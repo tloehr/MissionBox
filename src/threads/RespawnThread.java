@@ -2,6 +2,7 @@ package threads;
 
 import interfaces.DisplayTarget;
 import misc.AEPlayWave;
+import misc.Tools;
 
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -47,7 +48,7 @@ public class RespawnThread extends Thread {
                 secondsSinceLastRespawn++;
                 if (secondsSinceLastRespawn > time2respawn) {
                     secondsSinceLastRespawn = 0;
-                    AEPlayWave playWave = new AEPlayWave("/local/codepad.wav");
+                    AEPlayWave playWave = new AEPlayWave(Tools.SND_MINIONS_SPAWNED);
                     playWave.start();
                 }
                 Thread.sleep(1000); // Milliseconds

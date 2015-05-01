@@ -16,12 +16,7 @@ public class ProgressTarget implements ProgressInterface {
 
     @Override
     public void setValue(int value) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                jProgressBar.setValue(value);
-            }
-        });
+        SwingUtilities.invokeLater(() -> jProgressBar.setValue(value));
     }
 
 

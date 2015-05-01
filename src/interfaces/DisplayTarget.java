@@ -1,5 +1,7 @@
 package interfaces;
 
+import misc.Tools;
+
 import javax.swing.*;
 import java.util.ResourceBundle;
 
@@ -10,17 +12,17 @@ public class DisplayTarget {
 
 
     private final JLabel jLabel;
-    private final ResourceBundle lang;
+
 
     public DisplayTarget(JLabel jLabel) {
-        lang = ResourceBundle.getBundle("Messages");
+
         this.jLabel = jLabel;
     }
 
 
     public void setText(String text){
         if (jLabel != null){
-            jLabel.setText( lang.getString(text));
+            jLabel.setText( Tools.xx(text));
         }
     }
 }

@@ -34,7 +34,7 @@ public class SoundThread extends Thread {
 
         lang = ResourceBundle.getBundle("Messages");
 
-        setName("threads.DisplayThread");
+        setName("threads.FarcryAssaultThread");
         interrupted = false;
 
     }
