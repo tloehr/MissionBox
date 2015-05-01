@@ -24,7 +24,7 @@ public class FrmMain extends JFrame {
     FarcryAssaultThread farcryAssaultThread;
 
     public ResourceBundle lang;
-    private int TIME2RESPAWN = 20, MAXCYLCES = 5, SECONDS2CAPTURE = 60;
+    private int TIME2RESPAWN = 20, MAXCYLCES = 2, SECONDS2CAPTURE = 60;
 
     public FrmMain() {
         initComponents();

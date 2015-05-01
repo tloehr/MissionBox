@@ -34,10 +34,10 @@ public class FarcryAssaultThread extends Thread {
     public static final int GAME_FLAG_COLD = 2;
     public static final int GAME_FLAG_HOT = 3;
     public static final int GAME_ROCKET_LAUNCHED = 5;
-
     public static final int GAME_OUTCOME_FLAG_TAKEN = 6;
     public static final int GAME_OUTCOME_FLAG_DEFENDED = 7;
-    DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+
+    DateFormat formatter = new SimpleDateFormat("mm:ss");
 
     private final DisplayTarget messageTarget, gameTimer;//, dp2, dp3, dp4;
 
@@ -137,7 +137,7 @@ public class FarcryAssaultThread extends Thread {
                             playFlagCold = null;
                         }
 
-                        if (playFlagHot == null) {
+                        if (playFlagHot == null && cycle < MAXCYCLES) {
                             playFlagHot = new AEPlayWave(Tools.SND_SIREN, event -> {
                                 if (event.getType() == LineEvent.Type.STOP) {
                                     cycle++;
@@ -149,14 +149,9 @@ public class FarcryAssaultThread extends Thread {
                             playFlagHot.start();
                         }
 
-                        if (cycle == MAXCYCLES) {
-                            cycle++;
+                        if (cycle >= MAXCYCLES) {
+//                            cycle++;
                             gameState = GAME_ROCKET_LAUNCHED;
-                            playFlagHot = new AEPlayWave(Tools.SND_FLARE, event -> {
-                                if (event.getType() == LineEvent.Type.STOP) {
-                                    gameState = GAME_OUTCOME_FLAG_TAKEN;
-                                }
-                            });
                         }
 //
 //                        if (playFlagHot != null && !playFlagHot.isAlive()) {
@@ -165,6 +160,19 @@ public class FarcryAssaultThread extends Thread {
                         break;
                     }
                     case GAME_ROCKET_LAUNCHED: {
+                        if (playWave == null || !playWave.isAlive()) {
+
+                            if (playFlagHot!= null && playFlagHot.isAlive()){
+                                playFlagHot.stopSound();
+                            }
+
+                            playWave = new AEPlayWave(Tools.SND_FLARE, event -> {
+                                if (event.getType() == LineEvent.Type.STOP) {
+                                    gameState = GAME_OUTCOME_FLAG_TAKEN;
+                                }
+                            });
+                            playWave.start();
+                        }
                         break;
                     }
                     case GAME_FLAG_COLD: {
@@ -195,7 +203,7 @@ public class FarcryAssaultThread extends Thread {
                         break;
                     }
                     case GAME_OUTCOME_FLAG_TAKEN: {
-                        messageTarget.setText("assault.gamestate.flag.is.taken");
+                        messageTarget.setText("assault.gamestate.outcome.flag.taken");
                         if (playWave != null && playWave.isAlive()) {
                             playWave.stopSound();
                         }
@@ -211,7 +219,7 @@ public class FarcryAssaultThread extends Thread {
                         break;
                     }
                     case GAME_OUTCOME_FLAG_DEFENDED: {
-                        messageTarget.setText("assault.gamestate.flag.is.taken");
+                        messageTarget.setText("assault.gamestate.outcome.flag.defended");
 
                         if (playWave != null && playWave.isAlive()) {
                             playWave.stopSound();
