@@ -8,13 +8,13 @@ import java.util.ResourceBundle;
 /**
  * Created by tloehr on 26.04.15.
  */
-public class DisplayTarget {
+public class TextLabelDisplay {
 
 
     private final JLabel jLabel;
 
 
-    public DisplayTarget(JLabel jLabel) {
+    public TextLabelDisplay(JLabel jLabel) {
 
         this.jLabel = jLabel;
     }

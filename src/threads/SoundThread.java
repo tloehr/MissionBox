@@ -1,6 +1,5 @@
 package threads;
 
-import interfaces.DisplayTarget;
 import interfaces.SoundClip;
 
 import java.util.ResourceBundle;
@@ -13,7 +12,7 @@ import java.util.logging.Logger;
 public class SoundThread extends Thread {
     private final ResourceBundle lang;
     private SoundClip clip;
-    //    private DisplayTarget displayTarget;
+    //    private TextLabelDisplay displayTarget;
     private boolean interrupted = false;
     public final Logger LOGGER = Logger.getLogger(getName());
 

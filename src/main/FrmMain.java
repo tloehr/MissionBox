@@ -1,3 +1,5 @@
+package main;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ResourceBundle;
@@ -6,8 +8,9 @@ import javax.swing.*;
 import com.jgoodies.forms.factories.*;
 import com.jgoodies.forms.layout.*;
 
-import interfaces.DisplayTarget;
-import interfaces.ProgressTarget;
+import events.MessageEvent;
+import events.MessageListener;
+
 import threads.FarcryAssaultThread;
 import threads.RespawnThread;
 /*
@@ -19,6 +22,8 @@ import threads.RespawnThread;
  * @author Torsten Löhr
  */
 public class FrmMain extends JFrame {
+
+    private final MessageListener messageListener;
     boolean flag = false;
     RespawnThread respawnThread;
     FarcryAssaultThread farcryAssaultThread;
@@ -26,7 +31,10 @@ public class FrmMain extends JFrame {
     public ResourceBundle lang;
     private int TIME2RESPAWN = 20, MAXCYLCES = 2, SECONDS2CAPTURE = 60;
 
-    public FrmMain() {
+    public FrmMain(MessageListener messageListener) {
+        super();
+        this.messageListener = messageListener;
+
         initComponents();
         initFrame();
     }
@@ -34,27 +42,30 @@ public class FrmMain extends JFrame {
     private void initFrame() {
         progressBar1.setMinimum(0);
         progressBar1.setMinimum(MAXCYLCES);
-        respawnThread = new RespawnThread(new DisplayTarget(lblRespawn), TIME2RESPAWN);
-        farcryAssaultThread = new FarcryAssaultThread(new DisplayTarget(lblMessage), new DisplayTarget(lblGametimer), new ProgressTarget(progressBar1), MAXCYLCES, SECONDS2CAPTURE);
+//        respawnThread = new RespawnThread(new TextLabelDisplay(lblRespawn), TIME2RESPAWN);
+//        farcryAssaultThread = new FarcryAssaultThread(new TextLabelDisplay(lblMessage), new TextLabelDisplay(lblGametimer), new ProgressBarDisplay(progressBar1), MAXCYLCES, SECONDS2CAPTURE);
         lang = ResourceBundle.getBundle("Messages");
     }
 
-    @Override
-    public void setVisible(boolean b) {
-        super.setVisible(b);
-        if (b) {
-            respawnThread.start();
-            farcryAssaultThread.start();
-        } else {
 
-        }
+    private void btnMainActionPerformed(ActionEvent e) {
 
     }
 
-    private void btnMainActionPerformed(ActionEvent e) {
-        farcryAssaultThread.toggleFlag();
+    private void btnMainItemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED){
 
+        } else if (e.getStateChange() == ItemEvent.DESELECTED){
 
+        }
+    }
+
+    private void btnMainMousePressed(MouseEvent e) {
+        messageListener.messageReceived(new MessageEvent(e.getSource(), true));
+    }
+
+    private void btnMainMouseReleased(MouseEvent e) {
+        messageListener.messageReceived(new MessageEvent(e.getSource(), false));
     }
 
     private void initComponents() {
@@ -88,6 +99,17 @@ public class FrmMain extends JFrame {
         btnMain.setText("Dr\u00fcck mich");
         btnMain.setForeground(Color.black);
         btnMain.addActionListener(e -> btnMainActionPerformed(e));
+        btnMain.addItemListener(e -> btnMainItemStateChanged(e));
+        btnMain.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                btnMainMousePressed(e);
+            }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                btnMainMouseReleased(e);
+            }
+        });
         contentPane.add(btnMain, CC.xy(3, 5, CC.FILL, CC.FILL));
         contentPane.add(progressBar1, CC.xy(3, 7));
 

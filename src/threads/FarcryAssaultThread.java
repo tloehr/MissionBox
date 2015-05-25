@@ -1,7 +1,7 @@
 package threads;
 
-import interfaces.DisplayTarget;
-import interfaces.ProgressInterface;
+import interfaces.TextLabelDisplay;
+import interfaces.PercentageInterface;
 import misc.AEPlayWave;
 import misc.Tools;
 
@@ -17,10 +17,10 @@ import java.util.logging.Logger;
  */
 public class FarcryAssaultThread extends Thread {
 
-    //    private DisplayTarget displayTarget;
+    //    private TextLabelDisplay displayTarget;
     public final Logger LOGGER = Logger.getLogger(getName());
     private int cycle = 0;
-    private final ProgressInterface progressTarget;
+    private final PercentageInterface progressTarget;
     private final int seconds2capture;
     private int MAXCYCLES;
     private int gameState;
@@ -39,10 +39,10 @@ public class FarcryAssaultThread extends Thread {
 
     DateFormat formatter = new SimpleDateFormat("mm:ss");
 
-    private final DisplayTarget messageTarget, gameTimer;//, dp2, dp3, dp4;
+    private final TextLabelDisplay messageTarget, gameTimer;//, dp2, dp3, dp4;
 
 
-    public FarcryAssaultThread(DisplayTarget messageTarget, DisplayTarget gameTimer, ProgressInterface progressTarget, int maxcycles, int seconds2capture) {
+    public FarcryAssaultThread(TextLabelDisplay messageTarget, TextLabelDisplay gameTimer, PercentageInterface progressTarget, int maxcycles, int seconds2capture) {
         super();
         this.gameTimer = gameTimer;
         this.progressTarget = progressTarget;

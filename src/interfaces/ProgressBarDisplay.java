@@ -5,12 +5,12 @@ import javax.swing.*;
 /**
  * Created by tloehr on 26.04.15.
  */
-public class ProgressTarget implements ProgressInterface {
+public class ProgressBarDisplay implements PercentageInterface {
 
 
     private final JProgressBar jProgressBar;
 
-    public ProgressTarget(JProgressBar jProgressBar) {
+    public ProgressBarDisplay(JProgressBar jProgressBar) {
         this.jProgressBar = jProgressBar;
     }
 

@@ -1,6 +1,6 @@
 package threads;
 
-import interfaces.DisplayTarget;
+import interfaces.TextLabelDisplay;
 import misc.AEPlayWave;
 import misc.Tools;
 
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  */
 public class RespawnThread extends Thread {
     private final ResourceBundle lang;
-    private DisplayTarget displayTarget;
+    private TextLabelDisplay textLabelDisplay;
     private int secondsSinceLastRespawn, time2respawn;
     public final Logger LOGGER = Logger.getLogger(getName());
 
@@ -30,10 +30,10 @@ public class RespawnThread extends Thread {
 
     }
 
-    public RespawnThread(DisplayTarget displayTarget, int time2respawn) {
+    public RespawnThread(TextLabelDisplay textLabelDisplay, int time2respawn) {
         super();
 
-        this.displayTarget = displayTarget;
+        this.textLabelDisplay = textLabelDisplay;
         this.time2respawn = time2respawn;
         lang = ResourceBundle.getBundle("Messages");
 
@@ -44,7 +44,7 @@ public class RespawnThread extends Thread {
     public void run() {
         while (!isInterrupted()) {
             try {
-                displayTarget.setText(lang.getString("assault.seconds.for.reinforcements") + ": " + (time2respawn - secondsSinceLastRespawn));
+                textLabelDisplay.setText(lang.getString("assault.seconds.for.reinforcements") + ": " + (time2respawn - secondsSinceLastRespawn));
                 secondsSinceLastRespawn++;
                 if (secondsSinceLastRespawn > time2respawn) {
                     secondsSinceLastRespawn = 0;
