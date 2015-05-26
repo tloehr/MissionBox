@@ -1,45 +1,49 @@
 package events;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import main.MissionBox;
 import misc.Tools;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.EventObject;
-import java.util.logging.Logger;
+
 
 /**
  * Created by tloehr on 25.04.15.
  */
 public class MessageEvent extends EventObject {
 
-    final Logger LOGGER = Logger.getLogger("eventObject");
+    final Logger LOGGER = Logger.getLogger(this.getClass());
+
     private final Object message;
 
     public MessageEvent(Object source, String message) {
         super(source);
-        LOGGER.setLevel(MissionBox.LOGLEVEL);
+        LOGGER.setLevel(MissionBox.logLevel);
         this.message = Tools.xx(message);
-        LOGGER.finest("TextMessage: " + this.message);
+        LOGGER.debug("TextMessage: " + this.message);
     }
 
     public MessageEvent(Object source, BigDecimal percentage) {
         super(source);
+        LOGGER.setLevel(MissionBox.logLevel);
         this.message = percentage;
-        LOGGER.finest("PercentageMessage: " + percentage.setScale(2, RoundingMode.HALF_UP).toString());
+        LOGGER.debug("PercentageMessage: " + percentage.setScale(2, RoundingMode.HALF_UP).toString());
     }
 
     public MessageEvent(Object source, int mode) {
         super(source);
+        LOGGER.setLevel(MissionBox.logLevel);
         this.message = new Integer(mode);
-        LOGGER.finest("IntegerMessage: " + mode);
+        LOGGER.debug("IntegerMessage: " + mode);
     }
 
     public MessageEvent(Object source, Boolean on) {
         super(source);
+        LOGGER.setLevel(MissionBox.logLevel);
         this.message = on;
-        LOGGER.finest("BooleanMessage: " + on);
+        LOGGER.debug("BooleanMessage: " + on);
     }
 
     public boolean isPercentage() {
@@ -68,7 +72,7 @@ public class MessageEvent extends EventObject {
         return isMode() ? (Integer) message : null;
     }
 
-    public boolean isOn(){
+    public boolean isOn() {
         return isBoolean() ? (Boolean) message : false;
     }
 
