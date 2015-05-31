@@ -19,7 +19,6 @@ public class SoundClip {
     }
 
     public void play() {
-        // play the audio clip with the audioplayer class
         AudioPlayer.player.start(audioStream);
 
     }

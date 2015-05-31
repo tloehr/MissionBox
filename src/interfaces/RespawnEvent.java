@@ -1,4 +1,4 @@
-package events;
+package interfaces;
 
 import java.util.EventObject;
 

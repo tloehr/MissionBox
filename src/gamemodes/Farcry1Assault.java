@@ -1,197 +1,151 @@
 package gamemodes;
 
-import events.MessageEvent;
-import events.MessageListener;
+import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
+import com.pi4j.gpio.extension.mcp.MCP23017Pin;
+import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.pi4j.io.i2c.I2CBus;
+import com.pi4j.util.StringUtil;
+import com.pi4j.wiringpi.Lcd;
+import interfaces.MessageListener;
 import main.MissionBox;
+import misc.Tools;
 import org.apache.log4j.Logger;
+import threads.AEPlayWave;
 
-import javax.swing.event.EventListenerList;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
- * Created by tloehr on 25.04.15.
+ * Created by tloehr on 31.05.15.
  */
-public class Farcry1Assault implements Runnable {
-    final Logger LOGGER;
-    private final Thread thread;
-    private BigDecimal cycle;
-    private final int seconds2capture;
-    private BigDecimal MAXCYCLES;
-    private int gameState, previousGameState;
-    private long starttime = 0, endtime = 0;
-    private long threadcycles = 0; // makes sure that the time event is only triggered once a second
+public class Farcry1Assault implements GameModes {
+    private final Logger logger = Logger.getLogger(getClass());
+    private int LCD_ROWS = 2;
+    private int LCD_COLUMNS = 16;
+    private int LCD_BITS = 4;
+    private int TIME2RESPAWN = 20, MAXCYLCES = 200, SECONDS2CAPTURE = 60 * 10;
+    // a CYCLE takes 50 millis
 
-    public static final int GAME_PRE_GAME = 0;
-    public static final int GAME_FLAG_ACTIVE = 1;
-    public static final int GAME_FLAG_COLD = 2;
-    public static final int GAME_FLAG_HOT = 3;
-    public static final int GAME_ROCKET_LAUNCHED = 5;
-    public static final int GAME_OUTCOME_FLAG_TAKEN = 6;
-    public static final int GAME_OUTCOME_FLAG_DEFENDED = 7;
+    private Farcry1AssaultThread farcryAssaultThread;
 
-    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "ROCKET_LAUNCHED", "FLAG_TAKEN", "FLAG_DEFENDED"};
+    private AEPlayWave playWave, playFlagHot, playFlagCold, playRocket, playSiren;
 
-    DateFormat formatter = new SimpleDateFormat("mm:ss");
+    public Farcry1Assault(GpioController GPIO) throws IOException {
+        logger.setLevel(MissionBox.logLevel);
 
-    private final EventListenerList messageList, gameTimerList, percentageList, gameModeList;
+        final GpioPinDigitalInput btnFlagTrigger = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
+        final GpioPinDigitalInput btnGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
+        final MCP23017GpioProvider gpioProvider = new MCP23017GpioProvider(I2CBus.BUS_1, 0x20);
+
+        GpioPinDigitalOutput myOutputs[] = {
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_A0, "MyOutput-A0", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_A1, "MyOutput-A1", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_A2, "MyOutput-A2", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_A3, "MyOutput-A3", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_A4, "MyOutput-A4", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_A5, "MyOutput-A5", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_A6, "MyOutput-A6", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_A7, "MyOutput-A7", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_B0, "MyOutput-B0", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_B1, "MyOutput-B1", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_B2, "MyOutput-B2", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_B3, "MyOutput-B3", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_B4, "MyOutput-B4", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_B5, "MyOutput-B5", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_B6, "MyOutput-B6", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider, MCP23017Pin.GPIO_B7, "MyOutput-B7", PinState.LOW)
+        };
+
+        // initialize LCD
+        // the wiring is according to the examples from https://kofler.info/buecher/raspberry-pi/
+        int lcdHandle = Lcd.lcdInit(LCD_ROWS,     // number of row supported by LCD
+                LCD_COLUMNS,  // number of columns supported by LCD
+                LCD_BITS,     // number of bits used to communicate to LCD
+                11,           // LCD RS pin
+                10,           // LCD strobe pin
+                6,            // LCD data bit 1
+                5,            // LCD data bit 2
+                4,            // LCD data bit 3
+                1,            // LCD data bit 4
+                0,            // LCD data bit 5 (set to 0 if using 4 bit communication)
+                0,            // LCD data bit 6 (set to 0 if using 4 bit communication)
+                0,            // LCD data bit 7 (set to 0 if using 4 bit communication)
+                0);           // LCD data bit 8 (set to 0 if using 4 bit communication)
 
 
-    public Farcry1Assault(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, int maxcycles, int seconds2capture) {
-        super();
-        thread = new Thread(this);
-        LOGGER = Logger.getLogger(this.getClass());
-        LOGGER.setLevel(MissionBox.logLevel);
-
-        messageList = new EventListenerList();
-        gameTimerList = new EventListenerList();
-        percentageList = new EventListenerList();
-        gameModeList = new EventListenerList();
-
-        messageList.add(MessageListener.class, messageListener);
-        gameTimerList.add(MessageListener.class, gameTimerListener);
-        percentageList.add(MessageListener.class, percentageListener);
-        gameModeList.add(MessageListener.class, gameModeListener);
-
-        this.seconds2capture = seconds2capture;
-
-        gameState = GAME_PRE_GAME;
-        previousGameState = -1;
-
-        MAXCYCLES = new BigDecimal(maxcycles);
-        resetCycle();
-    }
-
-    public synchronized void setGameState(int state) {
-        this.gameState = state;
-        if (gameState != previousGameState) {
-            previousGameState = gameState;
-            fireMessage(gameModeList, new MessageEvent(this, gameState));
-            LOGGER.debug("gamemode set to: " + state);
-
-            switch (gameState) {
-                case GAME_PRE_GAME: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.pre.game"));
-                    break;
-                }
-                case GAME_FLAG_ACTIVE: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.active"));
-                    starttime = System.currentTimeMillis();
-                    endtime = starttime + (seconds2capture * 1000);
-                    setGameState(GAME_FLAG_COLD);
-                    break;
-                }
-                case GAME_FLAG_HOT: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.hot"));
-                    break;
-                }
-                case GAME_ROCKET_LAUNCHED: {
-                    setGameState(GAME_OUTCOME_FLAG_TAKEN);
-                    break;
-                }
-                case GAME_FLAG_COLD: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.cold"));
-                    resetCycle();
-                    break;
-                }
-                case GAME_OUTCOME_FLAG_TAKEN: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.taken"));
-                    break;
-                }
-                case GAME_OUTCOME_FLAG_DEFENDED: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.defended"));
-                    break;
-                }
-
-                default: {
-                    fireMessage(messageList, new MessageEvent(this, "msg.error"));
-                }
-            }
-        }
-    }
-
-    private synchronized void resetCycle() {
-        setCycle(BigDecimal.ZERO);
-    }
-
-    private synchronized void increaseCycle() {
-        setCycle(cycle.add(BigDecimal.ONE));
-    }
-
-    private synchronized void setCycle(BigDecimal cycle) {
-        this.cycle = cycle;
-        BigDecimal progress = cycle.divide(MAXCYCLES, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        fireMessage(percentageList, new MessageEvent(this, progress));
-    }
-
-    public synchronized void startStopGame(){
-        if (gameState == GAME_PRE_GAME){
-            setGameState(GAME_FLAG_ACTIVE);
-        }
-        if (gameState != GAME_PRE_GAME){
-            setGameState(GAME_PRE_GAME);
-        }
-    }
-
-    public synchronized void toggleFlag() {
-        if (gameState == GAME_PRE_GAME || gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED)
+        // verify initialization
+        if (lcdHandle == -1) {
+            logger.fatal(" ==>> LCD INIT FAILED");
             return;
-
-
-        if (gameState == GAME_FLAG_COLD) {
-            setGameState(GAME_FLAG_HOT);
-        } else {
-            setGameState(GAME_FLAG_COLD);
         }
-    }
 
-    protected synchronized void fireMessage(EventListenerList listeners, MessageEvent textMessage) {
-        for (MessageListener listener : listeners.getListeners(MessageListener.class)) {
-            listener.messageReceived(textMessage);
-        }
-    }
+        playSiren = new AEPlayWave(Tools.SND_SIREN, null, 5);
+        playRocket = new AEPlayWave(Tools.SND_FLARE, null, 1);
 
-    public void run() {
-        while (!thread.isInterrupted()) {
+        Lcd.lcdClear(lcdHandle);
 
-            threadcycles++;
+        MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
-            if (gameState == GAME_FLAG_COLD && System.currentTimeMillis() > endtime) {
-                setGameState(GAME_OUTCOME_FLAG_DEFENDED);
+        MessageListener gameTimeListener = messageEvent -> {
+            Lcd.lcdPosition(lcdHandle, 0, 1);
+            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(messageEvent.getMessage().toString(), LCD_COLUMNS));
+        };
+
+        MessageListener percentageListener = messageEvent -> {
+            int barrier = new BigDecimal(16).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(messageEvent.getPercentage()).intValue();
+
+            for (int ledON = 0; ledON < barrier; ledON++) {
+                GPIO.setState(true, myOutputs[ledON]);
             }
-
-            String dateFormatted = "00:00";
-            if (endtime > System.currentTimeMillis()) {
-                Date date = new Date(endtime - System.currentTimeMillis());
-                dateFormatted = formatter.format(date);
-                System.err.println(dateFormatted);
+            for (int ledOFF = barrier; ledOFF < 16; ledOFF++) {
+                GPIO.setState(false, myOutputs[ledOFF]);
             }
+        };
 
-            if (threadcycles % 20 == 0) {
-                fireMessage(gameTimerList, new MessageEvent(this, dateFormatted));
+        MessageListener gameModeListener = messageEvent -> {
+            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
+            Lcd.lcdHome(lcdHandle);
+            Lcd.lcdPosition(lcdHandle, 0, 0);
+            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
+
+            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
+                playSiren.startSound();
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
+                playSiren.stopSound();
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
+                playRocket.startSound();
             }
+        };
 
+        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);
 
+        btnFlagTrigger.addListener((GpioPinListenerDigital) event -> {
+            if (event.getState() == PinState.HIGH) {
+                logger.debug("btnFlagTrigger");
+                farcryAssaultThread.toggleFlag();
+            }
+        });
 
-            try {
-
-                if (gameState == GAME_FLAG_HOT && cycle.compareTo(MAXCYCLES) >= 0) {
-                    setGameState(GAME_ROCKET_LAUNCHED);
+        btnGameStartStop.addListener((GpioPinListenerDigital) event -> {
+            if (event.getState() == PinState.HIGH) {
+                logger.debug("btnGameStartStop");
+                if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
+                    farcryAssaultThread.startGame();
+                } else {
+                    farcryAssaultThread.restartGame();
                 }
-
-                if (gameState == GAME_FLAG_HOT){
-                    increaseCycle();
-                }
-
-                Thread.sleep(50); // Milliseconds
-
-            } catch (InterruptedException ie) {
-
-                LOGGER.debug(this + " interrupted!");
             }
-        }
+        });
+
+        farcryAssaultThread.run();
+        System.out.println("<--Pi4J--> Wiring Pi LCD test program");
     }
+
+    @Override
+    public void quitGame() {
+        farcryAssaultThread.quitGame();
+        playSiren.stopSound();
+    }
+
 }

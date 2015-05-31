@@ -2,7 +2,6 @@ package threads;
 
 import interfaces.TextLabelDisplay;
 import interfaces.PercentageInterface;
-import misc.AEPlayWave;
 import misc.Tools;
 
 import javax.sound.sampled.LineEvent;
@@ -62,7 +61,6 @@ public class FarcryAssaultThread extends Thread {
 
     public void setGameState(int state) {
         this.gameState = state;
-
     }
 
     public void toggleFlag() {
@@ -103,7 +101,7 @@ public class FarcryAssaultThread extends Thread {
                                 if (event.getType() == LineEvent.Type.CLOSE) {
                                     gameState = GAME_FLAG_ACTIVE;
                                 }
-                            });
+                            }, 1);
 
                             playWave.start();
                         }
@@ -120,7 +118,7 @@ public class FarcryAssaultThread extends Thread {
                                     starttime = System.currentTimeMillis();
                                     endtime = starttime + (seconds2capture * 1000);
                                 }
-                            });
+                            }, 1);
                             playWave.start();
                         }
                         break;
@@ -145,7 +143,7 @@ public class FarcryAssaultThread extends Thread {
                                 } else if (event.getType() == LineEvent.Type.CLOSE) {
                                     playFlagHot = null;
                                 }
-                            });
+                            }, 1);
                             playFlagHot.start();
                         }
 
@@ -170,7 +168,7 @@ public class FarcryAssaultThread extends Thread {
                                 if (event.getType() == LineEvent.Type.STOP) {
                                     gameState = GAME_OUTCOME_FLAG_TAKEN;
                                 }
-                            });
+                            }, 1);
                             playWave.start();
                         }
                         break;
@@ -194,7 +192,7 @@ public class FarcryAssaultThread extends Thread {
                                     if (event.getType() == LineEvent.Type.CLOSE) {
                                         playFlagCold = null;
                                     }
-                                });
+                                }, 1);
                                 playFlagCold.start();
                             }
                         }
@@ -213,7 +211,7 @@ public class FarcryAssaultThread extends Thread {
                                 if (event.getType() == LineEvent.Type.CLOSE) {
 
                                 }
-                            });
+                            }, 1);
                             playAfterGame.start();
                         }
                         break;
@@ -230,7 +228,7 @@ public class FarcryAssaultThread extends Thread {
                                 if (event.getType() == LineEvent.Type.CLOSE) {
 
                                 }
-                            });
+                            }, 1);
                             playAfterGame.start();
                         }
 

@@ -8,8 +8,8 @@ import javax.swing.*;
 import com.jgoodies.forms.factories.*;
 import com.jgoodies.forms.layout.*;
 
-import events.MessageEvent;
-import events.MessageListener;
+import interfaces.MessageEvent;
+import interfaces.MessageListener;
 
 import threads.FarcryAssaultThread;
 import threads.RespawnThread;

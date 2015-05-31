@@ -62,10 +62,7 @@ public class SoundThread extends Thread {
                     state = STATE_IDLE;
                 }
 
-
-
                 Thread.sleep(50); // Milliseconds
-
             } catch (InterruptedException ie) {
                 interrupted = true;
                 LOGGER.log(Level.FINE, "PrintProcessor interrupted!");
