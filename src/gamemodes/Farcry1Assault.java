@@ -22,7 +22,8 @@ public class Farcry1Assault implements Runnable {
     private final int seconds2capture;
     private BigDecimal MAXCYCLES;
     private int gameState, previousGameState;
-    private long starttime = 0, endtime = 0, threadcycles = 0;
+    private long starttime = 0, endtime = 0;
+    private long threadcycles = 0; // makes sure that the time event is only triggered once a second
 
     public static final int GAME_PRE_GAME = 0;
     public static final int GAME_FLAG_ACTIVE = 1;
@@ -32,7 +33,7 @@ public class Farcry1Assault implements Runnable {
     public static final int GAME_OUTCOME_FLAG_TAKEN = 6;
     public static final int GAME_OUTCOME_FLAG_DEFENDED = 7;
 
-    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FALG_COLD", "FLAG_HOT", "ROCKET_LAUNCHED", "FLAG_TAKEN", "FLAG_DEFENDED"};
+    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "ROCKET_LAUNCHED", "FLAG_TAKEN", "FLAG_DEFENDED"};
 
     DateFormat formatter = new SimpleDateFormat("mm:ss");
 
@@ -80,6 +81,7 @@ public class Farcry1Assault implements Runnable {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.active"));
                     starttime = System.currentTimeMillis();
                     endtime = starttime + (seconds2capture * 1000);
+                    setGameState(GAME_FLAG_COLD);
                     break;
                 }
                 case GAME_FLAG_HOT: {
@@ -125,9 +127,12 @@ public class Farcry1Assault implements Runnable {
         fireMessage(percentageList, new MessageEvent(this, progress));
     }
 
-    public synchronized void startGame(){
+    public synchronized void startStopGame(){
         if (gameState == GAME_PRE_GAME){
             setGameState(GAME_FLAG_ACTIVE);
+        }
+        if (gameState != GAME_PRE_GAME){
+            setGameState(GAME_PRE_GAME);
         }
     }
 
@@ -135,9 +140,6 @@ public class Farcry1Assault implements Runnable {
         if (gameState == GAME_PRE_GAME || gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED)
             return;
 
-        if (gameState == GAME_FLAG_ACTIVE) {
-            setGameState(GAME_FLAG_COLD);
-        }
 
         if (gameState == GAME_FLAG_COLD) {
             setGameState(GAME_FLAG_HOT);
@@ -161,21 +163,27 @@ public class Farcry1Assault implements Runnable {
                 setGameState(GAME_OUTCOME_FLAG_DEFENDED);
             }
 
-            String dateFormatted = "00:00:00";
+            String dateFormatted = "00:00";
             if (endtime > System.currentTimeMillis()) {
                 Date date = new Date(endtime - System.currentTimeMillis());
-//                LOGGER.debug(endtime - System.currentTimeMillis());
                 dateFormatted = formatter.format(date);
+                System.err.println(dateFormatted);
             }
 
             if (threadcycles % 20 == 0) {
                 fireMessage(gameTimerList, new MessageEvent(this, dateFormatted));
             }
 
+
+
             try {
 
                 if (gameState == GAME_FLAG_HOT && cycle.compareTo(MAXCYCLES) >= 0) {
                     setGameState(GAME_ROCKET_LAUNCHED);
+                }
+
+                if (gameState == GAME_FLAG_HOT){
+                    increaseCycle();
                 }
 
                 Thread.sleep(50); // Milliseconds
