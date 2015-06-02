@@ -1,6 +1,7 @@
 package threads;
 
 import interfaces.TextLabelDisplay;
+import threads.AEPlayWave;
 import misc.Tools;
 
 import java.util.ResourceBundle;
@@ -47,8 +48,8 @@ public class RespawnThread extends Thread {
                 secondsSinceLastRespawn++;
                 if (secondsSinceLastRespawn > time2respawn) {
                     secondsSinceLastRespawn = 0;
-                    AEPlayWave playWave = new AEPlayWave(Tools.SND_MINIONS_SPAWNED, null, 1);
-                    playWave.start();
+                    AEPlayWave playWave = new AEPlayWave(Tools.SND_MINIONS_SPAWNED, null);
+                    playWave.playSound();
                 }
                 Thread.sleep(1000); // Milliseconds
             } catch (InterruptedException ie) {

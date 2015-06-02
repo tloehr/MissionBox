@@ -9,9 +9,10 @@ import com.pi4j.util.StringUtil;
 import com.pi4j.wiringpi.Lcd;
 import interfaces.MessageListener;
 import main.MissionBox;
+import threads.AEPlayWave;
 import misc.Tools;
 import org.apache.log4j.Logger;
-import threads.AEPlayWave;
+
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -80,8 +81,8 @@ public class Farcry1Assault implements GameModes {
             return;
         }
 
-        playSiren = new AEPlayWave(Tools.SND_SIREN, null, 5);
-        playRocket = new AEPlayWave(Tools.SND_FLARE, null, 1);
+        playSiren = new AEPlayWave(Tools.SND_SIREN, null);
+        playRocket = new AEPlayWave(Tools.SND_FLARE, null);
 
         Lcd.lcdClear(lcdHandle);
 
@@ -109,13 +110,14 @@ public class Farcry1Assault implements GameModes {
             Lcd.lcdPosition(lcdHandle, 0, 0);
             Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
 
-            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
-                playSiren.startSound();
-            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
-                playSiren.stopSound();
-            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
-                playRocket.startSound();
-            }
+//            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
+//                playSiren.is
+//                playSiren.startSound();
+//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
+//                playSiren.stopSound();
+//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
+//                playRocket.startSound();
+//            }
         };
 
         farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);

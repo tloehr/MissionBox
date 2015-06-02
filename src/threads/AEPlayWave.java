@@ -4,61 +4,50 @@ package threads;
  * Created by tloehr on 26.04.15.
  */
 
-import main.MissionBox;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import javax.sound.sampled.*;
 
-public class AEPlayWave extends Thread {
-    private final Logger logger = Logger.getLogger(getClass());
+public class AEPlayWave implements Runnable {
+
     private String filename;
     private final LineListener lineListener;
     private SourceDataLine auline = null;
+    private Logger logger = Logger.getLogger(getClass());
+    private AudioInputStream audioInputStream = null;
+    private Thread thread;
 
     private Position curPosition;
 
+    private int repeat;
+
     private final int EXTERNAL_BUFFER_SIZE = 524288; // 128Kb
-    private int repeat = 1;
 
     enum Position {
         LEFT, RIGHT, NORMAL
     }
 
 
-    public AEPlayWave(String wavfile, LineListener lineListener, int repeat) {
+    public AEPlayWave(String wavfile) {
+        this(wavfile, null);
+    }
+
+    //auline.close();
+    public AEPlayWave(String wavfile, LineListener lineListener) {
+        thread = new Thread(this);
         filename = wavfile;
         this.lineListener = lineListener;
         curPosition = Position.NORMAL;
-        logger.setLevel(MissionBox.logLevel);
-    }
 
-    public void stopSound() {
-        if (auline != null && auline.isActive()) {
-            auline.stop();
-        }
-    }
-
-    public void startSound() {
-        if (auline != null && auline.isActive()) {
-            auline.stop();
-        }
-    }
-
-    public AEPlayWave(String wavfile) {
-        this(wavfile, null, 1);
-    }
-
-    public void run() {
 
         File soundFile = new File(filename);
         if (!soundFile.exists()) {
-            System.err.println("Wave file not found: " + filename);
+            logger.error("Wave file not found: " + filename);
             return;
         }
 
-        AudioInputStream audioInputStream = null;
         try {
             audioInputStream = AudioSystem.getAudioInputStream(soundFile);
         } catch (UnsupportedAudioFileException e1) {
@@ -77,10 +66,10 @@ public class AEPlayWave extends Thread {
             auline = (SourceDataLine) AudioSystem.getLine(info);
             auline.open(format);
         } catch (LineUnavailableException e) {
-            e.printStackTrace();
+            logger.error(e);
             return;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e);
             return;
         }
 
@@ -97,47 +86,47 @@ public class AEPlayWave extends Thread {
             auline.addLineListener(lineListener);
         }
 
-        auline.start();
+    }
 
-        while (!isInterrupted()) {
-            int nBytesRead = 0;
-            byte[] abData = new byte[EXTERNAL_BUFFER_SIZE];
+    public void stopSound() {
+        repeat = 0;
+    }
 
-            try {
-                while (nBytesRead != -1) {
-                    nBytesRead = audioInputStream.read(abData, 0, abData.length);
-                    if (nBytesRead >= 0) auline.write(abData, 0, nBytesRead);
+    public void playSound() {
+        repeat = 1;
+    }
+
+    @Override
+    public void run() {
+        while (!thread.isInterrupted()) {
+
+            if (repeat > 0) {
+
+                try {
+                    int nBytesRead = 0;
+                    byte[] abData = new byte[EXTERNAL_BUFFER_SIZE];
+
+                    auline.start();
+
+                    try {
+                        while (nBytesRead != -1) {
+                            nBytesRead = audioInputStream.read(abData, 0, abData.length);
+                            if (nBytesRead >= 0) auline.write(abData, 0, nBytesRead);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    } finally {
+                        auline.drain();
+
+                    }
+
+                    Thread.sleep(50);
+                } catch (InterruptedException ie) {
+                    break;
                 }
-
-                Thread.sleep(50);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+
         }
-
-        auline.drain();
-        auline.close();
-
-//
-//
-//
-//        try {
-//            while (nBytesRead != -1) {
-//                nBytesRead = audioInputStream.read(abData, 0, abData.length);
-//                if (nBytesRead >= 0) auline.write(abData, 0, nBytesRead);
-//            }
-//
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return;
-//        } finally {
-//            auline.drain();
-//            auline.close();
-//        }
-
     }
 }

@@ -11,7 +11,6 @@ import com.jgoodies.forms.layout.*;
 import interfaces.MessageEvent;
 import interfaces.MessageListener;
 
-import threads.FarcryAssaultThread;
 import threads.RespawnThread;
 /*
  * Created by JFormDesigner on Thu Apr 23 10:23:23 PDT 2015
@@ -26,7 +25,6 @@ public class FrmMain extends JFrame {
     private final MessageListener messageListener;
     boolean flag = false;
     RespawnThread respawnThread;
-    FarcryAssaultThread farcryAssaultThread;
 
     public ResourceBundle lang;
     private int TIME2RESPAWN = 20, MAXCYLCES = 2, SECONDS2CAPTURE = 60;
