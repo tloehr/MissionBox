@@ -6,11 +6,11 @@ package gamemodes;
 public interface GameThreads {
 
 
-    public void restartGame();
+    void restartGame();
 
-    public void startGame();
+    void startGame();
 
-    public void quitGame();
+    void quitGame();
 
 
 

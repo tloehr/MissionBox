@@ -4,24 +4,17 @@ package threads;
  * Created by tloehr on 26.04.15.
  */
 
-import org.apache.log4j.Logger;
-
 import java.io.File;
 import java.io.IOException;
 import javax.sound.sampled.*;
 
-public class AEPlayWave implements Runnable {
+public class AEPlayWave extends Thread {
 
     private String filename;
     private final LineListener lineListener;
     private SourceDataLine auline = null;
-    private Logger logger = Logger.getLogger(getClass());
-    private AudioInputStream audioInputStream = null;
-    private Thread thread;
 
     private Position curPosition;
-
-    private int repeat;
 
     private final int EXTERNAL_BUFFER_SIZE = 524288; // 128Kb
 
@@ -30,24 +23,38 @@ public class AEPlayWave implements Runnable {
     }
 
 
-    public AEPlayWave(String wavfile) {
-        this(wavfile, null);
-    }
-
-    //auline.close();
     public AEPlayWave(String wavfile, LineListener lineListener) {
-        thread = new Thread(this);
         filename = wavfile;
         this.lineListener = lineListener;
         curPosition = Position.NORMAL;
+    }
 
+    public void stopSound(){
+        if (auline != null && auline.isActive()){
+            auline.stop();
+        }
+    }
+
+    public AEPlayWave(String wavfile) {
+        filename = wavfile;
+        this.lineListener = null;
+        curPosition = Position.NORMAL;
+    }
+
+//    public AEPlayWave(String wavfile, Position p) {
+//        filename = wavfile;
+//        curPosition = p;
+//    }
+
+    public void run() {
 
         File soundFile = new File(filename);
         if (!soundFile.exists()) {
-            logger.error("Wave file not found: " + filename);
+            System.err.println("Wave file not found: " + filename);
             return;
         }
 
+        AudioInputStream audioInputStream = null;
         try {
             audioInputStream = AudioSystem.getAudioInputStream(soundFile);
         } catch (UnsupportedAudioFileException e1) {
@@ -66,10 +73,10 @@ public class AEPlayWave implements Runnable {
             auline = (SourceDataLine) AudioSystem.getLine(info);
             auline.open(format);
         } catch (LineUnavailableException e) {
-            logger.error(e);
+            e.printStackTrace();
             return;
         } catch (Exception e) {
-            logger.error(e);
+            e.printStackTrace();
             return;
         }
 
@@ -86,47 +93,23 @@ public class AEPlayWave implements Runnable {
             auline.addLineListener(lineListener);
         }
 
-    }
+        auline.start();
 
-    public void stopSound() {
-        repeat = 0;
-    }
+        int nBytesRead = 0;
+        byte[] abData = new byte[EXTERNAL_BUFFER_SIZE];
 
-    public void playSound() {
-        repeat = 1;
-    }
-
-    @Override
-    public void run() {
-        while (!thread.isInterrupted()) {
-
-            if (repeat > 0) {
-
-                try {
-                    int nBytesRead = 0;
-                    byte[] abData = new byte[EXTERNAL_BUFFER_SIZE];
-
-                    auline.start();
-
-                    try {
-                        while (nBytesRead != -1) {
-                            nBytesRead = audioInputStream.read(abData, 0, abData.length);
-                            if (nBytesRead >= 0) auline.write(abData, 0, nBytesRead);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return;
-                    } finally {
-                        auline.drain();
-
-                    }
-
-                    Thread.sleep(50);
-                } catch (InterruptedException ie) {
-                    break;
-                }
+        try {
+            while (nBytesRead != -1) {
+                nBytesRead = audioInputStream.read(abData, 0, abData.length);
+                if (nBytesRead >= 0) auline.write(abData, 0, nBytesRead);
             }
-
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            auline.drain();
+            auline.close();
         }
+
     }
 }

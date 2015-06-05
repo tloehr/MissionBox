@@ -22,28 +22,24 @@ public class MessageEvent extends EventObject {
         super(source);
         LOGGER.setLevel(MissionBox.logLevel);
         this.message = Tools.xx(message);
-//        LOGGER.debug("TextMessage: " + this.message);
     }
 
     public MessageEvent(Object source, BigDecimal percentage) {
         super(source);
         LOGGER.setLevel(MissionBox.logLevel);
         this.message = percentage;
-//        LOGGER.debug("PercentageMessage: " + percentage.setScale(2, RoundingMode.HALF_UP).toString());
     }
 
     public MessageEvent(Object source, int mode) {
         super(source);
         LOGGER.setLevel(MissionBox.logLevel);
         this.message = new Integer(mode);
-//        LOGGER.debug("IntegerMessage: " + mode);
     }
 
     public MessageEvent(Object source, Boolean on) {
         super(source);
         LOGGER.setLevel(MissionBox.logLevel);
         this.message = on;
-//        LOGGER.debug("BooleanMessage: " + on);
     }
 
     public boolean isPercentage() {

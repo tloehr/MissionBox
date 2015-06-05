@@ -8,12 +8,16 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.util.StringUtil;
 import com.pi4j.wiringpi.Lcd;
 import interfaces.MessageListener;
+import kuusisto.tinysound.Music;
+import kuusisto.tinysound.Sound;
+import kuusisto.tinysound.TinySound;
 import main.MissionBox;
 import threads.AEPlayWave;
 import misc.Tools;
 import org.apache.log4j.Logger;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -29,8 +33,8 @@ public class Farcry1Assault implements GameModes {
     // a CYCLE takes 50 millis
 
     private Farcry1AssaultThread farcryAssaultThread;
+    private Music playSiren, playRocket;
 
-    private AEPlayWave playWave, playFlagHot, playFlagCold, playRocket, playSiren;
 
     public Farcry1Assault(GpioController GPIO) throws IOException {
         logger.setLevel(MissionBox.logLevel);
@@ -81,8 +85,10 @@ public class Farcry1Assault implements GameModes {
             return;
         }
 
-        playSiren = new AEPlayWave(Tools.SND_SIREN, null);
-        playRocket = new AEPlayWave(Tools.SND_FLARE, null);
+        TinySound.init();
+
+        playSiren = TinySound.loadMusic(new File(Tools.SND_SIREN));
+        playRocket = TinySound.loadMusic(new File(Tools.SND_FLARE));
 
         Lcd.lcdClear(lcdHandle);
 
@@ -110,14 +116,14 @@ public class Farcry1Assault implements GameModes {
             Lcd.lcdPosition(lcdHandle, 0, 0);
             Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
 
-//            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
-//                playSiren.is
-//                playSiren.startSound();
-//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
-//                playSiren.stopSound();
-//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
-//                playRocket.startSound();
-//            }
+            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
+                playSiren.play(true);
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_COLD)) {
+                playSiren.stop();
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
+                playSiren.stop();
+                playRocket.play(false);
+            }
         };
 
         farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);
@@ -147,7 +153,7 @@ public class Farcry1Assault implements GameModes {
     @Override
     public void quitGame() {
         farcryAssaultThread.quitGame();
-        playSiren.stopSound();
+        TinySound.shutdown();
     }
 
 }

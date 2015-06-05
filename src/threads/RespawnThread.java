@@ -49,7 +49,7 @@ public class RespawnThread extends Thread {
                 if (secondsSinceLastRespawn > time2respawn) {
                     secondsSinceLastRespawn = 0;
                     AEPlayWave playWave = new AEPlayWave(Tools.SND_MINIONS_SPAWNED, null);
-                    playWave.playSound();
+//                    playWave.playSound();
                 }
                 Thread.sleep(1000); // Milliseconds
             } catch (InterruptedException ie) {
