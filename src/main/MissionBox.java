@@ -33,6 +33,9 @@ public class MissionBox {
         GPIO = GpioFactory.getInstance();
 
 
+
+
+
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
         ConsoleAppender consoleAppender = new ConsoleAppender(layout);
         logger.addAppender(consoleAppender);
