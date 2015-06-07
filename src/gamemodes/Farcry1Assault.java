@@ -7,19 +7,20 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.util.StringUtil;
 import com.pi4j.wiringpi.Lcd;
+import interfaces.LEDBar;
 import interfaces.MessageListener;
+import interfaces.RelaySiren;
 import kuusisto.tinysound.Music;
-import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
 import main.MissionBox;
-import threads.AEPlayWave;
 import misc.Tools;
 import org.apache.log4j.Logger;
 
-
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 /**
  * Created by tloehr on 31.05.15.
@@ -29,28 +30,38 @@ public class Farcry1Assault implements GameModes {
     private int LCD_ROWS = 2;
     private int LCD_COLUMNS = 16;
     private int LCD_BITS = 4;
-    private int TIME2RESPAWN = 20, MAXCYLCES = 200, SECONDS2CAPTURE = 60 * 10;
+    private int TIME2RESPAWN = 20, MAXCYLCES = 50, SECONDS2CAPTURE = 60 * 10, someint = 24;
+    private final ArrayList<GpioPinDigitalOutput> myLEDs = new ArrayList<>();
+    private final ArrayList<GpioPinDigitalOutput> mySirens = new ArrayList<>();
+    private final LEDBar ledBar;
+    private final RelaySiren relaisSirens;
+    private final int lcdHandle;
+
     // a CYCLE takes 50 millis
 
+
     private Farcry1AssaultThread farcryAssaultThread;
-    private Music playSiren, playRocket;
+
+    private Music playSiren, playRocket, playWinningSon, playWelcome;
 
 
     public Farcry1Assault(GpioController GPIO) throws IOException {
         logger.setLevel(MissionBox.logLevel);
 
+
         final GpioPinDigitalInput btnFlagTrigger = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
         final GpioPinDigitalInput btnGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
-
+        final GpioPinDigitalInput btnMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
 
 
         final MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("20", 16));
         final MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("21", 16));
         final MCP23017GpioProvider gpioProvider2 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("22", 16));
-        
+
 
         int NUMLED4PROGRESS = 17;
         GpioPinDigitalOutput myOutputs[] = {
+
                 GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A0, "mcp23017-01-A0", PinState.LOW),
                 GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A1, "mcp23017-01-A1", PinState.LOW),
                 GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A2, "mcp23017-01-A2", PinState.LOW),
@@ -67,12 +78,49 @@ public class Farcry1Assault implements GameModes {
                 GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B5, "mcp23017-01-B5", PinState.LOW),
                 GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B6, "mcp23017-01-B6", PinState.LOW),
                 GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B7, "mcp23017-01-B7", PinState.LOW),
-                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A0, "mcp23017-02-A0", PinState.LOW)
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A0, "mcp23017-02-A0", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A1, "mcp23017-02-A1", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A2, "mcp23017-02-A2", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A3, "mcp23017-02-A3", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A4, "mcp23017-02-A4", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A5, "mcp23017-02-A5", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A6, "mcp23017-02-A6", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A7, "mcp23017-02-A7", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B0, "mcp23017-02-B0", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B1, "mcp23017-02-B1", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B2, "mcp23017-02-B2", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B3, "mcp23017-02-B3", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B4, "mcp23017-02-B4", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B5, "mcp23017-02-B5", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B6, "mcp23017-02-B6", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B7, "mcp23017-02-B7", PinState.LOW)
+
         };
+
+
+        for (int ledON = 0; ledON < NUMLED4PROGRESS; ledON++) {
+            myLEDs.add(myOutputs[ledON]);
+        }
+
+        mySirens.add(myOutputs[24]);
+        mySirens.add(myOutputs[25]);
+        mySirens.add(myOutputs[26]);
+//        mySirens.add(myOutputs[31]);
+
+        this.ledBar = new LEDBar(GPIO, myLEDs);
+        this.relaisSirens = new RelaySiren(GPIO, mySirens);
+
+//
+//        this.relaisSiren1 = new Relais(GPIO, myOutputs[24]);
+//        this.relaisSiren2 = new Relais(GPIO, myOutputs[25]);
+//        this.relaisSiren3 = new Relais(GPIO, myOutputs[26]);
+//        this.relaisStrobe = new Relais(GPIO, myOutputs[31]);
+
 
         // initialize LCD
         // the wiring is according to the examples from https://kofler.info/buecher/raspberry-pi/
-        int lcdHandle = Lcd.lcdInit(LCD_ROWS,     // number of row supported by LCD
+        // LCD data bit 8 (set to 0 if using 4 bit communication)
+        lcdHandle = Lcd.lcdInit(LCD_ROWS,     // number of row supported by LCD
                 LCD_COLUMNS,  // number of columns supported by LCD
                 LCD_BITS,     // number of bits used to communicate to LCD
                 11,           // LCD RS pin
@@ -84,7 +132,7 @@ public class Farcry1Assault implements GameModes {
                 0,            // LCD data bit 5 (set to 0 if using 4 bit communication)
                 0,            // LCD data bit 6 (set to 0 if using 4 bit communication)
                 0,            // LCD data bit 7 (set to 0 if using 4 bit communication)
-                0);           // LCD data bit 8 (set to 0 if using 4 bit communication)
+                0);
 
 
         // verify initialization
@@ -97,6 +145,8 @@ public class Farcry1Assault implements GameModes {
 
         playSiren = TinySound.loadMusic(new File(Tools.SND_SIREN));
         playRocket = TinySound.loadMusic(new File(Tools.SND_FLARE));
+        playWinningSon = TinySound.loadMusic(new File(Tools.SND_MIB));
+        playWelcome = TinySound.loadMusic(new File(Tools.SND_WELCOME));
 
         Lcd.lcdClear(lcdHandle);
 
@@ -108,14 +158,10 @@ public class Farcry1Assault implements GameModes {
         };
 
         MessageListener percentageListener = messageEvent -> {
-            int barrier = new BigDecimal(NUMLED4PROGRESS).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(messageEvent.getPercentage()).intValue();
 
-            for (int ledON = 0; ledON < barrier; ledON++) {
-                GPIO.setState(true, myOutputs[ledON]);
-            }
-            for (int ledOFF = barrier; ledOFF < NUMLED4PROGRESS; ledOFF++) {
-                GPIO.setState(false, myOutputs[ledOFF]);
-            }
+            ledBar.setValue(messageEvent.getPercentage());
+            relaisSirens.setValue(messageEvent.getPercentage());
+
         };
 
         MessageListener gameModeListener = messageEvent -> {
@@ -128,9 +174,43 @@ public class Farcry1Assault implements GameModes {
                 playSiren.play(true);
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_COLD)) {
                 playSiren.stop();
+                relaisSirens.setValue(BigDecimal.ZERO);
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
                 playSiren.stop();
+                ledBar.setSimple();
+                relaisSirens.setValue(BigDecimal.ZERO);
                 playRocket.play(false);
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_PRE_GAME)) {
+                playSiren.stop();
+                playRocket.stop();
+                playWinningSon.stop();
+                playWelcome.play(false);
+                ledBar.setOff();
+
+                playWinningSon.play(false);
+
+                for (int ledOFF = 0; ledOFF < NUMLED4PROGRESS; ledOFF++) {
+                    GPIO.setState(false, myOutputs[ledOFF]);
+                }
+
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
+                playSiren.stop();
+                playRocket.stop();
+
+                double volume = playWinningSon.getVolume();
+
+                for (double vol = volume; vol >= 0d; vol = vol - 0.5d){
+                    playWinningSon.setVolume(vol);
+                }
+
+
+                playWinningSon.stop();
+
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN)) {
+                playSiren.stop();
+                playRocket.stop();
+                playWinningSon.play(false);
+                ledBar.setCylon();
             }
         };
 
@@ -154,14 +234,58 @@ public class Farcry1Assault implements GameModes {
             }
         });
 
+        btnMisc.addListener((GpioPinListenerDigital) event -> {
+
+            double volume = playWinningSon.getVolume();
+
+
+
+            for (double vol = volume; vol >= 0d; vol = vol - 0.01d){
+                logger.debug(vol);
+                playWinningSon.setVolume(vol);
+            }
+
+
+            playWinningSon.stop();
+
+            playWinningSon.setVolume(volume);
+
+//            quitGame();
+
+
+//            if (event.getState() == PinState.HIGH) {
+//                logger.debug("btnMisc");
+//
+//                GPIO.setState(!GPIO.getState(myOutputs[someint]).isHigh(), myOutputs[someint]);
+//                someint++;
+//                if (someint >= myOutputs.length) someint = 24;
+//
+//                ledBar.setSimple();
+//
+//            }
+        });
+
         farcryAssaultThread.run();
         System.out.println("<--Pi4J--> Wiring Pi LCD test program");
     }
 
+    void fadeout(Music music){
+
+
+
+
+    }
+
     @Override
     public void quitGame() {
+        Lcd.lcdClear(lcdHandle);
         farcryAssaultThread.quitGame();
+        playSiren.unload();
+        playRocket.unload();
+        playWinningSon.unload();
         TinySound.shutdown();
+        System.exit(0);
+
     }
 
 }

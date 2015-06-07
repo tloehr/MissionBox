@@ -33,10 +33,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     public static final int GAME_FLAG_ACTIVE = 1;
     public static final int GAME_FLAG_COLD = 2;
     public static final int GAME_FLAG_HOT = 3;
-    public static final int GAME_ROCKET_LAUNCHED = 5;
-    public static final int GAME_OUTCOME_FLAG_TAKEN = 6;
-    public static final int GAME_OUTCOME_FLAG_DEFENDED = 7;
-    public static final int GAME_OVER = 8;
+    public static final int GAME_ROCKET_LAUNCHED = 4;
+    public static final int GAME_OUTCOME_FLAG_TAKEN = 5;
+    public static final int GAME_OUTCOME_FLAG_DEFENDED = 6;
+    public static final int GAME_OVER = 7;
 
     public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "ROCKET_LAUNCHED", "FLAG_TAKEN", "FLAG_DEFENDED", "GAME_OVER"};
 
@@ -90,8 +90,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.active"));
                     starttime = System.currentTimeMillis();
                     endtime = starttime + (seconds2capture * 1000);
-                    rockettime = endtime + (rocketseconds * 1000);
-                    afterglow = endtime + (agseconds * 1000);
                     setGameState(GAME_FLAG_COLD);
                     break;
                 }
@@ -101,9 +99,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_ROCKET_LAUNCHED: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.defended"));
-                    if (rockettime > System.currentTimeMillis()) {
-                        setGameState(GAME_OUTCOME_FLAG_TAKEN);
-                    }
+                    endtime = System.currentTimeMillis();
+                    rockettime = endtime + (rocketseconds * 1000);
+                    afterglow = rockettime + (agseconds * 1000);
                     break;
                 }
                 case GAME_FLAG_COLD: {
@@ -113,21 +111,14 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.taken"));
-                    if (afterglow > System.currentTimeMillis()) {
-                        setGameState(GAME_OVER);
-                    }
                     break;
                 }
                 case GAME_OUTCOME_FLAG_DEFENDED: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.defended"));
-                    if (afterglow > System.currentTimeMillis()) {
-                        setGameState(GAME_OVER);
-                    }
                     break;
                 }
                 case GAME_OVER: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.after.game"));
-
                     break;
                 }
                 default: {
@@ -210,18 +201,33 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
             }
 
             try {
+
                 if (cycle.compareTo(MAXCYCLES) >= 0) {
                     if (gameState == GAME_FLAG_HOT) {
                         setGameState(GAME_ROCKET_LAUNCHED);
                     }
                 }
 
-                if (gameState == GAME_FLAG_COLD && System.currentTimeMillis() > endtime) {
-                    setGameState(GAME_OUTCOME_FLAG_DEFENDED);
+                if (gameState == GAME_FLAG_COLD) {
+                    if (endtime < System.currentTimeMillis()) {
+                        setGameState(GAME_OUTCOME_FLAG_DEFENDED);
+                    }
                 }
 
                 if (gameState == GAME_FLAG_HOT) {
                     increaseCycle();
+                }
+
+                if (gameState == GAME_ROCKET_LAUNCHED) {
+                    if (rockettime < System.currentTimeMillis()) {
+                        setGameState(GAME_OUTCOME_FLAG_TAKEN);
+                    }
+                }
+
+                if (gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED) {
+                    if (afterglow < System.currentTimeMillis()) {
+                        setGameState(GAME_OVER);
+                    }
                 }
 
                 Thread.sleep(millispercycle);

@@ -3,15 +3,10 @@ package main;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import gamemodes.Farcry1Assault;
-import kuusisto.tinysound.Sound;
-import kuusisto.tinysound.TinySound;
-import misc.Tools;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-
-import java.io.File;
 
 
 /**
@@ -31,10 +26,6 @@ public class MissionBox {
 
         logLevel = Level.toLevel("DEBUG", Level.DEBUG);
         GPIO = GpioFactory.getInstance();
-
-
-
-
 
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
         ConsoleAppender consoleAppender = new ConsoleAppender(layout);

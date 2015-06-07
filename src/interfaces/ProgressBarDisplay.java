@@ -1,6 +1,7 @@
 package interfaces;
 
 import javax.swing.*;
+import java.math.BigDecimal;
 
 /**
  * Created by tloehr on 26.04.15.
@@ -15,8 +16,12 @@ public class ProgressBarDisplay implements PercentageInterface {
     }
 
     @Override
-    public void setValue(int value) {
-        SwingUtilities.invokeLater(() -> jProgressBar.setValue(value));
+    public void setValue(BigDecimal value) {
+        SwingUtilities.invokeLater(() -> {
+            jProgressBar.setValue(value.intValue());
+            jProgressBar.revalidate();
+            jProgressBar.repaint();
+        });
     }
 
 
