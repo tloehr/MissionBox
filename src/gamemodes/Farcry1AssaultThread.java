@@ -24,7 +24,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private final int seconds2capture;
     private BigDecimal MAXCYCLES;
     private int gameState, previousGameState;
-    private long starttime = 0, endtime = 0, afterglow = 0, agseconds = 20, rockettime = 0, rocketseconds = 10;
+    private long starttime = 0, endtime = 0, afterglow = 0, agseconds = 20, rockettime = 0, rocketseconds = 7;
     private long threadcycles = 0; // makes sure that the time event is only triggered once a second
 
 
