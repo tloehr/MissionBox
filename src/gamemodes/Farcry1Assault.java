@@ -5,8 +5,6 @@ import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.i2c.I2CBus;
-import com.pi4j.util.StringUtil;
-import com.pi4j.wiringpi.Lcd;
 import interfaces.LEDBar;
 import interfaces.MessageListener;
 import interfaces.Relay;
@@ -18,7 +16,6 @@ import main.MissionBox;
 import misc.Tools;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -28,17 +25,26 @@ import java.util.ArrayList;
  * Created by tloehr on 31.05.15.
  */
 public class Farcry1Assault implements GameModes {
+
+    public static final String SND_TYPE_SIREN = "siren";
+    public static final String SND_TYPE_ROCKET = "rocket";
+    public static final String SND_TYPE_WINNING = "winning";
+    public static final String SND_TYPE_WELCOME = "welcome";
+    public static final String SND_TYPE_VICTORY = "victory";
+    public static final String SND_TYPE_DEFEAT = "defeat";
+
+
     private final Logger logger = Logger.getLogger(getClass());
     private int LCD_ROWS = 2;
     private int LCD_COLUMNS = 16;
     private int LCD_BITS = 4;
-    private int TIME2RESPAWN = 20, MAXCYLCES = 200, SECONDS2CAPTURE = 60 * 10, someint = 24;
+    private int TIME2RESPAWN = 20, MAXCYLCES = 500, SECONDS2CAPTURE = 60 * 11;
     private final ArrayList<GpioPinDigitalOutput> myLEDs = new ArrayList<>();
     private final ArrayList<GpioPinDigitalOutput> mySirens = new ArrayList<>();
     private final LEDBar ledBar;
-    private final RelaySiren relaisSirens;
+    private final RelaySiren relaySiren;
     private final Relay relayStrobe, relayRocket;
-    private final int lcdHandle;
+//    private final int lcdHandle;
 
     // a CYCLE takes 50 millis
 
@@ -49,7 +55,7 @@ public class Farcry1Assault implements GameModes {
     private Sound playWelcome, playRocket;
 
 
-    public Farcry1Assault(GpioController GPIO) throws IOException {
+    public Farcry1Assault() throws IOException {
         logger.setLevel(MissionBox.logLevel);
 
 
@@ -131,32 +137,32 @@ public class Farcry1Assault implements GameModes {
 
 
         this.ledBar = new LEDBar(GPIO, myLEDs);
-        this.relaisSirens = new RelaySiren(GPIO, mySirens);
+        this.relaySiren = new RelaySiren(GPIO, mySirens);
 
 
         // initialize LCD
         // the wiring is according to the examples from https://kofler.info/buecher/raspberry-pi/
         // LCD data bit 8 (set to 0 if using 4 bit communication)
-        lcdHandle = Lcd.lcdInit(LCD_ROWS,     // number of row supported by LCD
-                LCD_COLUMNS,  // number of columns supported by LCD
-                LCD_BITS,     // number of bits used to communicate to LCD
-                11,           // LCD RS pin
-                10,           // LCD strobe pin
-                6,            // LCD data bit 1
-                5,            // LCD data bit 2
-                4,            // LCD data bit 3
-                1,            // LCD data bit 4
-                0,            // LCD data bit 5 (set to 0 if using 4 bit communication)
-                0,            // LCD data bit 6 (set to 0 if using 4 bit communication)
-                0,            // LCD data bit 7 (set to 0 if using 4 bit communication)
-                0);
+//        lcdHandle = Lcd.lcdInit(LCD_ROWS,     // number of row supported by LCD
+//                LCD_COLUMNS,  // number of columns supported by LCD
+//                LCD_BITS,     // number of bits used to communicate to LCD
+//                11,           // LCD RS pin
+//                10,           // LCD strobe pin
+//                6,            // LCD data bit 1
+//                5,            // LCD data bit 2
+//                4,            // LCD data bit 3
+//                1,            // LCD data bit 4
+//                0,            // LCD data bit 5 (set to 0 if using 4 bit communication)
+//                0,            // LCD data bit 6 (set to 0 if using 4 bit communication)
+//                0,            // LCD data bit 7 (set to 0 if using 4 bit communication)
+//                0);
 
 
         // verify initialization
-        if (lcdHandle == -1) {
-            logger.fatal(" ==>> LCD INIT FAILED");
-            return;
-        }
+//        if (lcdHandle == -1) {
+//            logger.fatal(" ==>> LCD INIT FAILED");
+//            return;
+//        }
 
         TinySound.init();
 
@@ -165,27 +171,30 @@ public class Farcry1Assault implements GameModes {
         playWelcome = TinySound.loadSound(new File(Tools.SND_WELCOME));
         playRocket = TinySound.loadSound(new File(Tools.SND_FLARE));
 
-        Lcd.lcdClear(lcdHandle);
+//        Lcd.lcdClear(lcdHandle);
 
         MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
         MessageListener gameTimeListener = messageEvent -> {
-            Lcd.lcdPosition(lcdHandle, 0, 1);
-            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(messageEvent.getMessage().toString(), LCD_COLUMNS));
+//            Lcd.lcdPosition(lcdHandle, 0, 1);
+//            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(messageEvent.getMessage().toString(), LCD_COLUMNS));
+
+            logger.debug(messageEvent.getMessage().toString());
+
         };
 
         MessageListener percentageListener = messageEvent -> {
 
             ledBar.setValue(messageEvent.getPercentage());
-            relaisSirens.setValue(messageEvent.getPercentage());
+            relaySiren.setValue(messageEvent.getPercentage());
 
         };
 
         MessageListener gameModeListener = messageEvent -> {
             logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
-            Lcd.lcdHome(lcdHandle);
-            Lcd.lcdPosition(lcdHandle, 0, 0);
-            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
+//            Lcd.lcdHome(lcdHandle);
+//            Lcd.lcdPosition(lcdHandle, 0, 0);
+//            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
 
             if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
                 playSiren.play(true);
@@ -193,11 +202,11 @@ public class Farcry1Assault implements GameModes {
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_COLD)) {
                 playSiren.stop();
                 relayStrobe.setOff();
-                relaisSirens.setValue(BigDecimal.ZERO);
+                relaySiren.setValue(BigDecimal.ZERO);
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
                 playSiren.stop();
                 ledBar.setSimple();
-                relaisSirens.setValue(BigDecimal.ZERO);
+                relaySiren.setValue(BigDecimal.ZERO);
                 playRocket.play();
                 relayRocket.setOn();
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_PRE_GAME)) {
@@ -211,7 +220,7 @@ public class Farcry1Assault implements GameModes {
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
                 playSiren.stop();
                 playRocket.stop();
-                fadeout(playWinningSon);
+                Tools.fadeout(playWinningSon);
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN)) {
                 playSiren.stop();
                 playRocket.stop();
@@ -265,39 +274,14 @@ public class Farcry1Assault implements GameModes {
         System.out.println("<--Pi4J--> Wiring Pi LCD test program");
     }
 
-    void fadeout(Music music) {
-        SwingWorker worker = new SwingWorker() {
-            double volume;
 
-            @Override
-            protected Object doInBackground() throws Exception {
-                volume = music.getVolume();
-
-                for (double vol = volume; vol >= 0d; vol = vol - 0.01d) {
-                    logger.debug(vol);
-                    music.setVolume(vol);
-                    Thread.sleep(50);
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                super.done();
-                music.stop();
-                music.setVolume(volume);
-            }
-        };
-        worker.run();
-    }
 
     @Override
     public void quitGame() {
 
         farcryAssaultThread.quitGame();
 
-        Lcd.lcdClear(lcdHandle);
+//        Lcd.lcdClear(lcdHandle);
         farcryAssaultThread.quitGame();
         relayRocket.setOff();
         relayStrobe.setOff();

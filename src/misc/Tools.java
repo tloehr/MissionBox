@@ -7,7 +7,9 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.i2c.I2CBus;
+import kuusisto.tinysound.Music;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ResourceBundle;
@@ -85,6 +87,37 @@ public class Tools {
         return null;
     }
 
+
+    public static boolean isRaspberry(){
+        return System.getProperty("os.arch").equals("arm") && System.getProperty("os.name").equals("linux");
+    }
+
+
+    public static void fadeout(Music music) {
+        SwingWorker worker = new SwingWorker() {
+            double volume;
+
+            @Override
+            protected Object doInBackground() throws Exception {
+                volume = music.getVolume();
+
+                for (double vol = volume; vol >= 0d; vol = vol - 0.01d) {
+                    music.setVolume(vol);
+                    Thread.sleep(50);
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                music.stop();
+                music.setVolume(volume);
+            }
+        };
+        worker.run();
+    }
 
 //    public GpioPinDigitalOutput[] getProgressTo16LCDs(BigDecimal percent, GpioController gpio) throws IOException {
 //        final MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("20", 16));
