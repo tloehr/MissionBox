@@ -1,54 +1,33 @@
 package main;
 
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import gamemodes.Farcry1Assault;
-import kuusisto.tinysound.Music;
-import kuusisto.tinysound.Sound;
-import misc.ConfigXML;
-import misc.Tools;
+import misc.Config;
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
-import java.util.HashMap;
 
 
 /**
  * Created by tloehr on 22.04.15.
  */
 public class MissionBox {
-    public static GpioController getGPIO() {
-        return GPIO;
+    private static final Logger logger = Logger.getRootLogger();
+
+    private static Config config;
+
+    public static Config getConfig() {
+        return config;
     }
 
-    private static final Logger logger = Logger.getRootLogger();
-    public static Level logLevel = Level.DEBUG;
-    private static GpioController GPIO;
-
-    private static ConfigXML configXML;
-
-
-//    public static final SoundThread soundPool =  new SoundThread();
 
     public static final void main(String[] args) throws Exception {
 
+        config = new Config();
 
-        configXML = new ConfigXML();
-
-
-        logLevel = Level.toLevel("DEBUG", Level.DEBUG);
-        GPIO = Tools.isRaspberry() ? GpioFactory.getInstance() : null;
-
-        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
-        ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+        ConsoleAppender consoleAppender = new ConsoleAppender(config.getPatternLayout());
         logger.addAppender(consoleAppender);
+        logger.setLevel(config.getLogLevel());
 
-
-        Farcry1Assault fc = new Farcry1Assault();
-
+//        Farcry1Assault fc = new Farcry1Assault(config);
 
     }
 

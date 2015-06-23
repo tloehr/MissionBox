@@ -5,7 +5,9 @@ package gamemodes;
  */
 public interface GameModes {
 
-    public void quitGame();
+
+
+    void quitGame();
 
 
 }

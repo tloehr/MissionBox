@@ -20,25 +20,21 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, String message) {
         super(source);
-        LOGGER.setLevel(MissionBox.logLevel);
         this.message = Tools.xx(message);
     }
 
     public MessageEvent(Object source, BigDecimal percentage) {
         super(source);
-        LOGGER.setLevel(MissionBox.logLevel);
         this.message = percentage;
     }
 
     public MessageEvent(Object source, int mode) {
         super(source);
-        LOGGER.setLevel(MissionBox.logLevel);
         this.message = new Integer(mode);
     }
 
     public MessageEvent(Object source, Boolean on) {
         super(source);
-        LOGGER.setLevel(MissionBox.logLevel);
         this.message = on;
     }
 

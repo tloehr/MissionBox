@@ -51,7 +51,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         cycledivider = 1000 / millispercycle;
         thread = new Thread(this);
 
-        LOGGER.setLevel(MissionBox.logLevel);
+
 
         messageList = new EventListenerList();
         gameTimerList = new EventListenerList();
