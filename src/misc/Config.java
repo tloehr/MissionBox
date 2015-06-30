@@ -1,6 +1,7 @@
 package misc;
 
 import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
+import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
 import gamemodes.Farcry1Assault;
@@ -31,7 +32,7 @@ public class Config extends DefaultHandler {
 
     private final HashMap<String, Sound> soundMap = new HashMap<>();
     private final HashMap<String, Music> musicMap = new HashMap<>();
-    private final HashMap<String, GpioPinDigitalOutput> gpioMap = new HashMap<>();
+    private final HashMap<String, GpioPinDigital> gpioMap = new HashMap<>();
 
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -39,6 +40,7 @@ public class Config extends DefaultHandler {
     private Level logLevel = Level.DEBUG;
 
     private GpioController GPIO;
+    private MCP23017GpioProvider gpioProvider;
 
     private String currentGameMode = null, soundpath = "", homedir, sep;
     private int i2CBus = -1;
@@ -49,6 +51,7 @@ public class Config extends DefaultHandler {
 
     public Config() {
         TinySound.init();
+
         homedir = System.getProperty("user.home");
         sep = System.getProperty("file.separator");
         GPIO = Tools.isRaspberry() ? GpioFactory.getInstance() : null;
@@ -91,34 +94,14 @@ public class Config extends DefaultHandler {
 
         try {
 
-//        final GpioPinDigitalInput btnFlagTrigger = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
-//        final GpioPinDigitalInput btnGameStartStop = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
-//        final GpioPinDigitalInput btnMisc = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
-//
-//
-//        final MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("20", 16));
-//        final MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("21", 16));
-//        final MCP23017GpioProvider gpioProvider2 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("22", 16));
-
-//
-//        <I2CBus busNumber="1">
-//        <GPIOProvider name="gpio1" type="mcp23017" address="20">
-//        <provisionDigitalOutputPin providerPin="a0" state="low"/>
-//        <provisionDigitalOutputPin providerPin="a1" state="low"/>
-//        <provisionDigitalOutputPin providerPin="a2" state="low"/>
-//        <provisionDigitalOutputPin providerPin="a3" state="low"/>
-//        <provisionDigitalOutputPin providerPin="a4" state="low"/>
-//        <provisionDigitalOutputPin providerPin="a5" state="low"/>
-//        <provisionDigitalOutputPin providerPin="a6" state="low"/>
-//        <provisionDigitalOutp
 
             if (tagName.equalsIgnoreCase("mainconfigs")) {
                 logLevel = Level.toLevel(attributes.getValue("loglevel"));
                 patternLayout = new PatternLayout(attributes.getValue("patternlayout"));
             } else if (tagName.equalsIgnoreCase("soundfile")) {
-                soundMap.put(attributes.getValue("id"), TinySound.loadSound(new File(attributes.getValue("filename"))));
+                soundMap.put(attributes.getValue("id"), TinySound.loadSound(new File(soundpath + sep + attributes.getValue("filename"))));
             } else if (tagName.equalsIgnoreCase("musicfile")) {
-                musicMap.put(attributes.getValue("id"), TinySound.loadMusic(new File(attributes.getValue("filename"))));
+                musicMap.put(attributes.getValue("id"), TinySound.loadMusic(new File(soundpath + sep + attributes.getValue("filename"))));
             } else if (tagName.equalsIgnoreCase("mainconfigs")) {
                 logLevel = Level.toLevel(attributes.getValue("loglevel"));
                 patternLayout = new PatternLayout(attributes.getValue("patternlayout"));
@@ -128,7 +111,7 @@ public class Config extends DefaultHandler {
                 gameparameters.get(currentGameMode).setProperty(currentGameMode, attributes.getValue("label"));
             } else if (tagName.equalsIgnoreCase("play")) {
                 String type = attributes.getValue("type");
-                String file = soundpath + sep + attributes.getValue("file");
+                String file = attributes.getValue("file");
 
                 if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_SIREN)) {
                     configFC1.setPlaySiren(musicMap.get(file));
@@ -144,14 +127,29 @@ public class Config extends DefaultHandler {
                 soundpath = attributes.getValue("soundpath");
             } else if (tagName.equalsIgnoreCase("physical") && GPIO != null) {
 
+// <provisionDigitalPin providerPin="b5" state="low" direction="output"/>
 
                 if (tagName.equalsIgnoreCase("I2CBus")) {
                     i2CBus = attributes.getValue("loglevel").equalsIgnoreCase("0") ? I2CBus.BUS_0 : I2CBus.BUS_1;
                 } else if (tagName.equalsIgnoreCase("GPIOProvider")) {
-
                     if (attributes.getValue("type").equalsIgnoreCase("mcp23017")) {
-                        MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(i2CBus, Integer.parseInt(attributes.getValue("address").toString(), 16));
+                        gpioProvider = new MCP23017GpioProvider(i2CBus, Integer.parseInt(attributes.getValue("address").toString(), 16));
+                    } else if (tagName.equalsIgnoreCase("GPIOProvider")) {
+
+                        if (attributes.getValue("direction").equalsIgnoreCase("output")) {
+                            gpioMap.put("mcp23017-01-A0", GPIO.provisionDigitalOutputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), "", PinState.valueOf(attributes.getValue("state"))));
+                        } else {
+                            gpioMap.put(gpioProvider.getName(), GPIO.provisionDigitalInputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), "mcp23017-01-A0", PinPullResistance.valueOf(attributes.getValue("state"))));
+                        }
+
+
                     }
+
+                    //        final GpioPinDigitalInput btnFlagTrigger = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
+//        final GpioPinDigitalInput btnGameStartStop = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
+//        final GpioPinDigitalInput btnMisc = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
+//
+
 
                 }
 
@@ -163,7 +161,9 @@ public class Config extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-//        here (add the devices to the hashmap)
+        if (qName.equalsIgnoreCase("I2CBus")) {
+            gpioProvider = null;
+        }
     }
 
     public Level getLogLevel() {
@@ -172,6 +172,32 @@ public class Config extends DefaultHandler {
 
     public PatternLayout getPatternLayout() {
         return patternLayout;
+    }
+
+
+    public Pin getMCP23017Pin(String name) {
+        if (gpioProvider == null) return null;
+
+        Pin pin = null;
+
+        if (name.equalsIgnoreCase("a0")) pin = MCP23017Pin.GPIO_A0;
+        else if (name.equalsIgnoreCase("a1")) pin = MCP23017Pin.GPIO_A1;
+        else if (name.equalsIgnoreCase("a2")) pin = MCP23017Pin.GPIO_A2;
+        else if (name.equalsIgnoreCase("a3")) pin = MCP23017Pin.GPIO_A3;
+        else if (name.equalsIgnoreCase("a4")) pin = MCP23017Pin.GPIO_A4;
+        else if (name.equalsIgnoreCase("a5")) pin = MCP23017Pin.GPIO_A5;
+        else if (name.equalsIgnoreCase("a6")) pin = MCP23017Pin.GPIO_A6;
+        else if (name.equalsIgnoreCase("a7")) pin = MCP23017Pin.GPIO_A7;
+        else if (name.equalsIgnoreCase("b0")) pin = MCP23017Pin.GPIO_B0;
+        else if (name.equalsIgnoreCase("b1")) pin = MCP23017Pin.GPIO_B1;
+        else if (name.equalsIgnoreCase("b2")) pin = MCP23017Pin.GPIO_B2;
+        else if (name.equalsIgnoreCase("b3")) pin = MCP23017Pin.GPIO_B3;
+        else if (name.equalsIgnoreCase("b4")) pin = MCP23017Pin.GPIO_B4;
+        else if (name.equalsIgnoreCase("b5")) pin = MCP23017Pin.GPIO_B5;
+        else if (name.equalsIgnoreCase("b6")) pin = MCP23017Pin.GPIO_B6;
+        else if (name.equalsIgnoreCase("b7")) pin = MCP23017Pin.GPIO_B7;
+
+        return pin;
     }
 
     //    @Override
