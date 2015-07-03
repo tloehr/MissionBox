@@ -89,7 +89,7 @@ public class Tools {
 
 
     public static boolean isRaspberry(){
-        return System.getProperty("os.arch").equals("arm") && System.getProperty("os.name").equals("linux");
+        return System.getProperty("os.arch").equalsIgnoreCase("arm") && System.getProperty("os.name").equalsIgnoreCase("linux");
     }
 
 

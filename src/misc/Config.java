@@ -41,6 +41,7 @@ public class Config extends DefaultHandler {
 
     private GpioController GPIO;
     private MCP23017GpioProvider gpioProvider;
+    private String gpioProviderName;
 
     private String currentGameMode = null, soundpath = "", homedir, sep;
     private int i2CBus = -1;
@@ -61,10 +62,7 @@ public class Config extends DefaultHandler {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-
             File configFile = new File(homedir + sep + "missionbox" + sep + "missionbox.xml");
-
-
             saxParser.parse(configFile, this);
         } catch (SAXException e) {
             e.printStackTrace();
@@ -73,7 +71,6 @@ public class Config extends DefaultHandler {
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
-
 
     }
 
@@ -129,40 +126,39 @@ public class Config extends DefaultHandler {
 
 // <provisionDigitalPin providerPin="b5" state="low" direction="output"/>
 
-                if (tagName.equalsIgnoreCase("I2CBus")) {
-                    i2CBus = attributes.getValue("loglevel").equalsIgnoreCase("0") ? I2CBus.BUS_0 : I2CBus.BUS_1;
-                } else if (tagName.equalsIgnoreCase("GPIOProvider")) {
-                    if (attributes.getValue("type").equalsIgnoreCase("mcp23017")) {
-                        gpioProvider = new MCP23017GpioProvider(i2CBus, Integer.parseInt(attributes.getValue("address").toString(), 16));
-                    } else if (tagName.equalsIgnoreCase("GPIOProvider")) {
+            } else if (tagName.equalsIgnoreCase("I2CBus")) {
+                i2CBus = attributes.getValue("busNumber").equalsIgnoreCase("0") ? I2CBus.BUS_0 : I2CBus.BUS_1;
+            } else if (tagName.equalsIgnoreCase("GPIOProvider")) {
+                if (attributes.getValue("type").equalsIgnoreCase("mcp23017")) {
+                    gpioProvider = new MCP23017GpioProvider(i2CBus, Integer.parseInt(attributes.getValue("address").toString(), 16));
+                    gpioProviderName = attributes.getValue("name");
+                }
+            } else if (tagName.equalsIgnoreCase("provisionDigitalPin")) {
+                String key = "mcp23017-"+i2CBus+"-"+gpioProviderName+"-"+attributes.getValue("providerPin");
+                if (attributes.getValue("direction").equalsIgnoreCase("output")) {
+                    gpioMap.put(key, GPIO.provisionDigitalOutputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), key, PinState.valueOf(attributes.getValue("state").toUpperCase())));
+                } else {
+                    gpioMap.put(gpioProvider.getName(), GPIO.provisionDigitalInputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), "mcp23017-01-A0", PinPullResistance.valueOf(attributes.getValue("state"))));
+                }
+            }
 
-                        if (attributes.getValue("direction").equalsIgnoreCase("output")) {
-                            gpioMap.put("mcp23017-01-A0", GPIO.provisionDigitalOutputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), "", PinState.valueOf(attributes.getValue("state"))));
-                        } else {
-                            gpioMap.put(gpioProvider.getName(), GPIO.provisionDigitalInputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), "mcp23017-01-A0", PinPullResistance.valueOf(attributes.getValue("state"))));
-                        }
-
-
-                    }
-
-                    //        final GpioPinDigitalInput btnFlagTrigger = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
+            //        final GpioPinDigitalInput btnFlagTrigger = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
 //        final GpioPinDigitalInput btnGameStartStop = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
 //        final GpioPinDigitalInput btnMisc = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
 //
 
 
-                }
-
-            }
         } catch (IOException io) {
             throw new SAXException(io);
         }
+
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase("I2CBus")) {
             gpioProvider = null;
+            gpioProviderName = null;
         }
     }
 

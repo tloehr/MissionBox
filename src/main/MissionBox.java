@@ -41,12 +41,10 @@ public class MissionBox {
         logger.setLevel(config.getLogLevel());
 
 
-        FrmMain frmMain = new FrmMain();
-
-        frmMain.setVisible(true);
-        frmMain.setExtendedState(Frame.MAXIMIZED_BOTH);
-
-//        Farcry1Assault fc = new Farcry1Assault(config);
+//        FrmMain frmMain = new FrmMain();
+//
+//        frmMain.setVisible(true);
+//        frmMain.setExtendedState(Frame.MAXIMIZED_BOTH);
 
     }
 
