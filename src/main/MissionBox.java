@@ -41,6 +41,8 @@ public class MissionBox {
         logger.setLevel(config.getLogLevel());
 
 
+
+
 //        FrmMain frmMain = new FrmMain();
 //
 //        frmMain.setVisible(true);

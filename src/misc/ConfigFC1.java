@@ -13,6 +13,10 @@ public class ConfigFC1 {
     private int maxcycles = 200;
     private int seconds2capture = 600;
 
+
+
+
+
     private Music playSiren, playWinningSon;
     private Sound playWelcome, playRocket;
 

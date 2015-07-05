@@ -34,7 +34,6 @@ public class Config extends DefaultHandler {
     private final HashMap<String, Music> musicMap = new HashMap<>();
     private final HashMap<String, GpioPinDigital> gpioMap = new HashMap<>();
 
-
     private final Logger logger = Logger.getLogger(getClass());
     private PatternLayout patternLayout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
     private Level logLevel = Level.DEBUG;
@@ -91,7 +90,6 @@ public class Config extends DefaultHandler {
 
         try {
 
-
             if (tagName.equalsIgnoreCase("mainconfigs")) {
                 logLevel = Level.toLevel(attributes.getValue("loglevel"));
                 patternLayout = new PatternLayout(attributes.getValue("patternlayout"));
@@ -106,20 +104,6 @@ public class Config extends DefaultHandler {
                 currentGameMode = attributes.getValue("name");
                 gameparameters.put(currentGameMode, new Properties());
                 gameparameters.get(currentGameMode).setProperty(currentGameMode, attributes.getValue("label"));
-            } else if (tagName.equalsIgnoreCase("play")) {
-                String type = attributes.getValue("type");
-                String file = attributes.getValue("file");
-
-                if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_SIREN)) {
-                    configFC1.setPlaySiren(musicMap.get(file));
-                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_ROCKET)) {
-                    configFC1.setPlayRocket(soundMap.get(file));
-                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_WINNING)) {
-                    configFC1.setPlayWinningSon(musicMap.get(file));
-                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_WELCOME)) {
-                    configFC1.setPlayWelcome(soundMap.get(file));
-                }
-
             } else if (tagName.equalsIgnoreCase("soundfiles")) {
                 soundpath = attributes.getValue("soundpath");
             } else if (tagName.equalsIgnoreCase("physical") && GPIO != null) {
@@ -134,11 +118,24 @@ public class Config extends DefaultHandler {
                     gpioProviderName = attributes.getValue("name");
                 }
             } else if (tagName.equalsIgnoreCase("provisionDigitalPin")) {
-                String key = "mcp23017-"+i2CBus+"-"+gpioProviderName+"-"+attributes.getValue("providerPin");
+                String key = "mcp23017-" + i2CBus + "-" + gpioProviderName + "-" + attributes.getValue("providerPin");
                 if (attributes.getValue("direction").equalsIgnoreCase("output")) {
                     gpioMap.put(key, GPIO.provisionDigitalOutputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), key, PinState.valueOf(attributes.getValue("state").toUpperCase())));
                 } else {
                     gpioMap.put(gpioProvider.getName(), GPIO.provisionDigitalInputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), "mcp23017-01-A0", PinPullResistance.valueOf(attributes.getValue("state"))));
+                }
+            } else if (tagName.equalsIgnoreCase("play")) {
+                String type = attributes.getValue("type");
+                String file = attributes.getValue("file");
+
+                if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_SIREN)) {
+                    configFC1.setPlaySiren(musicMap.get(file));
+                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_ROCKET)) {
+                    configFC1.setPlayRocket(soundMap.get(file));
+                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_WINNING)) {
+                    configFC1.setPlayWinningSon(musicMap.get(file));
+                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_WELCOME)) {
+                    configFC1.setPlayWelcome(soundMap.get(file));
                 }
             }
 
