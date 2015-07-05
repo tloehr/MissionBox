@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<missionbox>
+    <mainconfigs loglevel="DEBUG" patternlayout="%d{ISO8601} %-5p [%t] %c: %m%n">
+
+
+        <!-- LogLevels should be set as used in Apache's Log4j
+            Possible values are: OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL
+        <LCD name="1602lcd" rows="2" columns="16" bits="4" rs="11" strobe="10" bit1="6" bit2="5" bit3="4" bit4="1" bit5="0" bit6="0" bit7="0" bit8="0"/>
+        -->
+        <physical>
+
+            <!-- the parser ignores the physical part, if it is not run on a raspi -->
+            <!-- the provider "raspi" is builtin. it follows the standard raspipin naming scheme -->
+
+            <I2CBus busNumber="1">
+                <GPIOProvider name="providergpio1" type="mcp23017" address="20">
+                    <provisionDigitalPin providerPin="a0" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a1" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a2" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a3" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a4" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a5" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a6" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a7" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b0" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b1" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b2" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b3" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b4" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b5" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b6" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b7" state="low" direction="output"/>
+                </GPIOProvider>
+                <GPIOProvider name="providergpio2" type="mcp23017" address="21">
+                    <provisionDigitalPin providerPin="a0" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a1" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a2" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a3" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a4" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a5" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a6" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a7" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b0" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b1" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b2" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b3" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b4" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b5" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b6" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b7" state="low" direction="output"/>
+                </GPIOProvider>
+                <GPIOProvider name="providergpio3" type="mcp23017" address="22">
+                    <provisionDigitalPin providerPin="a0" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a1" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a2" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a3" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a4" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a5" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a6" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="a7" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b0" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b1" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b2" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b3" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b4" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b5" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b6" state="low" direction="output"/>
+                    <provisionDigitalPin providerPin="b7" state="low" direction="output"/>
+                </GPIOProvider>
+            </I2CBus>
+
+        </physical>
+
+        <logical>
+
+            <!--    if a logical device omits the provider tag, the pins of the Raspberry PI itself are used.
+                    the naming scheme of the class com.pi4j.io.gpio.RaspiPin is applied.
+            -->
+
+            <display type="progressbar" name="ledprogress" class="">
+                <gpio name="01" provider="providergpio1" pin="a0"/>
+                <gpio name="02" provider="providergpio1" pin="a1"/>
+                <gpio name="03" provider="providergpio1" pin="a2"/>
+                <gpio name="04" provider="providergpio1" pin="a3"/>
+                <gpio name="05" provider="providergpio1" pin="a4"/>
+                <gpio name="06" provider="providergpio1" pin="a5"/>
+                <gpio name="07" provider="providergpio1" pin="a6"/>
+                <gpio name="08" provider="providergpio1" pin="a7"/>
+                <gpio name="09" provider="providergpio1" pin="b0"/>
+                <gpio name="10" provider="providergpio1" pin="b1"/>
+                <gpio name="11" provider="providergpio1" pin="b2"/>
+                <gpio name="12" provider="providergpio1" pin="b3"/>
+                <gpio name="13" provider="providergpio1" pin="b4"/>
+                <gpio name="14" provider="providergpio1" pin="b5"/>
+                <gpio name="15" provider="providergpio1" pin="b6"/>
+                <gpio name="16" provider="providergpio1" pin="b7"/>
+                <gpio name="17" provider="providergpio2" pin="a0"/>
+                <gpio name="18" provider="providergpio2" pin="a1"/>
+                <gpio name="19" provider="providergpio2" pin="a2"/>
+                <gpio name="20" provider="providergpio2" pin="a3"/>
+                <gpio name="21" provider="providergpio2" pin="a4"/>
+                <gpio name="22" provider="providergpio2" pin="a5"/>
+                <gpio name="23" provider="providergpio2" pin="a6"/>
+                <gpio name="24" provider="providergpio2" pin="a7"/>
+                <gpio name="25" provider="providergpio2" pin="b0"/>
+                <gpio name="26" provider="providergpio2" pin="b1"/>
+                <gpio name="27" provider="providergpio2" pin="b2"/>
+                <gpio name="28" provider="providergpio2" pin="b3"/>
+                <gpio name="29" provider="providergpio2" pin="b4"/>
+                <gpio name="30" provider="providergpio2" pin="b5"/>
+                <gpio name="31" provider="providergpio2" pin="b6"/>
+                <gpio name="32" provider="providergpio2" pin="b7"/>
+                <gpio name="33" provider="providergpio3" pin="a0"/>
+                <gpio name="34" provider="providergpio3" pin="a1"/>
+                <gpio name="35" provider="providergpio3" pin="a2"/>
+                <gpio name="36" provider="providergpio3" pin="a3"/>
+                <gpio name="37" provider="providergpio3" pin="a4"/>
+                <gpio name="38" provider="providergpio3" pin="a5"/>
+                <gpio name="39" provider="providergpio3" pin="a6"/>
+                <gpio name="40" provider="providergpio3" pin="a7"/>
+            </display>
+
+            <display type="progresssingle" name="relayprogress" class="">
+                <gpio name="41" provider="providergpio3" pin="b0"/>
+                <gpio name="42" provider="providergpio3" pin="b1"/>
+                <gpio name="43" provider="providergpio3" pin="b2"/>
+                <gpio name="44" provider="providergpio3" pin="b3"/>
+                <gpio name="45" provider="providergpio3" pin="b4"/>
+                <gpio name="46" provider="providergpio3" pin="b5"/>
+                <gpio name="47" provider="providergpio3" pin="b6"/>
+                <gpio name="48" provider="providergpio3" pin="b7"/>
+            </display>
+
+            <display type="textout" name="lcdtext" device="1602lcd" class=""/>
+
+            <button name="buttonA" provider="raspi" pin="gpio_03" resistor="down"/>
+            <button name="buttonB" provider="raspi" pin="gpio_02" resistor="down"/>
+            <button name="buttonC" provider="raspi" pin="gpio_00" resistor="down"/>
+
+        </logical>
+
+
+        <other>
+            <soundfiles soundpath="/local">
+                <soundfile id="welcome1" filename="0140_female1_OnWelcome_1.wav" label="LOL Welcome"/>
+                <musicfile id="siren1" filename="capture_siren.wav" label="FC1 Siren"/>
+                <soundfile id="flare1" filename="MP_flare.wav" label="FC1 Flare"/>
+                <soundfile id="shutdown1" filename="Shutdown.wav" label="LOL Shutdown"/>
+                <soundfile id="minions1" filename="0112_female1_OnMinionsSpawn_1.wav" label="LOL Minions"/>
+                <musicfile id="victory1" filename="0134_female1_OnVictory_1.wav" label="LOL Victory"/>
+                <soundfile id="defeat1" filename="0071_female1_OnDefeat_1.wav" label="LOL Defeat"/>
+                <musicfile id="mib" filename="mib.wav" label="Nod ya head"/>
+            </soundfiles>
+        </other>
+
+    </mainconfigs>
+
+    <gamemodes>
+
+        <!--
+            Please note that there are a couple of predefined controls and displays that are hardcoded into
+            the Swing GUI of the program.
+
+            <progressleft/>
+            <progressright/>
+            <button1/>
+            <button2/>
+            <button3/>
+            <button4/>
+            <button5/>
+            <button6/>
+            <textout1/>
+
+        -->
+
+        <game name="farcry1" label="Farcry 1 Assault">
+            <play type="siren" file="siren1"/>
+            <play type="rocket" file="flare1"/>
+            <play type="winning" file="mib"/>
+            <play type="welcome" file="welcome1"/>
+            <!--<play type="victory" file="victory1"/>-->
+            <!--<play type="defeat" file="defeat1"/>-->
+
+            <progress name="progress1">
+                <display name="relayprogress"/>
+                <display name="ledprogress"/>
+            </progress>
+
+            <textout name="textout1">
+                <display name="lcdtext"/>
+            </textout>
+
+            <gamebutton name="flag"  logical="buttonA"/>
+            <gamebutton name="reset"  logical="buttonB"/>
+            <gamebutton name="quit"  logical="buttonA"/>
+
+            <parameter name="cyclemillis" value="50"/>
+            <parameter name="time2respawn" value="20"/>
+            <parameter name="maxcycles" value="200"/>
+            <parameter name="seconds2capture" value="600"/>
+        </game>
+    </gamemodes>
+
+</missionbox>

@@ -7,8 +7,8 @@ import java.util.HashMap;
 /**
  * Created by tloehr on 05.07.15.
  */
-public class GameModeConfigs {
+public interface GameModeConfigs {
 
-    private HashMap<String, GpioPinDigitalInput>
+
 
 }

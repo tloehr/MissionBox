@@ -43,7 +43,7 @@ public class Farcry1Assault implements GameModes {
     private int TIME2RESPAWN = 20, MAXCYLCES = 500, SECONDS2CAPTURE = 60 * 11;
 //    private final ArrayList<GpioPinDigitalOutput> myLEDs = new ArrayList<>();
 //    private final ArrayList<GpioPinDigitalOutput> mySirens = new ArrayList<>();
-    private final LEDBar ledBar;
+    private  LEDBar ledBar;
 //    private final RelaySiren relaySiren;
 //    private final Relay relayStrobe, relayRocket;
 //    private final int lcdHandle;
@@ -67,80 +67,22 @@ public class Farcry1Assault implements GameModes {
         final GpioPinDigitalInput btnMisc = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
 
 
-//        final MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("20", 16));
-//        final MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("21", 16));
-//        final MCP23017GpioProvider gpioProvider2 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("22", 16));
+
+
+//        for (int ledON = 0; ledON < NUMLED4PROGRESS; ledON++) {
+//            myLEDs.add(myOutputs[ledON]);
+//        }
+//
+//        mySirens.add(myOutputs[40]);
+//        mySirens.add(myOutputs[41]);
+//        mySirens.add(myOutputs[42]);
+//
+//        relayRocket = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[43]);
+//        relayStrobe = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[47]);
 //
 //
-//        int NUMLED4PROGRESS = 40;
-//        GpioPinDigitalOutput myOutputs[] = {
-//
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A0, "mcp23017-01-A0", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A1, "mcp23017-01-A1", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A2, "mcp23017-01-A2", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A3, "mcp23017-01-A3", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A4, "mcp23017-01-A4", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A5, "mcp23017-01-A5", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A6, "mcp23017-01-A6", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A7, "mcp23017-01-A7", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B0, "mcp23017-01-B0", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B1, "mcp23017-01-B1", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B2, "mcp23017-01-B2", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B3, "mcp23017-01-B3", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B4, "mcp23017-01-B4", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B5, "mcp23017-01-B5", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B6, "mcp23017-01-B6", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B7, "mcp23017-01-B7", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A0, "mcp23017-02-A0", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A1, "mcp23017-02-A1", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A2, "mcp23017-02-A2", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A3, "mcp23017-02-A3", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A4, "mcp23017-02-A4", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A5, "mcp23017-02-A5", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A6, "mcp23017-02-A6", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A7, "mcp23017-02-A7", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B0, "mcp23017-02-B0", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B1, "mcp23017-02-B1", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B2, "mcp23017-02-B2", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B3, "mcp23017-02-B3", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B4, "mcp23017-02-B4", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B5, "mcp23017-02-B5", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B6, "mcp23017-02-B6", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B7, "mcp23017-02-B7", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A0, "mcp23017-03-A0", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A1, "mcp23017-03-A1", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A2, "mcp23017-03-A2", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A3, "mcp23017-03-A3", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A4, "mcp23017-03-A4", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A5, "mcp23017-03-A5", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A6, "mcp23017-03-A6", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A7, "mcp23017-03-A7", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B0, "mcp23017-03-B0", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B1, "mcp23017-03-B1", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B2, "mcp23017-03-B2", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B3, "mcp23017-03-B3", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B4, "mcp23017-03-B4", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B5, "mcp23017-03-B5", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B6, "mcp23017-03-B6", PinState.LOW),
-//                MissionBox.getConfig().getGPIO().provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B7, "mcp23017-03-B7", PinState.LOW)
-//
-//        };
-
-
-        for (int ledON = 0; ledON < NUMLED4PROGRESS; ledON++) {
-            myLEDs.add(myOutputs[ledON]);
-        }
-
-        mySirens.add(myOutputs[40]);
-        mySirens.add(myOutputs[41]);
-        mySirens.add(myOutputs[42]);
-
-        relayRocket = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[43]);
-        relayStrobe = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[47]);
-
-
-        this.ledBar = new LEDBar(MissionBox.getConfig().getGPIO(), myLEDs);
-        this.relaySiren = new RelaySiren(MissionBox.getConfig().getGPIO(), mySirens);
+//        this.ledBar = new LEDBar(MissionBox.getConfig().getGPIO(), myLEDs);
+//        this.relaySiren = new RelaySiren(MissionBox.getConfig().getGPIO(), mySirens);
 
 
         // initialize LCD
@@ -182,53 +124,57 @@ public class Farcry1Assault implements GameModes {
 
         };
 
-        MessageListener percentageListener = messageEvent -> {
+//        MessageListener percentageListener = messageEvent -> {
+//
+//            ledBar.setValue(messageEvent.getPercentage());
+//            relaySiren.setValue(messageEvent.getPercentage());
+//
+//        };
+//
+//        MessageListener gameModeListener = messageEvent -> {
+//            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
+////            Lcd.lcdHome(lcdHandle);
+////            Lcd.lcdPosition(lcdHandle, 0, 0);
+////            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
+//
+//            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
+//                MissionBox.getConfig().getConfigFC1().getPlaySiren().play(true);
+//                relayStrobe.setOn();
+//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_COLD)) {
+//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
+//                relayStrobe.setOff();
+//                relaySiren.setValue(BigDecimal.ZERO);
+//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
+//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
+//                ledBar.setSimple();
+//                relaySiren.setValue(BigDecimal.ZERO);
+//                MissionBox.getConfig().getConfigFC1().getPlayRocket().play();
+//                relayRocket.setOn();
+//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_PRE_GAME)) {
+//                relayStrobe.setOff();
+//                relayRocket.setOff();
+//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
+//                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
+//                MissionBox.getConfig().getConfigFC1().getPlayWinningSon().stop();
+//                MissionBox.getConfig().getConfigFC1().getPlayWelcome().play();
+//                ledBar.setOff();
+//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
+//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
+//                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
+//                Tools.fadeout(config.getConfigFC1().getPlayWinningSon());
+//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN)) {
+//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
+//                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
+//                MissionBox.getConfig().getConfigFC1().getPlayWinningSon().play(false);
+//                ledBar.setCylon();
+//            }
+//        };
 
-            ledBar.setValue(messageEvent.getPercentage());
-            relaySiren.setValue(messageEvent.getPercentage());
+//        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);
 
-        };
 
-        MessageListener gameModeListener = messageEvent -> {
-            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
-//            Lcd.lcdHome(lcdHandle);
-//            Lcd.lcdPosition(lcdHandle, 0, 0);
-//            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
 
-            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
-                MissionBox.getConfig().getConfigFC1().getPlaySiren().play(true);
-                relayStrobe.setOn();
-            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_COLD)) {
-                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-                relayStrobe.setOff();
-                relaySiren.setValue(BigDecimal.ZERO);
-            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
-                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-                ledBar.setSimple();
-                relaySiren.setValue(BigDecimal.ZERO);
-                MissionBox.getConfig().getConfigFC1().getPlayRocket().play();
-                relayRocket.setOn();
-            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_PRE_GAME)) {
-                relayStrobe.setOff();
-                relayRocket.setOff();
-                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
-                MissionBox.getConfig().getConfigFC1().getPlayWinningSon().stop();
-                MissionBox.getConfig().getConfigFC1().getPlayWelcome().play();
-                ledBar.setOff();
-            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
-                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
-                Tools.fadeout(config.getConfigFC1().getPlayWinningSon());
-            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN)) {
-                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
-                MissionBox.getConfig().getConfigFC1().getPlayWinningSon().play(false);
-                ledBar.setCylon();
-            }
-        };
 
-        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);
 
         btnFlagTrigger.addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
@@ -281,8 +227,8 @@ public class Farcry1Assault implements GameModes {
 
 //        Lcd.lcdClear(lcdHandle);
         farcryAssaultThread.quitGame();
-        relayRocket.setOff();
-        relayStrobe.setOff();
+//        relayRocket.setOff();
+//        relayStrobe.setOff();
         ledBar.setOff();
 
         TinySound.shutdown();

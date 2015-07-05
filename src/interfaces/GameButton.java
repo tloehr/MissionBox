@@ -38,15 +38,18 @@ public class GameButton {
         });
     }
 
+    public void add(GameButtonListener gbl){
+        listeners.add(gbl);
+    }
+
+    public void remove(GameButtonListener gbl){
+        listeners.remove(gbl);
+    }
+
     public GameButton(GpioPinDigitalInput button) {
         gpioButton = button;
     }
 
-    protected void broadcast(GameButtonEvent gbe) {
-        for (GameButtonListener listener : listeners) {
-            listener.
-        }
-    }
 
 
 }

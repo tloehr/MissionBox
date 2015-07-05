@@ -1,12 +1,20 @@
 package misc;
 
+import com.pi4j.io.gpio.GpioPinDigitalInput;
+import com.pi4j.io.gpio.PinPullResistance;
+import com.pi4j.io.gpio.RaspiPin;
+import interfaces.GameButton;
+import interfaces.GameModeConfigs;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
+import main.MissionBox;
 
 /**
  * Created by tloehr on 23.06.15.
  */
-public class ConfigFC1 {
+public class ConfigFC1 implements GameModeConfigs {
+
+    public static final String ID = "farcry1";
 
     private int cyclemillis = 50;
     private int time2respawn = 20;
@@ -14,12 +22,11 @@ public class ConfigFC1 {
     private int seconds2capture = 600;
 
 
-
-
-
     private Music playSiren, playWinningSon;
     private Sound playWelcome, playRocket;
-
+    private GameButton btnFlag = null;
+    private GameButton btnReset = null;
+    private GameButton btnQuit = null;
 
     public ConfigFC1() {
     }
@@ -86,5 +93,29 @@ public class ConfigFC1 {
 
     public void setPlayRocket(Sound playRocket) {
         this.playRocket = playRocket;
+    }
+
+    public GameButton getBtnFlag() {
+        return btnFlag;
+    }
+
+    public void setBtnFlag(GameButton btnFlag) {
+        this.btnFlag = btnFlag;
+    }
+
+    public GameButton getBtnReset() {
+        return btnReset;
+    }
+
+    public void setBtnReset(GameButton btnReset) {
+        this.btnReset = btnReset;
+    }
+
+    public GameButton getBtnQuit() {
+        return btnQuit;
+    }
+
+    public void setBtnQuit(GameButton btnQuit) {
+        this.btnQuit = btnQuit;
     }
 }

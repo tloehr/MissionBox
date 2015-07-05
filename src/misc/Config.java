@@ -5,6 +5,8 @@ import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
 import gamemodes.Farcry1Assault;
+import interfaces.GameButton;
+import interfaces.GameModeConfigs;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
@@ -13,6 +15,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -32,7 +35,11 @@ public class Config extends DefaultHandler {
 
     private final HashMap<String, Sound> soundMap = new HashMap<>();
     private final HashMap<String, Music> musicMap = new HashMap<>();
+    private final HashMap<String, GameButton> buttonMap = new HashMap<>();
+
     private final HashMap<String, GpioPinDigital> gpioMap = new HashMap<>();
+
+    private final HashMap<String, GameModeConfigs> gameConfigs = new HashMap<>();
 
     private final Logger logger = Logger.getLogger(getClass());
     private PatternLayout patternLayout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
@@ -40,13 +47,13 @@ public class Config extends DefaultHandler {
 
     private GpioController GPIO;
     private MCP23017GpioProvider gpioProvider;
-    private String gpioProviderName;
+    private String gpioProviderName, gameModeName;
 
     private String currentGameMode = null, soundpath = "", homedir, sep;
     private int i2CBus = -1;
 
 
-    private ConfigFC1 configFC1;
+    //    private ConfigFC1 configFC1;
     private final HashMap<String, Properties> gameparameters;
 
     public Config() {
@@ -55,14 +62,25 @@ public class Config extends DefaultHandler {
         homedir = System.getProperty("user.home");
         sep = System.getProperty("file.separator");
         GPIO = Tools.isRaspberry() ? GpioFactory.getInstance() : null;
-        configFC1 = new ConfigFC1();
+
+
+        gameConfigs.put(ConfigFC1.ID, new ConfigFC1());
+
         gameparameters = new HashMap<>();
 
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            File configFile = new File(homedir + sep + "missionbox" + sep + "missionbox.xml");
-            saxParser.parse(configFile, this);
+
+
+            InputSource is = new InputSource(getClass().getResourceAsStream("/missionbox.xml"));
+
+//            File configFile = new File(homedir + sep + "missionbox" + sep + "missionbox.xml");
+//            saxParser.parse(configFile, this);
+
+            saxParser.parse(is, this);
+
+
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -77,8 +95,8 @@ public class Config extends DefaultHandler {
         return GPIO;
     }
 
-    public ConfigFC1 getConfigFC1() {
-        return configFC1;
+    public GameModeConfigs get(String id) {
+        return gameConfigs.get(id);
     }
 
     @Override
@@ -90,26 +108,21 @@ public class Config extends DefaultHandler {
 
         try {
 
+            /***
+             *            _               _           _
+             *      _ __ | |__  _   _ ___(_) ___ __ _| |
+             *     | '_ \| '_ \| | | / __| |/ __/ _` | |
+             *     | |_) | | | | |_| \__ \ | (_| (_| | |
+             *     | .__/|_| |_|\__, |___/_|\___\__,_|_|
+             *     |_|          |___/
+             */
             if (tagName.equalsIgnoreCase("mainconfigs")) {
-                logLevel = Level.toLevel(attributes.getValue("loglevel"));
-                patternLayout = new PatternLayout(attributes.getValue("patternlayout"));
-            } else if (tagName.equalsIgnoreCase("soundfile")) {
-                soundMap.put(attributes.getValue("id"), TinySound.loadSound(new File(soundpath + sep + attributes.getValue("filename"))));
-            } else if (tagName.equalsIgnoreCase("musicfile")) {
-                musicMap.put(attributes.getValue("id"), TinySound.loadMusic(new File(soundpath + sep + attributes.getValue("filename"))));
-            } else if (tagName.equalsIgnoreCase("mainconfigs")) {
                 logLevel = Level.toLevel(attributes.getValue("loglevel"));
                 patternLayout = new PatternLayout(attributes.getValue("patternlayout"));
             } else if (tagName.equalsIgnoreCase("game")) {
                 currentGameMode = attributes.getValue("name");
                 gameparameters.put(currentGameMode, new Properties());
                 gameparameters.get(currentGameMode).setProperty(currentGameMode, attributes.getValue("label"));
-            } else if (tagName.equalsIgnoreCase("soundfiles")) {
-                soundpath = attributes.getValue("soundpath");
-            } else if (tagName.equalsIgnoreCase("physical") && GPIO != null) {
-
-// <provisionDigitalPin providerPin="b5" state="low" direction="output"/>
-
             } else if (tagName.equalsIgnoreCase("I2CBus")) {
                 i2CBus = attributes.getValue("busNumber").equalsIgnoreCase("0") ? I2CBus.BUS_0 : I2CBus.BUS_1;
             } else if (tagName.equalsIgnoreCase("GPIOProvider")) {
@@ -118,24 +131,81 @@ public class Config extends DefaultHandler {
                     gpioProviderName = attributes.getValue("name");
                 }
             } else if (tagName.equalsIgnoreCase("provisionDigitalPin")) {
-                String key = "mcp23017-" + i2CBus + "-" + gpioProviderName + "-" + attributes.getValue("providerPin");
+//                String key = gpioProviderName + "-" + attributes.getValue("providerPin");
                 if (attributes.getValue("direction").equalsIgnoreCase("output")) {
-                    gpioMap.put(key, GPIO.provisionDigitalOutputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), key, PinState.valueOf(attributes.getValue("state").toUpperCase())));
+                    gpioMap.put(gpioProviderName + "-" + attributes.getValue("providerPin"), GPIO.provisionDigitalOutputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), gpioProviderName + "-" + attributes.getValue("providerPin"), PinState.valueOf(attributes.getValue("state").toUpperCase())));
                 } else {
                     gpioMap.put(gpioProvider.getName(), GPIO.provisionDigitalInputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), "mcp23017-01-A0", PinPullResistance.valueOf(attributes.getValue("state"))));
                 }
-            } else if (tagName.equalsIgnoreCase("play")) {
-                String type = attributes.getValue("type");
-                String file = attributes.getValue("file");
+                /***
+                 *      _             _           _
+                 *     | | ___   __ _(_) ___ __ _| |
+                 *     | |/ _ \ / _` | |/ __/ _` | |
+                 *     | | (_) | (_| | | (_| (_| | |
+                 *     |_|\___/ \__, |_|\___\__,_|_|
+                 *              |___/
+                 */
+            } else if (tagName.equalsIgnoreCase("button")) {
 
-                if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_SIREN)) {
-                    configFC1.setPlaySiren(musicMap.get(file));
-                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_ROCKET)) {
-                    configFC1.setPlayRocket(soundMap.get(file));
-                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_WINNING)) {
-                    configFC1.setPlayWinningSon(musicMap.get(file));
-                } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_WELCOME)) {
-                    configFC1.setPlayWelcome(soundMap.get(file));
+                if (GPIO != null) {
+                    GpioPinDigitalInput button = attributes.getValue("provider").equalsIgnoreCase("raspi") ?
+                            GPIO.provisionDigitalInputPin(RaspiPin.getPinByName(attributes.getValue("pin")), attributes.getValue("name"), PinPullResistance.valueOf(attributes.getValue("resistor").toUpperCase())) :
+                            (GpioPinDigitalInput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin"));
+                    buttonMap.put(attributes.getValue("name"), new GameButton(button));
+                }
+
+                /***
+                 *            _   _
+                 *       ___ | |_| |__   ___ _ __
+                 *      / _ \| __| '_ \ / _ \ '__|
+                 *     | (_) | |_| | | |  __/ |
+                 *      \___/ \__|_| |_|\___|_|
+                 *
+                 */
+            } else if (tagName.equalsIgnoreCase("soundfile")) {
+                soundMap.put(attributes.getValue("id"), TinySound.loadSound(new File(soundpath + sep + attributes.getValue("filename"))));
+            } else if (tagName.equalsIgnoreCase("musicfile")) {
+                musicMap.put(attributes.getValue("id"), TinySound.loadMusic(new File(soundpath + sep + attributes.getValue("filename"))));
+            } else if (tagName.equalsIgnoreCase("soundfiles")) {
+                soundpath = attributes.getValue("soundpath");
+
+
+                /***
+                 *
+                 *       __ _  __ _ _ __ ___   ___  ___
+                 *      / _` |/ _` | '_ ` _ \ / _ \/ __|
+                 *     | (_| | (_| | | | | | |  __/\__ \
+                 *      \__, |\__,_|_| |_| |_|\___||___/
+                 *      |___/
+                 */
+            } else if (tagName.equalsIgnoreCase("game")) {
+                gameModeName = attributes.getValue("name");
+            } else if (tagName.equalsIgnoreCase("play")) {
+                if (gameModeName.equalsIgnoreCase(ConfigFC1.ID)) {
+                    String type = attributes.getValue("type");
+                    String file = attributes.getValue("file");
+
+                    if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_SIREN)) {
+                        ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setPlaySiren(musicMap.get(file));
+                    } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_ROCKET)) {
+                        ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setPlayRocket(soundMap.get(file));
+                    } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_WINNING)) {
+                        ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setPlayWinningSon(musicMap.get(file));
+                    } else if (type.equalsIgnoreCase(Farcry1Assault.SND_TYPE_WELCOME)) {
+                        ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setPlayWelcome(soundMap.get(file));
+                    }
+                }
+            } else if (tagName.equalsIgnoreCase("gamebutton")) {
+                if (gameModeName.equalsIgnoreCase(ConfigFC1.ID)) {
+
+                    GameButton btn = buttonMap.get(attributes.getValue("physical"));
+                    if (attributes.getValue("name").equalsIgnoreCase("flag"))
+                        ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setBtnFlag(btn);
+                    else if (attributes.getValue("name").equalsIgnoreCase("reset"))
+                        ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setBtnReset(btn);
+                    else if (attributes.getValue("name").equalsIgnoreCase("quit"))
+                        ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setBtnQuit(btn);
+
                 }
             }
 
@@ -156,6 +226,8 @@ public class Config extends DefaultHandler {
         if (qName.equalsIgnoreCase("I2CBus")) {
             gpioProvider = null;
             gpioProviderName = null;
+        } else if (qName.equalsIgnoreCase("game")) {
+            gameModeName = null;
         }
     }
 
@@ -168,7 +240,7 @@ public class Config extends DefaultHandler {
     }
 
 
-    public Pin getMCP23017Pin(String name) {
+    Pin getMCP23017Pin(String name) {
         if (gpioProvider == null) return null;
 
         Pin pin = null;
@@ -192,6 +264,10 @@ public class Config extends DefaultHandler {
 
         return pin;
     }
+
+//    String getI2CProviderKey(String providerTyoe, int bus, String name, String pin) {
+//        return providerTyoe + "-" + bus + "-" + name + "-" + pin; //"mcp23017-" + i2CBus + "-" + gpioProviderName + "-" + attributes.getValue("providerPin");
+//    }
 
     //    @Override
 //    public void endElement(String uri, String localName, String qName) throws SAXException {
