@@ -5,7 +5,7 @@ new FormModel {
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 			"$columnSpecs": "default:grow, labelcompgap, default:grow, labelcompgap, default:grow"
-			"$rowSpecs": "fill:default:grow, linegap, default:grow, linegap, fill:default:grow"
+			"$rowSpecs": "fill:default:grow, linegap, default:grow, linegap, default, linegap, fill:default:grow"
 		} ) {
 			name: "this"
 			"defaultCloseOperation": 3
@@ -43,11 +43,18 @@ new FormModel {
 				name: "label1"
 				"text": "text"
 				"font": #Font0
+				"horizontalAlignment": 0
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 				"gridY": 3
 				"gridWidth": 5
 				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+			} )
+			add( new FormComponent( "javax.swing.JProgressBar" ) {
+				name: "progressBar1"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"gridWidth": 5
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button4"
@@ -55,7 +62,7 @@ new FormModel {
 				"font": #Font0
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 				"gridX": 1
-				"gridY": 5
+				"gridY": 7
 				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 			} )
@@ -65,7 +72,7 @@ new FormModel {
 				"font": #Font0
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 				"gridX": 3
-				"gridY": 5
+				"gridY": 7
 				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 			} )
@@ -75,7 +82,7 @@ new FormModel {
 				"font": #Font0
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 				"gridX": 5
-				"gridY": 5
+				"gridY": 7
 				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 			} )

@@ -207,12 +207,15 @@ public class Config extends DefaultHandler {
                         ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setBtnQuit(btn);
 
                 }
+            } else if (tagName.equalsIgnoreCase("parameter")) {
+                gameConfigs.get(currentGameMode).setProperty(attributes.getValue("key"), attributes.getValue("value"));
             }
 
-            //        final GpioPinDigitalInput btnFlagTrigger = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
-//        final GpioPinDigitalInput btnGameStartStop = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
-//        final GpioPinDigitalInput btnMisc = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
-//
+
+//            <parameter name="cyclemillis" value="50"/>
+//            <parameter name="time2respawn" value="20"/>
+//            <parameter name="maxcycles" value="200"/>
+//            <parameter name="seconds2capture" value="600"/>
 
 
         } catch (IOException io) {

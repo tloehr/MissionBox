@@ -43,7 +43,7 @@ public class Farcry1Assault implements GameModes {
     private int TIME2RESPAWN = 20, MAXCYLCES = 500, SECONDS2CAPTURE = 60 * 11;
 //    private final ArrayList<GpioPinDigitalOutput> myLEDs = new ArrayList<>();
 //    private final ArrayList<GpioPinDigitalOutput> mySirens = new ArrayList<>();
-    private  LEDBar ledBar;
+//    private  LEDBar ledBar;
 //    private final RelaySiren relaySiren;
 //    private final Relay relayStrobe, relayRocket;
 //    private final int lcdHandle;
@@ -62,10 +62,10 @@ public class Farcry1Assault implements GameModes {
 
 
 
-        final GpioPinDigitalInput btnFlagTrigger = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
-        final GpioPinDigitalInput btnGameStartStop = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
-        final GpioPinDigitalInput btnMisc = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
-
+//        final GpioPinDigitalInput btnFlagTrigger = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
+//        final GpioPinDigitalInput btnGameStartStop = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
+//        final GpioPinDigitalInput btnMisc = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
+//
 
 
 
@@ -124,12 +124,12 @@ public class Farcry1Assault implements GameModes {
 
         };
 
-//        MessageListener percentageListener = messageEvent -> {
-//
-//            ledBar.setValue(messageEvent.getPercentage());
-//            relaySiren.setValue(messageEvent.getPercentage());
-//
-//        };
+        MessageListener percentageListener = messageEvent -> {
+
+            ledBar.setValue(messageEvent.getPercentage());
+            relaySiren.setValue(messageEvent.getPercentage());
+
+        };
 //
 //        MessageListener gameModeListener = messageEvent -> {
 //            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);

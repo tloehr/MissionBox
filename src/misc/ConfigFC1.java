@@ -12,7 +12,7 @@ import main.MissionBox;
 /**
  * Created by tloehr on 23.06.15.
  */
-public class ConfigFC1 implements GameModeConfigs {
+public class ConfigFC1 extends GameModeConfigs {
 
     public static final String ID = "farcry1";
 
@@ -21,6 +21,29 @@ public class ConfigFC1 implements GameModeConfigs {
     private int maxcycles = 200;
     private int seconds2capture = 600;
 
+    @Override
+    public void setProperty(String key, String value) {
+        if (key.equalsIgnoreCase("cyclemillis")){
+            cyclemillis = Integer.parseInt(value);
+        } else if (key.equalsIgnoreCase("time2respawn")){
+            time2respawn = Integer.parseInt(value);
+        } else if (key.equalsIgnoreCase("maxcycles")){
+            maxcycles = Integer.parseInt(value);
+        } else if (key.equalsIgnoreCase("seconds2capture")){
+            seconds2capture = Integer.parseInt(value);
+        }
+    }
+
+    @Override
+    public void setButton(String key, GameButton btn, String gui) {
+
+        if (key.equalsIgnoreCase("flag"))
+            setBtnFlag(btn);
+        else if (key.equalsIgnoreCase("reset"))
+            setBtnReset(btn);
+        else if (key.equalsIgnoreCase("quit"))
+            setBtnQuit(btn);
+    }
 
     private Music playSiren, playWinningSon;
     private Sound playWelcome, playRocket;
