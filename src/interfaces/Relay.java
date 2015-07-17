@@ -10,11 +10,11 @@ import com.pi4j.io.gpio.PinState;
 public class Relay implements OnOffInterface {
 
 
-    private final GpioController GPIO;
+
     private final GpioPinDigitalOutput pin;
 
-    public Relay(GpioController GPIO, GpioPinDigitalOutput pin) {
-        this.GPIO = GPIO;
+    public Relay(GpioPinDigitalOutput pin) {
+
         this.pin = pin;
         pin.setState(PinState.LOW);
     }

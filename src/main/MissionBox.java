@@ -43,10 +43,10 @@ public class MissionBox {
 
 
 
-        FrmMain frmMain = new FrmMain();
-
-        frmMain.setVisible(true);
-        frmMain.setExtendedState(Frame.MAXIMIZED_BOTH);
+//        FrmMain frmMain = new FrmMain();
+//
+//        frmMain.setVisible(true);
+//        frmMain.setExtendedState(Frame.MAXIMIZED_BOTH);
 
     }
 

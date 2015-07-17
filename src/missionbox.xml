@@ -120,22 +120,20 @@
                 <gpio name="40" provider="providergpio3" pin="a7"/>
             </display>
 
-            <display type="progresssingle" name="relayprogress">
-                <gpio name="41" provider="providergpio3" pin="b0"/>
-                <gpio name="42" provider="providergpio3" pin="b1"/>
-                <gpio name="43" provider="providergpio3" pin="b2"/>
-                <gpio name="44" provider="providergpio3" pin="b3"/>
-                <gpio name="45" provider="providergpio3" pin="b4"/>
-                <gpio name="46" provider="providergpio3" pin="b5"/>
-                <gpio name="47" provider="providergpio3" pin="b6"/>
-                <gpio name="48" provider="providergpio3" pin="b7"/>
-            </display>
-
             <display type="textout" name="lcdtext" device="1602lcd" gui="txt1"/>
 
-            <button name="buttonA" provider="raspi" pin="gpio_03" resistor="down" gui="btn1"/>
-            <button name="buttonB" provider="raspi" pin="gpio_02" resistor="down" gui="btn2"/>
-            <button name="buttonC" provider="raspi" pin="gpio_00" resistor="down" gui="btn3"/>
+            <button name="buttonA" provider="raspi" pin="GPIO 3" resistor="pull_down" gui="btn1"/>
+            <button name="buttonB" provider="raspi" pin="GPIO 2" resistor="pull_down" gui="btn2"/>
+            <button name="buttonC" provider="raspi" pin="GPIO 0" resistor="pull_down" gui="btn3"/>
+
+            <relay name="relay1" provider="providergpio3" pin="b0" gui="relay1"/>
+            <relay name="relay2" provider="providergpio3" pin="b1" gui="relay2"/>
+            <relay name="relay3" provider="providergpio3" pin="b2" gui="relay3"/>
+            <relay name="relay4" provider="providergpio3" pin="b3" gui="relay4"/>
+            <relay name="relay5" provider="providergpio3" pin="b4" gui="relay5"/>
+            <relay name="relay6" provider="providergpio3" pin="b5" gui="relay6"/>
+            <relay name="relay7" provider="providergpio3" pin="b6" gui="relay7"/>
+            <relay name="relay8" provider="providergpio3" pin="b7" gui="relay8"/>
 
         </logical>
 
@@ -190,6 +188,13 @@
             <gamebutton name="flag" logical="buttonA"/>
             <gamebutton name="reset" logical="buttonB"/>
             <gamebutton name="quit" logical="buttonC"/>
+
+
+
+            <signal name="rocket" logical="relay7"/>
+            <signal name="strobe" logical="relay8"/>
+
+
 
             <parameter key="cyclemillis" value="50"/>
             <parameter key="time2respawn" value="20"/>

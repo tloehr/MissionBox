@@ -1,26 +1,12 @@
 package gamemodes;
 
-import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
-import com.pi4j.gpio.extension.mcp.MCP23017Pin;
-import com.pi4j.io.gpio.*;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.io.i2c.I2CBus;
-import interfaces.LEDBar;
 import interfaces.MessageListener;
 import interfaces.Relay;
-import interfaces.RelaySiren;
-import kuusisto.tinysound.Music;
-import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
-import main.MissionBox;
 import misc.Config;
-import misc.Tools;
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 
 /**
  * Created by tloehr on 31.05.15.
@@ -36,7 +22,7 @@ public class Farcry1Assault implements GameModes {
 
 
     private final Logger logger = Logger.getLogger(getClass());
-//    private final Config config;
+    private final Config config;
     private int LCD_ROWS = 2;
     private int LCD_COLUMNS = 16;
     private int LCD_BITS = 4;
@@ -54,19 +40,15 @@ public class Farcry1Assault implements GameModes {
     private Farcry1AssaultThread farcryAssaultThread;
 
 
+    public Farcry1Assault(Config config) throws IOException {
 
-
-    public Farcry1Assault() throws IOException {
-//        this.config = config;
-
-
+        this.config = config;
 
 
 //        final GpioPinDigitalInput btnFlagTrigger = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "FlagTrigger", PinPullResistance.PULL_DOWN);
 //        final GpioPinDigitalInput btnGameStartStop = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GameStartStop", PinPullResistance.PULL_DOWN);
 //        final GpioPinDigitalInput btnMisc = MissionBox.getConfig().getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "MISC", PinPullResistance.PULL_DOWN);
 //
-
 
 
 //        for (int ledON = 0; ledON < NUMLED4PROGRESS; ledON++) {
@@ -77,7 +59,7 @@ public class Farcry1Assault implements GameModes {
 //        mySirens.add(myOutputs[41]);
 //        mySirens.add(myOutputs[42]);
 //
-//        relayRocket = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[43]);
+        relayRocket = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[43]);
 //        relayStrobe = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[47]);
 //
 //
@@ -124,12 +106,12 @@ public class Farcry1Assault implements GameModes {
 
         };
 
-        MessageListener percentageListener = messageEvent -> {
-
-            ledBar.setValue(messageEvent.getPercentage());
-            relaySiren.setValue(messageEvent.getPercentage());
-
-        };
+//        MessageListener percentageListener = messageEvent -> {
+//
+//            ledBar.setValue(messageEvent.getPercentage());
+//            relaySiren.setValue(messageEvent.getPercentage());
+//
+//        };
 //
 //        MessageListener gameModeListener = messageEvent -> {
 //            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
@@ -173,47 +155,44 @@ public class Farcry1Assault implements GameModes {
 //        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);
 
 
-
-
-
-        btnFlagTrigger.addListener((GpioPinListenerDigital) event -> {
-            if (event.getState() == PinState.HIGH) {
-                logger.debug("btnFlagTrigger");
-                farcryAssaultThread.toggleFlag();
-            }
-        });
-
-        btnGameStartStop.addListener((GpioPinListenerDigital) event -> {
-            if (event.getState() == PinState.HIGH) {
-                logger.debug("btnGameStartStop");
-                if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
-                    farcryAssaultThread.startGame();
-                } else {
-                    farcryAssaultThread.restartGame();
-                }
-            }
-        });
-
-        btnMisc.addListener((GpioPinListenerDigital) event -> {
-
-
-//            fadeout(playWinningSon);
-
-
-            quitGame();
-
-
+//        btnFlagTrigger.addListener((GpioPinListenerDigital) event -> {
 //            if (event.getState() == PinState.HIGH) {
-//                logger.debug("btnMisc");
-//
-//               MissionBox.getConfig().getGPIO().setState(!GPIO.getState(myOutputs[someint]).isHigh(), myOutputs[someint]);
-//                someint++;
-//                if (someint >= myOutputs.length) someint = 24;
-//
-//                ledBar.setSimple();
-//
+//                logger.debug("btnFlagTrigger");
+//                farcryAssaultThread.toggleFlag();
 //            }
-        });
+//        });
+//
+//        btnGameStartStop.addListener((GpioPinListenerDigital) event -> {
+//            if (event.getState() == PinState.HIGH) {
+//                logger.debug("btnGameStartStop");
+//                if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
+//                    farcryAssaultThread.startGame();
+//                } else {
+//                    farcryAssaultThread.restartGame();
+//                }
+//            }
+//        });
+//
+//        btnMisc.addListener((GpioPinListenerDigital) event -> {
+//
+//
+////            fadeout(playWinningSon);
+//
+//
+//            quitGame();
+//
+//
+////            if (event.getState() == PinState.HIGH) {
+////                logger.debug("btnMisc");
+////
+////               MissionBox.getConfig().getGPIO().setState(!GPIO.getState(myOutputs[someint]).isHigh(), myOutputs[someint]);
+////                someint++;
+////                if (someint >= myOutputs.length) someint = 24;
+////
+////                ledBar.setSimple();
+////
+////            }
+//        });
 
         farcryAssaultThread.run();
         System.out.println("<--Pi4J--> Wiring Pi LCD test program");
@@ -229,7 +208,7 @@ public class Farcry1Assault implements GameModes {
         farcryAssaultThread.quitGame();
 //        relayRocket.setOff();
 //        relayStrobe.setOff();
-        ledBar.setOff();
+//        ledBar.setOff();
 
         TinySound.shutdown();
         System.exit(0);

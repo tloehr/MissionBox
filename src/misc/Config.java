@@ -7,10 +7,10 @@ import com.pi4j.io.i2c.I2CBus;
 import gamemodes.Farcry1Assault;
 import interfaces.GameButton;
 import interfaces.GameModeConfigs;
+import interfaces.Relay;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
-import main.MissionBox;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -149,7 +149,18 @@ public class Config extends DefaultHandler {
 
                 if (GPIO != null) {
                     GpioPinDigitalInput button = attributes.getValue("provider").equalsIgnoreCase("raspi") ?
-                            GPIO.provisionDigitalInputPin(RaspiPin.getPinByName(attributes.getValue("pin")), attributes.getValue("name"), PinPullResistance.valueOf(attributes.getValue("resistor").toUpperCase())) :
+                            GPIO.provisionDigitalInputPin(RaspiPin.getPinByName(attributes.getValue("pin").toUpperCase()), attributes.getValue("name"),
+                                    PinPullResistance.valueOf(attributes.getValue("resistor").toUpperCase())) :
+                            (GpioPinDigitalInput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin"));
+                    buttonMap.put(attributes.getValue("name"), new GameButton(button));
+                }
+
+
+            } else if (tagName.equalsIgnoreCase("relay")) {
+                if (GPIO != null) {
+                    GpioPinDigitalInput button = attributes.getValue("provider").equalsIgnoreCase("raspi") ?
+                            GPIO.provisionDigitalInputPin(RaspiPin.getPinByName(attributes.getValue("pin").toUpperCase()), attributes.getValue("name"),
+                                    PinPullResistance.valueOf(attributes.getValue("resistor").toUpperCase())) :
                             (GpioPinDigitalInput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin"));
                     buttonMap.put(attributes.getValue("name"), new GameButton(button));
                 }
@@ -207,7 +218,7 @@ public class Config extends DefaultHandler {
                         ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setBtnQuit(btn);
 
                 }
-            } else if (tagName.equalsIgnoreCase("parameter")) {
+            }  else if (tagName.equalsIgnoreCase("parameter")) {
                 gameConfigs.get(currentGameMode).setProperty(attributes.getValue("key"), attributes.getValue("value"));
             }
 
