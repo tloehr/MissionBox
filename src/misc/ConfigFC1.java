@@ -5,6 +5,7 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.RaspiPin;
 import interfaces.GameButton;
 import interfaces.GameModeConfigs;
+import interfaces.Relay;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import main.MissionBox;
@@ -20,6 +21,13 @@ public class ConfigFC1 extends GameModeConfigs {
     private int time2respawn = 20;
     private int maxcycles = 200;
     private int seconds2capture = 600;
+    private Music playSiren, playWinningSon;
+    private Sound playWelcome, playRocket;
+    private GameButton btnFlag = null;
+    private GameButton btnReset = null;
+    private GameButton btnQuit = null;
+    private Relay relayRocket = null;
+    private Relay relaySiren = null;
 
     @Override
     public void setProperty(String key, String value) {
@@ -45,11 +53,6 @@ public class ConfigFC1 extends GameModeConfigs {
             setBtnQuit(btn);
     }
 
-    private Music playSiren, playWinningSon;
-    private Sound playWelcome, playRocket;
-    private GameButton btnFlag = null;
-    private GameButton btnReset = null;
-    private GameButton btnQuit = null;
 
     public ConfigFC1() {
     }
@@ -140,5 +143,21 @@ public class ConfigFC1 extends GameModeConfigs {
 
     public void setBtnQuit(GameButton btnQuit) {
         this.btnQuit = btnQuit;
+    }
+
+    public Relay getRelayRocket() {
+        return relayRocket;
+    }
+
+    public void setRelayRocket(Relay relayRocket) {
+        this.relayRocket = relayRocket;
+    }
+
+    public Relay getRelaySiren() {
+        return relaySiren;
+    }
+
+    public void setRelaySiren(Relay relaySiren) {
+        this.relaySiren = relaySiren;
     }
 }

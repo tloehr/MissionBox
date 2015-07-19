@@ -5,9 +5,7 @@ import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
 import gamemodes.Farcry1Assault;
-import interfaces.GameButton;
-import interfaces.GameModeConfigs;
-import interfaces.Relay;
+import interfaces.*;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
@@ -24,6 +22,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -36,6 +35,10 @@ public class Config extends DefaultHandler {
     private final HashMap<String, Sound> soundMap = new HashMap<>();
     private final HashMap<String, Music> musicMap = new HashMap<>();
     private final HashMap<String, GameButton> buttonMap = new HashMap<>();
+    private final HashMap<String, OnOffInterface> switchMap = new HashMap<>();
+    private final HashMap<String, PercentageInterface> progressMap = new HashMap<>();
+
+    private final ArrayList<GpioPinDigitalOutput> listLEDs = new ArrayList<>();
 
     private final HashMap<String, GpioPinDigital> gpioMap = new HashMap<>();
 
@@ -47,7 +50,7 @@ public class Config extends DefaultHandler {
 
     private GpioController GPIO;
     private MCP23017GpioProvider gpioProvider;
-    private String gpioProviderName, gameModeName;
+    private String gpioProviderName, gameModeName, progressName;
 
     private String currentGameMode = null, soundpath = "", homedir, sep;
     private int i2CBus = -1;
@@ -137,16 +140,18 @@ public class Config extends DefaultHandler {
                 } else {
                     gpioMap.put(gpioProvider.getName(), GPIO.provisionDigitalInputPin(gpioProvider, getMCP23017Pin(attributes.getValue("providerPin")), "mcp23017-01-A0", PinPullResistance.valueOf(attributes.getValue("state"))));
                 }
-                /***
-                 *      _             _           _
-                 *     | | ___   __ _(_) ___ __ _| |
-                 *     | |/ _ \ / _` | |/ __/ _` | |
-                 *     | | (_) | (_| | | (_| (_| | |
-                 *     |_|\___/ \__, |_|\___\__,_|_|
-                 *              |___/
-                 */
+
+            } else if (tagName.equalsIgnoreCase("progress")) {
+                if (GPIO != null) {
+                    progressName = attributes.getValue("name");
+                }
+            } else if (tagName.equalsIgnoreCase("gpio")) {
+                if (GPIO != null) {
+                    if (progressName != null) {
+                        listLEDs.add((GpioPinDigitalOutput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin")));
+                    }
+                }
             } else if (tagName.equalsIgnoreCase("button")) {
-
                 if (GPIO != null) {
                     GpioPinDigitalInput button = attributes.getValue("provider").equalsIgnoreCase("raspi") ?
                             GPIO.provisionDigitalInputPin(RaspiPin.getPinByName(attributes.getValue("pin").toUpperCase()), attributes.getValue("name"),
@@ -154,17 +159,13 @@ public class Config extends DefaultHandler {
                             (GpioPinDigitalInput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin"));
                     buttonMap.put(attributes.getValue("name"), new GameButton(button));
                 }
-
-
-            } else if (tagName.equalsIgnoreCase("relay")) {
+            } else if (tagName.equalsIgnoreCase("switch")) {
                 if (GPIO != null) {
-                    GpioPinDigitalInput button = attributes.getValue("provider").equalsIgnoreCase("raspi") ?
-                            GPIO.provisionDigitalInputPin(RaspiPin.getPinByName(attributes.getValue("pin").toUpperCase()), attributes.getValue("name"),
-                                    PinPullResistance.valueOf(attributes.getValue("resistor").toUpperCase())) :
-                            (GpioPinDigitalInput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin"));
-                    buttonMap.put(attributes.getValue("name"), new GameButton(button));
+                    GpioPinDigitalOutput pin = attributes.getValue("provider").equalsIgnoreCase("raspi") ?
+                            GPIO.provisionDigitalOutputPin(RaspiPin.getPinByName(attributes.getValue("pin").toUpperCase()), attributes.getValue("name"), PinState.LOW) :
+                            (GpioPinDigitalOutput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin"));
+                    switchMap.put(attributes.getValue("name"), new Relay(pin));
                 }
-
                 /***
                  *            _   _
                  *       ___ | |_| |__   ___ _ __
@@ -179,8 +180,6 @@ public class Config extends DefaultHandler {
                 musicMap.put(attributes.getValue("id"), TinySound.loadMusic(new File(soundpath + sep + attributes.getValue("filename"))));
             } else if (tagName.equalsIgnoreCase("soundfiles")) {
                 soundpath = attributes.getValue("soundpath");
-
-
                 /***
                  *
                  *       __ _  __ _ _ __ ___   ___  ___
@@ -218,7 +217,7 @@ public class Config extends DefaultHandler {
                         ((ConfigFC1) gameConfigs.get(ConfigFC1.ID)).setBtnQuit(btn);
 
                 }
-            }  else if (tagName.equalsIgnoreCase("parameter")) {
+            } else if (tagName.equalsIgnoreCase("parameter")) {
                 gameConfigs.get(currentGameMode).setProperty(attributes.getValue("key"), attributes.getValue("value"));
             }
 
@@ -242,6 +241,12 @@ public class Config extends DefaultHandler {
             gpioProviderName = null;
         } else if (qName.equalsIgnoreCase("game")) {
             gameModeName = null;
+        } else if (qName.equalsIgnoreCase("progress")) {
+            if (GPIO != null){
+                progressMap.put(progressName, new LEDBar(GPIO, listLEDs));
+                listLEDs.clear();
+            }
+            progressName = null;
         }
     }
 

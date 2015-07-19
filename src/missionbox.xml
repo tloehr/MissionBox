@@ -77,7 +77,7 @@
                     the naming scheme of the class com.pi4j.io.gpio.RaspiPin is applied.
             -->
 
-            <display type="progressbar" name="progressleft" gui="pb1">
+            <progress name="progressleft" gui="pb1">
                 <gpio name="01" provider="providergpio1" pin="a0"/>
                 <gpio name="02" provider="providergpio1" pin="a1"/>
                 <gpio name="03" provider="providergpio1" pin="a2"/>
@@ -118,22 +118,22 @@
                 <gpio name="38" provider="providergpio3" pin="a5"/>
                 <gpio name="39" provider="providergpio3" pin="a6"/>
                 <gpio name="40" provider="providergpio3" pin="a7"/>
-            </display>
+            </progress>
 
-            <display type="textout" name="lcdtext" device="1602lcd" gui="txt1"/>
+            <textout name="lcdtext" device="1602lcd" gui="txt1"/>
 
             <button name="buttonA" provider="raspi" pin="GPIO 3" resistor="pull_down" gui="btn1"/>
             <button name="buttonB" provider="raspi" pin="GPIO 2" resistor="pull_down" gui="btn2"/>
             <button name="buttonC" provider="raspi" pin="GPIO 0" resistor="pull_down" gui="btn3"/>
 
-            <relay name="relay1" provider="providergpio3" pin="b0" gui="relay1"/>
-            <relay name="relay2" provider="providergpio3" pin="b1" gui="relay2"/>
-            <relay name="relay3" provider="providergpio3" pin="b2" gui="relay3"/>
-            <relay name="relay4" provider="providergpio3" pin="b3" gui="relay4"/>
-            <relay name="relay5" provider="providergpio3" pin="b4" gui="relay5"/>
-            <relay name="relay6" provider="providergpio3" pin="b5" gui="relay6"/>
-            <relay name="relay7" provider="providergpio3" pin="b6" gui="relay7"/>
-            <relay name="relay8" provider="providergpio3" pin="b7" gui="relay8"/>
+            <switch name="relay1" provider="providergpio3" pin="b0" gui="relay1"/>
+            <switch name="relay2" provider="providergpio3" pin="b1" gui="relay2"/>
+            <switch name="relay3" provider="providergpio3" pin="b2" gui="relay3"/>
+            <switch name="relay4" provider="providergpio3" pin="b3" gui="relay4"/>
+            <switch name="relay5" provider="providergpio3" pin="b4" gui="relay5"/>
+            <switch name="relay6" provider="providergpio3" pin="b5" gui="relay6"/>
+            <switch name="relay7" provider="providergpio3" pin="b6" gui="relay7"/>
+            <switch name="relay8" provider="providergpio3" pin="b7" gui="relay8"/>
 
         </logical>
 
