@@ -38,7 +38,12 @@ public class Config extends DefaultHandler {
     private final HashMap<String, OnOffInterface> switchMap = new HashMap<>();
     private final HashMap<String, PercentageInterface> progressMap = new HashMap<>();
 
-    private final ArrayList<GpioPinDigitalOutput> listLEDs = new ArrayList<>();
+    private final ArrayList<GpioPinDigitalOutput> listProgress = new ArrayList<>();
+    private String progressName;
+
+    private enum ProgressType {CUMULATIVE, SINGLESTEP}
+
+    private ProgressType progressType;
 
     private final HashMap<String, GpioPinDigital> gpioMap = new HashMap<>();
 
@@ -50,7 +55,8 @@ public class Config extends DefaultHandler {
 
     private GpioController GPIO;
     private MCP23017GpioProvider gpioProvider;
-    private String gpioProviderName, gameModeName, progressName;
+    private String gpioProviderName, gameModeName;
+
 
     private String currentGameMode = null, soundpath = "", homedir, sep;
     private int i2CBus = -1;
@@ -144,11 +150,12 @@ public class Config extends DefaultHandler {
             } else if (tagName.equalsIgnoreCase("progress")) {
                 if (GPIO != null) {
                     progressName = attributes.getValue("name");
+                    progressType = attributes.getValue("type").equalsIgnoreCase("cumulative") ? ProgressType.CUMULATIVE : ProgressType.SINGLESTEP;
                 }
             } else if (tagName.equalsIgnoreCase("gpio")) {
                 if (GPIO != null) {
                     if (progressName != null) {
-                        listLEDs.add((GpioPinDigitalOutput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin")));
+                        listProgress.add((GpioPinDigitalOutput) gpioMap.get(attributes.getValue("provider") + "-" + attributes.getValue("pin")));
                     }
                 }
             } else if (tagName.equalsIgnoreCase("button")) {
@@ -242,9 +249,9 @@ public class Config extends DefaultHandler {
         } else if (qName.equalsIgnoreCase("game")) {
             gameModeName = null;
         } else if (qName.equalsIgnoreCase("progress")) {
-            if (GPIO != null){
-                progressMap.put(progressName, new LEDBar(GPIO, listLEDs));
-                listLEDs.clear();
+            if (GPIO != null) {
+                progressMap.put(progressName, progressType == ProgressType.CUMULATIVE ? new Cumulative(GPIO, listProgress) : new SingleStep(GPIO, listProgress));
+                listProgress.clear();
             }
             progressName = null;
         }

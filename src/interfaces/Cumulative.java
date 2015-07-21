@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by tloehr on 07.06.15.
  */
-public class LEDBar implements PercentageInterface, Runnable {
+public class Cumulative implements PercentageInterface, Runnable {
 
     public final int PERCENTAGE = 0;
     public final int SIMPLE = 1;
@@ -28,7 +28,7 @@ public class LEDBar implements PercentageInterface, Runnable {
     private Logger logger = Logger.getLogger(this.getClass());
 
 
-    public LEDBar(GpioController GPIO, ArrayList<GpioPinDigitalOutput> myLEDs) {
+    public Cumulative(GpioController GPIO, ArrayList<GpioPinDigitalOutput> myLEDs) {
         this.GPIO = GPIO;
         this.myLEDs = myLEDs;
         this.thread = new Thread(this);

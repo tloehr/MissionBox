@@ -11,13 +11,13 @@ import java.util.ArrayList;
 /**
  * Created by tloehr on 07.06.15.
  */
-public class RelaySiren implements PercentageInterface {
+public class SingleStep implements PercentageInterface {
 
     private final GpioController GPIO;
     private final ArrayList<GpioPinDigitalOutput> myRelais;
     private Logger logger = Logger.getLogger(this.getClass());
 
-    public RelaySiren(GpioController GPIO, ArrayList<GpioPinDigitalOutput> myRelais) {
+    public SingleStep(GpioController GPIO, ArrayList<GpioPinDigitalOutput> myRelais) {
         this.GPIO = GPIO;
         this.myRelais = myRelais;
     }

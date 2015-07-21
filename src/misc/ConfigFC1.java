@@ -3,12 +3,13 @@ package misc;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.RaspiPin;
-import interfaces.GameButton;
-import interfaces.GameModeConfigs;
-import interfaces.Relay;
+import interfaces.*;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import main.MissionBox;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 /**
  * Created by tloehr on 23.06.15.
@@ -28,6 +29,9 @@ public class ConfigFC1 extends GameModeConfigs {
     private GameButton btnQuit = null;
     private Relay relayRocket = null;
     private Relay relaySiren = null;
+    private MessageListener percentageListener = null, gameTimeListener = null, textListener = null;
+    private ArrayList<PercentageInterface> listPercentages;
+    private ArrayList<TextOutInterface> listText, listGametime;
 
     @Override
     public void setProperty(String key, String value) {
@@ -55,6 +59,31 @@ public class ConfigFC1 extends GameModeConfigs {
 
 
     public ConfigFC1() {
+        listPercentages = new ArrayList<>();
+        percentageListener = new MessageListener() {
+            @Override
+            public void messageReceived(MessageEvent messageEvent) {
+                listPercentages.forEach(new Consumer<PercentageInterface>() {
+                    @Override
+                    public void accept(PercentageInterface percentageInterface) {
+                        percentageInterface.setValue(messageEvent.getPercentage());
+                    }
+                });
+            }
+        };
+        listText = new ArrayList<>();
+        gameTimeListener = new MessageListener() {
+            @Override
+            public void messageReceived(MessageEvent messageEvent) {
+                listText.forEach(new Consumer<TextOutInterface>() {
+                    @Override
+                    public void accept(TextOutInterface textOutInterface) {
+                        textOutInterface.setText(messageEvent.getMessage().toString());
+                    }
+                });
+            }
+        };
+        listGametime = new ArrayList<>();
     }
 
     public int getCyclemillis() {

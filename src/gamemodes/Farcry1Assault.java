@@ -1,5 +1,6 @@
 package gamemodes;
 
+import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import interfaces.Relay;
 import kuusisto.tinysound.TinySound;
@@ -29,8 +30,8 @@ public class Farcry1Assault implements GameModes {
     private int TIME2RESPAWN = 20, MAXCYLCES = 500, SECONDS2CAPTURE = 60 * 11;
 //    private final ArrayList<GpioPinDigitalOutput> myLEDs = new ArrayList<>();
 //    private final ArrayList<GpioPinDigitalOutput> mySirens = new ArrayList<>();
-//    private  LEDBar ledBar;
-//    private final RelaySiren relaySiren;
+//    private  Cumulative ledBar;
+//    private final SingleStep relaySiren;
 //    private final Relay relayStrobe, relayRocket;
 //    private final int lcdHandle;
 
@@ -59,12 +60,12 @@ public class Farcry1Assault implements GameModes {
 //        mySirens.add(myOutputs[41]);
 //        mySirens.add(myOutputs[42]);
 //
-        relayRocket = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[43]);
+//        relayRocket = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[43]);
 //        relayStrobe = new Relay(MissionBox.getConfig().getGPIO(), myOutputs[47]);
 //
 //
-//        this.ledBar = new LEDBar(MissionBox.getConfig().getGPIO(), myLEDs);
-//        this.relaySiren = new RelaySiren(MissionBox.getConfig().getGPIO(), mySirens);
+//        this.ledBar = new Cumulative(MissionBox.getConfig().getGPIO(), myLEDs);
+//        this.relaySiren = new SingleStep(MissionBox.getConfig().getGPIO(), mySirens);
 
 
         // initialize LCD
@@ -98,12 +99,15 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
-        MessageListener gameTimeListener = messageEvent -> {
+        MessageListener gameTimeListener = new MessageListener() {
+            @Override
+            public void messageReceived(MessageEvent messageEvent) {
 //            Lcd.lcdPosition(lcdHandle, 0, 1);
 //            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(messageEvent.getMessage().toString(), LCD_COLUMNS));
 
-            logger.debug(messageEvent.getMessage().toString());
+                logger.debug(messageEvent.getMessage().toString());
 
+            }
         };
 
 //        MessageListener percentageListener = messageEvent -> {
@@ -112,7 +116,7 @@ public class Farcry1Assault implements GameModes {
 //            relaySiren.setValue(messageEvent.getPercentage());
 //
 //        };
-//
+
 //        MessageListener gameModeListener = messageEvent -> {
 //            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
 ////            Lcd.lcdHome(lcdHandle);
