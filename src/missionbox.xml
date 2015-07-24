@@ -77,7 +77,7 @@
                     the naming scheme of the class com.pi4j.io.gpio.RaspiPin is applied.
             -->
 
-            <progress name="progressleft" gui="pb1" type="cumulative">
+            <progress name="progressleft" type="cumulative">
                 <gpio name="01" provider="providergpio1" pin="a0"/>
                 <gpio name="02" provider="providergpio1" pin="a1"/>
                 <gpio name="03" provider="providergpio1" pin="a2"/>
@@ -122,17 +122,17 @@
 
             <textout name="lcdtext" device="1602lcd" gui="txt1"/>
 
-            <button name="buttonA" provider="raspi" pin="GPIO 3" resistor="pull_down" gui="btn1"/>
-            <button name="buttonB" provider="raspi" pin="GPIO 2" resistor="pull_down" gui="btn2"/>
-            <button name="buttonC" provider="raspi" pin="GPIO 0" resistor="pull_down" gui="btn3"/>
+            <button name="buttonA" provider="raspi" pin="GPIO 3" resistor="pull_down"/>
+            <button name="buttonB" provider="raspi" pin="GPIO 2" resistor="pull_down"/>
+            <button name="buttonC" provider="raspi" pin="GPIO 0" resistor="pull_down"/>
 
-            <switch name="relay1" provider="providergpio3" pin="b0" gui="switch1"/>
-            <switch name="relay2" provider="providergpio3" pin="b1" gui="switch2"/>
-            <switch name="relay3" provider="providergpio3" pin="b2" gui="switch3"/>
-            <switch name="relay4" provider="providergpio3" pin="b3" gui="switch4"/>
-            <switch name="relay5" provider="providergpio3" pin="b4" gui="switch5"/>
+            <switch name="switch1" provider="providergpio3" pin="b0"/>
+            <switch name="switch2" provider="providergpio3" pin="b1"/>
+            <switch name="switch3" provider="providergpio3" pin="b2"/>
+            <switch name="switch4" provider="providergpio3" pin="b3"/>
+            <switch name="switch5" provider="providergpio3" pin="b4"/>
 
-            <progress name="relaysiren" gui="relaysiren" type="singlestep">
+            <progress name="relaysiren" type="singlestep">
                 <gpio provider="providergpio3" pin="b5"/>
                 <gpio provider="providergpio3" pin="b6"/>
                 <gpio provider="providergpio3" pin="b7"/>
@@ -183,10 +183,10 @@
             <!--<play type="defeat" file="defeat1"/>-->
 
 
-            <progressbar name="pbleft" eventQ="percentageListenerLeft">
-                <progresselement name="progressleft"/>
-                <progresselement name="relaysiren"/>
-            </progressbar>
+            <percentage name="pbleft">
+                <notify name="progressleft"/>
+                <notify name="relaysiren"/>
+            </percentage>
 
 
             <!--<textout name="textout1">-->

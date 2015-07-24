@@ -8,7 +8,11 @@ import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import main.MissionBox;
 
+import javax.swing.event.EventListenerList;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -30,8 +34,53 @@ public class ConfigFC1 extends GameModeConfigs {
     private Relay relayRocket = null;
     private Relay relaySiren = null;
     private MessageListener percentageListener = null, gameTimeListener = null, textListener = null;
-    private ArrayList<PercentageInterface> listPercentages;
-    private ArrayList<TextOutInterface> listText, listGametime;
+//    private ArrayList<PercentageInterface> listPercentages;
+//    private ArrayList<TextOutInterface> listText, listGametime;
+    private HashMap<String, ArrayList<TextOutInterface>> mapGameTimeListeners;
+    private HashMap<String, ArrayList<TextOutInterface>> mapTextoutListeners;
+    private HashMap<String, EventListenerList> mapPercentageListeners;
+
+
+    public HashMap<String, EventListenerList> getMapPercentageListeners() {
+        return mapPercentageListeners;
+    }
+
+    public ConfigFC1() {
+
+        mapPercentageListeners = new HashMap<>();
+        mapGameTimeListeners = new HashMap<>();
+        mapTextoutListeners = new HashMap<>();
+
+        percentageListener = new MessageListener() {
+            @Override
+            public void messageReceived(MessageEvent messageEvent) {
+                mapPercentageListeners.forEach(new BiConsumer<String, EventListenerList>() {
+                    @Override
+                    public void accept(String s, EventListenerList eventListenerList) {
+                        for (MessageListener listener : eventListenerList.getListeners(MessageListener.class)) {
+                            listener.messageReceived(messageEvent);
+                        }
+                    }
+                });
+            }
+        };
+//        listText = new ArrayList<>();
+//        gameTimeListener = new MessageListener() {
+//            @Override
+//            public void messageReceived(MessageEvent messageEvent) {
+//                listText.forEach(new Consumer<TextOutInterface>() {
+//                    @Override
+//                    public void accept(TextOutInterface textOutInterface) {
+//                        textOutInterface.setText(messageEvent.getMessage().toString());
+//                    }
+//                });
+//            }
+//        };
+//        listGametime = new ArrayList<>();
+    }
+
+
+
 
     @Override
     public void setProperty(String key, String value) {
@@ -58,33 +107,11 @@ public class ConfigFC1 extends GameModeConfigs {
     }
 
 
-    public ConfigFC1() {
-        listPercentages = new ArrayList<>();
-        percentageListener = new MessageListener() {
-            @Override
-            public void messageReceived(MessageEvent messageEvent) {
-                listPercentages.forEach(new Consumer<PercentageInterface>() {
-                    @Override
-                    public void accept(PercentageInterface percentageInterface) {
-                        percentageInterface.setValue(messageEvent.getPercentage());
-                    }
-                });
-            }
-        };
-        listText = new ArrayList<>();
-        gameTimeListener = new MessageListener() {
-            @Override
-            public void messageReceived(MessageEvent messageEvent) {
-                listText.forEach(new Consumer<TextOutInterface>() {
-                    @Override
-                    public void accept(TextOutInterface textOutInterface) {
-                        textOutInterface.setText(messageEvent.getMessage().toString());
-                    }
-                });
-            }
-        };
-        listGametime = new ArrayList<>();
+    public MessageListener getPercentageListener() {
+        return percentageListener;
     }
+
+
 
     public int getCyclemillis() {
         return cyclemillis;
@@ -102,8 +129,8 @@ public class ConfigFC1 extends GameModeConfigs {
         this.time2respawn = time2respawn;
     }
 
-    public int getMaxcycles() {
-        return maxcycles;
+    public BigDecimal getMaxcycles() {
+        return new BigDecimal(maxcycles);
     }
 
     public void setMaxcycles(int maxcycles) {

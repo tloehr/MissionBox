@@ -3,6 +3,7 @@ package gamemodes;
 import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
+import misc.ConfigFC1;
 import org.apache.log4j.Logger;
 
 import javax.swing.event.EventListenerList;
@@ -18,11 +19,10 @@ import java.util.Date;
 public class Farcry1AssaultThread implements Runnable, GameThreads {
     final Logger LOGGER = Logger.getLogger(getClass());
     private final Thread thread;
-    private final int millispercycle;
     private final int cycledivider;
     private BigDecimal cycle;
-    private final int seconds2capture;
-    private BigDecimal MAXCYCLES;
+//    private final int seconds2capture;
+
     private int gameState, previousGameState;
     private long starttime = 0, endtime = 0, afterglow = 0, agseconds = 20, rockettime = 0, rocketseconds = 7;
     private long threadcycles = 0; // makes sure that the time event is only triggered once a second
@@ -42,33 +42,31 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
     DateFormat formatter = new SimpleDateFormat("mm:ss");
 
-    private final EventListenerList messageList, gameTimerList, percentageList, gameModeList;
+    private final EventListenerList messageList, gameTimerList, gameModeList;
+    private final ConfigFC1 config;
 
 
-    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, int maxcycles, int seconds2capture, int millispercycle) {
+    public Farcry1AssaultThread(ConfigFC1 config) {
         super();
-        this.millispercycle = millispercycle;
-        cycledivider = 1000 / millispercycle;
+        this.config = config;
+        cycledivider = 1000 / config.getCyclemillis();
         thread = new Thread(this);
-
-
 
         messageList = new EventListenerList();
         gameTimerList = new EventListenerList();
-        percentageList = new EventListenerList();
+//        percentageList = new EventListenerList();
         gameModeList = new EventListenerList();
 
-        messageList.add(MessageListener.class, messageListener);
-        gameTimerList.add(MessageListener.class, gameTimerListener);
-        percentageList.add(MessageListener.class, percentageListener);
-        gameModeList.add(MessageListener.class, gameModeListener);
+//        messageList.add(MessageListener.class, messageListener);
+//        gameTimerList.add(MessageListener.class, gameTimerListener);
+//        percentageList.add(MessageListener.class, config.getPercentageListener());
+//        gameModeList.add(MessageListener.class, gameModeListener);
 
-        this.seconds2capture = seconds2capture;
+
 
         previousGameState = GAME_NON_EXISTENT;
 
-        MAXCYCLES = new BigDecimal(maxcycles);
-        resetCycle();
+                resetCycle();
 
         setGameState(GAME_PRE_GAME);
 
@@ -89,7 +87,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 case GAME_FLAG_ACTIVE: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.active"));
                     starttime = System.currentTimeMillis();
-                    endtime = starttime + (seconds2capture * 1000);
+                    endtime = starttime + (config.getSeconds2capture() * 1000);
                     setGameState(GAME_FLAG_COLD);
                     break;
                 }
@@ -138,8 +136,8 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
     private synchronized void setCycle(BigDecimal cycle) {
         this.cycle = cycle;
-        BigDecimal progress = cycle.divide(MAXCYCLES, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        fireMessage(percentageList, new MessageEvent(this, progress));
+        BigDecimal progress = cycle.divide(config.getMaxcycles(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        fireMessage(config.getMapPercentageListeners().get("pbleft"), new MessageEvent(this, progress));
     }
 
     @Override
@@ -202,7 +200,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             try {
 
-                if (cycle.compareTo(MAXCYCLES) >= 0) {
+                if (cycle.compareTo(config.getMaxcycles()) >= 0) {
                     if (gameState == GAME_FLAG_HOT) {
                         setGameState(GAME_ROCKET_LAUNCHED);
                     }
@@ -230,7 +228,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     }
                 }
 
-                Thread.sleep(millispercycle);
+                Thread.sleep(config.getCyclemillis());
             } catch (InterruptedException ie) {
                 LOGGER.debug(this + " interrupted!");
             }

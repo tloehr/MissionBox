@@ -5,6 +5,7 @@ import interfaces.MessageListener;
 import interfaces.Relay;
 import kuusisto.tinysound.TinySound;
 import misc.Config;
+import misc.ConfigFC1;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class Farcry1Assault implements GameModes {
 
 
     private final Logger logger = Logger.getLogger(getClass());
-    private final Config config;
+    private final ConfigFC1 config;
     private int LCD_ROWS = 2;
     private int LCD_COLUMNS = 16;
     private int LCD_BITS = 4;
@@ -41,7 +42,7 @@ public class Farcry1Assault implements GameModes {
     private Farcry1AssaultThread farcryAssaultThread;
 
 
-    public Farcry1Assault(Config config) throws IOException {
+    public Farcry1Assault(ConfigFC1 config) throws IOException {
 
         this.config = config;
 
@@ -110,53 +111,54 @@ public class Farcry1Assault implements GameModes {
             }
         };
 
-//        MessageListener percentageListener = messageEvent -> {
-//
-//            ledBar.setValue(messageEvent.getPercentage());
-//            relaySiren.setValue(messageEvent.getPercentage());
-//
-//        };
+        MessageListener percentageListener = messageEvent -> {
 
-//        MessageListener gameModeListener = messageEvent -> {
-//            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
-////            Lcd.lcdHome(lcdHandle);
-////            Lcd.lcdPosition(lcdHandle, 0, 0);
-////            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
-//
-//            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
-//                MissionBox.getConfig().getConfigFC1().getPlaySiren().play(true);
-//                relayStrobe.setOn();
-//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_COLD)) {
-//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-//                relayStrobe.setOff();
-//                relaySiren.setValue(BigDecimal.ZERO);
-//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
-//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-//                ledBar.setSimple();
-//                relaySiren.setValue(BigDecimal.ZERO);
-//                MissionBox.getConfig().getConfigFC1().getPlayRocket().play();
-//                relayRocket.setOn();
-//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_PRE_GAME)) {
-//                relayStrobe.setOff();
-//                relayRocket.setOff();
-//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-//                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
-//                MissionBox.getConfig().getConfigFC1().getPlayWinningSon().stop();
-//                MissionBox.getConfig().getConfigFC1().getPlayWelcome().play();
-//                ledBar.setOff();
-//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
-//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-//                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
-//                Tools.fadeout(config.getConfigFC1().getPlayWinningSon());
-//            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN)) {
-//                MissionBox.getConfig().getConfigFC1().getPlaySiren().stop();
-//                MissionBox.getConfig().getConfigFC1().getPlayRocket().stop();
-//                MissionBox.getConfig().getConfigFC1().getPlayWinningSon().play(false);
-//                ledBar.setCylon();
-//            }
-//        };
 
-//        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);
+            ledBar.setValue(messageEvent.getPercentage());
+            relaySiren.setValue(messageEvent.getPercentage());
+
+        };
+
+        MessageListener gameModeListener = messageEvent -> {
+            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
+//            Lcd.lcdHome(lcdHandle);
+//            Lcd.lcdPosition(lcdHandle, 0, 0);
+//            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
+
+            if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
+                config.getPlaySiren().play(true);
+                relayStrobe.setOn();
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_COLD)) {
+                config.getPlaySiren().stop();
+                relayStrobe.setOff();
+                relaySiren.setValue(BigDecimal.ZERO);
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
+                config.getPlaySiren().stop();
+                ledBar.setSimple();
+                relaySiren.setValue(BigDecimal.ZERO);
+                config.getPlayRocket().play();
+                relayRocket.setOn();
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_PRE_GAME)) {
+                relayStrobe.setOff();
+                relayRocket.setOff();
+                config.getPlaySiren().stop();
+                config.getPlayRocket().stop();
+                config.getPlayWinningSon().stop();
+                config.getPlayWelcome().play();
+                ledBar.setOff();
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
+                config.getPlaySiren().stop();
+                config.getPlayRocket().stop();
+                Tools.fadeout(config.getConfigFC1().getPlayWinningSon());
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN)) {
+                config.getPlaySiren().stop();
+                config.getPlayRocket().stop();
+                config.getPlayWinningSon().play(false);
+                ledBar.setCylon();
+            }
+        };
+
+        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);
 
 
 //        btnFlagTrigger.addListener((GpioPinListenerDigital) event -> {
