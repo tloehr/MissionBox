@@ -38,28 +38,19 @@ public class ConfigFC1 extends GameModeConfigs {
 //    private ArrayList<TextOutInterface> listText, listGametime;
     private HashMap<String, ArrayList<TextOutInterface>> mapGameTimeListeners;
     private HashMap<String, ArrayList<TextOutInterface>> mapTextoutListeners;
-    private HashMap<String, EventListenerList> mapPercentageListeners;
-
-
-    public HashMap<String, EventListenerList> getMapPercentageListeners() {
-        return mapPercentageListeners;
-    }
 
     public ConfigFC1() {
 
-        mapPercentageListeners = new HashMap<>();
         mapGameTimeListeners = new HashMap<>();
         mapTextoutListeners = new HashMap<>();
 
         percentageListener = new MessageListener() {
             @Override
             public void messageReceived(MessageEvent messageEvent) {
-                mapPercentageListeners.forEach(new BiConsumer<String, EventListenerList>() {
+                listProgressLeft.forEach(new Consumer<PercentageInterface>() {
                     @Override
-                    public void accept(String s, EventListenerList eventListenerList) {
-                        for (MessageListener listener : eventListenerList.getListeners(MessageListener.class)) {
-                            listener.messageReceived(messageEvent);
-                        }
+                    public void accept(PercentageInterface percentageInterface) {
+                        percentageInterface.setValue(messageEvent.getPercentage());
                     }
                 });
             }

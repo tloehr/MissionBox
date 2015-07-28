@@ -37,6 +37,7 @@ public class Config extends DefaultHandler {
     private final HashMap<String, GameButton> buttonMap = new HashMap<>();
     private final HashMap<String, OnOffInterface> switchMap = new HashMap<>();
     private final HashMap<String, PercentageInterface> progressMap = new HashMap<>();
+    private final ArrayList<PercentageInterface> listCurrentProgress = new ArrayList<>();
 
     private final ArrayList<GpioPinDigitalOutput> listProgress = new ArrayList<>();
     private String progressName;
@@ -226,6 +227,8 @@ public class Config extends DefaultHandler {
                 }
             } else if (tagName.equalsIgnoreCase("parameter")) {
                 gameConfigs.get(currentGameMode).setProperty(attributes.getValue("key"), attributes.getValue("value"));
+            } else if (tagName.equalsIgnoreCase("notify")) {
+                listCurrentProgress.add(progressMap.get(attributes.getValue("name")));
             }
 
 
@@ -254,6 +257,11 @@ public class Config extends DefaultHandler {
                 listProgress.clear();
             }
             progressName = null;
+        } else if (qName.equalsIgnoreCase("progressleft")) {
+            if (gameModeName.equalsIgnoreCase(ConfigFC1.ID)) {
+                gameConfigs.get(ConfigFC1.ID).getListProgressLeft().addAll(listCurrentProgress);
+                listCurrentProgress.clear();
+            }
         }
     }
 

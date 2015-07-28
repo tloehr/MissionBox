@@ -2,6 +2,8 @@ package interfaces;
 
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 
+import javax.swing.event.EventListenerList;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -10,7 +12,10 @@ import java.util.Properties;
  */
 public abstract class GameModeConfigs {
 
-    Properties parameters = new Properties();
+    protected Properties parameters = new Properties();
+
+    protected ArrayList<PercentageInterface> listProgressLeft = new ArrayList<>();;
+
 
 
     public abstract void setProperty(String key, String value);
@@ -19,4 +24,10 @@ public abstract class GameModeConfigs {
     public Properties getParameters() {
         return parameters;
     }
+
+
+    public ArrayList<PercentageInterface> getListProgressLeft() {
+        return listProgressLeft;
+    }
+
 }
