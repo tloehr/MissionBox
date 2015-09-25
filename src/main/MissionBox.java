@@ -3,8 +3,11 @@ package main;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import gamemodes.Farcry1Assault;
+import interfaces.MessageEvent;
+import interfaces.MessageListener;
 import org.apache.log4j.*;
 
+import java.awt.*;
 import java.io.File;
 
 
@@ -29,7 +32,21 @@ public class MissionBox {
         logger.addAppender(new ConsoleAppender(layout));
         logger.addAppender(new FileAppender(layout, System.getenv("user.home") + File.separator + "missionbox.log"));
 
+
+        if (Desktop.isDesktopSupported()) {
+
+            FrmMain frmMain = new FrmMain(new MessageListener() {
+                @Override
+                public void messageReceived(MessageEvent messageEvent) {
+                    logger.debug(messageEvent.getMessage());
+                }
+            });
+            frmMain.pack();
+            frmMain.setVisible(true);
+        }
         Farcry1Assault fc = new Farcry1Assault(GPIO);
+
+
 
 
 
