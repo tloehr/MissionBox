@@ -21,17 +21,13 @@ public class MissionBox {
     private static GpioController GPIO;
 
     public static final void main(String[] args) throws Exception {
-
-
-
-//        System.out.println("asdjkasdj jdkasj als");
         logLevel = Level.toLevel("DEBUG", Level.DEBUG);
+
         GPIO = GpioFactory.getInstance();
 
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
         logger.addAppender(new ConsoleAppender(layout));
         logger.addAppender(new FileAppender(layout, System.getenv("user.home") + File.separator + "missionbox.log"));
-
 
         if (Desktop.isDesktopSupported()) {
 
@@ -45,13 +41,5 @@ public class MissionBox {
             frmMain.setVisible(true);
         }
         Farcry1Assault fc = new Farcry1Assault(GPIO);
-
-
-
-
-
-
     }
-
-
 }

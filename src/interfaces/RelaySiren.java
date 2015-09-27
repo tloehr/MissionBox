@@ -1,6 +1,7 @@
 package interfaces;
 
 import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioPinDigital;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import org.apache.log4j.Logger;
@@ -18,7 +19,11 @@ public class RelaySiren implements PercentageInterface {
 
     public RelaySiren(ArrayList<GpioPinDigitalOutput> myRelais) {
         this.myRelais = myRelais;
+        for(GpioPinDigitalOutput pin : myRelais){
+            pin.low();
+        }
     }
+
 
     @Override
     public void setValue(BigDecimal percent) {
