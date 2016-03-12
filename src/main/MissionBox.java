@@ -23,7 +23,11 @@ public class MissionBox {
     public static final void main(String[] args) throws Exception {
         logLevel = Level.toLevel("DEBUG", Level.DEBUG);
 
-        GPIO = GpioFactory.getInstance();
+        try {
+            GPIO = GpioFactory.getInstance();
+        } catch (Exception e){
+            GPIO = null;
+        }
 
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
         logger.addAppender(new ConsoleAppender(layout));

@@ -30,17 +30,12 @@ public class Farcry1Assault implements GameModes {
     private int LCD_COLUMNS = 16;
     private int LCD_BITS = 4;
     private int TIME2RESPAWN = 20, MAXCYLCES = 200, SECONDS2CAPTURE = 60 * 10, someint = 24;
-    //    private final ArrayList<GpioPinDigitalOutput> myLEaDs = new ArrayList<>();
+
     private final ArrayList<GpioPinDigitalOutput> relayBoard = new ArrayList<>();
     private final ArrayList<GpioPinDigitalOutput> relaidLEDs = new ArrayList<>();
     private final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
 
-    //    private final LEDBar ledBar;
     private final RelaySiren relaisSirens, relaisLEDs;
-//    private final Relay relayStrobe, relayRocket;
-//    private final int lcdHandle;
-
-    // a CYCLE takes 50 millis
 
 
     private Farcry1AssaultThread farcryAssaultThread;
