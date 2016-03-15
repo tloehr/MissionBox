@@ -14,13 +14,13 @@ import java.util.ArrayList;
  */
 public class RelaySiren implements PercentageInterface {
 
-    private final ArrayList<GpioPinDigitalOutput> myRelais;
+    private final ArrayList<Relay> myRelais;
     private Logger logger = Logger.getLogger(this.getClass());
 
-    public RelaySiren(ArrayList<GpioPinDigitalOutput> myRelais) {
+    public RelaySiren(ArrayList<Relay> myRelais) {
         this.myRelais = myRelais;
-        for(GpioPinDigitalOutput pin : myRelais){
-            pin.low();
+        for(Relay pin : myRelais){
+            pin.setOn(false);
         }
     }
 
@@ -33,13 +33,13 @@ public class RelaySiren implements PercentageInterface {
 
         if (relaynum >= 100) {
             for (int relay = 0; relay < myRelais.size(); relay++) {
-                myRelais.get(relay).setState(false);
+                myRelais.get(relay).setOn(false);
             }
             myRelais.get(myRelais.size() - 1).setState(PinState.HIGH);
 
         } else {
             for (int relay = 0; relay < myRelais.size(); relay++) {
-                myRelais.get(relay).setState(percent.compareTo(BigDecimal.ZERO) > 0 && relaynum == relay);
+                myRelais.get(relay).setOn(percent.compareTo(BigDecimal.ZERO) > 0 && relaynum == relay);
             }
         }
 

@@ -1,0 +1,46 @@
+package interfaces;
+
+import com.pi4j.io.gpio.GpioPinDigitalInput;
+import com.pi4j.io.gpio.event.GpioPinListener;
+
+import javax.swing.*;
+import java.awt.event.ActionListener;
+
+/**
+ * Created by tloehr on 15.03.16.
+ */
+public class MyAbstractButton {
+
+    private final GpioPinDigitalInput gpio;
+    private final JButton btn;
+
+    public MyAbstractButton(GpioPinDigitalInput gpio) {
+        this.btn = null;
+        this.gpio = gpio;
+    }
+
+    public MyAbstractButton(JButton btn) {
+        this.btn = btn;
+        this.gpio = null;
+    }
+
+    public MyAbstractButton(GpioPinDigitalInput gpio, JButton btn) {
+        this.gpio = gpio;
+        this.btn = btn;
+    }
+
+
+    public void addListener(GpioPinListener var1) {
+        if (gpio == null) return;
+        gpio.addListener(var1);
+    }
+
+    public void addListener(ActionListener var1) {
+        btn.addActionListener(var1);
+    }
+
+    public boolean isHigh(){
+        return gpio != null ? gpio.isHigh() : false;
+    }
+
+}

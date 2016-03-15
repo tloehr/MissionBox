@@ -6,15 +6,19 @@ import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.i2c.I2CBus;
 import interfaces.MessageListener;
+import interfaces.MyAbstractButton;
+import interfaces.Relay;
 import interfaces.RelaySiren;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
+import main.FrmTest;
 import main.MissionBox;
 import misc.Tools;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -26,13 +30,10 @@ import java.util.HashMap;
  */
 public class Farcry1Assault implements GameModes {
     private final Logger logger = Logger.getLogger(getClass());
-    private int LCD_ROWS = 2;
-    private int LCD_COLUMNS = 16;
-    private int LCD_BITS = 4;
     private int TIME2RESPAWN = 20, MAXCYLCES = 200, SECONDS2CAPTURE = 60 * 10, someint = 24;
 
-    private final ArrayList<GpioPinDigitalOutput> relayBoard = new ArrayList<>();
-    private final ArrayList<GpioPinDigitalOutput> relaidLEDs = new ArrayList<>();
+    private final ArrayList<Relay> relayBoard = new ArrayList<>();
+    private final ArrayList<Relay> relaidLEDs = new ArrayList<>();
     private final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
 
     private final RelaySiren relaisSirens, relaisLEDs;
@@ -43,156 +44,86 @@ public class Farcry1Assault implements GameModes {
     private Music playSiren, playWinningSon;
     private Sound playWelcome, playRocket;
 
+    private void hwinit(GpioController GPIO) throws IOException {
 
-    public Farcry1Assault(GpioController GPIO) throws IOException {
+        if (GPIO == null) return;
+
+        MCP23017GpioProvider gpioProvider0 = GPIO == null ? null : new MCP23017GpioProvider(I2CBus.BUS_1, 0x20);
+        GpioPinDigitalOutput myOutputs[] = {
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A0, "mcp23017-01-A0", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A1, "mcp23017-01-A1", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A2, "mcp23017-01-A2", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A3, "mcp23017-01-A3", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A4, "mcp23017-01-A4", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A5, "mcp23017-01-A5", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A6, "mcp23017-01-A6", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A7, "mcp23017-01-A7", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B0, "mcp23017-01-B0", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B1, "mcp23017-01-B1", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B2, "mcp23017-01-B2", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B3, "mcp23017-01-B3", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B4, "mcp23017-01-B4", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B5, "mcp23017-01-B5", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B6, "mcp23017-01-B6", PinState.LOW),
+                GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B7, "mcp23017-01-B7", PinState.LOW)
+        };
+
+        for (int ledON = 0; ledON < myOutputs.length; ledON++) {
+            mapGPIO.put(myOutputs[ledON].getName(), myOutputs[ledON]);
+        }
+    }
+
+    public Farcry1Assault(GpioController GPIO, FrmTest frmTest) throws IOException {
+
+        hwinit(GPIO);
+
         logger.setLevel(MissionBox.logLevel);
 
+        final GpioPinDigitalInput ioRed = GPIO == null ? null : GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
+        MyAbstractButton btnRed = new MyAbstractButton(ioRed, frmTest.getBtnRed());
 
-        final GpioPinDigitalInput btnRed = GPIO == null ? null : GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
-        final GpioPinDigitalInput btnGreen = GPIO == null ? null :GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
-        final GpioPinDigitalInput btnGameStartStop = GPIO == null ? null :GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
-        final GpioPinDigitalInput btnMisc = GPIO == null ? null :GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
+        final GpioPinDigitalInput ioGreen = GPIO == null ? null : GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
+        MyAbstractButton btnGreen = new MyAbstractButton(ioGreen, frmTest.getBtnRed());
 
-        final MCP23017GpioProvider gpioProvider0 = GPIO == null ? null :new MCP23017GpioProvider(I2CBus.BUS_1, 0x20);
+        final GpioPinDigitalInput ioGameStartStop = GPIO == null ? null : GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
+        MyAbstractButton btnGameStartStop = new MyAbstractButton(ioGameStartStop, frmTest.getBtn1());
+
+        final GpioPinDigitalInput ioMisc = GPIO == null ? null : GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
+        MyAbstractButton btnMisc = new MyAbstractButton(ioMisc, frmTest.getBtn2());
+
+
 //        final MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, 0x21);
 //        final MCP23017GpioProvider gpioProvider2 = new MCP23017GpioProvider(I2CBus.BUS_1, 0x22);
 //        final MCP23017GpioProvider gpioProvider3 = new MCP23017GpioProvider(I2CBus.BUS_1, 0x23);
 
 
-            int NUMLED4PROGRESS = 40;
+        final GpioPinDigitalOutput ioLedGreen = mapGPIO.get("mcp23017-01-A0");
+        final GpioPinDigitalOutput ioLedRed = mapGPIO.get("mcp23017-01-A1");
+        final GpioPinDigitalOutput ioLedBarGreen = mapGPIO.get("mcp23017-01-A2");
+        final GpioPinDigitalOutput ioLedBarYellow = mapGPIO.get("mcp23017-01-A3");
+        final GpioPinDigitalOutput ioLedBarRed = mapGPIO.get("mcp23017-01-A4");
 
-            GpioPinDigitalOutput myOutputs[] = {
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A0, "mcp23017-01-A0", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A1, "mcp23017-01-A1", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A2, "mcp23017-01-A2", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A3, "mcp23017-01-A3", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A4, "mcp23017-01-A4", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A5, "mcp23017-01-A5", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A6, "mcp23017-01-A6", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A7, "mcp23017-01-A7", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B0, "mcp23017-01-B0", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B1, "mcp23017-01-B1", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B2, "mcp23017-01-B2", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B3, "mcp23017-01-B3", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B4, "mcp23017-01-B4", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B5, "mcp23017-01-B5", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B6, "mcp23017-01-B6", PinState.LOW),
-                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B7, "mcp23017-01-B7", PinState.LOW)
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A0, "mcp23017-02-A0", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A1, "mcp23017-02-A1", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A2, "mcp23017-02-A2", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A3, "mcp23017-02-A3", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A4, "mcp23017-02-A4", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A5, "mcp23017-02-A5", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A6, "mcp23017-02-A6", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A7, "mcp23017-02-A7", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B0, "mcp23017-02-B0", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B1, "mcp23017-02-B1", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B2, "mcp23017-02-B2", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B3, "mcp23017-02-B3", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B4, "mcp23017-02-B4", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B5, "mcp23017-02-B5", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B6, "mcp23017-02-B6", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_B7, "mcp23017-02-B7", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A0, "mcp23017-03-A0", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A1, "mcp23017-03-A1", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A2, "mcp23017-03-A2", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A3, "mcp23017-03-A3", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A4, "mcp23017-03-A4", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A5, "mcp23017-03-A5", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A6, "mcp23017-03-A6", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_A7, "mcp23017-03-A7", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B0, "mcp23017-03-B0", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B1, "mcp23017-03-B1", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B2, "mcp23017-03-B2", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B3, "mcp23017-03-B3", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B4, "mcp23017-03-B4", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B5, "mcp23017-03-B5", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B6, "mcp23017-03-B6", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider2, MCP23017Pin.GPIO_B7, "mcp23017-03-B7", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_A0, "mcp23017-04-A0", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_A1, "mcp23017-04-A1", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_A2, "mcp23017-04-A2", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_A3, "mcp23017-04-A3", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_A4, "mcp23017-04-A4", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_A5, "mcp23017-04-A5", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_A6, "mcp23017-04-A6", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_A7, "mcp23017-04-A7", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_B0, "mcp23017-04-B0", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_B1, "mcp23017-04-B1", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_B2, "mcp23017-04-B2", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_B3, "mcp23017-04-B3", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_B4, "mcp23017-04-B4", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_B5, "mcp23017-04-B5", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_B6, "mcp23017-04-B6", PinState.LOW),
-//                GPIO.provisionDigitalOutputPin(gpioProvider3, MCP23017Pin.GPIO_B7, "mcp23017-04-B7", PinState.LOW)
-            };
+        Relay ledGreen = new Relay(ioLedGreen);
+        Relay ledRed = new Relay(ioLedRed);
+        Relay ledBarGreen = new Relay(ioLedBarGreen);
+        Relay ledBarYellow = new Relay(ioLedBarYellow);
+        Relay ledBarRed = new Relay(ioLedBarRed);
 
+        relayBoard.add(new Relay(mapGPIO.containsKey("mcp23017-01-B0") ? mapGPIO.get("mcp23017-01-B0") : null));
+        relayBoard.add(new Relay(mapGPIO.containsKey("mcp23017-01-B1") ? mapGPIO.get("mcp23017-01-B1") : null));
+        relayBoard.add(new Relay(mapGPIO.containsKey("mcp23017-01-B2") ? mapGPIO.get("mcp23017-01-B2") : null));
+        relayBoard.add(new Relay(mapGPIO.containsKey("mcp23017-01-B3") ? mapGPIO.get("mcp23017-01-B3") : null));
+        relayBoard.add(new Relay(mapGPIO.containsKey("mcp23017-01-B4") ? mapGPIO.get("mcp23017-01-B4") : null));
+        relayBoard.add(new Relay(mapGPIO.containsKey("mcp23017-01-B5") ? mapGPIO.get("mcp23017-01-B5") : null));
+        relayBoard.add(new Relay(mapGPIO.containsKey("mcp23017-01-B6") ? mapGPIO.get("mcp23017-01-B6") : null));
+        relayBoard.add(new Relay(mapGPIO.containsKey("mcp23017-01-B7") ? mapGPIO.get("mcp23017-01-B7") : null));
 
-            for (int ledON = 0; ledON < myOutputs.length; ledON++) {
-//            myLEDs.add(myOutputs[ledON]);
-                mapGPIO.put(myOutputs[ledON].getName(), myOutputs[ledON]);
-            }
+        relaidLEDs.add(ledBarGreen);
+        relaidLEDs.add(ledBarYellow);
+        relaidLEDs.add(ledBarRed);
 
-            final GpioPinDigitalOutput ledGreen = mapGPIO.get("mcp23017-01-A0");
-            final GpioPinDigitalOutput ledRed = mapGPIO.get("mcp23017-01-A1");
-            final GpioPinDigitalOutput ledBarGreen = mapGPIO.get("mcp23017-01-A2");
-            final GpioPinDigitalOutput ledBarYellow = mapGPIO.get("mcp23017-01-A3");
-            final GpioPinDigitalOutput ledBarRed = mapGPIO.get("mcp23017-01-A4");
-
-            relayBoard.add(mapGPIO.get("mcp23017-01-B0"));
-            relayBoard.add(mapGPIO.get("mcp23017-01-B1"));
-            relayBoard.add(mapGPIO.get("mcp23017-01-B2"));
-            relayBoard.add(mapGPIO.get("mcp23017-01-B3"));
-            relayBoard.add(mapGPIO.get("mcp23017-01-B4"));
-            relayBoard.add(mapGPIO.get("mcp23017-01-B5"));
-            relayBoard.add(mapGPIO.get("mcp23017-01-B6"));
-            relayBoard.add(mapGPIO.get("mcp23017-01-B7"));
-
-
-
-
-            relaidLEDs.add(ledBarGreen);
-            relaidLEDs.add(ledBarYellow);
-            relaidLEDs.add(ledBarRed);
-
-//        mySirens.add(myOutputs[40]);
-//        mySirens.add(myOutputs[41]);
-//        mySirens.add(myOutputs[42]);
-
-//        relayRocket = new Relay(GPIO, myOutputs[43]);
-//        relayStrobe = new Relay(GPIO, myOutputs[47]);
-
-
-//        this.ledBar = new LEDBar(GPIO, myLEDs);
-
-
-            this.relaisLEDs = new RelaySiren(relaidLEDs);
-            this.relaisSirens = new RelaySiren(relayBoard);
-
-        // initialize LCD
-        // the wiring is according to the examples from https://kofler.info/buecher/raspberry-pi/
-        // LCD data bit 8 (set to 0 if using 4 bit communication)
-//        lcdHandle = Lcd.lcdInit(LCD_ROWS,     // number of row supported by LCD
-//                LCD_COLUMNS,  // number of columns supported by LCD
-//                LCD_BITS,     // number of bits used to communicate to LCD
-//                11,           // LCD RS pin
-//                10,           // LCD strobe pin
-//                6,            // LCD data bit 1
-//                5,            // LCD data bit 2
-//                4,            // LCD data bit 3
-//                1,            // LCD data bit 4
-//                0,            // LCD data bit 5 (set to 0 if using 4 bit communication)
-//                0,            // LCD data bit 6 (set to 0 if using 4 bit communication)
-//                0,            // LCD data bit 7 (set to 0 if using 4 bit communication)
-//                0);
-
-
-        // verify initialization
-//        if (lcdHandle == -1) {
-//            logger.fatal(" ==>> LCD INIT FAILED");
-//            return;
-//        }
+        this.relaisLEDs = new RelaySiren(relaidLEDs);
+        this.relaisSirens = new RelaySiren(relayBoard);
 
         TinySound.init();
 
@@ -201,14 +132,7 @@ public class Farcry1Assault implements GameModes {
         playWelcome = TinySound.loadSound(new File(Tools.SND_WELCOME));
         playRocket = TinySound.loadSound(new File(Tools.SND_FLARE));
 
-//        Lcd.lcdClear(lcdHandle);
-
         MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
-
-//        MessageListener gameTimeListener = messageEvent -> {
-//            Lcd.lcdPosition(lcdHandle, 0, 1);
-//            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(messageEvent.getMessage().toString(), LCD_COLUMNS));
-//        };
 
         MessageListener gameTimeListener = messageEvent -> {
             logger.info("GameTime: " + messageEvent.getMessage());
@@ -217,15 +141,11 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener percentageListener = messageEvent -> {
             logger.debug(messageEvent.getPercentage());
-//            ledBar.setValue(messageEvent.getPercentage());
             relaisSirens.setValue(messageEvent.getPercentage());
         };
 
         MessageListener gameModeListener = messageEvent -> {
             logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
-//            Lcd.lcdHome(lcdHandle);
-//            Lcd.lcdPosition(lcdHandle, 0, 0);
-//            Lcd.lcdPuts(lcdHandle, StringUtil.padCenter(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()], LCD_COLUMNS));
 
             if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
                 playSiren.play(true);
@@ -274,7 +194,6 @@ public class Farcry1Assault implements GameModes {
                 playSiren.stop();
                 playRocket.stop();
                 playWinningSon.play(false);
-//                ledBar.setCylon();
             }
         };
 
@@ -287,10 +206,26 @@ public class Farcry1Assault implements GameModes {
             }
         });
 
+        btnRed.addListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logger.debug("RedButton pressed");
+                farcryAssaultThread.setFlag(true);
+            }
+        });
+
         btnGreen.addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
                 // If both buttons are pressed, the red one wins.
                 if (btnRed.isHigh()) return;
+                logger.debug("GreenButton pressed");
+                farcryAssaultThread.setFlag(false);
+            }
+        });
+
+        btnGreen.addListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 logger.debug("GreenButton pressed");
                 farcryAssaultThread.setFlag(false);
             }
@@ -307,6 +242,18 @@ public class Farcry1Assault implements GameModes {
             }
         });
 
+        btnGameStartStop.addListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logger.debug("btnGameStartStop");
+                if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
+                    farcryAssaultThread.startGame();
+                } else {
+                    farcryAssaultThread.restartGame();
+                }
+            }
+        });
+
         btnMisc.addListener((GpioPinListenerDigital) event -> {
 
 
@@ -314,50 +261,45 @@ public class Farcry1Assault implements GameModes {
 
 
             quitGame();
+        });
 
-
-//            if (event.getState() == PinState.HIGH) {
-//                logger.debug("btnMisc");
-//
-//                GPIO.setState(!GPIO.getState(myOutputs[someint]).isHigh(), myOutputs[someint]);
-//                someint++;
-//                if (someint >= myOutputs.length) someint = 24;
-//
-//                ledBar.setSimple();
-//
-//            }
+        btnMisc.addListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                quitGame();
+            }
         });
 
         farcryAssaultThread.run();
         System.out.println("<--Pi4J--> Wiring Pi LCD test program");
     }
 
-    void fadeout(Music music) {
-        SwingWorker worker = new SwingWorker() {
-            double volume;
-
-            @Override
-            protected Object doInBackground() throws Exception {
-                volume = music.getVolume();
-
-                for (double vol = volume; vol >= 0d; vol = vol - 0.01d) {
-                    logger.debug(vol);
-                    music.setVolume(vol);
-                    Thread.sleep(50);
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                super.done();
-                music.stop();
-                music.setVolume(volume);
-            }
-        };
-        worker.run();
-    }
+//    void fadeout(Music music) {
+//        SwingWorker worker = new SwingWorker() {
+//            double volume;
+//
+//            @Override
+//            protected Object doInBackground() throws Exception {
+//                volume = music.getVolume();
+//
+//                for (double vol = volume; vol >= 0d; vol = vol - 0.01d) {
+//                    logger.debug(vol);
+//                    music.setVolume(vol);
+//                    Thread.sleep(50);
+//                }
+//
+//                return null;
+//            }
+//
+//            @Override
+//            protected void done() {
+//                super.done();
+//                music.stop();
+//                music.setVolume(volume);
+//            }
+//        };
+//        worker.run();
+//    }
 
     @Override
     public void quitGame() {

@@ -1,41 +1,54 @@
 package interfaces;
 
-import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
+import org.apache.log4j.Logger;
 
 /**
  * Created by tloehr on 07.06.15.
  */
 public class Relay implements OnOffInterface {
-
-
-    private final GpioController GPIO;
+    private final Logger logger = Logger.getLogger(getClass());
     private final GpioPinDigitalOutput pin;
 
-    public Relay(GpioController GPIO, GpioPinDigitalOutput pin) {
-        this.GPIO = GPIO;
+    public Relay(GpioPinDigitalOutput pin) {
         this.pin = pin;
+        if (pin == null) return;
         pin.setState(PinState.LOW);
     }
 
     @Override
     public void setOn(boolean on) {
+        logger.debug("relay set to " + (on ? "ON" : "OFF"));
+        if (pin == null) return;
         pin.setState(on);
     }
 
-
-    public void setOn() {
-        pin.setState(true);
+    public void setState(PinState pinState) {
+        if (pinState.equals(PinState.HIGH)) {
+            setOn(true);
+        }
+        if (pinState.equals(PinState.LOW)) {
+            setOn(false);
+        }
     }
 
-    public void setOff() {
-        pin.setState(false);
+    public void blink(long l) {
+        logger.debug(String.format("blinking at %d ms", l));
+        if (pin == null) return;
+        pin.blink(l);
     }
 
+    public void blink(long l, PinState pinState) {
+        logger.debug(String.format("blinking at %d ms", l));
+        if (pin == null) return;
+        pin.blink(l, pinState);
+    }
 
     @Override
     public void toggle() {
+        logger.debug("relay toggle");
+        if (pin == null) return;
         pin.setState(!pin.isState(PinState.HIGH));
     }
 }
