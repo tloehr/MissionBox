@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 /**
  * Created by tloehr on 15.03.16.
  */
-public class MyAbstractLED {
+public class MyAbstractLED  {
     private final Logger logger = Logger.getLogger(getClass());
     GpioPinDigitalOutput led;
 

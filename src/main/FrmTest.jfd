@@ -5,47 +5,10 @@ new FormModel {
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
+			"defaultCloseOperation": 3
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 				name: "dialogPane"
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
-				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "pref:grow, labelcompgap, default, labelcompgap, default:grow"
-					"$rowSpecs": "fill:default:grow, linegap, default"
-				} ) {
-					name: "contentPanel"
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRed"
-						"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"background": new java.awt.Color( 255, 0, 51, 255 )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 1
-						"gridY": 1
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnGreen"
-						"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"background": new java.awt.Color( 0, 255, 51, 255 )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 5
-						"gridY": 1
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btn1"
-						"text": "1"
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 1
-						"gridY": 3
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btn2"
-						"text": "2"
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 5
-						"gridY": 3
-					} )
-				}, new FormLayoutConstraints( class java.lang.String ) {
-					"value": "Center"
-				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
 					"$columnSpecs": "0:1.0, 80, 80"
 					"$rowSpecs": "0"
@@ -55,28 +18,205 @@ new FormModel {
 					name: "buttonBar"
 					"border": new javax.swing.border.EmptyBorder( 12, 0, 0, 0 )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "okButton"
-						"text": "OK"
+						name: "btn1"
+						"text": "Start/Stop"
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 						"gridx": 1
-						"gridy": 0
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "cancelButton"
-						"text": "Cancel"
+						name: "btn2"
+						"text": "QUIT"
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 						"gridx": 2
-						"gridy": 0
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "South"
+				} )
+				add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+					name: "tabbedPane1"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "pref:grow, labelcompgap, default, labelcompgap, center:default:grow"
+						"$rowSpecs": "fill:default:grow, linegap, default"
+					} ) {
+						name: "contentPanel"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnRed"
+							"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/red-led-off.png" )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 1
+							"gridY": 1
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.swingx.VerticalLayout ) {
+							"gap": 1
+						} ) {
+							name: "panel1"
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl1"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": &SwingIcon0 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkgreen.png" )
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl2"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon0
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl3"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon0
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl4"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon0
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl5"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon0
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl6"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkorange.png" )
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl7"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": &SwingIcon1 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkorange.png" )
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl8"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon1
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl9"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon1
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl10"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon1
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl11"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": &SwingIcon2 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkred.png" )
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl12"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon2
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl13"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon2
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl14"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon2
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "lbl15"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": #SwingIcon2
+							} )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnGreen"
+							"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/green-led-off.png" )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 5
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "lblMessage"
+							"text": "text"
+							"font": new java.awt.Font( "Dialog", 0, 18 )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 3
+							"gridWidth": 3
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "lblTimer"
+							"text": "text"
+							"font": new java.awt.Font( "Dialog", 1, 18 )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 3
+							"gridX": 5
+						} )
+					}, new FormLayoutConstraints( null ) {
+						"title": "Game"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default, labelcompgap, default:grow"
+						"$rowSpecs": "default, linegap, default, linegap, default"
+					} ) {
+						name: "panel2"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label1"
+							"text": "text"
+							"font": &Font0 new java.awt.Font( "Dialog", 0, 26 )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 1
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "textField1"
+							"font": #Font0
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label2"
+							"text": "text"
+							"font": #Font0
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 3
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "textField2"
+							"font": #Font0
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 3
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label3"
+							"text": "text"
+							"font": #Font0
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 5
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "textField3"
+							"font": #Font0
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 5
+						} )
+					}, new FormLayoutConstraints( null ) {
+						"title": "Settings"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "Center"
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 400, 300 )
+			"size": new java.awt.Dimension( 860, 510 )
 		} )
 	}
 }

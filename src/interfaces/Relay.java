@@ -17,6 +17,8 @@ public class Relay implements OnOffInterface {
         pin.setState(PinState.LOW);
     }
 
+
+
     @Override
     public void setOn(boolean on) {
         logger.debug("relay set to " + (on ? "ON" : "OFF"));

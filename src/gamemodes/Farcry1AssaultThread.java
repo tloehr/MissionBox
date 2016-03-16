@@ -13,19 +13,24 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by tloehr on 25.04.15.
+ * Dieser Thread läuft wie ein Motor in Zyklen ab. Jeder Zyklus dauert <b>millispercycle</b> millisekunden.
+ * Nach <b>maxcycles</b> Zyklen ist das Spiel vorbei. <b>seconds2capture</b> ist die Anzahl der Sekunden, die es braucht, bis die Flagge genommen wurde. (Wenn sie vorher nicht deaktiviert wurde).
+ *
  */
 public class Farcry1AssaultThread implements Runnable, GameThreads {
     final Logger LOGGER = Logger.getLogger(getClass());
     private final Thread thread;
-    private final int millispercycle;
-    private final int cycledivider;
+
     private BigDecimal cycle;
     private final int seconds2capture;
     private BigDecimal MAXCYCLES;
     private int gameState, previousGameState;
     private long starttime = 0, endtime = 0, afterglow = 0, agseconds = 20, rockettime = 0, rocketseconds = 7;
-    private long threadcycles = 0; // makes sure that the time event is only triggered once a second
+
+    // makes sure that the time event is only triggered once a second
+    private long threadcycles = 0;
+    private final BigDecimal millispercycle = new BigDecimal(5);
+    private final int cycledivider;
 
 
     public static final int GAME_NON_EXISTENT = -1;
@@ -45,11 +50,14 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private final EventListenerList messageList, gameTimerList, percentageList, gameModeList;
 
 
-    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, int maxcycles, int seconds2capture, int millispercycle) {
+    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, int maxminutes4game, int seconds2capture) {
         super();
-        this.millispercycle = millispercycle;
-        cycledivider = 1000 / millispercycle;
+
+        // der cycledivider wird nur benutzt, damit nicht so oft die Zeitausgaben erfolgen.
+        cycledivider = new BigDecimal(1000).divide(millispercycle, BigDecimal.ROUND_HALF_UP).intValue();
+
         thread = new Thread(this);
+        this.seconds2capture = seconds2capture;
 
         LOGGER.setLevel(MissionBox.logLevel);
 
@@ -63,11 +71,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         percentageList.add(MessageListener.class, percentageListener);
         gameModeList.add(MessageListener.class, gameModeListener);
 
-        this.seconds2capture = seconds2capture;
-
         previousGameState = GAME_NON_EXISTENT;
 
-        MAXCYCLES = new BigDecimal(maxcycles);
+        // die Maximalen-Zyklen für einen Spieldurchlauf ergeben sich aus der maximalen Anzahl der Minuten für ein Spiel.
+        MAXCYCLES = new BigDecimal(maxminutes4game).multiply(new BigDecimal(60)).multiply(new BigDecimal(1000)).divide(millispercycle, BigDecimal.ROUND_HALF_UP);
         resetCycle();
 
         setGameState(GAME_PRE_GAME);
@@ -89,7 +96,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 case GAME_FLAG_ACTIVE: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.active"));
                     starttime = System.currentTimeMillis();
-                    endtime = starttime + (seconds2capture * 1000);
+                    endtime = starttime + (seconds2capture * 1000); // die endtime ist der moment des drückens + die sekunden bis zum capture (in millis umgerechnet)
                     setGameState(GAME_FLAG_COLD);
                     break;
                 }
@@ -100,7 +107,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 case GAME_ROCKET_LAUNCHED: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.defended"));
                     endtime = System.currentTimeMillis();
-                    rockettime = endtime + (rocketseconds * 1000);
+                    rockettime = endtime + (rocketseconds * 1000); // hier wird noch kurz gewartet bis der raketensound abgespielt ist. danach wird gehts
                     afterglow = rockettime + (agseconds * 1000);
                     break;
                 }
@@ -140,6 +147,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         this.cycle = cycle;
         BigDecimal progress = cycle.divide(MAXCYCLES, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         fireMessage(percentageList, new MessageEvent(this, progress));
+    }
+
+    private boolean timeIsUp(){
+        return cycle.compareTo(MAXCYCLES) >= 0;
     }
 
     @Override
@@ -197,12 +208,15 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         }
     }
 
+
+    // Die bewertung der Spielsituation erfolgt in Zyklen.
     public void run() {
         while (!thread.isInterrupted()) {
 
             threadcycles++;
 
-
+            // Alle cycledivider durchgänge wird eine Nachricht bzgl. der Gametime geschickt. Sonst sind das zu viele unsinnige nachrichten.
+            // cycledivider = 1000 / millispercycle
             if (threadcycles % cycledivider == 0) {
                 String dateFormatted = "00:00";
                 if (endtime > System.currentTimeMillis()) {
@@ -215,7 +229,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             try {
 
-                if (cycle.compareTo(MAXCYCLES) >= 0) {
+                if (timeIsUp()) { // and the flag was hot, the rocket is launched.
                     if (gameState == GAME_FLAG_HOT) {
                         setGameState(GAME_ROCKET_LAUNCHED);
                     }
@@ -232,18 +246,20 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
 
                 if (gameState == GAME_ROCKET_LAUNCHED) {
+                    // hier wird auf FlagTaken umgesschaltet, sobald die Rakete abgespielt wurde
                     if (rockettime < System.currentTimeMillis()) {
                         setGameState(GAME_OUTCOME_FLAG_TAKEN);
                     }
                 }
 
                 if (gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED) {
+                    // nach dem AfterGlow (wo musik gespielt wird), wird das Spiel auf GameOver gesetzt
                     if (afterglow < System.currentTimeMillis()) {
                         setGameState(GAME_OVER);
                     }
                 }
 
-                Thread.sleep(millispercycle);
+                Thread.sleep(millispercycle.longValue());
             } catch (InterruptedException ie) {
                 LOGGER.debug(this + " interrupted!");
             }

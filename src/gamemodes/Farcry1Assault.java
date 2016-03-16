@@ -30,7 +30,14 @@ import java.util.HashMap;
  */
 public class Farcry1Assault implements GameModes {
     private final Logger logger = Logger.getLogger(getClass());
-    private int TIME2RESPAWN = 20, MAXCYLCES = 200, SECONDS2CAPTURE = 60 * 10, someint = 24;
+
+    // the game is organized in cycles. In a cycle the game state is checked and it is decided if the game was won or not.
+    private final int MILLISPERCYCLE = 50;
+
+
+    private final int MAXCYLCES = 200;
+
+    private int SECONDS2CAPTURE = 60 * 10;
 
     private final ArrayList<Relay> relayBoard = new ArrayList<>();
     private final ArrayList<Relay> relaidLEDs = new ArrayList<>();
@@ -83,7 +90,7 @@ public class Farcry1Assault implements GameModes {
         MyAbstractButton btnRed = new MyAbstractButton(ioRed, frmTest.getBtnRed());
 
         final GpioPinDigitalInput ioGreen = GPIO == null ? null : GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnGreen = new MyAbstractButton(ioGreen, frmTest.getBtnRed());
+        MyAbstractButton btnGreen = new MyAbstractButton(ioGreen, frmTest.getBtnGreen());
 
         final GpioPinDigitalInput ioGameStartStop = GPIO == null ? null : GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
         MyAbstractButton btnGameStartStop = new MyAbstractButton(ioGameStartStop, frmTest.getBtn1());
@@ -135,9 +142,9 @@ public class Farcry1Assault implements GameModes {
         MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
         MessageListener gameTimeListener = messageEvent -> {
-            logger.info("GameTime: " + messageEvent.getMessage());
+            logger.debug("GameTime: " + messageEvent.getMessage());
+            frmTest.setTimer( messageEvent.getMessage().toString());
         };
-
 
         MessageListener percentageListener = messageEvent -> {
             logger.debug(messageEvent.getPercentage());
@@ -146,6 +153,7 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener gameModeListener = messageEvent -> {
             logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
+            frmTest.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
 
             if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_HOT)) {
                 playSiren.play(true);
@@ -197,7 +205,7 @@ public class Farcry1Assault implements GameModes {
             }
         };
 
-        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE, 50);
+        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE);
 
         btnRed.addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
@@ -271,7 +279,7 @@ public class Farcry1Assault implements GameModes {
         });
 
         farcryAssaultThread.run();
-        System.out.println("<--Pi4J--> Wiring Pi LCD test program");
+
     }
 
 //    void fadeout(Music music) {

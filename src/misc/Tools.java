@@ -1,16 +1,16 @@
 package misc;
 
-import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.PinState;
-import com.pi4j.io.i2c.I2CBus;
+import org.jdesktop.core.animation.timing.Animator;
+import org.jdesktop.core.animation.timing.TimingSource;
+import org.jdesktop.core.animation.timing.TimingTargetAdapter;
+import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
-import java.io.IOException;
-import java.math.BigDecimal;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by tloehr on 01.05.15.
@@ -86,37 +86,159 @@ public class Tools {
     }
 
 
-//    public GpioPinDigitalOutput[] getProgressTo16LCDs(BigDecimal percent, GpioController gpio) throws IOException {
-//        final MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("20", 16));
-//        final MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("21", 16));
-//        final MCP23017GpioProvider gpioProvider2 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.parseInt("22", 16));
-//
-//        int barrier = new BigDecimal(16).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent).intValue();
-//
-//
-//
-//
-//
-//
-//        GpioPinDigitalOutput myOutputs[] = {
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A0, "MyOutput-A0", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A1, "MyOutput-A1", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A2, "MyOutput-A2", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A3, "MyOutput-A3", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A4, "MyOutput-A4", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A5, "MyOutput-A5", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A6, "MyOutput-A6", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A7, "MyOutput-A7", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B0, "MyOutput-B0", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B1, "MyOutput-B1", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B2, "MyOutput-B2", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B3, "MyOutput-B3", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B4, "MyOutput-B4", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B5, "MyOutput-B5", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B6, "MyOutput-B6", PinState.LOW),
-//                gpio.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B7, "MyOutput-B7", PinState.LOW)
-//        };
-//        return myOutputs;
-//    }
+    public static Animator flashBackground(Animator animator, final JComponent component, final Color flashcolor, int repeatTimes) {
+        if (component == null)
+            return null; // this prevents NULL pointer exceptions when quickly switching the residents after the entry
+        final Color originalColor = component.getBackground();
+
+
+        if (animator == null || !animator.isRunning()) {
+
+            final TimingSource ts = new SwingTimerTimingSource();
+            final boolean wasOpaque = component.isOpaque();
+            Animator.setDefaultTimingSource(ts);
+            ts.init();
+            component.setOpaque(true);
+
+
+            animator = new Animator.Builder().setDuration(750, TimeUnit.MILLISECONDS).setRepeatCount(repeatTimes).setRepeatBehavior(Animator.RepeatBehavior.REVERSE).setStartDirection(Animator.Direction.FORWARD).addTarget(new TimingTargetAdapter() {
+                @Override
+                public void begin(Animator source) {
+                }
+
+                @Override
+                public void timingEvent(Animator animator, final double fraction) {
+                    SwingUtilities.invokeLater(() -> {
+                        component.setBackground(interpolateColor(originalColor, flashcolor, fraction));
+                        component.repaint();
+                    });
+                }
+
+                @Override
+                public void end(Animator source) {
+                    component.setOpaque(wasOpaque);
+                    component.repaint();
+                }
+            }).build();
+        } else {
+            animator.stop();
+        }
+        animator.start();
+
+        return animator;
+    }
+
+    /**
+     * @param distance a double between 0.0f and 1.0f to express the distance between the source and destination color
+     *                 see http://stackoverflow.com/questions/27532/generating-gradients-programatically
+     * @return
+     */
+    public static Color interpolateColor(Color source, Color destination, double distance) {
+        int red = (int) (destination.getRed() * distance + source.getRed() * (1 - distance));
+        int green = (int) (destination.getGreen() * distance + source.getGreen() * (1 - distance));
+        int blue = (int) (destination.getBlue() * distance + source.getBlue() * (1 - distance));
+        return new Color(red, green, blue);
+    }
+
+    public static void flashBackground(final JComponent component, final Color flashcolor, int repeatTimes) {
+        // https://github.com/tloehr/Offene-Pflege.de/issues/37
+        if (component == null)
+            return; // this prevents NULL pointer exceptions when quickly switching the residents after the entry
+        flashBackground(component, flashcolor, component.getBackground(), repeatTimes);
+    }
+
+    public static void flashBackground(final JComponent component, final Color flashcolor, final Color originalColor, int repeatTimes) {
+        if (component == null)
+            return; // this prevents NULL pointer exceptions when quickly switching the residents after the entry
+        //            final Color originalColor = component.getBackground();
+        final TimingSource ts = new SwingTimerTimingSource();
+        final boolean wasOpaque = component.isOpaque();
+        Animator.setDefaultTimingSource(ts);
+        ts.init();
+        component.setOpaque(true);
+        Animator animator = new Animator.Builder().setDuration(750, TimeUnit.MILLISECONDS).setRepeatCount(repeatTimes).setRepeatBehavior(Animator.RepeatBehavior.REVERSE).setStartDirection(Animator.Direction.FORWARD).addTarget(new TimingTargetAdapter() {
+            @Override
+            public void begin(Animator source) {
+            }
+
+            @Override
+            public void timingEvent(Animator animator, final double fraction) {
+                SwingUtilities.invokeLater(() -> {
+                    component.setBackground(interpolateColor(originalColor, flashcolor, fraction));
+                    component.repaint();
+                });
+            }
+
+            @Override
+            public void end(Animator source) {
+                component.setOpaque(wasOpaque);
+                component.repaint();
+            }
+        }).build();
+        animator.start();
+    }
+
+    public static void flashIcon(final AbstractButton btn, final Icon icon) {
+        flashIcon(btn, icon, 2);
+    }
+
+    public static void flashIcon(final AbstractButton btn, final Icon icon, int repeat) {
+
+        if (btn == null)
+            return; // this prevents NULL pointer exceptions when quickly switching the residents after the entry
+
+        int textposition = btn.getHorizontalTextPosition();
+        btn.setHorizontalTextPosition(SwingConstants.LEADING);
+
+        final Icon originalIcon = btn.getIcon();
+        final TimingSource ts = new SwingTimerTimingSource();
+        Animator.setDefaultTimingSource(ts);
+        ts.init();
+
+        Animator animator = new Animator.Builder().setDuration(750, TimeUnit.MILLISECONDS).setRepeatCount(repeat).setRepeatBehavior(Animator.RepeatBehavior.REVERSE).setStartDirection(Animator.Direction.FORWARD).addTarget(new TimingTargetAdapter() {
+            Animator.Direction dir;
+
+            public void begin(Animator source) {
+                dir = null;
+            }
+
+            @Override
+            public void timingEvent(Animator animator, final double fraction) {
+
+                if (dir == null || !dir.equals(animator.getCurrentDirection())) {
+
+                    dir = animator.getCurrentDirection();
+
+                    SwingUtilities.invokeLater(() -> {
+
+                        if (animator.getCurrentDirection().equals(Animator.Direction.FORWARD)) {
+                            btn.setIcon(icon);
+                        } else {
+                            btn.setIcon(originalIcon);
+                        }
+
+                        //                    Logger.getLogger(getClass()).debug(fraction);
+                        //                    btn.setIcon();
+                        //                    component.setBackground(interpolateColor(originalColor, flashcolor, fraction));
+                        btn.revalidate();
+                        btn.repaint();
+                    });
+                }
+            }
+
+            @Override
+            public void end(Animator source) {
+                SwingUtilities.invokeLater(() -> {
+                    btn.setHorizontalTextPosition(textposition);
+                    btn.setIcon(originalIcon);
+                    btn.repaint();
+                });
+            }
+        }).build();
+        animator.start();
+
+
+    }
+
 
 }
