@@ -34,6 +34,7 @@ new FormModel {
 				} )
 				add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 					name: "tabbedPane1"
+					"font": new java.awt.Font( "Dialog", 1, 24 )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 						"$columnSpecs": "pref:grow, labelcompgap, default, labelcompgap, center:default:grow"
 						"$rowSpecs": "fill:default:grow, linegap, default"
@@ -158,20 +159,20 @@ new FormModel {
 						"title": "Game"
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-						"$columnSpecs": "default, labelcompgap, default:grow"
-						"$rowSpecs": "default, linegap, default, linegap, default"
+						"$columnSpecs": "default, 9dlu, default:grow"
+						"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default"
 					} ) {
 						name: "panel2"
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label1"
-							"text": "text"
+							"text": "Time to capture the flag (seconds)"
 							"font": &Font0 new java.awt.Font( "Dialog", 0, 26 )
 						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 							"gridX": 1
 							"gridY": 1
 						} )
 						add( new FormComponent( "javax.swing.JTextField" ) {
-							name: "textField1"
+							name: "txtTime2Capture"
 							"font": #Font0
 						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 							"gridX": 3
@@ -179,31 +180,51 @@ new FormModel {
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label2"
-							"text": "text"
+							"text": "Maximum gametime (minutes)"
 							"font": #Font0
 						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 							"gridY": 3
 						} )
 						add( new FormComponent( "javax.swing.JTextField" ) {
-							name: "textField2"
+							name: "txtGametime"
 							"font": #Font0
 						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 							"gridX": 3
 							"gridY": 3
+						} )
+						add( new FormComponent( "javax.swing.JToggleButton" ) {
+							name: "btnSound"
+							"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/soundoff.png" )
+							"selectedIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/sound.png" )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 7
+						} )
+						add( new FormComponent( "javax.swing.JToggleButton" ) {
+							name: "btnSirens"
+							"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/speaker_mute.png" )
+							"selectedIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/speaker.png" )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 7
+							"gridX": 3
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label3"
-							"text": "text"
+							"text": "Sound-System"
 							"font": #Font0
 						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-							"gridY": 5
+							"gridY": 9
+							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
 						} )
-						add( new FormComponent( "javax.swing.JTextField" ) {
-							name: "textField3"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label4"
+							"text": "Siren"
 							"font": #Font0
 						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 9
+							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
 							"gridX": 3
-							"gridY": 5
 						} )
 					}, new FormLayoutConstraints( null ) {
 						"title": "Settings"

@@ -35,9 +35,9 @@ public class Farcry1Assault implements GameModes {
     private final int MILLISPERCYCLE = 50;
 
 
-    private final int MAXCYLCES = 200;
 
-    private int SECONDS2CAPTURE = 60 * 10;
+    private int SECONDS2CAPTURE = 20;
+    private int GAMETIMEINSECONDS = 60;
 
     private final ArrayList<Relay> relayBoard = new ArrayList<>();
     private final ArrayList<Relay> relaidLEDs = new ArrayList<>();
@@ -49,7 +49,7 @@ public class Farcry1Assault implements GameModes {
     private Farcry1AssaultThread farcryAssaultThread;
 
     private Music playSiren, playWinningSon;
-    private Sound playWelcome, playRocket;
+    private Sound playWelcome, playRocket, playStart, playGameOver;
 
     private void hwinit(GpioController GPIO) throws IOException {
 
@@ -138,12 +138,14 @@ public class Farcry1Assault implements GameModes {
         playWinningSon = TinySound.loadMusic(new File(Tools.SND_MIB));
         playWelcome = TinySound.loadSound(new File(Tools.SND_WELCOME));
         playRocket = TinySound.loadSound(new File(Tools.SND_FLARE));
+        playGameOver = TinySound.loadSound(new File(Tools.SND_GAME_OVER));
+        playStart = TinySound.loadSound(new File(Tools.SND_START));
 
         MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
         MessageListener gameTimeListener = messageEvent -> {
             logger.debug("GameTime: " + messageEvent.getMessage());
-            frmTest.setTimer( messageEvent.getMessage().toString());
+            frmTest.setTimer(messageEvent.getMessage().toString());
         };
 
         MessageListener percentageListener = messageEvent -> {
@@ -202,10 +204,12 @@ public class Farcry1Assault implements GameModes {
                 playSiren.stop();
                 playRocket.stop();
                 playWinningSon.play(false);
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_ACTIVE)) {
+                playStart.play();
             }
         };
 
-        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, MAXCYLCES, SECONDS2CAPTURE);
+        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, GAMETIMEINSECONDS,SECONDS2CAPTURE);
 
         btnRed.addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {

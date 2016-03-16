@@ -52,11 +52,13 @@ public class FrmTest extends JFrame {
         lblTimer = new JLabel();
         panel2 = new JPanel();
         label1 = new JLabel();
-        textField1 = new JTextField();
+        txtTime2Capture = new JTextField();
         label2 = new JLabel();
-        textField2 = new JTextField();
+        txtGametime = new JTextField();
+        btnSound = new JToggleButton();
+        btnSirens = new JToggleButton();
         label3 = new JLabel();
-        textField3 = new JTextField();
+        label4 = new JLabel();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -91,6 +93,7 @@ public class FrmTest extends JFrame {
 
             //======== tabbedPane1 ========
             {
+                tabbedPane1.setFont(new Font("Dialog", Font.BOLD, 24));
 
                 //======== contentPanel ========
                 {
@@ -204,35 +207,48 @@ public class FrmTest extends JFrame {
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                        "default, $lcgap, default:grow",
-                        "2*(default, $lgap), default"));
+                        "default, 9dlu, default:grow",
+                        "5*(default, $lgap), default"));
 
                     //---- label1 ----
-                    label1.setText("text");
+                    label1.setText("Time to capture the flag (seconds)");
                     label1.setFont(new Font("Dialog", Font.PLAIN, 26));
                     panel2.add(label1, CC.xy(1, 1));
 
-                    //---- textField1 ----
-                    textField1.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(textField1, CC.xy(3, 1));
+                    //---- txtTime2Capture ----
+                    txtTime2Capture.setFont(new Font("Dialog", Font.PLAIN, 26));
+                    panel2.add(txtTime2Capture, CC.xy(3, 1));
 
                     //---- label2 ----
-                    label2.setText("text");
+                    label2.setText("Maximum gametime (minutes)");
                     label2.setFont(new Font("Dialog", Font.PLAIN, 26));
                     panel2.add(label2, CC.xy(1, 3));
 
-                    //---- textField2 ----
-                    textField2.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(textField2, CC.xy(3, 3));
+                    //---- txtGametime ----
+                    txtGametime.setFont(new Font("Dialog", Font.PLAIN, 26));
+                    panel2.add(txtGametime, CC.xy(3, 3));
+
+                    //---- btnSound ----
+                    btnSound.setText(null);
+                    btnSound.setIcon(new ImageIcon(getClass().getResource("/artwork/soundoff.png")));
+                    btnSound.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/sound.png")));
+                    panel2.add(btnSound, CC.xy(1, 7));
+
+                    //---- btnSirens ----
+                    btnSirens.setText(null);
+                    btnSirens.setIcon(new ImageIcon(getClass().getResource("/artwork/speaker_mute.png")));
+                    btnSirens.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/speaker.png")));
+                    panel2.add(btnSirens, CC.xy(3, 7));
 
                     //---- label3 ----
-                    label3.setText("text");
+                    label3.setText("Sound-System");
                     label3.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(label3, CC.xy(1, 5));
+                    panel2.add(label3, CC.xy(1, 9, CC.CENTER, CC.DEFAULT));
 
-                    //---- textField3 ----
-                    textField3.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(textField3, CC.xy(3, 5));
+                    //---- label4 ----
+                    label4.setText("Siren");
+                    label4.setFont(new Font("Dialog", Font.PLAIN, 26));
+                    panel2.add(label4, CC.xy(3, 9, CC.CENTER, CC.DEFAULT));
                 }
                 tabbedPane1.addTab("Settings", panel2);
             }
@@ -305,10 +321,12 @@ public class FrmTest extends JFrame {
     private JLabel lblTimer;
     private JPanel panel2;
     private JLabel label1;
-    private JTextField textField1;
+    private JTextField txtTime2Capture;
     private JLabel label2;
-    private JTextField textField2;
+    private JTextField txtGametime;
+    private JToggleButton btnSound;
+    private JToggleButton btnSirens;
     private JLabel label3;
-    private JTextField textField3;
+    private JLabel label4;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

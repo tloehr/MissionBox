@@ -25,7 +25,8 @@ public class Tools {
     public static final String SND_VICTORY = "/local/0134_female1_OnVictory_1.wav";
     public static final String SND_DEFEAT = "/local/0071_female1_OnDefeat_1.wav";
     public static final String SND_MIB = "/local/mib.wav";
-
+    public static final String SND_START = "/local/196889__ionicsmusic__race-robot-start.wav";
+    public static final String SND_GAME_OVER = "/local/196868__ionicsmusic__race-robot-game-over.wav";
 
     public static String xx(String message) {
         String title = catchNull(message);

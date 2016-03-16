@@ -1,7 +1,8 @@
 package main;
 
 import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
+import com.sun.speech.freetts.Voice;
+import com.sun.speech.freetts.VoiceManager;
 import gamemodes.Farcry1Assault;
 import org.apache.log4j.*;
 
@@ -28,6 +29,17 @@ public class MissionBox {
 //        }
 
         GPIO = null;
+
+
+        String text = "10 minutes";
+
+
+        Voice voice;
+        VoiceManager voiceManager = VoiceManager.getInstance();
+        voice = voiceManager.getVoice("kevin"); // kevin, kevin16, alan
+        voice.allocate();
+        voice.speak(text);
+
 
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
         logger.addAppender(new ConsoleAppender(layout));
