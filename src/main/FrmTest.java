@@ -6,11 +6,10 @@ package main;
 
 import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.FormLayout;
-import org.jdesktop.swingx.VerticalLayout;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * @author Torsten Löhr
@@ -18,244 +17,206 @@ import java.awt.*;
 public class FrmTest extends JFrame {
     public FrmTest() {
         initComponents();
+        initPanel();
+    }
 
+    private void initPanel() {
+        lblFCYCapture.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
+        lblFCYGametime.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
+        btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("1"));
+        btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("1"));
+
+        btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "1" : "0"));
+        btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "1" : "0"));
 
     }
 
+    private void btnFCYcapPlusActionPerformed(ActionEvent e) {
+        int time2capture = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
+        time2capture++;
+        final String text = Integer.toString(time2capture);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_TIME2CAPTURE, text);
+        SwingUtilities.invokeLater(() -> {
+            lblFCYCapture.setText(text);
+            revalidate();
+            repaint();
+        });
+    }
+
+    private void btnFCYcapMinusActionPerformed(ActionEvent e) {
+        int time2capture = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
+        if (time2capture == 1) return;
+        time2capture--;
+        final String text = Integer.toString(time2capture);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_TIME2CAPTURE, text);
+        SwingUtilities.invokeLater(() -> {
+            lblFCYCapture.setText(text);
+            revalidate();
+            repaint();
+        });
+    }
+
+    private void btnFCYgametimePlusActionPerformed(ActionEvent e) {
+        int gametime = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
+        gametime++;
+        final String text = Integer.toString(gametime);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_GAMETIME, text);
+        SwingUtilities.invokeLater(() -> {
+            lblFCYGametime.setText(text);
+            revalidate();
+            repaint();
+        });
+    }
+
+    private void btnFCYgametimeMinusActionPerformed(ActionEvent e) {
+        int gametime = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
+        if (gametime == 1) return;
+        gametime--;
+        final String text = Integer.toString(gametime);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_GAMETIME, text);
+        SwingUtilities.invokeLater(() -> {
+            lblFCYGametime.setText(text);
+            revalidate();
+            repaint();
+        });
+    }
+
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        dialogPane = new JPanel();
-        buttonBar = new JPanel();
-        btn1 = new JButton();
-        btn2 = new JButton();
         tabbedPane1 = new JTabbedPane();
         contentPanel = new JPanel();
         btnRed = new JButton();
-        panel1 = new JPanel();
-        lbl1 = new JLabel();
-        lbl2 = new JLabel();
-        lbl3 = new JLabel();
-        lbl4 = new JLabel();
-        lbl5 = new JLabel();
-        lbl6 = new JLabel();
-        lbl7 = new JLabel();
-        lbl8 = new JLabel();
-        lbl9 = new JLabel();
-        lbl10 = new JLabel();
-        lbl11 = new JLabel();
-        lbl12 = new JLabel();
-        lbl13 = new JLabel();
-        lbl14 = new JLabel();
-        lbl15 = new JLabel();
         btnGreen = new JButton();
+        pb1 = new JProgressBar();
         lblMessage = new JLabel();
         lblTimer = new JLabel();
+        btn1 = new JButton();
+        btn2 = new JButton();
         panel2 = new JPanel();
         label1 = new JLabel();
-        txtTime2Capture = new JTextField();
+        btnFCYcapPlus = new JButton();
+        lblFCYCapture = new JLabel();
+        btnFCYcapMinus = new JButton();
         label2 = new JLabel();
-        txtGametime = new JTextField();
+        btnFCYgametimePlus = new JButton();
+        lblFCYGametime = new JLabel();
+        btnFCYgametimeMinus = new JButton();
         btnSound = new JToggleButton();
-        btnSirens = new JToggleButton();
-        label3 = new JLabel();
-        label4 = new JLabel();
+        btnSiren = new JToggleButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Container contentPane = getContentPane();
-        contentPane.setLayout(new BorderLayout());
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
 
-        //======== dialogPane ========
+        //======== tabbedPane1 ========
         {
-            dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setLayout(new BorderLayout());
+            tabbedPane1.setFont(new Font("Dialog", Font.PLAIN, 16));
 
-            //======== buttonBar ========
+            //======== contentPanel ========
             {
-                buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
-                buttonBar.setLayout(new GridBagLayout());
-                ((GridBagLayout)buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
-                ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
+                contentPanel.setLayout(new FormLayout(
+                        "pref:grow, $ugap, default:grow",
+                        "fill:pref:grow, 3*($lgap, default)"));
+
+                //---- btnRed ----
+                btnRed.setText(null);
+                btnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred32.png")));
+                contentPanel.add(btnRed, CC.xy(1, 1, CC.FILL, CC.FILL));
+
+                //---- btnGreen ----
+                btnGreen.setText(null);
+                btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
+                contentPanel.add(btnGreen, CC.xy(3, 1, CC.FILL, CC.FILL));
+                contentPanel.add(pb1, CC.xywh(1, 3, 3, 1));
+
+                //---- lblMessage ----
+                lblMessage.setText("text");
+                lblMessage.setFont(new Font("Dialog", Font.PLAIN, 16));
+                contentPanel.add(lblMessage, CC.xy(1, 5));
+
+                //---- lblTimer ----
+                lblTimer.setText("text");
+                lblTimer.setFont(new Font("Dialog", Font.PLAIN, 16));
+                contentPanel.add(lblTimer, CC.xy(3, 5));
 
                 //---- btn1 ----
                 btn1.setText("Start/Stop");
-                buttonBar.add(btn1, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 0, 5), 0, 0));
+                contentPanel.add(btn1, CC.xy(1, 7));
 
                 //---- btn2 ----
                 btn2.setText("QUIT");
-                buttonBar.add(btn2, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 0, 0), 0, 0));
+                contentPanel.add(btn2, CC.xy(3, 7));
             }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+            tabbedPane1.addTab("Game", contentPanel);
 
-            //======== tabbedPane1 ========
+            //======== panel2 ========
             {
-                tabbedPane1.setFont(new Font("Dialog", Font.BOLD, 24));
+                panel2.setLayout(new FormLayout(
+                        "default:grow, $ugap, default, $lcgap, default:grow, $lcgap, default",
+                        "2*(default, $lgap), default"));
 
-                //======== contentPanel ========
-                {
-                    contentPanel.setLayout(new FormLayout(
-                        "pref:grow, $lcgap, default, $lcgap, center:default:grow",
-                        "fill:default:grow, $lgap, default"));
+                //---- label1 ----
+                label1.setText("capture");
+                label1.setFont(new Font("Dialog", Font.PLAIN, 16));
+                panel2.add(label1, CC.xy(1, 1));
 
-                    //---- btnRed ----
-                    btnRed.setText(null);
-                    btnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/red-led-off.png")));
-                    contentPanel.add(btnRed, CC.xy(1, 1));
+                //---- btnFCYcapPlus ----
+                btnFCYcapPlus.setText(null);
+                btnFCYcapPlus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_add.png")));
+                btnFCYcapPlus.addActionListener(e -> btnFCYcapPlusActionPerformed(e));
+                panel2.add(btnFCYcapPlus, CC.xy(3, 1));
 
-                    //======== panel1 ========
-                    {
-                        panel1.setLayout(new VerticalLayout(1));
+                //---- lblFCYCapture ----
+                lblFCYCapture.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYCapture.setText("1");
+                panel2.add(lblFCYCapture, CC.xy(5, 1, CC.CENTER, CC.DEFAULT));
 
-                        //---- lbl1 ----
-                        lbl1.setText(null);
-                        lbl1.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen.png")));
-                        panel1.add(lbl1);
+                //---- btnFCYcapMinus ----
+                btnFCYcapMinus.setText(null);
+                btnFCYcapMinus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_remove.png")));
+                btnFCYcapMinus.addActionListener(e -> btnFCYcapMinusActionPerformed(e));
+                panel2.add(btnFCYcapMinus, CC.xy(7, 1));
 
-                        //---- lbl2 ----
-                        lbl2.setText(null);
-                        lbl2.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen.png")));
-                        panel1.add(lbl2);
+                //---- label2 ----
+                label2.setText("gametime");
+                label2.setFont(new Font("Dialog", Font.PLAIN, 16));
+                panel2.add(label2, CC.xy(1, 3));
 
-                        //---- lbl3 ----
-                        lbl3.setText(null);
-                        lbl3.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen.png")));
-                        panel1.add(lbl3);
+                //---- btnFCYgametimePlus ----
+                btnFCYgametimePlus.setText(null);
+                btnFCYgametimePlus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_add.png")));
+                btnFCYgametimePlus.addActionListener(e -> btnFCYgametimePlusActionPerformed(e));
+                panel2.add(btnFCYgametimePlus, CC.xy(3, 3));
 
-                        //---- lbl4 ----
-                        lbl4.setText(null);
-                        lbl4.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen.png")));
-                        panel1.add(lbl4);
+                //---- lblFCYGametime ----
+                lblFCYGametime.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYGametime.setText("1");
+                panel2.add(lblFCYGametime, CC.xy(5, 3, CC.CENTER, CC.DEFAULT));
 
-                        //---- lbl5 ----
-                        lbl5.setText(null);
-                        lbl5.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen.png")));
-                        panel1.add(lbl5);
+                //---- btnFCYgametimeMinus ----
+                btnFCYgametimeMinus.setText(null);
+                btnFCYgametimeMinus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_remove.png")));
+                btnFCYgametimeMinus.addActionListener(e -> btnFCYgametimeMinusActionPerformed(e));
+                panel2.add(btnFCYgametimeMinus, CC.xy(7, 3));
 
-                        //---- lbl6 ----
-                        lbl6.setText(null);
-                        lbl6.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkorange.png")));
-                        panel1.add(lbl6);
+                //---- btnSound ----
+                btnSound.setText(null);
+                btnSound.setIcon(new ImageIcon(getClass().getResource("/artwork/soundoff.png")));
+                btnSound.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/sound.png")));
+                panel2.add(btnSound, CC.xy(1, 5));
 
-                        //---- lbl7 ----
-                        lbl7.setText(null);
-                        lbl7.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkorange.png")));
-                        panel1.add(lbl7);
-
-                        //---- lbl8 ----
-                        lbl8.setText(null);
-                        lbl8.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkorange.png")));
-                        panel1.add(lbl8);
-
-                        //---- lbl9 ----
-                        lbl9.setText(null);
-                        lbl9.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkorange.png")));
-                        panel1.add(lbl9);
-
-                        //---- lbl10 ----
-                        lbl10.setText(null);
-                        lbl10.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkorange.png")));
-                        panel1.add(lbl10);
-
-                        //---- lbl11 ----
-                        lbl11.setText(null);
-                        lbl11.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred.png")));
-                        panel1.add(lbl11);
-
-                        //---- lbl12 ----
-                        lbl12.setText(null);
-                        lbl12.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred.png")));
-                        panel1.add(lbl12);
-
-                        //---- lbl13 ----
-                        lbl13.setText(null);
-                        lbl13.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred.png")));
-                        panel1.add(lbl13);
-
-                        //---- lbl14 ----
-                        lbl14.setText(null);
-                        lbl14.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred.png")));
-                        panel1.add(lbl14);
-
-                        //---- lbl15 ----
-                        lbl15.setText(null);
-                        lbl15.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred.png")));
-                        panel1.add(lbl15);
-                    }
-                    contentPanel.add(panel1, CC.xy(3, 1));
-
-                    //---- btnGreen ----
-                    btnGreen.setText(null);
-                    btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/green-led-off.png")));
-                    contentPanel.add(btnGreen, CC.xy(5, 1));
-
-                    //---- lblMessage ----
-                    lblMessage.setText("text");
-                    lblMessage.setFont(new Font("Dialog", Font.PLAIN, 18));
-                    contentPanel.add(lblMessage, CC.xywh(1, 3, 3, 1));
-
-                    //---- lblTimer ----
-                    lblTimer.setText("text");
-                    lblTimer.setFont(new Font("Dialog", Font.BOLD, 18));
-                    contentPanel.add(lblTimer, CC.xy(5, 3));
-                }
-                tabbedPane1.addTab("Game", contentPanel);
-
-                //======== panel2 ========
-                {
-                    panel2.setLayout(new FormLayout(
-                        "default, 9dlu, default:grow",
-                        "5*(default, $lgap), default"));
-
-                    //---- label1 ----
-                    label1.setText("Time to capture the flag (seconds)");
-                    label1.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(label1, CC.xy(1, 1));
-
-                    //---- txtTime2Capture ----
-                    txtTime2Capture.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(txtTime2Capture, CC.xy(3, 1));
-
-                    //---- label2 ----
-                    label2.setText("Maximum gametime (minutes)");
-                    label2.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(label2, CC.xy(1, 3));
-
-                    //---- txtGametime ----
-                    txtGametime.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(txtGametime, CC.xy(3, 3));
-
-                    //---- btnSound ----
-                    btnSound.setText(null);
-                    btnSound.setIcon(new ImageIcon(getClass().getResource("/artwork/soundoff.png")));
-                    btnSound.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/sound.png")));
-                    panel2.add(btnSound, CC.xy(1, 7));
-
-                    //---- btnSirens ----
-                    btnSirens.setText(null);
-                    btnSirens.setIcon(new ImageIcon(getClass().getResource("/artwork/speaker_mute.png")));
-                    btnSirens.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/speaker.png")));
-                    panel2.add(btnSirens, CC.xy(3, 7));
-
-                    //---- label3 ----
-                    label3.setText("Sound-System");
-                    label3.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(label3, CC.xy(1, 9, CC.CENTER, CC.DEFAULT));
-
-                    //---- label4 ----
-                    label4.setText("Siren");
-                    label4.setFont(new Font("Dialog", Font.PLAIN, 26));
-                    panel2.add(label4, CC.xy(3, 9, CC.CENTER, CC.DEFAULT));
-                }
-                tabbedPane1.addTab("Settings", panel2);
+                //---- btnSiren ----
+                btnSiren.setText(null);
+                btnSiren.setIcon(new ImageIcon(getClass().getResource("/artwork/speaker_mute.png")));
+                btnSiren.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/speaker.png")));
+                panel2.add(btnSiren, CC.xywh(3, 5, 5, 1));
             }
-            dialogPane.add(tabbedPane1, BorderLayout.NORTH);
+            tabbedPane1.addTab("Settings", panel2);
         }
-        contentPane.add(dialogPane, BorderLayout.CENTER);
-        pack();
+        contentPane.add(tabbedPane1);
+        setSize(320, 240);
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -293,40 +254,25 @@ public class FrmTest extends JFrame {
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    private JPanel dialogPane;
-    private JPanel buttonBar;
-    private JButton btn1;
-    private JButton btn2;
     private JTabbedPane tabbedPane1;
     private JPanel contentPanel;
     private JButton btnRed;
-    private JPanel panel1;
-    private JLabel lbl1;
-    private JLabel lbl2;
-    private JLabel lbl3;
-    private JLabel lbl4;
-    private JLabel lbl5;
-    private JLabel lbl6;
-    private JLabel lbl7;
-    private JLabel lbl8;
-    private JLabel lbl9;
-    private JLabel lbl10;
-    private JLabel lbl11;
-    private JLabel lbl12;
-    private JLabel lbl13;
-    private JLabel lbl14;
-    private JLabel lbl15;
     private JButton btnGreen;
+    private JProgressBar pb1;
     private JLabel lblMessage;
     private JLabel lblTimer;
+    private JButton btn1;
+    private JButton btn2;
     private JPanel panel2;
     private JLabel label1;
-    private JTextField txtTime2Capture;
+    private JButton btnFCYcapPlus;
+    private JLabel lblFCYCapture;
+    private JButton btnFCYcapMinus;
     private JLabel label2;
-    private JTextField txtGametime;
+    private JButton btnFCYgametimePlus;
+    private JLabel lblFCYGametime;
+    private JButton btnFCYgametimeMinus;
     private JToggleButton btnSound;
-    private JToggleButton btnSirens;
-    private JLabel label3;
-    private JLabel label4;
+    private JToggleButton btnSiren;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

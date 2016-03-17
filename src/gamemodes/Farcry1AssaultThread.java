@@ -13,17 +13,17 @@ import java.util.Date;
 
 /**
  * Dieser Thread läuft wie ein Motor in Zyklen ab. Jeder Zyklus dauert <b>millispercycle</b> millisekunden.
- * Nach <b>maxcycles</b> Zyklen ist das Spiel vorbei. <b>seconds2capture</b> ist die Anzahl der Sekunden, die es braucht, bis die Flagge genommen wurde. (Wenn sie vorher nicht deaktiviert wurde).
- *
+ * Nach <b>maxcycles</b> Zyklen ist das Spiel vorbei. <b>TIME2CAP</b> ist die Anzahl der Sekunden, die es braucht, bis die Flagge genommen wurde. (Wenn sie vorher nicht deaktiviert wurde).
  */
 public class Farcry1AssaultThread implements Runnable, GameThreads {
     final Logger LOGGER = Logger.getLogger(getClass());
     private final Thread thread;
     private int GAMETIMEINSECONDS;
+    private int TIME2CAP;
 
     private BigDecimal cycle;
-    private final int seconds2capture;
-//    private BigDecimal MAXCYCLES;
+
+    //    private BigDecimal MAXCYCLES;
     private int gameState, previousGameState;
     private long starttime = 0, endtime = 0, afterglow = 0, agseconds = 20, rockettime = 0, rocketseconds = 7;
 
@@ -50,15 +50,15 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private final EventListenerList messageList, gameTimerList, percentageList, gameModeList;
 
 
-    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, int gametimeinseconds, int seconds2capture) {
+    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener) {
         super();
-        this.GAMETIMEINSECONDS = gametimeinseconds;
+
 
         // der cycledivider wird nur benutzt, damit nicht so oft die Zeitausgaben erfolgen.
         cycledivider = 1000 / millispercycle;
 
         thread = new Thread(this);
-        this.seconds2capture = seconds2capture;
+
 
         LOGGER.setLevel(MissionBox.logLevel);
 
@@ -78,12 +78,13 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 //        MAXCYCLES = new BigDecimal(GAMETIMEINSECONDS).multiply(new BigDecimal(60)).multiply(new BigDecimal(1000)).divide(millispercycle, BigDecimal.ROUND_HALF_UP);
 //        resetCycle();
 
-        setGameState(GAME_PRE_GAME);
+        restartGame();
 
     }
 
     /**
      * Hier ist die eingentliche Spielmechanik drin. Also was kommt nach was.
+     *
      * @param state
      */
     public synchronized void setGameState(int state) {
@@ -99,6 +100,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
+
+                    this.GAMETIMEINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60;
+                    this.TIME2CAP = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
+
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.active"));
                     starttime = System.currentTimeMillis();
                     endtime = starttime + (GAMETIMEINSECONDS * 1000);
@@ -107,7 +112,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_FLAG_HOT: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.hot"));
-                    endtime = System.currentTimeMillis() + (seconds2capture * 1000);
+                    endtime = System.currentTimeMillis() + (TIME2CAP * 1000);
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
@@ -235,7 +240,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             try {
 
-                if (endtime < System.currentTimeMillis() ) { // and the flag was hot, the rocket is launched.
+                if (endtime < System.currentTimeMillis()) { // and the flag was hot, the rocket is launched.
                     if (gameState == GAME_FLAG_HOT) {
                         setGameState(GAME_ROCKET_LAUNCHED);
                     }

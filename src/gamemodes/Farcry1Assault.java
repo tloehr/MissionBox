@@ -36,8 +36,6 @@ public class Farcry1Assault implements GameModes {
 
 
 
-    private int SECONDS2CAPTURE = 20;
-    private int GAMETIMEINSECONDS = 60;
 
     private final ArrayList<Relay> relayBoard = new ArrayList<>();
     private final ArrayList<Relay> relaidLEDs = new ArrayList<>();
@@ -169,6 +167,9 @@ public class Farcry1Assault implements GameModes {
                 ledBarYellow.blink(0);
                 ledBarRed.blink(0);
                 relaisSirens.setValue(BigDecimal.ZERO);
+
+                MissionBox.getVoice().speak("Deactivated");
+
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
                 playSiren.stop();
                 relaisSirens.setValue(BigDecimal.ZERO);
@@ -188,8 +189,10 @@ public class Farcry1Assault implements GameModes {
                 playSiren.stop();
                 playRocket.stop();
                 playWinningSon.stop();
-                playWelcome.play();
-//                ledBar.setOff();
+//                playWelcome.play();
+                MissionBox.getVoice().speak("Game ready");
+                MissionBox.getVoice().speak("Deactivated");
+                MissionBox.getVoice().speak("Start");
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
                 playSiren.stop();
                 playRocket.stop();
@@ -205,11 +208,14 @@ public class Farcry1Assault implements GameModes {
                 playRocket.stop();
                 playWinningSon.play(false);
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_ACTIVE)) {
-                playStart.play();
+//                playStart.play();
+
+                MissionBox.getVoice().speak("Start");
+
             }
         };
 
-        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener, GAMETIMEINSECONDS,SECONDS2CAPTURE);
+        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener);
 
         btnRed.addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
@@ -327,6 +333,9 @@ public class Farcry1Assault implements GameModes {
         playRocket.unload();
         playWinningSon.unload();
         TinySound.shutdown();
+
+        MissionBox.saveLocalProps();
+
         System.exit(0);
 
     }
