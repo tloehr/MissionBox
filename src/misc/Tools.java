@@ -17,16 +17,18 @@ import java.util.concurrent.TimeUnit;
  */
 public class Tools {
 
-    public static final String SND_WELCOME = "/local/0140_female1_OnWelcome_1.wav";
-    public static final String SND_SIREN = "/local/capture_siren.wav";
-    public static final String SND_FLARE = "/local/MP_flare.wav";
-    public static final String SND_SHUTDOWN = "/local/Shutdown.wav";
-    public static final String SND_MINIONS_SPAWNED = "/local/0112_female1_OnMinionsSpawn_1.wav";
-    public static final String SND_VICTORY = "/local/0134_female1_OnVictory_1.wav";
-    public static final String SND_DEFEAT = "/local/0071_female1_OnDefeat_1.wav";
-    public static final String SND_MIB = "/local/mib.wav";
-    public static final String SND_START = "/local/196889__ionicsmusic__race-robot-start.wav";
-    public static final String SND_GAME_OVER = "/local/196868__ionicsmusic__race-robot-game-over.wav";
+    public static final String SND_WELCOME = "0140_female1_OnWelcome_1.wav";
+    public static final String SND_SIREN = "capture_siren.wav";
+    public static final String SND_FLARE = "MP_flare.wav";
+    public static final String SND_SHUTDOWN = "Shutdown.wav";
+    public static final String SND_MINIONS_SPAWNED = "0112_female1_OnMinionsSpawn_1.wav";
+    public static final String SND_VICTORY = "0134_female1_OnVictory_1.wav";
+    public static final String SND_DEFEAT = "0071_female1_OnDefeat_1.wav";
+    public static final String SND_MIB = "mib.wav";
+    public static final String SND_QUEEN = "We Will Rock You - Queen - Greatest Hits - 16.wav";
+    public static final String SND_START = "196889__ionicsmusic__race-robot-start.wav";
+    public static final String SND_GAME_OVER = "196868__ionicsmusic__race-robot-game-over.wav";
+
 
     public static String xx(String message) {
         String title = catchNull(message);
@@ -84,6 +86,10 @@ public class Tools {
             }
         }
         return null;
+    }
+
+    public static String getSoundPath(){
+        return  "/local/missionbox";
     }
 
 

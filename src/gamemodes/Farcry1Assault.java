@@ -31,10 +31,10 @@ import java.util.HashMap;
 public class Farcry1Assault implements GameModes {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private boolean gameWon = false;
+
     // the game is organized in cycles. In a cycle the game state is checked and it is decided if the game was won or not.
     private final int MILLISPERCYCLE = 50;
-
-
 
 
     private final ArrayList<Relay> relayBoard = new ArrayList<>();
@@ -47,7 +47,7 @@ public class Farcry1Assault implements GameModes {
     private Farcry1AssaultThread farcryAssaultThread;
 
     private Music playSiren, playWinningSon;
-    private Sound playWelcome, playRocket, playStart, playGameOver;
+    private Sound playWelcome, playRocket, playMinions, playGameOver, playVictory, playDefeat;
 
     private void hwinit(GpioController GPIO) throws IOException {
 
@@ -132,12 +132,14 @@ public class Farcry1Assault implements GameModes {
 
         TinySound.init();
 
-        playSiren = TinySound.loadMusic(new File(Tools.SND_SIREN));
-        playWinningSon = TinySound.loadMusic(new File(Tools.SND_MIB));
-        playWelcome = TinySound.loadSound(new File(Tools.SND_WELCOME));
-        playRocket = TinySound.loadSound(new File(Tools.SND_FLARE));
-        playGameOver = TinySound.loadSound(new File(Tools.SND_GAME_OVER));
-        playStart = TinySound.loadSound(new File(Tools.SND_START));
+        playSiren = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SIREN));
+        playWinningSon = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_MIB));
+        playWelcome = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_WELCOME));
+        playRocket = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_FLARE));
+        playGameOver = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_GAME_OVER));
+        playMinions = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_MINIONS_SPAWNED));
+        playVictory = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_VICTORY));
+        playDefeat = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_DEFEAT));
 
         MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
@@ -149,6 +151,7 @@ public class Farcry1Assault implements GameModes {
         MessageListener percentageListener = messageEvent -> {
             logger.debug(messageEvent.getPercentage());
             relaisSirens.setValue(messageEvent.getPercentage());
+            frmTest.setProgress(messageEvent.getPercentage().intValue());
         };
 
         MessageListener gameModeListener = messageEvent -> {
@@ -167,9 +170,6 @@ public class Farcry1Assault implements GameModes {
                 ledBarYellow.blink(0);
                 ledBarRed.blink(0);
                 relaisSirens.setValue(BigDecimal.ZERO);
-
-                MissionBox.getVoice().speak("Deactivated");
-
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_ROCKET_LAUNCHED)) {
                 playSiren.stop();
                 relaisSirens.setValue(BigDecimal.ZERO);
@@ -179,7 +179,11 @@ public class Farcry1Assault implements GameModes {
                 ledBarGreen.blink(50);
                 ledBarYellow.blink(50);
                 ledBarRed.blink(50);
+                gameWon = true;
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_PRE_GAME)) {
+                gameWon = false;
+                frmTest.enableSettings(true);
+
                 ledRed.blink(500, PinState.HIGH);
                 ledGreen.blink(500, PinState.LOW);
                 ledBarGreen.blink(1000);
@@ -189,14 +193,17 @@ public class Farcry1Assault implements GameModes {
                 playSiren.stop();
                 playRocket.stop();
                 playWinningSon.stop();
-//                playWelcome.play();
-                MissionBox.getVoice().speak("Game ready");
-                MissionBox.getVoice().speak("Deactivated");
-                MissionBox.getVoice().speak("Start");
+                playWelcome.play();
+
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
                 playSiren.stop();
                 playRocket.stop();
                 ledGreen.blink(0);
+                if (gameWon){
+                    playVictory.play();
+                } else {
+                    playDefeat.play();
+                }
 //                fadeout(playWinningSon);
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN)) {
                 ledRed.blink(250, PinState.HIGH);
@@ -206,11 +213,11 @@ public class Farcry1Assault implements GameModes {
                 ledBarRed.blink(500);
                 playSiren.stop();
                 playRocket.stop();
-                playWinningSon.play(false);
-            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_ACTIVE)) {
-//                playStart.play();
 
-                MissionBox.getVoice().speak("Start");
+            } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_FLAG_ACTIVE)) {
+                frmTest.enableSettings(false);
+                playMinions.play();
+
 
             }
         };
@@ -250,6 +257,7 @@ public class Farcry1Assault implements GameModes {
         });
 
         btnGameStartStop.addListener((GpioPinListenerDigital) event -> {
+            if (!frmTest.isGameStartable()) return;
             if (event.getState() == PinState.HIGH) {
                 logger.debug("btnGameStartStop");
                 if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
@@ -263,6 +271,7 @@ public class Farcry1Assault implements GameModes {
         btnGameStartStop.addListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!frmTest.isGameStartable()) return;
                 logger.debug("btnGameStartStop");
                 if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                     farcryAssaultThread.startGame();

@@ -8,6 +8,7 @@ import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -28,6 +29,9 @@ public class FrmTest extends JFrame {
 
         btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "1" : "0"));
         btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "1" : "0"));
+
+        pb1.setMaximum(100);
+        pb1.setMaximum(0);
 
     }
 
@@ -81,6 +85,32 @@ public class FrmTest extends JFrame {
         });
     }
 
+    private void tabbedPane1StateChanged(ChangeEvent e) {
+
+        if (tabbedPane1.getSelectedIndex() == 0) {
+
+        } else {
+
+        }
+    }
+
+    public void setProgress(int value) {
+        SwingUtilities.invokeLater(() -> {
+            pb1.setValue(value);
+            pb1.revalidate();
+            pb1.repaint();
+        });
+
+    }
+
+    public void enableSettings(boolean yes) {
+        tabbedPane1.setEnabledAt(1, yes);
+    }
+
+    public boolean isGameStartable() {
+        return tabbedPane1.getSelectedIndex() == 0;
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -113,6 +143,7 @@ public class FrmTest extends JFrame {
         //======== tabbedPane1 ========
         {
             tabbedPane1.setFont(new Font("Dialog", Font.PLAIN, 16));
+            tabbedPane1.addChangeListener(e -> tabbedPane1StateChanged(e));
 
             //======== contentPanel ========
             {

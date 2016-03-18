@@ -10,6 +10,7 @@ new FormModel {
 			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 				name: "tabbedPane1"
 				"font": &Font0 new java.awt.Font( "Dialog", 0, 16 )
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "tabbedPane1StateChanged", true ) )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 					"$columnSpecs": "pref:grow, unrelgap, default:grow"
 					"$rowSpecs": "fill:pref:grow, linegap, default, linegap, default, linegap, default"

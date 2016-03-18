@@ -4,12 +4,12 @@ import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import javax.swing.event.EventListenerList;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Dieser Thread läuft wie ein Motor in Zyklen ab. Jeder Zyklus dauert <b>millispercycle</b> millisekunden.
@@ -21,12 +21,12 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private int GAMETIMEINSECONDS;
     private int TIME2CAP;
 
-    private BigDecimal cycle;
+//    private BigDecimal cycle;
 
     //    private BigDecimal MAXCYCLES;
     private int gameState, previousGameState;
-    private long starttime = 0, endtime = 0, afterglow = 0, agseconds = 20, rockettime = 0, rocketseconds = 7;
-
+    private int afterglow = 0, agseconds = 20, rocketseconds = 7;
+    private DateTime starttime, endtime, rockettime;
     // makes sure that the time event is only triggered once a second
     private long threadcycles = 0;
     private final long millispercycle = 5;
@@ -43,7 +43,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     public static final int GAME_OUTCOME_FLAG_DEFENDED = 6;
     public static final int GAME_OVER = 7;
 
-    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "ROCKET_LAUNCHED", "FLAG_TAKEN", "FLAG_DEFENDED", "GAME_OVER"};
+    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "ROCKET", "FLAG_TAKEN", "FLAG_DEFENDED", "GAME_OVER"};
 
     DateFormat formatter = new SimpleDateFormat("mm:ss");
 
@@ -96,7 +96,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
             switch (gameState) {
                 case GAME_PRE_GAME: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.pre.game"));
-                    endtime = 0;
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
@@ -105,26 +104,26 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     this.TIME2CAP = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
 
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.active"));
-                    starttime = System.currentTimeMillis();
-                    endtime = starttime + (GAMETIMEINSECONDS * 1000);
+                    starttime = new DateTime();
+                    endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     setGameState(GAME_FLAG_COLD);
                     break;
                 }
                 case GAME_FLAG_HOT: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.hot"));
-                    endtime = System.currentTimeMillis() + (TIME2CAP * 1000);
+                    endtime = starttime.plusSeconds(TIME2CAP);
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.defended"));
-                    endtime = System.currentTimeMillis();
-                    rockettime = endtime + (rocketseconds * 1000); // hier wird noch kurz gewartet bis der raketensound abgespielt ist. danach wird gehts
-                    afterglow = rockettime + (agseconds * 1000);
+                    endtime = new DateTime();
+                    rockettime = endtime.plusSeconds(rocketseconds); // hier wird noch kurz gewartet bis der raketensound abgespielt ist. danach wird gehts
+//                    afterglow = rockettime + (agseconds * 1000);
                     break;
                 }
                 case GAME_FLAG_COLD: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.cold"));
-                    endtime = starttime + (GAMETIMEINSECONDS * 1000);
+                    endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
@@ -230,44 +229,49 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
             // cycledivider = 1000 / millispercycle
             if (threadcycles % cycledivider == 0) {
                 String dateFormatted = "00:00";
-                if (endtime > System.currentTimeMillis()) {
-                    Date date = new Date(endtime - System.currentTimeMillis());
-                    dateFormatted = formatter.format(date);
+                if (endtime.isAfterNow()) {
+                    dateFormatted = endtime.minus(new DateTime().getMillis()).toString("mm:ss");
                 }
+
 
                 fireMessage(gameTimerList, new MessageEvent(this, dateFormatted));
             }
 
             try {
 
-                if (endtime < System.currentTimeMillis()) { // and the flag was hot, the rocket is launched.
+
+                // das hier nochmal prüfen
+                if (endtime.isBeforeNow()) { // and the flag was hot, the rocket is launched.
                     if (gameState == GAME_FLAG_HOT) {
                         setGameState(GAME_ROCKET_LAUNCHED);
                     }
                 }
 
                 if (gameState == GAME_FLAG_COLD) {
-                    if (endtime < System.currentTimeMillis()) {
+                    fireMessage(percentageList, new MessageEvent(this, BigDecimal.ZERO));
+                    if (endtime.isAfterNow()) {
                         setGameState(GAME_OUTCOME_FLAG_DEFENDED);
                     }
                 }
 
-//                if (gameState == GAME_FLAG_HOT) {
-//                    increaseCycle();
-//                }
+                if (gameState == GAME_FLAG_HOT) {
+                    BigDecimal progress = new BigDecimal(System.currentTimeMillis()).divide(new BigDecimal(endtime), BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+                    System.err.println(progress);
+                    fireMessage(percentageList, new MessageEvent(this, progress));
+                }
 
                 if (gameState == GAME_ROCKET_LAUNCHED) {
                     // hier wird auf FlagTaken umgesschaltet, sobald die Rakete abgespielt wurde
-                    if (rockettime < System.currentTimeMillis()) {
+                    if (rockettime.isBeforeNow()) {
                         setGameState(GAME_OUTCOME_FLAG_TAKEN);
                     }
                 }
 
                 if (gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED) {
                     // nach dem AfterGlow (wo musik gespielt wird), wird das Spiel auf GameOver gesetzt
-                    if (afterglow < System.currentTimeMillis()) {
-                        setGameState(GAME_OVER);
-                    }
+//                    if (afterglow < System.currentTimeMillis()) {
+                    setGameState(GAME_OVER);
+//                    }
                 }
 
                 Thread.sleep(millispercycle);
