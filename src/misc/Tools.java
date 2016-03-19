@@ -10,6 +10,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,9 +26,13 @@ public class Tools {
     public static final String SND_VICTORY = "0134_female1_OnVictory_1.wav";
     public static final String SND_DEFEAT = "0071_female1_OnDefeat_1.wav";
     public static final String SND_MIB = "mib.wav";
+    public static final String SND_LOSER = "loser.wav";
     public static final String SND_QUEEN = "We Will Rock You - Queen - Greatest Hits - 16.wav";
     public static final String SND_START = "196889__ionicsmusic__race-robot-start.wav";
     public static final String SND_GAME_OVER = "196868__ionicsmusic__race-robot-game-over.wav";
+
+    public static final String[] WINNING_SONGS = new String[]{SND_MIB, SND_QUEEN};
+    public static final String[] LOSING_SONGS = new String[]{SND_LOSER};
 
 
     public static String xx(String message) {
@@ -88,8 +93,18 @@ public class Tools {
         return null;
     }
 
-    public static String getSoundPath(){
-        return  "/local/missionbox";
+    public static String getSoundPath() {
+        return "/local/missionbox";
+    }
+
+    public static String getWinningSong() {
+        int rand = ThreadLocalRandom.current().nextInt(0, WINNING_SONGS.length);
+        return WINNING_SONGS[rand];
+    }
+
+    public static String getLosingSong() {
+        int rand = ThreadLocalRandom.current().nextInt(0, LOSING_SONGS.length);
+        return LOSING_SONGS[rand];
     }
 
 

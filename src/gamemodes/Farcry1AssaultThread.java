@@ -26,10 +26,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     //    private BigDecimal MAXCYCLES;
     private int gameState, previousGameState;
     private int afterglow = 0, agseconds = 20, rocketseconds = 7;
-    private DateTime starttime, endtime, rockettime;
+    private DateTime starttime, flagactivation, endtime, rockettime;
     // makes sure that the time event is only triggered once a second
     private long threadcycles = 0;
-    private final long millispercycle = 5;
+    private final long millispercycle = 50;
     private final long cycledivider;
 
 
@@ -111,17 +111,19 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_FLAG_HOT: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.hot"));
-                    endtime = starttime.plusSeconds(TIME2CAP);
+                    flagactivation = new DateTime();
+                    endtime = flagactivation.plusSeconds(TIME2CAP);
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.defended"));
+                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.rocket.launched"));
                     endtime = new DateTime();
                     rockettime = endtime.plusSeconds(rocketseconds); // hier wird noch kurz gewartet bis der raketensound abgespielt ist. danach wird gehts
 //                    afterglow = rockettime + (agseconds * 1000);
                     break;
                 }
                 case GAME_FLAG_COLD: {
+                    flagactivation = null;
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.cold"));
                     endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     break;
@@ -136,6 +138,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_OVER: {
                     fireMessage(messageList, new MessageEvent(this, "assault.gamestate.after.game"));
+
+
+
+
                     break;
                 }
                 default: {
@@ -218,6 +224,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         }
     }
 
+    public boolean timeIsUp(){
+        return endtime != null && endtime.isBeforeNow();
+    }
+
 
     // Die bewertung der Spielsituation erfolgt in Zyklen.
     public void run() {
@@ -229,34 +239,27 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
             // cycledivider = 1000 / millispercycle
             if (threadcycles % cycledivider == 0) {
                 String dateFormatted = "00:00";
-                if (endtime.isAfterNow()) {
+                if (endtime != null && endtime.isAfterNow()) {
                     dateFormatted = endtime.minus(new DateTime().getMillis()).toString("mm:ss");
                 }
-
 
                 fireMessage(gameTimerList, new MessageEvent(this, dateFormatted));
             }
 
             try {
 
-
-                // das hier nochmal prüfen
-                if (endtime.isBeforeNow()) { // and the flag was hot, the rocket is launched.
-                    if (gameState == GAME_FLAG_HOT) {
-                        setGameState(GAME_ROCKET_LAUNCHED);
-                    }
-                }
-
                 if (gameState == GAME_FLAG_COLD) {
-                    fireMessage(percentageList, new MessageEvent(this, BigDecimal.ZERO));
-                    if (endtime.isAfterNow()) {
+                    if (timeIsUp()) {
                         setGameState(GAME_OUTCOME_FLAG_DEFENDED);
                     }
+                    fireMessage(percentageList, new MessageEvent(this, BigDecimal.ZERO));
                 }
 
                 if (gameState == GAME_FLAG_HOT) {
-                    BigDecimal progress = new BigDecimal(System.currentTimeMillis()).divide(new BigDecimal(endtime), BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-                    System.err.println(progress);
+                    if (timeIsUp()) {
+                        setGameState(GAME_ROCKET_LAUNCHED);
+                    }
+                    BigDecimal progress = new BigDecimal(new DateTime().getMillis()-flagactivation.getMillis()).divide(new BigDecimal(endtime.getMillis()-flagactivation.getMillis()), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                     fireMessage(percentageList, new MessageEvent(this, progress));
                 }
 

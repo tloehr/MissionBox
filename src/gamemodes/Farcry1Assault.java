@@ -46,7 +46,7 @@ public class Farcry1Assault implements GameModes {
 
     private Farcry1AssaultThread farcryAssaultThread;
 
-    private Music playSiren, playWinningSon;
+    private Music playSiren, playWinningSong, playLoserSong;
     private Sound playWelcome, playRocket, playMinions, playGameOver, playVictory, playDefeat;
 
     private void hwinit(GpioController GPIO) throws IOException {
@@ -133,7 +133,6 @@ public class Farcry1Assault implements GameModes {
         TinySound.init();
 
         playSiren = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SIREN));
-        playWinningSon = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_MIB));
         playWelcome = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_WELCOME));
         playRocket = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_FLARE));
         playGameOver = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_GAME_OVER));
@@ -182,6 +181,17 @@ public class Farcry1Assault implements GameModes {
                 gameWon = true;
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_PRE_GAME)) {
                 gameWon = false;
+
+                if (playWinningSong != null) { // checking for 1 null is enough.
+                    playWinningSong.stop();
+                    playLoserSong.stop();
+                    playLoserSong.unload();
+                    playWinningSong.unload();
+                }
+
+                playLoserSong = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.getLosingSong()));
+                playWinningSong = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.getWinningSong()));
+
                 frmTest.enableSettings(true);
 
                 ledRed.blink(500, PinState.HIGH);
@@ -192,17 +202,19 @@ public class Farcry1Assault implements GameModes {
 
                 playSiren.stop();
                 playRocket.stop();
-                playWinningSon.stop();
+
                 playWelcome.play();
 
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OVER)) {
                 playSiren.stop();
                 playRocket.stop();
                 ledGreen.blink(0);
-                if (gameWon){
+                if (gameWon) {
                     playVictory.play();
+                    playWinningSong.play(false);
                 } else {
                     playDefeat.play();
+                    playLoserSong.play(false);
                 }
 //                fadeout(playWinningSon);
             } else if (messageEvent.getMode().equals(Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN)) {
@@ -340,7 +352,10 @@ public class Farcry1Assault implements GameModes {
 //        ledBar.setOff();
         playSiren.unload();
         playRocket.unload();
-        playWinningSon.unload();
+        playWinningSong.unload();
+        playLoserSong.unload();
+        playVictory.unload();
+        playDefeat.unload();
         TinySound.shutdown();
 
         MissionBox.saveLocalProps();

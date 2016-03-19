@@ -6,6 +6,7 @@ import com.sun.speech.freetts.VoiceManager;
 import gamemodes.Farcry1Assault;
 import org.apache.log4j.*;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -42,6 +43,16 @@ public class MissionBox {
         loadLocalProperties();
         GPIO = null;
 
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // If Nimbus is not available, you can set the GUI to another look and feel.
+        }
 
 //        String text = "10 minutes";
 //

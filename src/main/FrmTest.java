@@ -12,10 +12,12 @@ import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+
 /**
  * @author Torsten Löhr
  */
 public class FrmTest extends JFrame {
+
     public FrmTest() {
         initComponents();
         initPanel();
@@ -30,8 +32,7 @@ public class FrmTest extends JFrame {
         btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "1" : "0"));
         btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "1" : "0"));
 
-        pb1.setMaximum(100);
-        pb1.setMaximum(0);
+        pb1.setVisible(true);
 
     }
 
@@ -94,13 +95,11 @@ public class FrmTest extends JFrame {
         }
     }
 
-    public void setProgress(int value) {
-        SwingUtilities.invokeLater(() -> {
-            pb1.setValue(value);
-            pb1.revalidate();
-            pb1.repaint();
-        });
-
+    public void setProgress(int progress) {
+        pb1.setIndeterminate(progress == 0);
+        if (progress > 0) {
+            pb1.setValue(progress);
+        }
     }
 
     public void enableSettings(boolean yes) {
@@ -116,14 +115,14 @@ public class FrmTest extends JFrame {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         tabbedPane1 = new JTabbedPane();
         contentPanel = new JPanel();
+        btn1 = new JButton();
+        btn2 = new JButton();
         btnRed = new JButton();
         btnGreen = new JButton();
         pb1 = new JProgressBar();
         lblMessage = new JLabel();
         lblTimer = new JLabel();
-        btn1 = new JButton();
-        btn2 = new JButton();
-        panel2 = new JPanel();
+        settingsPanel = new JPanel();
         label1 = new JLabel();
         btnFCYcapPlus = new JButton();
         lblFCYCapture = new JLabel();
@@ -134,6 +133,8 @@ public class FrmTest extends JFrame {
         btnFCYgametimeMinus = new JButton();
         btnSound = new JToggleButton();
         btnSiren = new JToggleButton();
+        panel1 = new JPanel();
+        button1 = new JButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -148,103 +149,117 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                        "pref:grow, $ugap, default:grow",
-                        "fill:pref:grow, 3*($lgap, default)"));
+                    "pref:grow, $lcgap, default, $rgap, default:grow",
+                    "fill:default:grow, $lgap, fill:pref:grow, $lgap, 10dlu, $lgap, default"));
+
+                //---- btn1 ----
+                btn1.setText(null);
+                btn1.setIcon(new ImageIcon(getClass().getResource("/artwork/farcry-logo.png")));
+                contentPanel.add(btn1, CC.xywh(1, 1, 1, 3));
+
+                //---- btn2 ----
+                btn2.setText(null);
+                btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit.png")));
+                contentPanel.add(btn2, CC.xywh(3, 1, 1, 3));
 
                 //---- btnRed ----
                 btnRed.setText(null);
                 btnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred32.png")));
-                contentPanel.add(btnRed, CC.xy(1, 1, CC.FILL, CC.FILL));
+                contentPanel.add(btnRed, CC.xy(5, 1, CC.FILL, CC.FILL));
 
                 //---- btnGreen ----
                 btnGreen.setText(null);
                 btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
-                contentPanel.add(btnGreen, CC.xy(3, 1, CC.FILL, CC.FILL));
-                contentPanel.add(pb1, CC.xywh(1, 3, 3, 1));
+                contentPanel.add(btnGreen, CC.xy(5, 3, CC.FILL, CC.FILL));
+                contentPanel.add(pb1, CC.xywh(1, 5, 5, 1));
 
                 //---- lblMessage ----
                 lblMessage.setText("text");
                 lblMessage.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblMessage, CC.xy(1, 5));
+                contentPanel.add(lblMessage, CC.xy(1, 7));
 
                 //---- lblTimer ----
                 lblTimer.setText("text");
                 lblTimer.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblTimer, CC.xy(3, 5));
-
-                //---- btn1 ----
-                btn1.setText("Start/Stop");
-                contentPanel.add(btn1, CC.xy(1, 7));
-
-                //---- btn2 ----
-                btn2.setText("QUIT");
-                contentPanel.add(btn2, CC.xy(3, 7));
+                contentPanel.add(lblTimer, CC.xy(5, 7));
             }
             tabbedPane1.addTab("Game", contentPanel);
 
-            //======== panel2 ========
+            //======== settingsPanel ========
             {
-                panel2.setLayout(new FormLayout(
-                        "default:grow, $ugap, default, $lcgap, default:grow, $lcgap, default",
-                        "2*(default, $lgap), default"));
+                settingsPanel.setLayout(new FormLayout(
+                    "default:grow, $ugap, default, $lcgap, default:grow, $lcgap, default",
+                    "2*(default, $lgap), default"));
 
                 //---- label1 ----
                 label1.setText("capture");
                 label1.setFont(new Font("Dialog", Font.PLAIN, 16));
-                panel2.add(label1, CC.xy(1, 1));
+                settingsPanel.add(label1, CC.xy(1, 1));
 
                 //---- btnFCYcapPlus ----
                 btnFCYcapPlus.setText(null);
                 btnFCYcapPlus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_add.png")));
                 btnFCYcapPlus.addActionListener(e -> btnFCYcapPlusActionPerformed(e));
-                panel2.add(btnFCYcapPlus, CC.xy(3, 1));
+                settingsPanel.add(btnFCYcapPlus, CC.xy(3, 1));
 
                 //---- lblFCYCapture ----
                 lblFCYCapture.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYCapture.setText("1");
-                panel2.add(lblFCYCapture, CC.xy(5, 1, CC.CENTER, CC.DEFAULT));
+                settingsPanel.add(lblFCYCapture, CC.xy(5, 1, CC.CENTER, CC.DEFAULT));
 
                 //---- btnFCYcapMinus ----
                 btnFCYcapMinus.setText(null);
                 btnFCYcapMinus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_remove.png")));
                 btnFCYcapMinus.addActionListener(e -> btnFCYcapMinusActionPerformed(e));
-                panel2.add(btnFCYcapMinus, CC.xy(7, 1));
+                settingsPanel.add(btnFCYcapMinus, CC.xy(7, 1));
 
                 //---- label2 ----
                 label2.setText("gametime");
                 label2.setFont(new Font("Dialog", Font.PLAIN, 16));
-                panel2.add(label2, CC.xy(1, 3));
+                settingsPanel.add(label2, CC.xy(1, 3));
 
                 //---- btnFCYgametimePlus ----
                 btnFCYgametimePlus.setText(null);
                 btnFCYgametimePlus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_add.png")));
                 btnFCYgametimePlus.addActionListener(e -> btnFCYgametimePlusActionPerformed(e));
-                panel2.add(btnFCYgametimePlus, CC.xy(3, 3));
+                settingsPanel.add(btnFCYgametimePlus, CC.xy(3, 3));
 
                 //---- lblFCYGametime ----
                 lblFCYGametime.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYGametime.setText("1");
-                panel2.add(lblFCYGametime, CC.xy(5, 3, CC.CENTER, CC.DEFAULT));
+                settingsPanel.add(lblFCYGametime, CC.xy(5, 3, CC.CENTER, CC.DEFAULT));
 
                 //---- btnFCYgametimeMinus ----
                 btnFCYgametimeMinus.setText(null);
                 btnFCYgametimeMinus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_remove.png")));
                 btnFCYgametimeMinus.addActionListener(e -> btnFCYgametimeMinusActionPerformed(e));
-                panel2.add(btnFCYgametimeMinus, CC.xy(7, 3));
+                settingsPanel.add(btnFCYgametimeMinus, CC.xy(7, 3));
 
                 //---- btnSound ----
                 btnSound.setText(null);
                 btnSound.setIcon(new ImageIcon(getClass().getResource("/artwork/soundoff.png")));
                 btnSound.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/sound.png")));
-                panel2.add(btnSound, CC.xy(1, 5));
+                settingsPanel.add(btnSound, CC.xy(1, 5));
 
                 //---- btnSiren ----
                 btnSiren.setText(null);
                 btnSiren.setIcon(new ImageIcon(getClass().getResource("/artwork/speaker_mute.png")));
                 btnSiren.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/speaker.png")));
-                panel2.add(btnSiren, CC.xywh(3, 5, 5, 1));
+                settingsPanel.add(btnSiren, CC.xywh(3, 5, 5, 1));
             }
-            tabbedPane1.addTab("Settings", panel2);
+            tabbedPane1.addTab("Settings", settingsPanel);
+
+            //======== panel1 ========
+            {
+                panel1.setLayout(new FormLayout(
+                    "default, $lcgap, default",
+                    "2*(default, $lgap), default"));
+
+                //---- button1 ----
+                button1.setText("Relay 1");
+                panel1.add(button1, CC.xy(1, 1));
+            }
+            tabbedPane1.addTab("HW-Test", panel1);
         }
         contentPane.add(tabbedPane1);
         setSize(320, 240);
@@ -287,14 +302,14 @@ public class FrmTest extends JFrame {
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     private JTabbedPane tabbedPane1;
     private JPanel contentPanel;
+    private JButton btn1;
+    private JButton btn2;
     private JButton btnRed;
     private JButton btnGreen;
     private JProgressBar pb1;
     private JLabel lblMessage;
     private JLabel lblTimer;
-    private JButton btn1;
-    private JButton btn2;
-    private JPanel panel2;
+    private JPanel settingsPanel;
     private JLabel label1;
     private JButton btnFCYcapPlus;
     private JLabel lblFCYCapture;
@@ -305,5 +320,7 @@ public class FrmTest extends JFrame {
     private JButton btnFCYgametimeMinus;
     private JToggleButton btnSound;
     private JToggleButton btnSiren;
+    private JPanel panel1;
+    private JButton button1;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
