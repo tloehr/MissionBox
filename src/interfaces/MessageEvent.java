@@ -5,7 +5,6 @@ import misc.Tools;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.EventObject;
 
 
@@ -17,28 +16,33 @@ public class MessageEvent extends EventObject {
     final Logger LOGGER = Logger.getLogger(this.getClass());
 
     private final Object message;
+    private final int mode;
 
-    public MessageEvent(Object source, String message) {
+    public MessageEvent(Object source, int mode, String message) {
         super(source);
         LOGGER.setLevel(MissionBox.logLevel);
+        this.mode = mode;
         this.message = Tools.xx(message);
     }
 
-    public MessageEvent(Object source, BigDecimal percentage) {
+    public MessageEvent(Object source, int mode, BigDecimal percentage) {
         super(source);
         LOGGER.setLevel(MissionBox.logLevel);
+        this.mode = mode;
         this.message = percentage;
     }
 
     public MessageEvent(Object source, int mode) {
         super(source);
         LOGGER.setLevel(MissionBox.logLevel);
+        this.mode = mode;
         this.message = new Integer(mode);
     }
 
-    public MessageEvent(Object source, Boolean on) {
+    public MessageEvent(Object source,  int mode, Boolean on) {
         super(source);
         LOGGER.setLevel(MissionBox.logLevel);
+        this.mode = mode;
         this.message = on;
     }
 
@@ -67,9 +71,8 @@ public class MessageEvent extends EventObject {
         return isPercentage() ? (BigDecimal) message : null;
     }
 
-
-    public Integer getMode() {
-        return isMode() ? (Integer) message : null;
+    public int getMode() {
+        return mode;
     }
 
     public boolean isOn() {

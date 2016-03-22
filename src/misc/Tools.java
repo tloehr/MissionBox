@@ -9,6 +9,7 @@ import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,7 @@ public class Tools {
     public static final String SND_START = "196889__ionicsmusic__race-robot-start.wav";
     public static final String SND_GAME_OVER = "196868__ionicsmusic__race-robot-game-over.wav";
 
+    public static final String[] COUNTDOWN = new String[]{"10.wav","09.wav","08.wav","07.wav","06.wav","05.wav","04.wav","03.wav","02.wav","01.wav","00.wav"};
     public static final String[] WINNING_SONGS = new String[]{SND_MIB, SND_QUEEN};
     public static final String[] LOSING_SONGS = new String[]{SND_LOSER};
 
@@ -93,8 +95,12 @@ public class Tools {
         return null;
     }
 
+    public static String getMissionboxDirectory() {
+        return System.getProperty("user.home") + File.separator + "missionbox";
+    }
+
     public static String getSoundPath() {
-        return "/local/missionbox";
+        return getMissionboxDirectory() + File.separator + "sounds";
     }
 
     public static String getWinningSong() {

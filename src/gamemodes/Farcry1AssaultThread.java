@@ -95,7 +95,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             switch (gameState) {
                 case GAME_PRE_GAME: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.pre.game"));
+                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
@@ -103,20 +103,20 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     this.GAMETIMEINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60;
                     this.TIME2CAP = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
 
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.active"));
+                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.active"));
                     starttime = new DateTime();
                     endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     setGameState(GAME_FLAG_COLD);
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.hot"));
+                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     flagactivation = new DateTime();
                     endtime = flagactivation.plusSeconds(TIME2CAP);
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.rocket.launched"));
+                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.rocket.launched"));
                     endtime = new DateTime();
                     rockettime = endtime.plusSeconds(rocketseconds); // hier wird noch kurz gewartet bis der raketensound abgespielt ist. danach wird gehts
 //                    afterglow = rockettime + (agseconds * 1000);
@@ -124,28 +124,26 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_FLAG_COLD: {
                     flagactivation = null;
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.flag.is.cold"));
+                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.taken"));
+                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.taken"));
                     break;
                 }
                 case GAME_OUTCOME_FLAG_DEFENDED: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.outcome.flag.defended"));
+                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
                     break;
                 }
                 case GAME_OVER: {
-                    fireMessage(messageList, new MessageEvent(this, "assault.gamestate.after.game"));
-
-
+                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.after.game"));
 
 
                     break;
                 }
                 default: {
-                    fireMessage(messageList, new MessageEvent(this, "msg.error"));
+                    fireMessage(messageList, new MessageEvent(this, gameState, "msg.error"));
                 }
             }
         }
@@ -224,7 +222,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         }
     }
 
-    public boolean timeIsUp(){
+    public boolean timeIsUp() {
         return endtime != null && endtime.isBeforeNow();
     }
 
@@ -243,7 +241,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     dateFormatted = endtime.minus(new DateTime().getMillis()).toString("mm:ss");
                 }
 
-                fireMessage(gameTimerList, new MessageEvent(this, dateFormatted));
+                fireMessage(gameTimerList, new MessageEvent(this, gameState, dateFormatted));
             }
 
             try {
@@ -252,15 +250,15 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     if (timeIsUp()) {
                         setGameState(GAME_OUTCOME_FLAG_DEFENDED);
                     }
-                    fireMessage(percentageList, new MessageEvent(this, BigDecimal.ZERO));
+                    fireMessage(percentageList, new MessageEvent(this, gameState, BigDecimal.ZERO));
                 }
 
                 if (gameState == GAME_FLAG_HOT) {
                     if (timeIsUp()) {
                         setGameState(GAME_ROCKET_LAUNCHED);
                     }
-                    BigDecimal progress = new BigDecimal(new DateTime().getMillis()-flagactivation.getMillis()).divide(new BigDecimal(endtime.getMillis()-flagactivation.getMillis()), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-                    fireMessage(percentageList, new MessageEvent(this, progress));
+                    BigDecimal progress = new BigDecimal(new DateTime().getMillis() - flagactivation.getMillis()).divide(new BigDecimal(endtime.getMillis() - flagactivation.getMillis()), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+                    fireMessage(percentageList, new MessageEvent(this, gameState, progress));
                 }
 
                 if (gameState == GAME_ROCKET_LAUNCHED) {

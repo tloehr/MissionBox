@@ -89,7 +89,7 @@ public class FrmTest extends JFrame {
     private void tabbedPane1StateChanged(ChangeEvent e) {
 
         if (tabbedPane1.getSelectedIndex() == 0) {
-
+            MissionBox.saveLocalProps();
         } else {
 
         }
