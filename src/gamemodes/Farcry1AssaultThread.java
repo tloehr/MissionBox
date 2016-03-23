@@ -236,6 +236,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
             // Alle cycledivider durchgänge wird eine Nachricht bzgl. der Gametime geschickt. Sonst sind das zu viele unsinnige nachrichten.
             // cycledivider = 1000 / millispercycle
             if (threadcycles % cycledivider == 0) {
+
                 String dateFormatted = "00:00";
                 if (endtime != null && endtime.isAfterNow()) {
                     dateFormatted = endtime.minus(new DateTime().getMillis()).toString("mm:ss");

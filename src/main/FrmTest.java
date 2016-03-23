@@ -26,11 +26,11 @@ public class FrmTest extends JFrame {
     private void initPanel() {
         lblFCYCapture.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
         lblFCYGametime.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
-        btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("1"));
-        btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("1"));
+        btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("true"));
+        btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("true"));
 
-        btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "1" : "0"));
-        btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "1" : "0"));
+        btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "true" : "false"));
+        btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "true" : "false"));
 
         pb1.setVisible(true);
 
@@ -104,10 +104,16 @@ public class FrmTest extends JFrame {
 
     public void enableSettings(boolean yes) {
         tabbedPane1.setEnabledAt(1, yes);
+        tabbedPane1.setEnabledAt(2, yes);
     }
+
 
     public boolean isGameStartable() {
         return tabbedPane1.getSelectedIndex() == 0;
+    }
+
+    private void btnRedLedBarActionPerformed(ActionEvent e) {
+        // TODO add your code here
     }
 
 
@@ -134,7 +140,15 @@ public class FrmTest extends JFrame {
         btnSound = new JToggleButton();
         btnSiren = new JToggleButton();
         panel1 = new JPanel();
-        button1 = new JButton();
+        lblBtnRed = new JLabel();
+        btnRedLed = new JButton();
+        btnRedLedBar = new JButton();
+        lblBtnGreen = new JLabel();
+        btnRedLed2 = new JButton();
+        btnYellowLedBar = new JButton();
+        lblBtnStartStop = new JLabel();
+        btnGreenLedBar = new JButton();
+        lblBtnQuit = new JLabel();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -179,9 +193,9 @@ public class FrmTest extends JFrame {
                 contentPanel.add(lblMessage, CC.xy(1, 7));
 
                 //---- lblTimer ----
-                lblTimer.setText("text");
+                lblTimer.setText("--");
                 lblTimer.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblTimer, CC.xy(5, 7));
+                contentPanel.add(lblTimer, CC.xy(5, 7, CC.CENTER, CC.DEFAULT));
             }
             tabbedPane1.addTab("Game", contentPanel);
 
@@ -252,12 +266,49 @@ public class FrmTest extends JFrame {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                    "default, $lcgap, default",
-                    "2*(default, $lgap), default"));
+                    "default, $lcgap, default, 6dlu, default",
+                    "4*(default, $lgap), default"));
 
-                //---- button1 ----
-                button1.setText("Relay 1");
-                panel1.add(button1, CC.xy(1, 1));
+                //---- lblBtnRed ----
+                lblBtnRed.setText("Red Button");
+                lblBtnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred32.png")));
+                panel1.add(lblBtnRed, CC.xy(1, 1));
+
+                //---- btnRedLed ----
+                btnRedLed.setText("LED ON");
+                panel1.add(btnRedLed, CC.xy(3, 1));
+
+                //---- btnRedLedBar ----
+                btnRedLedBar.setText("Red LED Bar");
+                btnRedLedBar.addActionListener(e -> btnRedLedBarActionPerformed(e));
+                panel1.add(btnRedLedBar, CC.xy(5, 1));
+
+                //---- lblBtnGreen ----
+                lblBtnGreen.setText("Green Button");
+                lblBtnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
+                panel1.add(lblBtnGreen, CC.xy(1, 3));
+
+                //---- btnRedLed2 ----
+                btnRedLed2.setText("LED ON");
+                panel1.add(btnRedLed2, CC.xy(3, 3));
+
+                //---- btnYellowLedBar ----
+                btnYellowLedBar.setText("Yellow LED Bar");
+                panel1.add(btnYellowLedBar, CC.xy(5, 3));
+
+                //---- lblBtnStartStop ----
+                lblBtnStartStop.setText("Start/Stop");
+                lblBtnStartStop.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
+                panel1.add(lblBtnStartStop, CC.xy(1, 5));
+
+                //---- btnGreenLedBar ----
+                btnGreenLedBar.setText("Green LED Bar");
+                panel1.add(btnGreenLedBar, CC.xy(5, 5));
+
+                //---- lblBtnQuit ----
+                lblBtnQuit.setText("Quit");
+                lblBtnQuit.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkyellow32.png")));
+                panel1.add(lblBtnQuit, CC.xy(1, 7));
             }
             tabbedPane1.addTab("HW-Test", panel1);
         }
@@ -321,6 +372,14 @@ public class FrmTest extends JFrame {
     private JToggleButton btnSound;
     private JToggleButton btnSiren;
     private JPanel panel1;
-    private JButton button1;
+    private JLabel lblBtnRed;
+    private JButton btnRedLed;
+    private JButton btnRedLedBar;
+    private JLabel lblBtnGreen;
+    private JButton btnRedLed2;
+    private JButton btnYellowLedBar;
+    private JLabel lblBtnStartStop;
+    private JButton btnGreenLedBar;
+    private JLabel lblBtnQuit;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
