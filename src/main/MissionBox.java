@@ -4,8 +4,6 @@ import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
-import com.sun.speech.freetts.Voice;
-import com.sun.speech.freetts.VoiceManager;
 import gamemodes.Farcry1Assault;
 import interfaces.Relay;
 import interfaces.RelaySiren;
@@ -99,19 +97,25 @@ public class MissionBox {
 
         hwinit();
 
+        ledGreen = new Relay(ioLedGreen);
+        ledRed = new Relay(ioLedRed);
+        ledBarGreen = new Relay(ioLedBarGreen);
+        ledBarYellow = new Relay(ioLedBarYellow);
+        ledBarRed = new Relay(ioLedBarRed);
+
+        progressLEDs.add(ledBarGreen);
+        progressLEDs.add(ledBarYellow);
+        progressLEDs.add(ledBarRed);
+
+        relaisLEDs = new RelaySiren(MissionBox.getProgressLEDs());
+        relaisSirens = new RelaySiren(MissionBox.getRelayBoard());
+
         frmTest = new FrmTest();
         frmTest.pack();
         frmTest.setVisible(true);
 
         Farcry1Assault fc = new Farcry1Assault(frmTest);
     }
-
-    public static Voice getVoice() {
-        Voice voice = VoiceManager.getInstance().getVoice("kevin"); // kevin, kevin16, alan
-        voice.allocate();
-        return voice;
-    }
-
 
     private static void loadLocalProperties() throws IOException {
 
@@ -208,18 +212,7 @@ public class MissionBox {
         ioLedBarYellow = MissionBox.getMapGPIO().get("mcp23017-01-A3");
         ioLedBarRed = MissionBox.getMapGPIO().get("mcp23017-01-A4");
 
-        Relay ledGreen = new Relay(ioLedGreen);
-        Relay ledRed = new Relay(ioLedRed);
-        Relay ledBarGreen = new Relay(ioLedBarGreen);
-        Relay ledBarYellow = new Relay(ioLedBarYellow);
-        Relay ledBarRed = new Relay(ioLedBarRed);
 
-        progressLEDs.add(ledBarGreen);
-        progressLEDs.add(ledBarYellow);
-        progressLEDs.add(ledBarRed);
-
-        relaisLEDs = new RelaySiren(MissionBox.getProgressLEDs());
-        relaisSirens = new RelaySiren(MissionBox.getRelayBoard());
     }
 
     public static HashMap<String, GpioPinDigitalOutput> getMapGPIO() {

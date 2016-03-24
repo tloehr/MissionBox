@@ -49,7 +49,7 @@ public class Farcry1Assault implements GameModes {
     private Farcry1AssaultThread farcryAssaultThread;
 
     private Music playSiren, playWinningSong, playLoserSong;
-    private Sound playWelcome, playRocket, playMinions, playGameOver, playVictory, playDefeat;
+    private Sound playWelcome, playRocket, playMinions, playGameOver, playVictory, playDefeat, playShutdown;
 
     private Sound[] countdown = new Sound[11];
     private int prev_countdown_index;
@@ -88,6 +88,7 @@ public class Farcry1Assault implements GameModes {
         playMinions = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_MINIONS_SPAWNED));
         playVictory = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_VICTORY));
         playDefeat = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_DEFEAT));
+        playShutdown = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN));
 
         for (int i = 0; i <= 10; i++) {
             countdown[i] = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.COUNTDOWN[i]));
@@ -98,6 +99,10 @@ public class Farcry1Assault implements GameModes {
         MessageListener gameTimeListener = messageEvent -> {
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 frmTest.setTimer("--");
+                return;
+            }
+            if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
+                frmTest.setTimer(gameWon ? "Flag taken" : "Flag defended");
                 return;
             }
             logger.debug("GameTime: " + messageEvent.getMessage());
@@ -124,11 +129,14 @@ public class Farcry1Assault implements GameModes {
             frmTest.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
+                if (sound) playShutdown.stop();
                 if (sound) playSiren.play(true);
                 MissionBox.getLedRed().blink(100, PinState.HIGH);
                 MissionBox.getLedGreen().blink(100, PinState.LOW);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 if (sound) playSiren.stop();
+                if (sound && prev_countdown_index > -1) playShutdown.play(); // plays only when the flag has been touched during this round.
+
                 MissionBox.getLedRed().blink(1000, PinState.HIGH);
                 MissionBox.getLedGreen().blink(1000, PinState.LOW);
                 MissionBox.getLedBarGreen().blink(0);
