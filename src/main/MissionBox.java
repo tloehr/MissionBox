@@ -7,6 +7,7 @@ import com.pi4j.io.i2c.I2CBus;
 import gamemodes.Farcry1Assault;
 import interfaces.Relay;
 import interfaces.RelaySiren;
+import misc.Tools;
 import org.apache.log4j.*;
 
 import javax.swing.*;
@@ -62,13 +63,18 @@ public class MissionBox {
     public static final void main(String[] args) throws Exception {
         logLevel = Level.toLevel("DEBUG", Level.DEBUG);
 
-//        try {
-//            GPIO = GpioFactory.getInstance();
-//        } catch (Exception e) {
-//            GPIO = null;
-//        }
-        loadLocalProperties();
+
+        String os = System.getProperty("os.name").toLowerCase();
+
         GPIO = null;
+        if (Tools.isArm()) {
+            try {
+                GPIO = GpioFactory.getInstance();
+            } catch (Exception e) {
+            }
+        }
+
+        loadLocalProperties();
 
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -163,6 +169,46 @@ public class MissionBox {
         return config;
     }
 
+    public static GpioPinDigitalInput getIoRed() {
+        return ioRed;
+    }
+
+    public static GpioPinDigitalInput getIoGreen() {
+        return ioGreen;
+    }
+
+    public static GpioPinDigitalInput getIoGameStartStop() {
+        return ioGameStartStop;
+    }
+
+    public static GpioPinDigitalInput getIoMisc() {
+        return ioMisc;
+    }
+
+    public static GpioPinDigitalOutput getIoLedGreen() {
+        return ioLedGreen;
+    }
+
+    public static GpioPinDigitalOutput getIoLedRed() {
+        return ioLedRed;
+    }
+
+    public static GpioPinDigitalOutput getIoLedBarGreen() {
+        return ioLedBarGreen;
+    }
+
+    public static GpioPinDigitalOutput getIoLedBarYellow() {
+        return ioLedBarYellow;
+    }
+
+    public static GpioPinDigitalOutput getIoLedBarRed() {
+        return ioLedBarRed;
+    }
+
+    public static RelaySiren getRelaisLEDs() {
+        return relaisLEDs;
+    }
+
     private static void hwinit() throws IOException {
 
         if (GPIO == null) return;
@@ -205,7 +251,6 @@ public class MissionBox {
         ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
         ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
 
-
         ioLedGreen = MissionBox.getMapGPIO().get("mcp23017-01-A0");
         ioLedRed = MissionBox.getMapGPIO().get("mcp23017-01-A1");
         ioLedBarGreen = MissionBox.getMapGPIO().get("mcp23017-01-A2");
@@ -214,6 +259,8 @@ public class MissionBox {
 
 
     }
+
+
 
     public static HashMap<String, GpioPinDigitalOutput> getMapGPIO() {
         return mapGPIO;

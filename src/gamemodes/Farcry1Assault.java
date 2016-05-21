@@ -64,17 +64,17 @@ public class Farcry1Assault implements GameModes {
 
         // hier gehts weiter
 
-        final GpioPinDigitalInput ioRed = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnRed = new MyAbstractButton(ioRed, frmTest.getBtnRed());
+//        final GpioPinDigitalInput ioRed = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
+        MyAbstractButton btnRed = new MyAbstractButton(MissionBox.getIoRed(), frmTest.getBtnRed());
 
-        final GpioPinDigitalInput ioGreen = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnGreen = new MyAbstractButton(ioGreen, frmTest.getBtnGreen());
+//        final GpioPinDigitalInput ioGreen = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
+        MyAbstractButton btnGreen = new MyAbstractButton(MissionBox.getIoGreen(), frmTest.getBtnGreen());
 
-        final GpioPinDigitalInput ioGameStartStop = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnGameStartStop = new MyAbstractButton(ioGameStartStop, frmTest.getBtn1());
+//        final GpioPinDigitalInput ioGameStartStop = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
+        MyAbstractButton btnGameStartStop = new MyAbstractButton(MissionBox.getIoGameStartStop(), frmTest.getBtn1());
 
-        final GpioPinDigitalInput ioMisc = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnMisc = new MyAbstractButton(ioMisc, frmTest.getBtn2());
+//        final GpioPinDigitalInput ioMisc = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
+        MyAbstractButton btnMisc = new MyAbstractButton(MissionBox.getIoMisc(), frmTest.getBtn2());
 
 
 

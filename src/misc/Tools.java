@@ -49,6 +49,42 @@ public class Tools {
     }
 
 
+    // http://www.mkyong.com/java/how-to-detect-os-in-java-systemgetpropertyosname/
+    public static boolean isWindows() {
+
+        String os = System.getProperty("os.name").toLowerCase();
+        //windows
+        return (os.indexOf("win") >= 0);
+
+    }
+
+    // http://www.mkyong.com/java/how-to-detect-os-in-java-systemgetpropertyosname/
+    public static boolean isMac() {
+
+        String os = System.getProperty("os.name").toLowerCase();
+        //Mac
+        return (os.indexOf("mac") >= 0);
+
+    }
+
+    // http://www.mkyong.com/java/how-to-detect-os-in-java-systemgetpropertyosname/
+    public static boolean isArm() {
+
+        String os = System.getProperty("os.arch").toLowerCase();
+        //Mac
+        return (os.indexOf("arm") >= 0);
+
+    }
+
+    // http://www.mkyong.com/java/how-to-detect-os-in-java-systemgetpropertyosname/
+    public static boolean isUnix() {
+
+        String os = System.getProperty("os.name").toLowerCase();
+        //linux or unix
+        return (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0);
+
+    }
+
     public static Pin getPinByName(String provider, String pinname) {
         if (provider.equalsIgnoreCase("mcp23017")) {
             switch (pinname) {
