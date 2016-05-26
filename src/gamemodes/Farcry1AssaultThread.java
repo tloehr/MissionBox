@@ -192,19 +192,19 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 //        setGameState(GAME_PRE_GAME);
 //    }
 
-    public synchronized void toggleFlag() {
-        if (gameState == GAME_PRE_GAME || gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED || gameState == GAME_OVER)
-            return;
-
-        if (isFlagHot()) setFlag(false);
-        else setFlag(true);
-
-//        if (gameState == GAME_FLAG_COLD) {
-//            setGameState(GAME_FLAG_HOT);
-//        } else {
-//            setGameState(GAME_FLAG_COLD);
-//        }
-    }
+//    public synchronized void toggleFlag() {
+//        if (gameState == GAME_PRE_GAME || gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED || gameState == GAME_OVER)
+//            return;
+//
+//        if (isFlagHot()) setFlag(false);
+//        else setFlag(true);
+//
+////        if (gameState == GAME_FLAG_COLD) {
+////            setGameState(GAME_FLAG_HOT);
+////        } else {
+////            setGameState(GAME_FLAG_COLD);
+////        }
+//    }
 
     public synchronized boolean isFlagHot() {
         return gameState == GAME_FLAG_HOT;

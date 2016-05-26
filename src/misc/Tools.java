@@ -128,7 +128,7 @@ public class Tools {
     }
 
     public static String getMissionboxDirectory() {
-        return System.getProperty("user.home") + File.separator + "missionbox";
+        return"/home/pi/missionbox";
     }
 
     public static String getSoundPath() {

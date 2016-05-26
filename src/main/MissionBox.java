@@ -9,6 +9,7 @@ import interfaces.Relay;
 import interfaces.RelaySiren;
 import misc.Tools;
 import org.apache.log4j.*;
+import org.apache.log4j.net.SyslogAppender;
 
 import javax.swing.*;
 import java.io.File;
@@ -28,7 +29,7 @@ public class MissionBox {
     private static final Logger logger = Logger.getRootLogger();
     public static Level logLevel = Level.DEBUG;
     private static GpioController GPIO;
-    private static FrmTest frmTest;
+//    private static FrmTest frmTest;
     private static Properties config;
 
     private static final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
@@ -116,11 +117,11 @@ public class MissionBox {
         relaisLEDs = new RelaySiren(MissionBox.getProgressLEDs());
         relaisSirens = new RelaySiren(MissionBox.getRelayBoard());
 
-        frmTest = new FrmTest();
-        frmTest.pack();
-        frmTest.setVisible(true);
+//        frmTest = new FrmTest();
+//        frmTest.pack();
+//        frmTest.setVisible(true);
 
-        Farcry1Assault fc = new Farcry1Assault(frmTest);
+        new Farcry1Assault();
     }
 
     private static void loadLocalProperties() throws IOException {
@@ -134,9 +135,9 @@ public class MissionBox {
         config.put(FCY_SOUND, "true");
         config.put(FCY_SIREN, "false");
 
-        String path = System.getProperty("user.home") + File.separator + "missionbox";
 
-        File configFile = new File(path + File.separator + "config.txt");
+
+        File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
 
         configFile.getParentFile().mkdirs();
 
@@ -256,6 +257,11 @@ public class MissionBox {
         ioLedBarGreen = MissionBox.getMapGPIO().get("mcp23017-01-A2");
         ioLedBarYellow = MissionBox.getMapGPIO().get("mcp23017-01-A3");
         ioLedBarRed = MissionBox.getMapGPIO().get("mcp23017-01-A4");
+
+        if (ioGameStartStop == null) System.exit(0);
+        if (ioRed == null) System.exit(0);
+        if (ioGreen == null) System.exit(0);
+        if (ioMisc == null) System.exit(0);
 
 
     }

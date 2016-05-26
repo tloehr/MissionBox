@@ -1,29 +1,18 @@
 package gamemodes;
 
-import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
-import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import com.pi4j.io.i2c.I2CBus;
 import interfaces.MessageListener;
-import interfaces.MyAbstractButton;
-import interfaces.Relay;
-import interfaces.RelaySiren;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
-import main.FrmTest;
 import main.MissionBox;
 import misc.Tools;
 import org.apache.log4j.Logger;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by tloehr on 31.05.15.
@@ -39,13 +28,6 @@ public class Farcry1Assault implements GameModes {
     private boolean sound = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND));
     private boolean siren = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN));
 
-
-
-
-
-//    private final RelaySiren relaisSirens, relaisLEDs;
-
-
     private Farcry1AssaultThread farcryAssaultThread;
 
     private Music playSiren, playWinningSong, playLoserSong;
@@ -55,29 +37,8 @@ public class Farcry1Assault implements GameModes {
     private int prev_countdown_index;
 
 
-
-    public Farcry1Assault(FrmTest frmTest) throws IOException {
-
-
-
+    public Farcry1Assault() throws IOException {
         logger.setLevel(MissionBox.logLevel);
-
-        // hier gehts weiter
-
-//        final GpioPinDigitalInput ioRed = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnRed = new MyAbstractButton(MissionBox.getIoRed(), frmTest.getBtnRed());
-
-//        final GpioPinDigitalInput ioGreen = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnGreen = new MyAbstractButton(MissionBox.getIoGreen(), frmTest.getBtnGreen());
-
-//        final GpioPinDigitalInput ioGameStartStop = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnGameStartStop = new MyAbstractButton(MissionBox.getIoGameStartStop(), frmTest.getBtn1());
-
-//        final GpioPinDigitalInput ioMisc = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnMisc = new MyAbstractButton(MissionBox.getIoMisc(), frmTest.getBtn2());
-
-
-
 
         TinySound.init();
 
@@ -89,6 +50,8 @@ public class Farcry1Assault implements GameModes {
         playVictory = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_VICTORY));
         playDefeat = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_DEFEAT));
         playShutdown = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN));
+        playLoserSong = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.getLosingSong()));
+        playWinningSong = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.getWinningSong()));
 
         for (int i = 0; i <= 10; i++) {
             countdown[i] = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.COUNTDOWN[i]));
@@ -98,21 +61,19 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener gameTimeListener = messageEvent -> {
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
-                frmTest.setTimer("--");
+//                frmTest.setTimer("--");
                 return;
             }
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
-                frmTest.setTimer(gameWon ? "Flag taken" : "Flag defended");
+//                frmTest.setTimer(gameWon ? "Flag taken" : "Flag defended");
                 return;
             }
-            logger.debug("GameTime: " + messageEvent.getMessage());
-            frmTest.setTimer(messageEvent.getMessage().toString());
+            logger.info("GameTime: " + messageEvent.getMessage());
         };
 
         MessageListener percentageListener = messageEvent -> {
             logger.debug(messageEvent.getPercentage());
             if (siren) MissionBox.getRelaisSirens().setValue(messageEvent.getPercentage());
-            frmTest.setProgress(messageEvent.getPercentage().intValue());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 int countdown_index = messageEvent.getPercentage().intValue() / 10;
@@ -121,12 +82,10 @@ public class Farcry1Assault implements GameModes {
                     if (sound) countdown[countdown_index].play();
                 }
             }
-
         };
 
         MessageListener gameModeListener = messageEvent -> {
             logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
-            frmTest.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 if (sound) playShutdown.stop();
@@ -135,13 +94,14 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.getLedGreen().blink(100, PinState.LOW);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 if (sound) playSiren.stop();
-                if (sound && prev_countdown_index > -1) playShutdown.play(); // plays only when the flag has been touched during this round.
+                if (sound && prev_countdown_index > -1)
+                    playShutdown.play(); // plays only when the flag has been touched during this round.
 
                 MissionBox.getLedRed().blink(1000, PinState.HIGH);
                 MissionBox.getLedGreen().blink(1000, PinState.LOW);
-                MissionBox.getLedBarGreen().blink(0);
-                MissionBox.getLedBarYellow().blink(0);
-                MissionBox.getLedBarRed().blink(0);
+                MissionBox.getLedBarGreen().setOn(false);
+                MissionBox.getLedBarYellow().setOn(false);
+                MissionBox.getLedBarRed().setOn(false);
                 if (siren) MissionBox.getRelaisSirens().setValue(BigDecimal.ZERO);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
                 if (sound) playSiren.stop();
@@ -160,15 +120,7 @@ public class Farcry1Assault implements GameModes {
                 if (sound && playWinningSong != null) { // checking for 1 null is enough.
                     playWinningSong.stop();
                     playLoserSong.stop();
-                    playLoserSong.unload();
-                    playWinningSong.unload();
                 }
-
-                playLoserSong = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.getLosingSong()));
-                playWinningSong = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.getWinningSong()));
-
-                frmTest.enableSettings(true);
-
                 MissionBox.getLedRed().blink(500, PinState.HIGH);
                 MissionBox.getLedGreen().blink(500, PinState.LOW);
                 MissionBox.getLedBarGreen().blink(1000);
@@ -191,7 +143,7 @@ public class Farcry1Assault implements GameModes {
                     if (sound) playDefeat.play();
                     if (sound) playLoserSong.play(false);
                 }
-//                fadeout(playWinningSon);
+
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
                 MissionBox.getLedRed().blink(250, PinState.HIGH);
                 MissionBox.getLedGreen().blink(250, PinState.HIGH);
@@ -202,51 +154,29 @@ public class Farcry1Assault implements GameModes {
                 if (sound) playRocket.stop();
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
-                frmTest.enableSettings(false);
                 if (sound) playMinions.play();
-
-
             }
         };
 
-        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener);
-
-        btnRed.addListener((GpioPinListenerDigital) event -> {
+        MissionBox.getIoRed().addListener((GpioPinListenerDigital) event -> {
+            logger.info("RedButton pressed");
             if (event.getState() == PinState.HIGH) {
-                logger.debug("RedButton pressed");
                 farcryAssaultThread.setFlag(true);
             }
         });
 
-        btnRed.addListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                logger.debug("RedButton pressed");
-                farcryAssaultThread.setFlag(true);
-            }
-        });
-
-        btnGreen.addListener((GpioPinListenerDigital) event -> {
-            if (event.getState() == PinState.HIGH) {
+        MissionBox.getIoGreen().addListener((GpioPinListenerDigital) gpioPinDigitalStateChangeEvent -> {
+            logger.info("GreenButton pressed");
+            if (gpioPinDigitalStateChangeEvent.getState() == PinState.HIGH) {
                 // If both buttons are pressed, the red one wins.
-                if (btnRed.isHigh()) return;
-                logger.debug("GreenButton pressed");
+                if (MissionBox.getIoRed().isHigh()) return;
                 farcryAssaultThread.setFlag(false);
             }
         });
 
-        btnGreen.addListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                logger.debug("GreenButton pressed");
-                farcryAssaultThread.setFlag(false);
-            }
-        });
-
-        btnGameStartStop.addListener((GpioPinListenerDigital) event -> {
-            if (!frmTest.isGameStartable()) return;
+        MissionBox.getIoGameStartStop().addListener((GpioPinListenerDigital) event -> {
+            logger.info("btnGameStartStop");
             if (event.getState() == PinState.HIGH) {
-                logger.debug("btnGameStartStop");
                 if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                     farcryAssaultThread.startGame();
                 } else {
@@ -255,76 +185,20 @@ public class Farcry1Assault implements GameModes {
             }
         });
 
-        btnGameStartStop.addListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!frmTest.isGameStartable()) return;
-                logger.debug("btnGameStartStop");
-                if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
-                    farcryAssaultThread.startGame();
-                } else {
-                    farcryAssaultThread.restartGame();
-                }
-            }
-        });
-
-        btnMisc.addListener((GpioPinListenerDigital) event -> {
-
-
-//            fadeout(playWinningSon);
-
-
+        MissionBox.getIoMisc().addListener((GpioPinListenerDigital) event -> {
+            logger.info("btnQuitGamePressed");
             quitGame();
         });
 
-        btnMisc.addListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                quitGame();
-            }
-        });
-
+        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener);
         farcryAssaultThread.run();
-
     }
 
-//    void fadeout(Music music) {
-//        SwingWorker worker = new SwingWorker() {
-//            double volume;
-//
-//            @Override
-//            protected Object doInBackground() throws Exception {
-//                volume = music.getVolume();
-//
-//                for (double vol = volume; vol >= 0d; vol = vol - 0.01d) {
-//                    logger.debug(vol);
-//                    music.setVolume(vol);
-//                    Thread.sleep(50);
-//                }
-//
-//                return null;
-//            }
-//
-//            @Override
-//            protected void done() {
-//                super.done();
-//                music.stop();
-//                music.setVolume(volume);
-//            }
-//        };
-//        worker.run();
-//    }
 
     @Override
     public void quitGame() {
-
         farcryAssaultThread.quitGame();
-
-//        Lcd.lcdClear(lcdHandle);
         farcryAssaultThread.quitGame();
-//        relayRocket.setOff();
-//        relayStrobe.setOff();
-//        ledBar.setOff();
         playSiren.unload();
         playRocket.unload();
         playWinningSong.unload();
@@ -334,7 +208,6 @@ public class Farcry1Assault implements GameModes {
         TinySound.shutdown();
 
         System.exit(0);
-
     }
 
 }
