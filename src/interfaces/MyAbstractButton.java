@@ -36,6 +36,7 @@ public class MyAbstractButton {
     }
 
     public void addListener(ActionListener var1) {
+        if (btn == null) return;
         btn.addActionListener(var1);
     }
 

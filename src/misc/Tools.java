@@ -22,8 +22,8 @@ public class Tools {
     public static final String SND_MINIONS_SPAWNED = "0112_female1_OnMinionsSpawn_1.wav";
     public static final String SND_VICTORY = "0134_female1_OnVictory_1.wav";
     public static final String SND_DEFEAT = "0071_female1_OnDefeat_1.wav";
-    public static final String SND_MIB = "mib.wav";
     public static final String SND_LOSER = "loser.wav";
+    public static final String SND_MIB = "mib.wav";
     public static final String SND_QUEEN = "We Will Rock You - Queen - Greatest Hits - 16.wav";
     public static final String SND_START = "196889__ionicsmusic__race-robot-start.wav";
     public static final String SND_GAME_OVER = "196868__ionicsmusic__race-robot-game-over.wav";
@@ -128,22 +128,22 @@ public class Tools {
     }
 
     public static String getMissionboxDirectory() {
-        return System.getProperty("user.home") + File.separator + "missionbox";
+        return (isArm() ? "/home/pi" : System.getProperty("user.home")) + File.separator + "missionbox";
     }
 
     public static String getSoundPath() {
         return getMissionboxDirectory() + File.separator + "sounds";
     }
-
-    public static String getWinningSong() {
-        int rand = ThreadLocalRandom.current().nextInt(0, WINNING_SONGS.length);
-        return WINNING_SONGS[rand];
-    }
-
-    public static String getLosingSong() {
-        int rand = ThreadLocalRandom.current().nextInt(0, LOSING_SONGS.length);
-        return LOSING_SONGS[rand];
-    }
+//
+//    public static String getWinningSong() {
+//        int rand = ThreadLocalRandom.current().nextInt(0, WINNING_SONGS.length);
+//        return WINNING_SONGS[rand];
+//    }
+//
+//    public static String getLosingSong() {
+//        int rand = ThreadLocalRandom.current().nextInt(0, LOSING_SONGS.length);
+//        return LOSING_SONGS[rand];
+//    }
 
 
 //    public static Animator flashBackground(Animator animator, final JComponent component, final Color flashcolor, int repeatTimes) {

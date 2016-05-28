@@ -9,8 +9,7 @@ import interfaces.MessageListener;
 import interfaces.MyAbstractButton;
 import interfaces.Relay;
 import interfaces.RelaySiren;
-import kuusisto.tinysound.Music;
-import kuusisto.tinysound.Sound;
+
 import kuusisto.tinysound.TinySound;
 import main.FrmTest;
 import main.MissionBox;
@@ -36,8 +35,7 @@ public class Farcry1Assault implements GameModes {
     // the game is organized in cycles. In a cycle the game state is checked and it is decided if the game was won or not.
     private final int MILLISPERCYCLE = 50;
 
-    private boolean sound = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND));
-    private boolean siren = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN));
+
 
 
 
@@ -48,105 +46,77 @@ public class Farcry1Assault implements GameModes {
 
     private Farcry1AssaultThread farcryAssaultThread;
 
-    private Music playSiren, playWinningSong, playLoserSong;
-    private Sound playWelcome, playRocket, playMinions, playGameOver, playVictory, playDefeat, playShutdown;
 
-    private Sound[] countdown = new Sound[11];
     private int prev_countdown_index;
 
 
 
-    public Farcry1Assault(FrmTest frmTest) throws IOException {
+    public Farcry1Assault() throws IOException {
 
 
 
-        logger.setLevel(MissionBox.logLevel);
+        logger.setLevel(MissionBox.getLogLevel());
 
         // hier gehts weiter
 
-//        final GpioPinDigitalInput ioRed = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnRed = new MyAbstractButton(MissionBox.getIoRed(), frmTest.getBtnRed());
-
-//        final GpioPinDigitalInput ioGreen = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnGreen = new MyAbstractButton(MissionBox.getIoGreen(), frmTest.getBtnGreen());
-
-//        final GpioPinDigitalInput ioGameStartStop = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnGameStartStop = new MyAbstractButton(MissionBox.getIoGameStartStop(), frmTest.getBtn1());
-
-//        final GpioPinDigitalInput ioMisc = MissionBox.getGPIO() == null ? null : MissionBox.getGPIO().provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
-        MyAbstractButton btnMisc = new MyAbstractButton(MissionBox.getIoMisc(), frmTest.getBtn2());
 
 
 
 
-        TinySound.init();
-
-        playSiren = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SIREN));
-        playWelcome = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_WELCOME));
-        playRocket = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_FLARE));
-        playGameOver = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_GAME_OVER));
-        playMinions = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_MINIONS_SPAWNED));
-        playVictory = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_VICTORY));
-        playDefeat = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_DEFEAT));
-        playShutdown = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN));
-
-        for (int i = 0; i <= 10; i++) {
-            countdown[i] = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.COUNTDOWN[i]));
-        }
 
         MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
         MessageListener gameTimeListener = messageEvent -> {
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
-                frmTest.setTimer("--");
+                MissionBox.setTimerMessage("--");
                 return;
             }
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
-                frmTest.setTimer(gameWon ? "Flag taken" : "Flag defended");
+                MissionBox.setTimerMessage(gameWon ? "Flag taken" : "Flag defended");
                 return;
             }
             logger.debug("GameTime: " + messageEvent.getMessage());
-            frmTest.setTimer(messageEvent.getMessage().toString());
+            MissionBox.setTimerMessage(messageEvent.getMessage().toString());
         };
 
         MessageListener percentageListener = messageEvent -> {
             logger.debug(messageEvent.getPercentage());
-            if (siren) MissionBox.getRelaisSirens().setValue(messageEvent.getPercentage());
-            frmTest.setProgress(messageEvent.getPercentage().intValue());
+            if (MissionBox.isSIREN()) MissionBox.getRelaisSirens().setValue(messageEvent.getPercentage());
+            MissionBox.setProgress(messageEvent.getPercentage().intValue());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 int countdown_index = messageEvent.getPercentage().intValue() / 10;
                 if (prev_countdown_index != countdown_index) {
                     prev_countdown_index = countdown_index;
-                    if (sound) countdown[countdown_index].play();
+                    MissionBox.countdown(countdown_index);
                 }
             }
-
         };
 
         MessageListener gameModeListener = messageEvent -> {
             logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
-            frmTest.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
+            MissionBox.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
-                if (sound) playShutdown.stop();
-                if (sound) playSiren.play(true);
+                MissionBox.stop("shutdown");
+                MissionBox.play("siren", true);
                 MissionBox.getLedRed().blink(100, PinState.HIGH);
                 MissionBox.getLedGreen().blink(100, PinState.LOW);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
-                if (sound) playSiren.stop();
-                if (sound && prev_countdown_index > -1) playShutdown.play(); // plays only when the flag has been touched during this round.
+                MissionBox.stop("siren");
+
+                if (prev_countdown_index > -1) MissionBox.play("shutdown"); // plays only when the flag has been touched during this round.
 
                 MissionBox.getLedRed().blink(1000, PinState.HIGH);
                 MissionBox.getLedGreen().blink(1000, PinState.LOW);
                 MissionBox.getLedBarGreen().blink(0);
                 MissionBox.getLedBarYellow().blink(0);
                 MissionBox.getLedBarRed().blink(0);
-                if (siren) MissionBox.getRelaisSirens().setValue(BigDecimal.ZERO);
+                MissionBox.setRelaySirenPercentage(BigDecimal.ZERO);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
-                if (sound) playSiren.stop();
-                if (siren) MissionBox.getRelaisSirens().setValue(BigDecimal.ZERO);
-                if (sound) playRocket.play();
+                MissionBox.stop("siren");
+                MissionBox.setRelaySirenPercentage(BigDecimal.ZERO);
+                MissionBox.play("rocket");
                 MissionBox.getLedRed().blink(50, PinState.HIGH);
                 MissionBox.getLedGreen().blink(50, PinState.LOW);
                 MissionBox.getLedBarGreen().blink(50);
@@ -157,17 +127,11 @@ public class Farcry1Assault implements GameModes {
                 gameWon = false;
                 prev_countdown_index = -1;
 
-                if (sound && playWinningSong != null) { // checking for 1 null is enough.
-                    playWinningSong.stop();
-                    playLoserSong.stop();
-                    playLoserSong.unload();
-                    playWinningSong.unload();
-                }
 
-                playLoserSong = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.getLosingSong()));
-                playWinningSong = TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.getWinningSong()));
 
-                frmTest.enableSettings(true);
+                MissionBox.stopAllSongs();
+
+                MissionBox.enableSettings(true);
 
                 MissionBox.getLedRed().blink(500, PinState.HIGH);
                 MissionBox.getLedGreen().blink(500, PinState.LOW);
@@ -175,21 +139,22 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.getLedBarYellow().blink(1000);
                 MissionBox.getLedBarRed().blink(1000);
 
-                if (sound) playSiren.stop();
-                if (sound) playRocket.stop();
-
-                if (sound) playWelcome.play();
+                MissionBox.stop("siren");
+                MissionBox.stop("rocket");
+                MissionBox.play("welcome");
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
-                if (sound) playSiren.stop();
-                if (sound) playRocket.stop();
+                MissionBox.stop("siren");
+                MissionBox.stop("rocket");
                 MissionBox.getLedGreen().blink(0);
                 if (gameWon) {
-                    if (sound) playVictory.play();
-                    if (sound) playWinningSong.play(false);
+                    MissionBox.stop("victory");
+                    MissionBox.playWinner();
+
                 } else {
-                    if (sound) playDefeat.play();
-                    if (sound) playLoserSong.play(false);
+                    MissionBox.stop("defeat");
+                    MissionBox.playLooser();
+
                 }
 //                fadeout(playWinningSon);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
@@ -198,12 +163,13 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.getLedBarGreen().blink(500);
                 MissionBox.getLedBarYellow().blink(500);
                 MissionBox.getLedBarRed().blink(500);
-                if (sound) playSiren.stop();
-                if (sound) playRocket.stop();
+                MissionBox.stop("siren");
+                MissionBox.stop("rocket");
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
-                frmTest.enableSettings(false);
-                if (sound) playMinions.play();
+                MissionBox.enableSettings(false);
+                MissionBox.stop("minions");
+
 
 
             }
@@ -211,7 +177,7 @@ public class Farcry1Assault implements GameModes {
 
         farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener);
 
-        btnRed.addListener((GpioPinListenerDigital) event -> {
+        MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
                 logger.debug("RedButton pressed");
                 farcryAssaultThread.setFlag(true);
@@ -318,20 +284,17 @@ public class Farcry1Assault implements GameModes {
     @Override
     public void quitGame() {
 
-        farcryAssaultThread.quitGame();
 
-//        Lcd.lcdClear(lcdHandle);
-        farcryAssaultThread.quitGame();
-//        relayRocket.setOff();
-//        relayStrobe.setOff();
-//        ledBar.setOff();
-        playSiren.unload();
-        playRocket.unload();
-        playWinningSong.unload();
-        playLoserSong.unload();
-        playVictory.unload();
-        playDefeat.unload();
-        TinySound.shutdown();
+
+//        farcryAssaultThread.quitGame();
+//
+//        playSiren.unload();
+//        playRocket.unload();
+//        playWinningSong.unload();
+//        playLoserSong.unload();
+//        playVictory.unload();
+//        playDefeat.unload();
+//        TinyMissionBox.isSOUND().shutdown();
 
         System.exit(0);
 
