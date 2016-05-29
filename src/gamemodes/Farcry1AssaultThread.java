@@ -47,8 +47,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
     DateFormat formatter = new SimpleDateFormat("mm:ss");
 
-    private final EventListenerList messageList, gameTimerList, percentageList, gameModeList;
-
+    private final EventListenerList textMessageList, gameTimerList, percentageList, gameModeList;
 
     public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener) {
         super();
@@ -60,14 +59,14 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         thread = new Thread(this);
 
 
-        LOGGER.setLevel(MissionBox.logLevel);
+        LOGGER.setLevel(MissionBox.getLogLevel());
 
-        messageList = new EventListenerList();
+        textMessageList = new EventListenerList();
         gameTimerList = new EventListenerList();
         percentageList = new EventListenerList();
         gameModeList = new EventListenerList();
 
-        messageList.add(MessageListener.class, messageListener);
+        textMessageList.add(MessageListener.class, messageListener);
         gameTimerList.add(MessageListener.class, gameTimerListener);
         percentageList.add(MessageListener.class, percentageListener);
         gameModeList.add(MessageListener.class, gameModeListener);
@@ -95,28 +94,27 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             switch (gameState) {
                 case GAME_PRE_GAME: {
-                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
-
+                    LOGGER.info("resetting game timer");
                     this.GAMETIMEINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60;
                     this.TIME2CAP = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
-
-                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.active"));
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.active"));
                     starttime = new DateTime();
                     endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     setGameState(GAME_FLAG_COLD);
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     flagactivation = new DateTime();
                     endtime = flagactivation.plusSeconds(TIME2CAP);
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
-                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.rocket.launched"));
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.rocket.launched"));
                     endtime = new DateTime();
                     rockettime = endtime.plusSeconds(rocketseconds); // hier wird noch kurz gewartet bis der raketensound abgespielt ist. danach wird gehts
 //                    afterglow = rockettime + (agseconds * 1000);
@@ -124,26 +122,24 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_FLAG_COLD: {
                     flagactivation = null;
-                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
-                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.taken"));
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.taken"));
                     break;
                 }
                 case GAME_OUTCOME_FLAG_DEFENDED: {
-                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
                     break;
                 }
                 case GAME_OVER: {
-                    fireMessage(messageList, new MessageEvent(this, gameState, "assault.gamestate.after.game"));
-
-
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.after.game"));
                     break;
                 }
                 default: {
-                    fireMessage(messageList, new MessageEvent(this, gameState, "msg.error"));
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "msg.error"));
                 }
             }
         }
@@ -177,6 +173,15 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         setGameState(GAME_FLAG_ACTIVE);
     }
 
+    public void toggleGameSate() {
+        if (gameState == GAME_PRE_GAME){
+            setGameState(GAME_FLAG_ACTIVE);
+        } else {
+            setGameState(GAME_PRE_GAME);
+        }
+    }
+
+
     @Override
     public void quitGame() {
         setGameState(GAME_OVER);
@@ -185,25 +190,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
     public int getGameState() {
         return gameState;
-    }
-
-
-    //    public synchronized void stopGame() {
-//        setGameState(GAME_PRE_GAME);
-//    }
-
-    public synchronized void toggleFlag() {
-        if (gameState == GAME_PRE_GAME || gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED || gameState == GAME_OVER)
-            return;
-
-        if (isFlagHot()) setFlag(false);
-        else setFlag(true);
-
-//        if (gameState == GAME_FLAG_COLD) {
-//            setGameState(GAME_FLAG_HOT);
-//        } else {
-//            setGameState(GAME_FLAG_COLD);
-//        }
     }
 
     public synchronized boolean isFlagHot() {

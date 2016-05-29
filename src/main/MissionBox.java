@@ -41,23 +41,6 @@ public class MissionBox {
     private static final ArrayList<Relay> relayBoard = new ArrayList<>();
     private static final ArrayList<Relay> progressLEDs = new ArrayList<>();
 
-    private static GpioPinDigitalInput ioRed = null;
-    private static GpioPinDigitalInput ioGreen = null;
-    private static GpioPinDigitalInput ioGameStartStop = null;
-    private static GpioPinDigitalInput ioMisc = null;
-
-    private static GpioPinDigitalOutput ioLedGreen = null;
-    private static GpioPinDigitalOutput ioLedRed = null;
-    private static GpioPinDigitalOutput ioLedBarGreen = null;
-    private static GpioPinDigitalOutput ioLedBarYellow = null;
-    private static GpioPinDigitalOutput ioLedBarRed = null;
-
-    private static Relay ledGreen = null;
-    private static Relay ledRed = null;
-    private static Relay ledBarGreen = null;
-    private static Relay ledBarYellow = null;
-    private static Relay ledBarRed = null;
-
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc;
 
     private static RelaySiren relaisSirens, relaisLEDs;
@@ -74,6 +57,10 @@ public class MissionBox {
     private static boolean SIREN = false;
 
     private static HashMap<String, Object> soundMap = new HashMap<>();
+    private static HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
+    private static HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
+    private static HashMap<String, Relay> relayMap = new HashMap<>();
+
     private static ArrayList<Music> winnerSongs = new ArrayList<>();
     private static ArrayList<Music> looserSongs = new ArrayList<>();
 
@@ -86,17 +73,6 @@ public class MissionBox {
         initSound();
         hwinit();
 
-//        try {
-//            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (Exception e) {
-//            // If Nimbus is not available, you can set the GUI to another look and feel.
-//        }
-
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
         logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
 
@@ -106,17 +82,20 @@ public class MissionBox {
             frmTest.setVisible(true);
         }
 
-
-        btnRed = new MyAbstractButton(getIoRed(), getGUIBtnRed());
-        btnGreen = new MyAbstractButton(getIoGreen(), getGUIBtnGreen());
-        btnGameStartStop = new MyAbstractButton(getIoGameStartStop(), getGUIBtn1());
-        btnMisc = new MyAbstractButton(getIoMisc(), getGUIBtn2());
+        btnRed = new MyAbstractButton(inputMap.get("btnRed"), getGUIBtnRed());
+        btnGreen = new MyAbstractButton(inputMap.get("btnGreen"), getGUIBtnGreen());
+        btnGameStartStop = new MyAbstractButton(inputMap.get("btnGameStartStop"), getGUIBtn1());
+        btnMisc = new MyAbstractButton(inputMap.get("btnMisc"), getGUIBtn2());
 
         Farcry1Assault fc = new Farcry1Assault();
     }
 
     public static MyAbstractButton getBtnRed() {
         return btnRed;
+    }
+
+    public static boolean isGameStartable() {
+        return GUI ? frmTest.isGameStartable() : true;
     }
 
     public static MyAbstractButton getBtnGreen() {
@@ -162,7 +141,6 @@ public class MissionBox {
 
         TinySound.init();
 
-
         soundMap.put("siren", TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SIREN)));
         soundMap.put("welcome", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_WELCOME)));
         soundMap.put("rocket", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_FLARE)));
@@ -170,6 +148,7 @@ public class MissionBox {
         soundMap.put("minions", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_MINIONS_SPAWNED)));
         soundMap.put("victory", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_VICTORY)));
         soundMap.put("defeat", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_DEFEAT)));
+        soundMap.put("shutdown", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN)));
 
         looserSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_LOSER)));
         winnerSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_MIB)));
@@ -182,6 +161,27 @@ public class MissionBox {
 
     }
 
+    public static void blink(String key, long l){
+        if (!outputMap.containsKey(key)) return;
+        outputMap.get(key).blink(l);
+    }
+
+    public static void blink(String key, long l, PinState pinState){
+        if (!outputMap.containsKey(key)) return;
+        outputMap.get(key).blink(l, pinState);
+    }
+
+    public static HashMap<String, GpioPinDigitalOutput> getOutputMap() {
+        return outputMap;
+    }
+
+    public static HashMap<String, GpioPinDigitalInput> getInputMap() {
+        return inputMap;
+    }
+
+    public static HashMap<String, Relay> getRelayMap() {
+        return relayMap;
+    }
 
     public static void enableSettings(boolean enable) {
         if (GUI) frmTest.enableSettings(enable);
@@ -289,10 +289,6 @@ public class MissionBox {
         return config;
     }
 
-    public static GpioPinDigitalInput getIoRed() {
-        return ioRed;
-    }
-
     public static void setMessage(String message) {
         if (GUI) frmTest.setMessage(message);
     }
@@ -313,37 +309,6 @@ public class MissionBox {
         if (GUI) frmTest.setTimer(message);
     }
 
-    public static GpioPinDigitalInput getIoGreen() {
-        return ioGreen;
-    }
-
-    public static GpioPinDigitalInput getIoGameStartStop() {
-        return ioGameStartStop;
-    }
-
-    public static GpioPinDigitalInput getIoMisc() {
-        return ioMisc;
-    }
-
-    public static GpioPinDigitalOutput getIoLedGreen() {
-        return ioLedGreen;
-    }
-
-    public static GpioPinDigitalOutput getIoLedRed() {
-        return ioLedRed;
-    }
-
-    public static GpioPinDigitalOutput getIoLedBarGreen() {
-        return ioLedBarGreen;
-    }
-
-    public static GpioPinDigitalOutput getIoLedBarYellow() {
-        return ioLedBarYellow;
-    }
-
-    public static GpioPinDigitalOutput getIoLedBarRed() {
-        return ioLedBarRed;
-    }
 
     public static RelaySiren getRelaisLEDs() {
         return relaisLEDs;
@@ -398,23 +363,33 @@ public class MissionBox {
             relayBoard.add(new Relay(MissionBox.getMapGPIO().containsKey("mcp23017-01-B6") ? MissionBox.getMapGPIO().get("mcp23017-01-B6") : null));
             relayBoard.add(new Relay(MissionBox.getMapGPIO().containsKey("mcp23017-01-B7") ? MissionBox.getMapGPIO().get("mcp23017-01-B7") : null));
 
-            ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
-            ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
-            ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
-            ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
+            GpioPinDigitalInput ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
+            GpioPinDigitalInput ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
+            GpioPinDigitalInput ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
+            GpioPinDigitalInput ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
 
-            ioLedGreen = MissionBox.getMapGPIO().get("mcp23017-01-A0");
-            ioLedRed = MissionBox.getMapGPIO().get("mcp23017-01-A1");
-            ioLedBarGreen = MissionBox.getMapGPIO().get("mcp23017-01-A2");
-            ioLedBarYellow = MissionBox.getMapGPIO().get("mcp23017-01-A3");
-            ioLedBarRed = MissionBox.getMapGPIO().get("mcp23017-01-A4");
+            inputMap.put("btnRed", ioRed);
+            inputMap.put("btnRed", ioGreen);
+            inputMap.put("btnGameStartStop", ioGameStartStop);
+            inputMap.put("btnMisc", ioMisc);
 
+            GpioPinDigitalOutput ioLedGreen = MissionBox.getMapGPIO().get("mcp23017-01-A0");
+            GpioPinDigitalOutput ioLedRed = MissionBox.getMapGPIO().get("mcp23017-01-A1");
+            GpioPinDigitalOutput ioLedBarGreen = MissionBox.getMapGPIO().get("mcp23017-01-A2");
+            GpioPinDigitalOutput ioLedBarYellow = MissionBox.getMapGPIO().get("mcp23017-01-A3");
+            GpioPinDigitalOutput ioLedBarRed = MissionBox.getMapGPIO().get("mcp23017-01-A4");
 
-            ledGreen = new Relay(ioLedGreen);
-            ledRed = new Relay(ioLedRed);
-            ledBarGreen = new Relay(ioLedBarGreen);
-            ledBarYellow = new Relay(ioLedBarYellow);
-            ledBarRed = new Relay(ioLedBarRed);
+            outputMap.put("ledGreen", ioLedGreen);
+            outputMap.put("ledRed", ioLedRed);
+            outputMap.put("ledBarGreen", ioLedBarGreen);
+            outputMap.put("ledBarYello", ioLedBarYellow);
+            outputMap.put("ledBarRed", ioLedBarRed);
+
+            Relay ledGreen = new Relay(ioLedGreen);
+            Relay ledRed = new Relay(ioLedRed);
+            Relay ledBarGreen = new Relay(ioLedBarGreen);
+            Relay ledBarYellow = new Relay(ioLedBarYellow);
+            Relay ledBarRed = new Relay(ioLedBarRed);
 
             progressLEDs.add(ledBarGreen);
             progressLEDs.add(ledBarYellow);
@@ -441,26 +416,6 @@ public class MissionBox {
 
     public static ArrayList<Relay> getProgressLEDs() {
         return progressLEDs;
-    }
-
-    public static Relay getLedGreen() {
-        return ledGreen;
-    }
-
-    public static Relay getLedRed() {
-        return ledRed;
-    }
-
-    public static Relay getLedBarGreen() {
-        return ledBarGreen;
-    }
-
-    public static Relay getLedBarYellow() {
-        return ledBarYellow;
-    }
-
-    public static Relay getLedBarRed() {
-        return ledBarRed;
     }
 
     public static RelaySiren getRelaisSirens() {
