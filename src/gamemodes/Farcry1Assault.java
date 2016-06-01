@@ -37,12 +37,12 @@ public class Farcry1Assault implements GameModes {
         MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
         MessageListener gameTimeListener = messageEvent -> {
-            gameTimeNotificationCouner++;
-            if (gameTimeNotificationCouner >= 50){
-                gameTimeNotificationCouner = 0;
-            } else {
-                return;
-            }
+//            gameTimeNotificationCouner++;
+//            if (gameTimeNotificationCouner >= 10){
+//                gameTimeNotificationCouner = 0;
+//            } else {
+//                return;
+//            }
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 MissionBox.setTimerMessage("--");
@@ -210,11 +210,6 @@ public class Farcry1Assault implements GameModes {
         });
 
         MissionBox.getBtnMisc().addListener((GpioPinListenerDigital) event -> {
-
-
-//            fadeout(playWinningSon);
-
-
             quitGame();
         });
 
@@ -224,55 +219,12 @@ public class Farcry1Assault implements GameModes {
                 quitGame();
             }
         });
-
         farcryAssaultThread.run();
-
     }
-
-//    void fadeout(Music music) {
-//        SwingWorker worker = new SwingWorker() {
-//            double volume;
-//
-//            @Override
-//            protected Object doInBackground() throws Exception {
-//                volume = music.getVolume();
-//
-//                for (double vol = volume; vol >= 0d; vol = vol - 0.01d) {
-//                    logger.debug(vol);
-//                    music.setVolume(vol);
-//                    Thread.sleep(50);
-//                }
-//
-//                return null;
-//            }
-//
-//            @Override
-//            protected void done() {
-//                super.done();
-//                music.stop();
-//                music.setVolume(volume);
-//            }
-//        };
-//        worker.run();
-//    }
 
     @Override
     public void quitGame() {
-
-
-
-//        farcryAssaultThread.quitGame();
-//
-//        playSiren.unload();
-//        playRocket.unload();
-//        playWinningSong.unload();
-//        playLoserSong.unload();
-//        playVictory.unload();
-//        playDefeat.unload();
-//        TinyMissionBox.isSOUND().shutdown();
-
         System.exit(0);
-
     }
 
 }

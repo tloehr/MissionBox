@@ -14,16 +14,6 @@ public class MyAbstractButton {
     private final GpioPinDigitalInput gpio;
     private final JButton btn;
 
-    public MyAbstractButton(GpioPinDigitalInput gpio) {
-        this.btn = null;
-        this.gpio = gpio;
-    }
-
-    public MyAbstractButton(JButton btn) {
-        this.btn = btn;
-        this.gpio = null;
-    }
-
     public MyAbstractButton(GpioPinDigitalInput gpio, JButton btn) {
         this.gpio = gpio;
         this.btn = btn;

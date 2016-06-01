@@ -188,6 +188,23 @@ public class Tools {
 //        return animator;
 //    }
 
+    public static void printProgBar(int percent) {
+        StringBuilder bar = new StringBuilder("[");
+
+        for (int i = 0; i < 50; i++) {
+            if (i < (percent / 2)) {
+                bar.append("=");
+            } else if (i == (percent / 2)) {
+                bar.append(">");
+            } else {
+                bar.append(" ");
+            }
+        }
+
+        bar.append("]   " + percent + "%     ");
+        System.out.print("\r" + bar.toString());
+    }
+
     /**
      * @param distance a double between 0.0f and 1.0f to express the distance between the source and destination color
      *                 see http://stackoverflow.com/questions/27532/generating-gradients-programatically

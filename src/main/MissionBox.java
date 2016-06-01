@@ -3,6 +3,8 @@ package main;
 import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.i2c.I2CBus;
 import gamemodes.Farcry1Assault;
 import interfaces.MyAbstractButton;
@@ -68,26 +70,39 @@ public class MissionBox {
 
 
     public static final void main(String[] args) throws Exception {
+
+        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
+        logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
+
         loadLocalProperties();
 
         initSound();
         hwinit();
 
-        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
-        logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
+        inputMap.get("btnRed").addListener(new GpioPinListenerDigital() {
+            @Override
+            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent gpioPinDigitalStateChangeEvent) {
+                System.out.println();
+            }
+        });
 
-        if (GUI) {
-            frmTest = new FrmTest();
-            frmTest.pack();
-            frmTest.setVisible(true);
+
+        while (true){
+            // nop
         }
 
-        btnRed = new MyAbstractButton(inputMap.get("btnRed"), getGUIBtnRed());
-        btnGreen = new MyAbstractButton(inputMap.get("btnGreen"), getGUIBtnGreen());
-        btnGameStartStop = new MyAbstractButton(inputMap.get("btnGameStartStop"), getGUIBtn1());
-        btnMisc = new MyAbstractButton(inputMap.get("btnMisc"), getGUIBtn2());
-
-        Farcry1Assault fc = new Farcry1Assault();
+//        if (GUI) {
+//            frmTest = new FrmTest();
+//            frmTest.pack();
+//            frmTest.setVisible(true);
+//        }
+//
+//        btnRed = new MyAbstractButton(inputMap.get("btnRed"), getGUIBtnRed());
+//        btnGreen = new MyAbstractButton(inputMap.get("btnGreen"), getGUIBtnGreen());
+//        btnGameStartStop = new MyAbstractButton(inputMap.get("btnGameStartStop"), getGUIBtn1());
+//        btnMisc = new MyAbstractButton(inputMap.get("btnMisc"), getGUIBtn2());
+//
+//        Farcry1Assault fc = new Farcry1Assault();
     }
 
     public static MyAbstractButton getBtnRed() {
@@ -363,13 +378,13 @@ public class MissionBox {
             relayBoard.add(new Relay(MissionBox.getMapGPIO().containsKey("mcp23017-01-B6") ? MissionBox.getMapGPIO().get("mcp23017-01-B6") : null));
             relayBoard.add(new Relay(MissionBox.getMapGPIO().containsKey("mcp23017-01-B7") ? MissionBox.getMapGPIO().get("mcp23017-01-B7") : null));
 
-            GpioPinDigitalInput ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
-            GpioPinDigitalInput ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN);
-            GpioPinDigitalInput ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN);
-            GpioPinDigitalInput ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN);
+            GpioPinDigitalInput ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN); // Board 11
+            GpioPinDigitalInput ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN); // Board 13
+            GpioPinDigitalInput ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN); // Board 15
+            GpioPinDigitalInput ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
 
             inputMap.put("btnRed", ioRed);
-            inputMap.put("btnRed", ioGreen);
+            inputMap.put("btnGreen", ioGreen);
             inputMap.put("btnGameStartStop", ioGameStartStop);
             inputMap.put("btnMisc", ioMisc);
 
@@ -385,8 +400,8 @@ public class MissionBox {
             outputMap.put("ledBarYello", ioLedBarYellow);
             outputMap.put("ledBarRed", ioLedBarRed);
 
-            Relay ledGreen = new Relay(ioLedGreen);
-            Relay ledRed = new Relay(ioLedRed);
+//            Relay ledGreen = new Relay(ioLedGreen);
+//            Relay ledRed = new Relay(ioLedRed);
             Relay ledBarGreen = new Relay(ioLedBarGreen);
             Relay ledBarYellow = new Relay(ioLedBarYellow);
             Relay ledBarRed = new Relay(ioLedBarRed);
