@@ -79,30 +79,41 @@ public class MissionBox {
         initSound();
         hwinit();
 
-        inputMap.get("btnRed").addListener(new GpioPinListenerDigital() {
-            @Override
-            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent gpioPinDigitalStateChangeEvent) {
-                System.out.println();
-            }
-        });
+        try {
+            GPIO = GpioFactory.getInstance();
 
-
-        while (true){
-            // nop
+        } catch (Exception e) {
         }
 
-//        if (GUI) {
-//            frmTest = new FrmTest();
-//            frmTest.pack();
-//            frmTest.setVisible(true);
+
+//        final GpioPinDigitalInput pin = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
+//        pin.addListener(new GpioPinListenerDigital() {
+//            @Override
+//            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+//                // display pin state on console
+//                System.out.println(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = " + event.getState());
+//            }
+//        });
+//
+//
+//
+//        for (;;) {
+//            Thread.sleep(500);
 //        }
-//
-//        btnRed = new MyAbstractButton(inputMap.get("btnRed"), getGUIBtnRed());
-//        btnGreen = new MyAbstractButton(inputMap.get("btnGreen"), getGUIBtnGreen());
-//        btnGameStartStop = new MyAbstractButton(inputMap.get("btnGameStartStop"), getGUIBtn1());
-//        btnMisc = new MyAbstractButton(inputMap.get("btnMisc"), getGUIBtn2());
-//
-//        Farcry1Assault fc = new Farcry1Assault();
+
+
+        if (GUI) {
+            frmTest = new FrmTest();
+            frmTest.pack();
+            frmTest.setVisible(true);
+        }
+
+        btnRed = new MyAbstractButton(inputMap.get("btnRed"), getGUIBtnRed());
+        btnGreen = new MyAbstractButton(inputMap.get("btnGreen"), getGUIBtnGreen());
+        btnGameStartStop = new MyAbstractButton(inputMap.get("btnGameStartStop"), getGUIBtn1());
+        btnMisc = new MyAbstractButton(inputMap.get("btnMisc"), getGUIBtn2());
+
+        Farcry1Assault fc = new Farcry1Assault();
     }
 
     public static MyAbstractButton getBtnRed() {
@@ -176,12 +187,12 @@ public class MissionBox {
 
     }
 
-    public static void blink(String key, long l){
+    public static void blink(String key, long l) {
         if (!outputMap.containsKey(key)) return;
         outputMap.get(key).blink(l);
     }
 
-    public static void blink(String key, long l, PinState pinState){
+    public static void blink(String key, long l, PinState pinState) {
         if (!outputMap.containsKey(key)) return;
         outputMap.get(key).blink(l, pinState);
     }
