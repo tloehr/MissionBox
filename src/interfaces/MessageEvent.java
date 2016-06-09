@@ -3,6 +3,7 @@ package interfaces;
 import main.MissionBox;
 import misc.Tools;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
 import java.util.EventObject;
@@ -24,6 +25,13 @@ public class MessageEvent extends EventObject {
         this.mode = mode;
         this.message = Tools.xx(message);
     }
+
+    public MessageEvent(Object source, int mode, DateTime message) {
+            super(source);
+            LOGGER.setLevel(MissionBox.getLogLevel());
+            this.mode = mode;
+            this.message = message;
+        }
 
     public MessageEvent(Object source, int mode, BigDecimal percentage) {
         super(source);
@@ -65,6 +73,14 @@ public class MessageEvent extends EventObject {
 
     public Object getMessage() {
         return message;
+    }
+
+    public DateTime getTime() {
+            return (DateTime) message;
+        }
+
+    public String getDateTimeFormatted(){
+        return getTime().toString("mm:ss");
     }
 
     public BigDecimal getPercentage() {

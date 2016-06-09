@@ -25,10 +25,27 @@ public class Tools {
     public static final String SND_LOSER = "loser.wav";
     public static final String SND_MIB = "mib.wav";
     public static final String SND_QUEEN = "We Will Rock You - Queen - Greatest Hits - 16.wav";
+    public static final String SND_SKYFALL = "skyfall.wav";
+    public static final String SND_EVERYBODY_DANCE_NOW = "gonna_make_you_sweat.wav";
+    public static final String SND_WHO_WANTS_TO_LIVE_FOREVER = "who-wants-to-live-forever.wav";
     public static final String SND_START = "196889__ionicsmusic__race-robot-start.wav";
     public static final String SND_GAME_OVER = "196868__ionicsmusic__race-robot-game-over.wav";
+    public static final String SND_BEEP = "153213__freezeman__beep1.wav";
 
     public static final String[] COUNTDOWN = new String[]{"10.wav","09.wav","08.wav","07.wav","06.wav","05.wav","04.wav","03.wav","02.wav","01.wav","00.wav"};
+
+    public static final String SND_20_MINUTES = "20-minutes.wav";
+    public static final String SND_10_MINUTES = "10-minutes.wav";
+    public static final String SND_5_MINUTES = "05-minutes.wav";
+    public static final String SND_4_MINUTES = "04-minutes.wav";
+    public static final String SND_3_MINUTES = "03-minutes.wav";
+    public static final String SND_2_MINUTES = "02-minutes.wav";
+    public static final String SND_1_MINUTE = "01-minute.wav";
+    public static final String SND_30_SECONDS = "30-seconds.wav";
+    public static final String SND_20_SECONDS = "20-seconds.wav";
+    public static final String SND_10_SECONDS = "10-seconds.wav";
+
+
     public static final String[] WINNING_SONGS = new String[]{SND_MIB, SND_QUEEN};
     public static final String[] LOSING_SONGS = new String[]{SND_LOSER};
 
@@ -84,6 +101,8 @@ public class Tools {
         return (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0);
 
     }
+
+
 
     public static Pin getPinByName(String provider, String pinname) {
         if (provider.equalsIgnoreCase("mcp23017")) {

@@ -3,8 +3,6 @@ package main;
 import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.i2c.I2CBus;
 import gamemodes.Farcry1Assault;
 import interfaces.MyAbstractButton;
@@ -33,6 +31,7 @@ import java.util.Random;
  */
 public class MissionBox {
 
+    private static int startup_progress = 0;
     private static final Logger logger = Logger.getRootLogger();
     private static Level logLevel = Level.DEBUG;
     private static GpioController GPIO;
@@ -53,6 +52,7 @@ public class MissionBox {
     public static final String FCY_SIREN = "fcy.siren";
     public static final String MBX_GUI = "mbx.gui";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
+    public static final String FCY_RESPAWN = "fcy.respawn";
 
     public static boolean GUI = false;
     private static boolean SOUND = false;
@@ -65,41 +65,27 @@ public class MissionBox {
 
     private static ArrayList<Music> winnerSongs = new ArrayList<>();
     private static ArrayList<Music> looserSongs = new ArrayList<>();
-
+    private static HashMap<String, Sound> timeAnnouncements = new HashMap();
     private static Sound[] countdown = new Sound[11];
 
 
     public static final void main(String[] args) throws Exception {
 
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
+        logger.addAppender(new ConsoleAppender(layout));
         logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
 
+        Tools.printProgBar(startup_progress);
         loadLocalProperties();
 
+
         initSound();
+
+
         hwinit();
 
-        try {
-            GPIO = GpioFactory.getInstance();
-
-        } catch (Exception e) {
-        }
-
-
-//        final GpioPinDigitalInput pin = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN);
-//        pin.addListener(new GpioPinListenerDigital() {
-//            @Override
-//            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-//                // display pin state on console
-//                System.out.println(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = " + event.getState());
-//            }
-//        });
-//
-//
-//
-//        for (;;) {
-//            Thread.sleep(500);
-//        }
+        startup_progress = startup_progress + 10;
+        Tools.printProgBar(startup_progress);
 
 
         if (GUI) {
@@ -108,12 +94,24 @@ public class MissionBox {
             frmTest.setVisible(true);
         }
 
+        startup_progress = startup_progress + 10;
+        Tools.printProgBar(startup_progress);
+
         btnRed = new MyAbstractButton(inputMap.get("btnRed"), getGUIBtnRed());
         btnGreen = new MyAbstractButton(inputMap.get("btnGreen"), getGUIBtnGreen());
         btnGameStartStop = new MyAbstractButton(inputMap.get("btnGameStartStop"), getGUIBtn1());
         btnMisc = new MyAbstractButton(inputMap.get("btnMisc"), getGUIBtn2());
 
+        startup_progress = 100;
+        Tools.printProgBar(startup_progress);
+
         Farcry1Assault fc = new Farcry1Assault();
+
+
+    }
+
+    public static HashMap<String, Sound> getTimeAnnouncements() {
+        return timeAnnouncements;
     }
 
     public static MyAbstractButton getBtnRed() {
@@ -163,26 +161,113 @@ public class MissionBox {
 
     private static void initSound() {
 
-        if (!SOUND) return;
+        if (!SOUND) {
+            startup_progress = 77;
+            return;
+        }
+
+        startup_progress = 5;
+        Tools.printProgBar(startup_progress);
 
         TinySound.init();
 
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         soundMap.put("siren", TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SIREN)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         soundMap.put("welcome", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_WELCOME)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         soundMap.put("rocket", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_FLARE)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         soundMap.put("gameover", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_GAME_OVER)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         soundMap.put("minions", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_MINIONS_SPAWNED)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         soundMap.put("victory", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_VICTORY)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         soundMap.put("defeat", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_DEFEAT)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         soundMap.put("shutdown", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN)));
 
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        soundMap.put("beep1", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_BEEP)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         looserSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_LOSER)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        looserSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_WHO_WANTS_TO_LIVE_FOREVER)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        looserSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SKYFALL)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         winnerSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_MIB)));
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
         winnerSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_QUEEN)));
 
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        winnerSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_EVERYBODY_DANCE_NOW)));
+
         for (int i = 0; i <= 10; i++) {
+            startup_progress = startup_progress + 2;
+            Tools.printProgBar(startup_progress);
             countdown[i] = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.COUNTDOWN[i]));
         }
+
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("20:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_20_MINUTES)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("10:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_10_MINUTES)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("05:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_5_MINUTES)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("04:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_4_MINUTES)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("03:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_3_MINUTES)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("02:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_2_MINUTES)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("01:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_1_MINUTE)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("00:30", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_30_SECONDS)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("00:20", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_20_SECONDS)));
+        startup_progress = startup_progress + 2;
+        Tools.printProgBar(startup_progress);
+        timeAnnouncements.put("00:10", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_10_SECONDS)));
 
 
     }
@@ -272,6 +357,7 @@ public class MissionBox {
         config.put(FCY_GAMETIME, "5");
         config.put(FCY_SOUND, "true");
         config.put(FCY_SIREN, "false");
+        config.put(FCY_RESPAWN, "40");
         config.put(MBX_GUI, "true");
         config.put(MBX_LOGLEVEL, "debug");
 
@@ -335,6 +421,10 @@ public class MissionBox {
         if (GUI) frmTest.setTimer(message);
     }
 
+
+    public static void setRespawnTimer(String message) {
+        if (GUI) frmTest.setRespawnTimer(message);
+    }
 
     public static RelaySiren getRelaisLEDs() {
         return relaisLEDs;

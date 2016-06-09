@@ -5,6 +5,7 @@ import interfaces.MessageListener;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import javax.swing.event.EventListenerList;
 import java.math.BigDecimal;
@@ -30,7 +31,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     // makes sure that the time event is only triggered once a second
     private long threadcycles = 0;
     private final long millispercycle = 50;
-    private final long cycledivider;
 
 
     public static final int GAME_NON_EXISTENT = -1;
@@ -53,8 +53,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         super();
 
 
-        // der cycledivider wird nur benutzt, damit nicht so oft die Zeitausgaben erfolgen.
-        cycledivider = 1000 / millispercycle;
 
         thread = new Thread(this);
 
@@ -173,13 +171,13 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         setGameState(GAME_FLAG_ACTIVE);
     }
 
-    public void toggleGameSate() {
-        if (gameState == GAME_PRE_GAME){
-            setGameState(GAME_FLAG_ACTIVE);
-        } else {
-            setGameState(GAME_PRE_GAME);
-        }
-    }
+//    public void toggleGameSate() {
+//        if (gameState == GAME_PRE_GAME){
+//            setGameState(GAME_FLAG_ACTIVE);
+//        } else {
+//            setGameState(GAME_PRE_GAME);
+//        }
+//    }
 
 
     @Override
@@ -219,16 +217,12 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             threadcycles++;
 
-            // Alle cycledivider durchgänge wird eine Nachricht bzgl. der Gametime geschickt. Sonst sind das zu viele unsinnige nachrichten.
-            // cycledivider = 1000 / millispercycle
-            if (threadcycles % cycledivider == 0) {
-
-                String dateFormatted = "00:00";
+            if (threadcycles % 15 == 0) {
+                DateTime gameTime = new LocalDate().toDateTimeAtStartOfDay();
                 if (endtime != null && endtime.isAfterNow()) {
-                    dateFormatted = endtime.minus(new DateTime().getMillis()).toString("mm:ss");
+                    gameTime = endtime.minus(new DateTime().getMillis());
                 }
-
-                fireMessage(gameTimerList, new MessageEvent(this, gameState, dateFormatted));
+                fireMessage(gameTimerList, new MessageEvent(this, gameState, gameTime));
             }
 
             try {

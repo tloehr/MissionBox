@@ -26,6 +26,7 @@ public class FrmTest extends JFrame {
     private void initPanel() {
         lblFCYCapture.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
         lblFCYGametime.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
+        lblFCYRespawn.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
         btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("true"));
         btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("true"));
 
@@ -116,6 +117,31 @@ public class FrmTest extends JFrame {
         // TODO add your code here
     }
 
+    private void btnFCYrespawnPlusActionPerformed(ActionEvent e) {
+        int respawn = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
+        respawn++;
+        final String text = Integer.toString(respawn);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN, text);
+        SwingUtilities.invokeLater(() -> {
+            lblFCYRespawn.setText(text);
+            revalidate();
+            repaint();
+        });
+    }
+
+    private void btnFCYrespawnMinusActionPerformed(ActionEvent e) {
+        int respawn = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
+        respawn--;
+        if (respawn == 1) return;
+        final String text = Integer.toString(respawn);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN, text);
+        SwingUtilities.invokeLater(() -> {
+            lblFCYRespawn.setText(text);
+            revalidate();
+            repaint();
+        });
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -127,6 +153,7 @@ public class FrmTest extends JFrame {
         btnGreen = new JButton();
         pb1 = new JProgressBar();
         lblMessage = new JLabel();
+        lblRespawn = new JLabel();
         lblTimer = new JLabel();
         settingsPanel = new JPanel();
         label1 = new JLabel();
@@ -137,18 +164,22 @@ public class FrmTest extends JFrame {
         btnFCYgametimePlus = new JButton();
         lblFCYGametime = new JLabel();
         btnFCYgametimeMinus = new JButton();
+        label3 = new JLabel();
+        btnFCYrespawnPlus = new JButton();
+        lblFCYRespawn = new JLabel();
+        btnFCYrespawnMinus = new JButton();
         btnSound = new JToggleButton();
         btnSiren = new JToggleButton();
         panel1 = new JPanel();
         lblBtnRed = new JLabel();
         btnRedLed = new JButton();
-        btnRedLedBar = new JButton();
         lblBtnGreen = new JLabel();
         btnRedLed2 = new JButton();
-        btnYellowLedBar = new JButton();
         lblBtnStartStop = new JLabel();
-        btnGreenLedBar = new JButton();
+        btnRedLedBar = new JButton();
         lblBtnQuit = new JLabel();
+        btnYellowLedBar = new JButton();
+        btnGreenLedBar = new JButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -164,7 +195,7 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                    "pref:grow, $lcgap, default, $rgap, default:grow",
+                    "min:grow, $lcgap, default, $rgap, min:grow",
                     "fill:default:grow, $lgap, fill:pref:grow, $lgap, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
@@ -193,6 +224,12 @@ public class FrmTest extends JFrame {
                 lblMessage.setFont(new Font("Dialog", Font.PLAIN, 16));
                 contentPanel.add(lblMessage, CC.xy(1, 7));
 
+                //---- lblRespawn ----
+                lblRespawn.setText("--");
+                lblRespawn.setFont(new Font("Dialog", Font.PLAIN, 16));
+                lblRespawn.setForeground(Color.red);
+                contentPanel.add(lblRespawn, CC.xy(3, 7, CC.CENTER, CC.DEFAULT));
+
                 //---- lblTimer ----
                 lblTimer.setText("--");
                 lblTimer.setFont(new Font("Dialog", Font.PLAIN, 16));
@@ -204,10 +241,10 @@ public class FrmTest extends JFrame {
             {
                 settingsPanel.setLayout(new FormLayout(
                     "default:grow, $ugap, default, $lcgap, default:grow, $lcgap, default",
-                    "2*(default, $lgap), default"));
+                    "3*(default, $lgap), default"));
 
                 //---- label1 ----
-                label1.setText("capture");
+                label1.setText("capture (sec)");
                 label1.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label1, CC.xy(1, 1));
 
@@ -229,7 +266,7 @@ public class FrmTest extends JFrame {
                 settingsPanel.add(btnFCYcapMinus, CC.xy(7, 1));
 
                 //---- label2 ----
-                label2.setText("gametime");
+                label2.setText("gametime (min)");
                 label2.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label2, CC.xy(1, 3));
 
@@ -250,17 +287,39 @@ public class FrmTest extends JFrame {
                 btnFCYgametimeMinus.addActionListener(e -> btnFCYgametimeMinusActionPerformed(e));
                 settingsPanel.add(btnFCYgametimeMinus, CC.xy(7, 3));
 
+                //---- label3 ----
+                label3.setText("respawn (sec)");
+                label3.setFont(new Font("Dialog", Font.PLAIN, 16));
+                settingsPanel.add(label3, CC.xy(1, 5));
+
+                //---- btnFCYrespawnPlus ----
+                btnFCYrespawnPlus.setText(null);
+                btnFCYrespawnPlus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_add.png")));
+                btnFCYrespawnPlus.addActionListener(e -> btnFCYrespawnPlusActionPerformed(e));
+                settingsPanel.add(btnFCYrespawnPlus, CC.xy(3, 5));
+
+                //---- lblFCYRespawn ----
+                lblFCYRespawn.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYRespawn.setText("1");
+                settingsPanel.add(lblFCYRespawn, CC.xy(5, 5, CC.CENTER, CC.DEFAULT));
+
+                //---- btnFCYrespawnMinus ----
+                btnFCYrespawnMinus.setText(null);
+                btnFCYrespawnMinus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_remove.png")));
+                btnFCYrespawnMinus.addActionListener(e -> btnFCYrespawnMinusActionPerformed(e));
+                settingsPanel.add(btnFCYrespawnMinus, CC.xy(7, 5));
+
                 //---- btnSound ----
                 btnSound.setText(null);
                 btnSound.setIcon(new ImageIcon(getClass().getResource("/artwork/soundoff.png")));
                 btnSound.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/sound.png")));
-                settingsPanel.add(btnSound, CC.xy(1, 5));
+                settingsPanel.add(btnSound, CC.xy(1, 7));
 
                 //---- btnSiren ----
                 btnSiren.setText(null);
                 btnSiren.setIcon(new ImageIcon(getClass().getResource("/artwork/speaker_mute.png")));
                 btnSiren.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/speaker.png")));
-                settingsPanel.add(btnSiren, CC.xywh(3, 5, 5, 1));
+                settingsPanel.add(btnSiren, CC.xywh(3, 7, 5, 1));
             }
             tabbedPane1.addTab("Settings", settingsPanel);
 
@@ -279,11 +338,6 @@ public class FrmTest extends JFrame {
                 btnRedLed.setText("LED ON");
                 panel1.add(btnRedLed, CC.xy(3, 1));
 
-                //---- btnRedLedBar ----
-                btnRedLedBar.setText("Red LED Bar");
-                btnRedLedBar.addActionListener(e -> btnRedLedBarActionPerformed(e));
-                panel1.add(btnRedLedBar, CC.xy(5, 1));
-
                 //---- lblBtnGreen ----
                 lblBtnGreen.setText("Green Button");
                 lblBtnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
@@ -293,28 +347,33 @@ public class FrmTest extends JFrame {
                 btnRedLed2.setText("LED ON");
                 panel1.add(btnRedLed2, CC.xy(3, 3));
 
-                //---- btnYellowLedBar ----
-                btnYellowLedBar.setText("Yellow LED Bar");
-                panel1.add(btnYellowLedBar, CC.xy(5, 3));
-
                 //---- lblBtnStartStop ----
                 lblBtnStartStop.setText("Start/Stop");
                 lblBtnStartStop.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
                 panel1.add(lblBtnStartStop, CC.xy(1, 5));
 
-                //---- btnGreenLedBar ----
-                btnGreenLedBar.setText("Green LED Bar");
-                panel1.add(btnGreenLedBar, CC.xy(5, 5));
+                //---- btnRedLedBar ----
+                btnRedLedBar.setText("Red LED Bar");
+                btnRedLedBar.addActionListener(e -> btnRedLedBarActionPerformed(e));
+                panel1.add(btnRedLedBar, CC.xy(3, 5));
 
                 //---- lblBtnQuit ----
                 lblBtnQuit.setText("Quit");
                 lblBtnQuit.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkyellow32.png")));
                 panel1.add(lblBtnQuit, CC.xy(1, 7));
+
+                //---- btnYellowLedBar ----
+                btnYellowLedBar.setText("Yellow LED Bar");
+                panel1.add(btnYellowLedBar, CC.xy(3, 7));
+
+                //---- btnGreenLedBar ----
+                btnGreenLedBar.setText("Green LED Bar");
+                panel1.add(btnGreenLedBar, CC.xy(3, 9));
             }
             tabbedPane1.addTab("HW-Test", panel1);
         }
         contentPane.add(tabbedPane1);
-        setSize(320, 240);
+        setSize(305, 240);
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -343,6 +402,15 @@ public class FrmTest extends JFrame {
         });
     }
 
+    public void setRespawnTimer(String time) {
+        SwingUtilities.invokeLater(() -> {
+            lblRespawn.setText(time);
+            revalidate();
+            repaint();
+        });
+    }
+
+
     public void setMessage(String message) {
         SwingUtilities.invokeLater(() -> {
             lblMessage.setText(message);
@@ -360,6 +428,7 @@ public class FrmTest extends JFrame {
     private JButton btnGreen;
     private JProgressBar pb1;
     private JLabel lblMessage;
+    private JLabel lblRespawn;
     private JLabel lblTimer;
     private JPanel settingsPanel;
     private JLabel label1;
@@ -370,17 +439,21 @@ public class FrmTest extends JFrame {
     private JButton btnFCYgametimePlus;
     private JLabel lblFCYGametime;
     private JButton btnFCYgametimeMinus;
+    private JLabel label3;
+    private JButton btnFCYrespawnPlus;
+    private JLabel lblFCYRespawn;
+    private JButton btnFCYrespawnMinus;
     private JToggleButton btnSound;
     private JToggleButton btnSiren;
     private JPanel panel1;
     private JLabel lblBtnRed;
     private JButton btnRedLed;
-    private JButton btnRedLedBar;
     private JLabel lblBtnGreen;
     private JButton btnRedLed2;
-    private JButton btnYellowLedBar;
     private JLabel lblBtnStartStop;
-    private JButton btnGreenLedBar;
+    private JButton btnRedLedBar;
     private JLabel lblBtnQuit;
+    private JButton btnYellowLedBar;
+    private JButton btnGreenLedBar;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
