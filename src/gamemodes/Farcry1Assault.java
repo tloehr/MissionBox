@@ -4,6 +4,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import interfaces.MessageListener;
 import main.MissionBox;
+import misc.Tools;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
@@ -65,7 +66,8 @@ public class Farcry1Assault implements GameModes {
         };
 
         MessageListener percentageListener = messageEvent -> {
-            if (MissionBox.isSIREN()) MissionBox.getRelaisSirens().setValue(messageEvent.getPercentage());
+            logger.debug(messageEvent.getPercentage() + " %");
+            if (MissionBox.getGPIO() != null) MissionBox.getRelaisLEDs().setValue(messageEvent.getPercentage());
             MissionBox.setProgress(messageEvent.getPercentage().intValue());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
@@ -79,7 +81,7 @@ public class Farcry1Assault implements GameModes {
         };
 
         MessageListener gameModeListener = messageEvent -> {
-            logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
+            //logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
             MissionBox.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
@@ -87,6 +89,7 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.play("siren", true);
                 MissionBox.blink("ledRed", 100, PinState.HIGH);
                 MissionBox.blink("ledGreen", 100, PinState.LOW);
+
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.stop("siren");
 
@@ -95,9 +98,9 @@ public class Farcry1Assault implements GameModes {
 
                 MissionBox.blink("ledRed", 1000, PinState.HIGH);
                 MissionBox.blink("ledGreen", 1000, PinState.LOW);
-                MissionBox.blink("ledBarGreen", 0);
-                MissionBox.blink("ledBarYellow", 0);
-                MissionBox.blink("ledBarRed", 0);
+//                MissionBox.blink("ledBarGreen", 0);
+//                MissionBox.blink("ledBarYellow", 0);
+//                MissionBox.blink("ledBarRed", 0);
                 MissionBox.setRelaySirenPercentage(BigDecimal.ZERO);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
                 MissionBox.stop("siren");
@@ -106,9 +109,9 @@ public class Farcry1Assault implements GameModes {
 
                 MissionBox.blink("ledRed", 50, PinState.HIGH);
                 MissionBox.blink("ledGreen", 50, PinState.LOW);
-                MissionBox.blink("ledBarGreen", 50);
-                MissionBox.blink("ledBarYellow", 50);
-                MissionBox.blink("ledBarRed", 50);
+//                MissionBox.blink("ledBarGreen", 50);
+//                MissionBox.blink("ledBarYellow", 50);
+//                MissionBox.blink("ledBarRed", 50);
                 gameWon = true;
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 gameWon = false;
@@ -119,9 +122,9 @@ public class Farcry1Assault implements GameModes {
 
                 MissionBox.blink("ledRed", 500, PinState.HIGH);
                 MissionBox.blink("ledGreen", 500, PinState.LOW);
-                MissionBox.blink("ledBarGreen", 1000);
-                MissionBox.blink("ledBarYellow", 1000);
-                MissionBox.blink("ledBarRed", 1000);
+//                MissionBox.blink("ledBarGreen", 1000);
+//                MissionBox.blink("ledBarYellow", 1000);
+//                MissionBox.blink("ledBarRed", 1000);
 
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
@@ -145,9 +148,9 @@ public class Farcry1Assault implements GameModes {
 
                 MissionBox.blink("ledRed", 250, PinState.HIGH);
                 MissionBox.blink("ledGreen", 250, PinState.LOW);
-                MissionBox.blink("ledBarGreen", 500);
-                MissionBox.blink("ledBarYellow", 500);
-                MissionBox.blink("ledBarRed", 500);
+//                MissionBox.blink("ledBarGreen", 500);
+//                MissionBox.blink("ledBarYellow", 500);
+//                MissionBox.blink("ledBarRed", 500);
 
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");

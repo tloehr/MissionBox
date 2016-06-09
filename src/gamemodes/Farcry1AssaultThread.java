@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
  * Nach <b>maxcycles</b> Zyklen ist das Spiel vorbei. <b>TIME2CAP</b> ist die Anzahl der Sekunden, die es braucht, bis die Flagge genommen wurde. (Wenn sie vorher nicht deaktiviert wurde).
  */
 public class Farcry1AssaultThread implements Runnable, GameThreads {
-    final Logger LOGGER = Logger.getLogger(getClass());
+    final Logger logger = Logger.getLogger(getClass());
     private final Thread thread;
     private int GAMETIMEINSECONDS;
     private int TIME2CAP;
@@ -53,11 +53,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         super();
 
 
-
         thread = new Thread(this);
 
 
-        LOGGER.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(MissionBox.getLogLevel());
 
         textMessageList = new EventListenerList();
         gameTimerList = new EventListenerList();
@@ -96,7 +95,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
-                    LOGGER.info("resetting game timer");
+                    logger.info("resetting game timer");
                     this.GAMETIMEINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60;
                     this.TIME2CAP = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.active"));
@@ -106,9 +105,11 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_HOT: {
+
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     flagactivation = new DateTime();
                     endtime = flagactivation.plusSeconds(TIME2CAP);
+
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
@@ -119,9 +120,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    flagactivation = null;
+                    flagactivation = new DateTime(0);
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
+
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
@@ -201,6 +203,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     }
 
     protected synchronized void fireMessage(EventListenerList listeners, MessageEvent textMessage) {
+        logger.debug(textMessage.getMessage().toString());
         for (MessageListener listener : listeners.getListeners(MessageListener.class)) {
             listener.messageReceived(textMessage);
         }
@@ -238,8 +241,11 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     if (timeIsUp()) {
                         setGameState(GAME_ROCKET_LAUNCHED);
                     }
+
+
                     BigDecimal progress = new BigDecimal(new DateTime().getMillis() - flagactivation.getMillis()).divide(new BigDecimal(endtime.getMillis() - flagactivation.getMillis()), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                     fireMessage(percentageList, new MessageEvent(this, gameState, progress));
+
                 }
 
                 if (gameState == GAME_ROCKET_LAUNCHED) {
@@ -258,7 +264,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
                 Thread.sleep(millispercycle);
             } catch (InterruptedException ie) {
-                LOGGER.debug(this + " interrupted!");
+                logger.debug(this + " interrupted!");
             }
         }
     }

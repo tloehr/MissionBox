@@ -15,10 +15,7 @@ import misc.Tools;
 import org.apache.log4j.*;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +37,7 @@ public class MissionBox {
 
     private static final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
     private static final ArrayList<Relay> relayBoard = new ArrayList<>();
-    private static final ArrayList<Relay> progressLEDs = new ArrayList<>();
+
 
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc;
 
@@ -71,6 +68,16 @@ public class MissionBox {
 
     public static final void main(String[] args) throws Exception {
 
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            sw.toString(); // stack trace as a string
+            logger.fatal(e);
+            logger.fatal(sw);
+        });
+
+
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
         logger.addAppender(new ConsoleAppender(layout));
         logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
@@ -78,9 +85,7 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         loadLocalProperties();
 
-
         initSound();
-
 
         hwinit();
 
@@ -106,8 +111,6 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
 
         Farcry1Assault fc = new Farcry1Assault();
-
-
     }
 
     public static HashMap<String, Sound> getTimeAnnouncements() {
@@ -308,10 +311,11 @@ public class MissionBox {
 
 
     public static void playRandomSong(ArrayList<Music> list) {
-        Random random = new Random();
-        random.nextInt();
-        int randomNumber = random.nextInt(winnerSongs.size());
-        list.get(randomNumber).play(false);
+        list.get(random_int(0, list.size() - 1)).play(false);
+    }
+
+    public static int random_int(int Min, int Max) {
+        return (int) (Math.random() * (Max - Min)) + Min;
     }
 
     public static void stopAllSongs() {
@@ -498,7 +502,7 @@ public class MissionBox {
             outputMap.put("ledGreen", ioLedGreen);
             outputMap.put("ledRed", ioLedRed);
             outputMap.put("ledBarGreen", ioLedBarGreen);
-            outputMap.put("ledBarYello", ioLedBarYellow);
+            outputMap.put("ledBarYellow", ioLedBarYellow);
             outputMap.put("ledBarRed", ioLedBarRed);
 
 //            Relay ledGreen = new Relay(ioLedGreen);
@@ -507,11 +511,12 @@ public class MissionBox {
             Relay ledBarYellow = new Relay(ioLedBarYellow);
             Relay ledBarRed = new Relay(ioLedBarRed);
 
+            ArrayList<Relay> progressLEDs = new ArrayList<>();
             progressLEDs.add(ledBarGreen);
             progressLEDs.add(ledBarYellow);
             progressLEDs.add(ledBarRed);
 
-            relaisLEDs = new RelaySiren(MissionBox.getProgressLEDs());
+            relaisLEDs = new RelaySiren(progressLEDs);
             relaisSirens = new RelaySiren(MissionBox.getRelayBoard());
         }
 
@@ -530,9 +535,8 @@ public class MissionBox {
         return relayBoard;
     }
 
-    public static ArrayList<Relay> getProgressLEDs() {
-        return progressLEDs;
-    }
+
+
 
     public static RelaySiren getRelaisSirens() {
         return relaisSirens;

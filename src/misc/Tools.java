@@ -88,7 +88,6 @@ public class Tools {
     public static boolean isArm() {
 
         String os = System.getProperty("os.arch").toLowerCase();
-        //Mac
         return (os.indexOf("arm") >= 0);
 
     }

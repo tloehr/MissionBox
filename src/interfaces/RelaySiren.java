@@ -29,8 +29,6 @@ public class RelaySiren implements PercentageInterface {
     public void setValue(BigDecimal percent) {
         int relaynum = new BigDecimal(myRelais.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent).intValue();
 
-        logger.debug(relaynum);
-
         if (relaynum >= 100) {
             for (int relay = 0; relay < myRelais.size(); relay++) {
                 myRelais.get(relay).setOn(false);
