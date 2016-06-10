@@ -105,11 +105,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_HOT: {
-
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     flagactivation = new DateTime();
                     endtime = flagactivation.plusSeconds(TIME2CAP);
-
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {

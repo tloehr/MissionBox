@@ -211,6 +211,9 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         soundMap.put("beep1", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_BEEP)));
 
+
+        /*
+
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
         looserSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_LOSER)));
@@ -234,7 +237,7 @@ public class MissionBox {
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
         winnerSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_EVERYBODY_DANCE_NOW)));
-
+        */
         for (int i = 0; i <= 10; i++) {
             startup_progress = startup_progress + 2;
             Tools.printProgBar(startup_progress);
@@ -302,11 +305,11 @@ public class MissionBox {
     }
 
     public static void playWinner() {
-        playRandomSong(winnerSongs);
+//        playRandomSong(winnerSongs);
     }
 
     public static void playLooser() {
-        playRandomSong(looserSongs);
+//        playRandomSong(looserSongs);
     }
 
 
@@ -534,8 +537,6 @@ public class MissionBox {
     public static ArrayList<Relay> getRelayBoard() {
         return relayBoard;
     }
-
-
 
 
     public static RelaySiren getRelaisSirens() {
