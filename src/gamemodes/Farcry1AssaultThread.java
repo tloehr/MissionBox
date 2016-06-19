@@ -175,7 +175,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     }
 
     protected synchronized void fireMessage(EventListenerList listeners, MessageEvent textMessage) {
-        logger.debug(textMessage.getMessage().toString());
+//        logger.debug(textMessage.getMessage().toString());
         for (MessageListener listener : listeners.getListeners(MessageListener.class)) {
             listener.messageReceived(textMessage);
         }

@@ -4,6 +4,7 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigital;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
+import main.MissionBox;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -16,9 +17,11 @@ public class RelaySiren implements PercentageInterface {
 
     protected final ArrayList<Relay> myRelais;
     protected long lastChangeTime;
+    protected final Logger logger = Logger.getLogger(getClass());
 
     public RelaySiren(ArrayList<Relay> myRelais) {
         this.myRelais = myRelais;
+        logger.setLevel(MissionBox.getLogLevel());
         for (Relay pin : myRelais) {
             pin.setOn(false);
         }
@@ -30,12 +33,12 @@ public class RelaySiren implements PercentageInterface {
         lastChangeTime = System.currentTimeMillis();
         int relaynum = new BigDecimal(myRelais.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent).intValue();
 
-        if (relaynum >= 100) {
+        if (relaynum >= myRelais.size()) {
             for (int relay = 0; relay < myRelais.size(); relay++) {
                 myRelais.get(relay).setOn(false);
             }
             // leave the last one on, when 100 percent is reached
-            myRelais.get(myRelais.size() - 1).setState(PinState.HIGH);
+//            myRelais.get(myRelais.size() - 1).setState(PinState.HIGH);
 
         } else {
             for (int relay = 0; relay < myRelais.size(); relay++) {

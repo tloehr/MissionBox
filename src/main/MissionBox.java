@@ -35,12 +35,12 @@ public class MissionBox {
     private static GpioController GPIO;
     private static FrmTest frmTest;
     private static Properties config;
+    private static int gamemode;
 
     private static final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
 
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc;
-    private static RelaySiren relaisSirens, relaisLEDs;
-    private static Relay respawnSiren;
+    private static RelaySiren relaisLEDs;
 
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
@@ -283,6 +283,16 @@ public class MissionBox {
         outputMap.get(key).blink(l, pinState);
     }
 
+    public static void setState(String key, PinState pinState) {
+        if (!outputMap.containsKey(key)) return;
+        outputMap.get(key).setState(pinState);
+    }
+
+    public static void blink(String key, long l, long duration) {
+        if (!outputMap.containsKey(key)) return;
+        outputMap.get(key).blink(l, duration);
+    }
+
     public static HashMap<String, GpioPinDigitalOutput> getOutputMap() {
         return outputMap;
     }
@@ -407,9 +417,17 @@ public class MissionBox {
         if (GUI) frmTest.setMessage(message);
     }
 
+    public static int getGamemode() {
+        return gamemode;
+    }
+
+    public static void setGamemode(int gamemode) {
+        MissionBox.gamemode = gamemode;
+    }
+
     public static void setProgress(BigDecimal percent) {
         if (GUI) frmTest.setProgress(percent.intValue());
-        if (SIREN) MissionBox.getRelaisSirens().setValue(percent);
+//        if (SIREN) MissionBox.getRelaisSirens().setValue(percent);
         if (SIREN) MissionBox.getRelaisLEDs().setValue(new BigDecimal(100).subtract(percent));
     }
 
@@ -469,12 +487,12 @@ public class MissionBox {
                 mapGPIO.put(myOutputs[ioPin].getName(), myOutputs[ioPin]);
             }
 
-            ArrayList<Relay> relayBoard = new ArrayList<>();
-            // for our siren generator the order of the signals is the button 3-1-5-6
-            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B2")));
-            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B0")));
-            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B4")));
-            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B5")));
+//            ArrayList<Relay> relayBoard = new ArrayList<>();
+//            // for our siren generator the order of the signals is the button 3-1-5-6
+//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B2")));
+//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B0")));
+//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B4")));
+//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B5")));
 
 
 
@@ -511,6 +529,10 @@ public class MissionBox {
             outputMap.put("ledBarYellow", ioLedBarYellow);
             outputMap.put("ledBarRed", ioLedBarRed);
 
+            outputMap.put("flagSiren", mapGPIO.get("mcp23017-01-B2"));
+            outputMap.put("shutdownSiren", mapGPIO.get("mcp23017-01-B1"));
+            outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B7"));
+
 //            Relay ledGreen = new Relay(ioLedGreen);
 //            Relay ledRed = new Relay(ioLedRed);
             Relay ledBarGreen = new Relay(ioLedBarGreen);
@@ -523,17 +545,13 @@ public class MissionBox {
             progressLEDs.add(ledBarRed);
 
             relaisLEDs = new RelaySiren(progressLEDs);
-            relaisSirens = new RelaySirenPulse(relayBoard, 500);
+//            relaisSirens = new RelaySirenPulse(relayBoard, 500);
 
-            respawnSiren = new Relay(mapGPIO.get("mcp23017-01-B1"));
+//            respawnSiren = new Relay(mapGPIO.get("mcp23017-01-B1"));
 
         }
 
     }
 
 
-
-    public static RelaySiren getRelaisSirens() {
-        return relaisSirens;
-    }
 }

@@ -21,7 +21,6 @@ public class Relay implements OnOffInterface {
 
     @Override
     public void setOn(boolean on) {
-//        logger.debug("relay set to " + (on ? "ON" : "OFF"));
         if (pin == null) return;
         pin.setState(on);
     }
@@ -39,7 +38,6 @@ public class Relay implements OnOffInterface {
 //        logger.debug(String.format("blinking at %d ms", l));
         if (pin == null) return;
         pin.blink(l);
-
     }
 
     public void blink(long l, PinState pinState) {

@@ -2,6 +2,7 @@ package gamemodes;
 
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
 import misc.Tools;
@@ -31,7 +32,7 @@ public class Farcry1Assault implements GameModes {
 
         logger.setLevel(MissionBox.getLogLevel());
 
-        MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
+//        MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
 
         MessageListener gameTimeListener = messageEvent -> {
             String thisAnnoucement = messageEvent.getDateTimeFormatted();
@@ -49,6 +50,7 @@ public class Farcry1Assault implements GameModes {
                     if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
                         lastRespawn = new DateTime();
                         MissionBox.play("minions");
+                        MissionBox.blink("respawnSignal", 1000, 1000);
                         logger.info("Respawn...");
                     }
                 }
@@ -82,19 +84,25 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener gameModeListener = messageEvent -> {
             MissionBox.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
+            MissionBox.setGamemode(messageEvent.getMode());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 MissionBox.stop("shutdown");
                 MissionBox.play("siren", true);
                 MissionBox.blink("ledRed", 100, PinState.HIGH);
                 MissionBox.blink("ledGreen", 100, PinState.LOW);
-
+                MissionBox.blink("flagSiren", 1000);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.stop("siren");
                 MissionBox.setProgress(BigDecimal.ZERO);
 
-                if (prev_countdown_index > -1)
-                    MissionBox.play("shutdown"); // plays only when the flag has been touched during this round.
+
+                if (prev_countdown_index > -1) {
+                    MissionBox.blink("flagSiren", 0);
+                    MissionBox.setState("flagSiren",PinState.LOW);
+                    MissionBox.play("shutdown"); // plays only once when the flag has been touched during this round.
+                    MissionBox.blink("shutdownSiren", 1000, 1000);
+                }
 
                 MissionBox.blink("ledRed", 1000, PinState.HIGH);
                 MissionBox.blink("ledGreen", 1000, PinState.LOW);
@@ -165,7 +173,12 @@ public class Farcry1Assault implements GameModes {
             }
         };
 
-        farcryAssaultThread = new Farcry1AssaultThread(textListener, gameTimeListener, percentageListener, gameModeListener);
+        farcryAssaultThread = new Farcry1AssaultThread(new MessageListener() {
+            @Override
+            public void messageReceived(MessageEvent messageEvent) {
+
+            }
+        }, gameTimeListener, percentageListener, gameModeListener);
 
         MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
@@ -185,7 +198,7 @@ public class Farcry1Assault implements GameModes {
         MissionBox.getBtnGreen().addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
                 // If both buttons are pressed, the red one wins.
-                if (MissionBox.getBtnRed().isHigh()) return;
+                if (MissionBox.getBtnRed().isHigh() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT) return;
                 logger.debug("GreenButton pressed");
                 farcryAssaultThread.setFlag(false);
             }
@@ -194,6 +207,7 @@ public class Farcry1Assault implements GameModes {
         MissionBox.getBtnGreen().addListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (MissionBox.getBtnRed().isHigh() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT) return;
                 logger.debug("GreenButton pressed");
                 farcryAssaultThread.setFlag(false);
             }
