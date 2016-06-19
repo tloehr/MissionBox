@@ -143,23 +143,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         }
     }
 
-//    private synchronized void resetCycle() {
-//        setCycle(BigDecimal.ZERO);
-//    }
-//
-//    private synchronized void increaseCycle() {
-//        setCycle(cycle.add(BigDecimal.ONE));
-//    }
-//
-//    private synchronized void setCycle(BigDecimal cycle) {
-//        this.cycle = cycle;
-//        BigDecimal progress = cycle.divide(MAXCYCLES, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-//        fireMessage(percentageList, new MessageEvent(this, progress));
-//    }
-//
-//    private boolean timeIsUp(){
-//        return cycle.compareTo(MAXCYCLES) >= 0;
-//    }
 
     @Override
     public void restartGame() {
@@ -170,15 +153,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     public void startGame() {
         setGameState(GAME_FLAG_ACTIVE);
     }
-
-//    public void toggleGameSate() {
-//        if (gameState == GAME_PRE_GAME){
-//            setGameState(GAME_FLAG_ACTIVE);
-//        } else {
-//            setGameState(GAME_PRE_GAME);
-//        }
-//    }
-
 
     @Override
     public void quitGame() {

@@ -19,7 +19,6 @@ public class MyAbstractButton {
         this.btn = btn;
     }
 
-
     public void addListener(GpioPinListener var1) {
         if (gpio == null) return;
         gpio.addListener(var1);

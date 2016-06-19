@@ -68,9 +68,8 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener percentageListener = messageEvent -> {
             logger.debug(messageEvent.getPercentage() + " %");
-            if (MissionBox.getGPIO() != null)
-                MissionBox.getRelaisLEDs().setValue(new BigDecimal(100).subtract(messageEvent.getPercentage()));
-            MissionBox.setProgress(messageEvent.getPercentage().intValue());
+
+            MissionBox.setProgress(messageEvent.getPercentage());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 int countdown_index = messageEvent.getPercentage().intValue() / 10;
@@ -82,7 +81,6 @@ public class Farcry1Assault implements GameModes {
         };
 
         MessageListener gameModeListener = messageEvent -> {
-            //logger.debug("gameMode changed: " + Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
             MissionBox.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
@@ -93,6 +91,7 @@ public class Farcry1Assault implements GameModes {
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.stop("siren");
+                MissionBox.setProgress(BigDecimal.ZERO);
 
                 if (prev_countdown_index > -1)
                     MissionBox.play("shutdown"); // plays only when the flag has been touched during this round.
@@ -100,10 +99,10 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.blink("ledRed", 1000, PinState.HIGH);
                 MissionBox.blink("ledGreen", 1000, PinState.LOW);
 
-                MissionBox.setRelaySirenPercentage(BigDecimal.ZERO);
+
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
                 MissionBox.stop("siren");
-                MissionBox.setRelaySirenPercentage(BigDecimal.ZERO);
+                MissionBox.setProgress(BigDecimal.ZERO);
                 MissionBox.play("rocket");
 
                 MissionBox.blink("ledRed", 50, PinState.HIGH);
