@@ -42,6 +42,8 @@ public class Farcry1Assault implements GameModes {
                 if (messageEvent.getMode() != Farcry1AssaultThread.GAME_FLAG_HOT && !lastAnnoucement.equals(thisAnnoucement) && MissionBox.getTimeAnnouncements().containsKey(thisAnnoucement)) {
                     lastAnnoucement = thisAnnoucement;
                     MissionBox.getTimeAnnouncements().get(thisAnnoucement).play();
+                    int minutes = messageEvent.getTime().getMinuteOfHour();
+                    MissionBox.blink("minuteSignal", 750, minutes * 750 + 400);  // blinks in the number of minutes. the +400ms is just a little more.
                 }
 
                 // Respawn announcer
@@ -50,7 +52,7 @@ public class Farcry1Assault implements GameModes {
                     if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
                         lastRespawn = new DateTime();
                         MissionBox.play("minions");
-                        MissionBox.blink("respawnSignal", 1000, 1000);
+                        MissionBox.blink("respawnSiren", 1000, 1000);
                         logger.info("Respawn...");
                     }
                 }
@@ -69,7 +71,7 @@ public class Farcry1Assault implements GameModes {
         };
 
         MessageListener percentageListener = messageEvent -> {
-            logger.debug(messageEvent.getPercentage() + " %");
+//            logger.debug(messageEvent.getPercentage() + " %");
 
             MissionBox.setProgress(messageEvent.getPercentage());
 
@@ -89,25 +91,23 @@ public class Farcry1Assault implements GameModes {
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 MissionBox.stop("shutdown");
                 MissionBox.play("siren", true);
-                MissionBox.blink("ledRed", 100, PinState.HIGH);
-                MissionBox.blink("ledGreen", 100, PinState.LOW);
-                MissionBox.blink("flagSiren", 1000);
+
+                MissionBox.blink("ledGreen", 100, PinState.HIGH);
+                MissionBox.blink("ledRed", 0);
+
+//                MissionBox.blink("flagSiren", 1000);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.stop("siren");
                 MissionBox.setProgress(BigDecimal.ZERO);
 
-
                 if (prev_countdown_index > -1) {
                     MissionBox.blink("flagSiren", 0);
-                    MissionBox.setState("flagSiren",PinState.LOW);
                     MissionBox.play("shutdown"); // plays only once when the flag has been touched during this round.
                     MissionBox.blink("shutdownSiren", 1000, 1000);
                 }
 
                 MissionBox.blink("ledRed", 1000, PinState.HIGH);
-                MissionBox.blink("ledGreen", 1000, PinState.LOW);
-
-
+                MissionBox.blink("ledGreen", 0);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
                 MissionBox.stop("siren");
                 MissionBox.setProgress(BigDecimal.ZERO);
@@ -132,6 +132,10 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.blink("ledBarYellow", 1000);
                 MissionBox.blink("ledBarRed", 1000);
 
+                MissionBox.blink("flagSiren", 0);
+                MissionBox.blink("shutdownSiren", 0);
+                MissionBox.blink("respawnSiren", 0);
+
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
                 MissionBox.play("welcome");
@@ -139,17 +143,28 @@ public class Farcry1Assault implements GameModes {
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
+
                 MissionBox.blink("ledGreen", 0);
                 MissionBox.blink("ledRed", 0);
 
                 if (gameWon) {
                     MissionBox.play("victory");
                     MissionBox.playWinner();
+                    MissionBox.blink("ledBarGreen", 1000);
+                    MissionBox.blink("ledBarYellow", 0);
+                    MissionBox.blink("ledBarRed", 0);
                 } else {
                     MissionBox.play("defeat");
                     MissionBox.playLooser();
+                    MissionBox.blink("ledBarGreen", 0);
+                    MissionBox.blink("ledBarYellow", 0);
+                    MissionBox.blink("ledBarRed", 1000);
                 }
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
+
+                MissionBox.blink("flagSiren", 0);
+                MissionBox.blink("shutdownSiren", 0);
+                MissionBox.blink("respawnSiren", 0);
 
                 MissionBox.blink("ledRed", 500, PinState.HIGH);
                 MissionBox.blink("ledGreen", 500, PinState.LOW);
@@ -198,7 +213,8 @@ public class Farcry1Assault implements GameModes {
         MissionBox.getBtnGreen().addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
                 // If both buttons are pressed, the red one wins.
-                if (MissionBox.getBtnRed().isHigh() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT) return;
+                if (MissionBox.getBtnRed().isHigh() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT)
+                    return;
                 logger.debug("GreenButton pressed");
                 farcryAssaultThread.setFlag(false);
             }
@@ -207,7 +223,8 @@ public class Farcry1Assault implements GameModes {
         MissionBox.getBtnGreen().addListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (MissionBox.getBtnRed().isHigh() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT) return;
+                if (MissionBox.getBtnRed().isHigh() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT)
+                    return;
                 logger.debug("GreenButton pressed");
                 farcryAssaultThread.setFlag(false);
             }

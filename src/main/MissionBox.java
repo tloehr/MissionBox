@@ -41,6 +41,7 @@ public class MissionBox {
 
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc;
     private static RelaySiren relaisLEDs;
+    private static RelaySirenPulse relaisSirenProgress;
 
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
@@ -276,6 +277,7 @@ public class MissionBox {
     public static void blink(String key, long l) {
         if (!outputMap.containsKey(key)) return;
         outputMap.get(key).blink(l);
+        if (l == 0) outputMap.get(key).setState(PinState.LOW);
     }
 
     public static void blink(String key, long l, PinState pinState) {
@@ -360,10 +362,8 @@ public class MissionBox {
     }
 
     private static void loadLocalProperties() throws IOException {
-
         config = new Properties();
         // some defaults
-
 
         config.put(FCY_TIME2CAPTURE, "20");
         config.put(FCY_GAMETIME, "5");
@@ -427,8 +427,8 @@ public class MissionBox {
 
     public static void setProgress(BigDecimal percent) {
         if (GUI) frmTest.setProgress(percent.intValue());
-//        if (SIREN) MissionBox.getRelaisSirens().setValue(percent);
-        if (SIREN) MissionBox.getRelaisLEDs().setValue(new BigDecimal(100).subtract(percent));
+        if (SIREN) relaisSirenProgress.setValue(percent);
+        if (SIREN) relaisLEDs.setValue(new BigDecimal(100).subtract(percent));
     }
 
     public static boolean isSOUND() {
@@ -444,13 +444,15 @@ public class MissionBox {
     }
 
 
+
+
     public static void setRespawnTimer(String message) {
         if (GUI) frmTest.setRespawnTimer(message);
     }
-
-    public static RelaySiren getRelaisLEDs() {
-        return relaisLEDs;
-    }
+//
+//    public static RelaySiren getRelaisLEDs() {
+//        return relaisLEDs;
+//    }
 
     private static void hwinit() throws IOException {
 
@@ -531,7 +533,18 @@ public class MissionBox {
 
             outputMap.put("flagSiren", mapGPIO.get("mcp23017-01-B2"));
             outputMap.put("shutdownSiren", mapGPIO.get("mcp23017-01-B1"));
-            outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B7"));
+            outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B6"));
+            outputMap.put("minuteSignal", mapGPIO.get("mcp23017-01-B7"));
+
+            outputMap.put("siren1/3", mapGPIO.get("mcp23017-01-B2"));
+            outputMap.put("siren2/3", mapGPIO.get("mcp23017-01-B0"));
+            outputMap.put("siren3/3", mapGPIO.get("mcp23017-01-B4"));
+
+            ArrayList relaisKeys = new ArrayList<String>();
+            relaisKeys.add("siren1/3");
+            relaisKeys.add("siren2/3");
+            relaisKeys.add("siren3/3");
+            relaisSirenProgress = new RelaySirenPulse(relaisKeys, 1000);
 
 //            Relay ledGreen = new Relay(ioLedGreen);
 //            Relay ledRed = new Relay(ioLedRed);

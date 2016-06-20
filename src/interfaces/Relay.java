@@ -22,16 +22,7 @@ public class Relay implements OnOffInterface {
     @Override
     public void setOn(boolean on) {
         if (pin == null) return;
-        pin.setState(on);
-    }
-
-    public void setState(PinState pinState) {
-        if (pinState.equals(PinState.HIGH)) {
-            setOn(true);
-        }
-        if (pinState.equals(PinState.LOW)) {
-            setOn(false);
-        }
+        pin.setState(on ? PinState.HIGH : PinState.LOW);
     }
 
     public void blink(long l) {
