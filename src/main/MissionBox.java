@@ -47,6 +47,7 @@ public class MissionBox {
     public static final String FCY_GAMETIME = "fcy.gametime";
     public static final String FCY_SOUND = "fcy.sound";
     public static final String FCY_SIREN = "fcy.siren";
+    public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
     public static final String MBX_GUI = "mbx.gui";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
     public static final String FCY_RESPAWN = "fcy.respawn";
@@ -67,6 +68,23 @@ public class MissionBox {
 
     public static final void main(String[] args) throws Exception {
 
+        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
+        logger.addAppender(new ConsoleAppender(layout));
+        logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
+
+//
+//        ArrayList relaisKeys = new ArrayList<String>();
+//        relaisKeys.add("siren1/3");
+//        relaisKeys.add("siren2/3");
+//        relaisKeys.add("siren3/3");
+//        relaisSirenProgress = new RelaySirenPulse(relaisKeys);
+//
+//        for (int i = 0; i < 100; i++){
+//            relaisSirenProgress.setValue(new BigDecimal(i));
+//        }
+//
+//        System.exit(0);
+
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -75,10 +93,6 @@ public class MissionBox {
             logger.fatal(e);
             logger.fatal(sw);
         });
-
-        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
-        logger.addAppender(new ConsoleAppender(layout));
-        logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
 
         Tools.printProgBar(startup_progress);
         loadLocalProperties();
@@ -369,13 +383,14 @@ public class MissionBox {
         config.put(FCY_GAMETIME, "5");
         config.put(FCY_SOUND, "true");
         config.put(FCY_SIREN, "false");
+        config.put(MBX_SIREN_TIME, "750");
         config.put(FCY_RESPAWN, "40");
         config.put(MBX_GUI, "true");
         config.put(MBX_LOGLEVEL, "debug");
 
-        String path = System.getProperty("user.home") + File.separator + "missionbox";
 
-        File configFile = new File(path + File.separator + "config.txt");
+
+        File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
 
         configFile.getParentFile().mkdirs();
 
@@ -396,10 +411,9 @@ public class MissionBox {
     }
 
     public static void saveLocalProps() {
-        String path = System.getProperty("user.home") + File.separator + "missionbox";
 
         try {
-            File configFile = new File(path + File.separator + "config.txt");
+            File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
             FileOutputStream out = new FileOutputStream(configFile);
             config.store(out, "Settings MissionBox");
             out.close();
@@ -442,6 +456,8 @@ public class MissionBox {
     public static void setTimerMessage(String message) {
         if (GUI) frmTest.setTimer(message);
     }
+
+
 
 
 
@@ -544,7 +560,7 @@ public class MissionBox {
             relaisKeys.add("siren1/3");
             relaisKeys.add("siren2/3");
             relaisKeys.add("siren3/3");
-            relaisSirenProgress = new RelaySirenPulse(relaisKeys, 1000);
+            relaisSirenProgress = new RelaySirenPulse(relaisKeys);
 
 //            Relay ledGreen = new Relay(ioLedGreen);
 //            Relay ledRed = new Relay(ioLedRed);

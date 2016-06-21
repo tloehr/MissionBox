@@ -12,13 +12,12 @@ import java.util.ArrayList;
  * Created by Torsten on 19.06.2016.
  */
 public class RelaySirenPulse implements PercentageInterface {
-    long pulsetimeinmillis = 1000;
+    long pulsetimeinmillis = 1000; // Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.MBX_SIREN_TIME));
     int lastRelay = -1;
     protected final Logger logger = Logger.getLogger(getClass());
     ArrayList<String> myRelaisKeys;
 
-    public RelaySirenPulse(ArrayList<String> myRelaisKeys, long pulsetimeinmillis) {
-        this.pulsetimeinmillis = pulsetimeinmillis;
+    public RelaySirenPulse(ArrayList<String> myRelaisKeys) {
         this.myRelaisKeys = myRelaisKeys;
         logger.setLevel(MissionBox.getLogLevel());
         for (String pin : myRelaisKeys) {
@@ -26,32 +25,44 @@ public class RelaySirenPulse implements PercentageInterface {
         }
     }
 
+
     public void setValue(BigDecimal percent) {
 
-        // Warum setzt der so verzögert ein ?
-
-        int relaynum = new BigDecimal(myRelaisKeys.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent).intValue() - 1;
+        logger.debug(percent+" %");
+        BigDecimal bd = new BigDecimal(myRelaisKeys.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent);
+        logger.debug("bd "+ bd);
+        int relaynum = bd.intValue();
+        logger.debug("relaynum "+relaynum);
+        logger.debug("lastRelay "+lastRelay);
         if (lastRelay == relaynum) return;
 
-        logger.debug(percent + " %");
-        logger.debug("relaynum " + relaynum + " out of " + myRelaisKeys.size());
+        lastRelay = relaynum;
 
         if (relaynum >= myRelaisKeys.size()) {
             for (int relay = 0; relay < myRelaisKeys.size(); relay++) {
-
                 MissionBox.blink(myRelaisKeys.get(relay), 0);
             }
             // leave the last one on, when 100 percent is reached
-//            myRelais.get(myRelais.size() - 1).setState(PinState.HIGH);
-
+            MissionBox.blink(myRelaisKeys.get(myRelaisKeys.size() - 1), pulsetimeinmillis);
         } else {
+
+
             for (int relay = 0; relay < myRelaisKeys.size(); relay++) {
-                boolean on = percent.compareTo(BigDecimal.ZERO) > 0 && relaynum == relay;
-//                MissionBox.setState(myRelaisKeys.get(relay), PinState.LOW);
+                boolean on = percent.compareTo(BigDecimal.ZERO) > 0 && relay == relaynum;
+
+                logger.debug("relaynum " + relaynum);
+                logger.debug("relay " + relay);
+
+                logger.debug("on: " + on);
+                logger.debug("myRelaisKeys.get(relay): " + myRelaisKeys.get(relay));
+
                 MissionBox.blink(myRelaisKeys.get(relay), (on ? pulsetimeinmillis : 0));
             }
+
+            if (percent.compareTo(BigDecimal.ZERO) <= 0) lastRelay = -1;
+
         }
 
-        lastRelay = relaynum;
+
     }
 }

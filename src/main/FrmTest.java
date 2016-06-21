@@ -88,7 +88,6 @@ public class FrmTest extends JFrame {
     }
 
     private void tabbedPane1StateChanged(ChangeEvent e) {
-
         if (tabbedPane1.getSelectedIndex() == 0) {
             MissionBox.saveLocalProps();
         } else {
@@ -97,7 +96,7 @@ public class FrmTest extends JFrame {
     }
 
     public void setProgress(int progress) {
-        pb1.setIndeterminate(progress == 0);
+        pb1.setIndeterminate(progress <= 0);
         if (progress > 0) {
             pb1.setValue(progress);
         }

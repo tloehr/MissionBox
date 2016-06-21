@@ -73,7 +73,10 @@ public class Farcry1Assault implements GameModes {
         MessageListener percentageListener = messageEvent -> {
 //            logger.debug(messageEvent.getPercentage() + " %");
 
-            MissionBox.setProgress(messageEvent.getPercentage());
+            if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
+                MissionBox.setProgress(messageEvent.getPercentage());
+            }
+
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 int countdown_index = messageEvent.getPercentage().intValue() / 10;
@@ -89,11 +92,12 @@ public class Farcry1Assault implements GameModes {
             MissionBox.setGamemode(messageEvent.getMode());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
+
                 MissionBox.stop("shutdown");
                 MissionBox.play("siren", true);
-
                 MissionBox.blink("ledGreen", 100, PinState.HIGH);
                 MissionBox.blink("ledRed", 0);
+
 
 //                MissionBox.blink("flagSiren", 1000);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
@@ -101,7 +105,7 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setProgress(BigDecimal.ZERO);
 
                 if (prev_countdown_index > -1) {
-                    MissionBox.blink("flagSiren", 0);
+//                    MissionBox.blink("flagSiren", 0);
                     MissionBox.play("shutdown"); // plays only once when the flag has been touched during this round.
                     MissionBox.blink("shutdownSiren", 1000, 1000);
                 }
