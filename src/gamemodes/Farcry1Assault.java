@@ -41,7 +41,8 @@ public class Farcry1Assault implements GameModes {
             if (isGameRunning(messageEvent.getMode())) {
                 if (messageEvent.getMode() != Farcry1AssaultThread.GAME_FLAG_HOT && !lastAnnoucement.equals(thisAnnoucement) && MissionBox.getTimeAnnouncements().containsKey(thisAnnoucement)) {
                     lastAnnoucement = thisAnnoucement;
-                    MissionBox.getTimeAnnouncements().get(thisAnnoucement).play();
+
+                    if (MissionBox.isSOUND()) MissionBox.getTimeAnnouncements().get(thisAnnoucement).play();
 
                     int minutes = messageEvent.getTime().getMinuteOfHour();
                     int seconds = messageEvent.getTime().getSecondOfMinute();
@@ -61,7 +62,7 @@ public class Farcry1Assault implements GameModes {
                     if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
                         lastRespawn = new DateTime();
                         MissionBox.play("minions");
-                        MissionBox.blink("respawnSiren", 1000, 1000);
+                        MissionBox.blink("respawnSiren", 2000, 2000);
                         logger.info("Respawn...");
                     }
                 }
@@ -203,7 +204,7 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.blink("ledBarRed", 0);
                 lastRespawn = new DateTime();
                 MissionBox.play("minions");
-
+                MissionBox.blink("respawnSiren", 2000, 2000);
             }
         };
 

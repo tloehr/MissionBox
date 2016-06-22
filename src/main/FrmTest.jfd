@@ -145,6 +145,8 @@ new FormModel {
 						name: "lblFCYGametime"
 						"font": #Font2
 						"text": "1"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYGametimeActionPerformed", true ) )
+						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYGametimeFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 5
 						"gridY": 3
@@ -179,6 +181,8 @@ new FormModel {
 						name: "lblFCYRespawn"
 						"font": #Font2
 						"text": "1"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYRespawnActionPerformed", true ) )
+						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYRespawnFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 5
 						"gridY": 5
@@ -219,40 +223,18 @@ new FormModel {
 					"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, default"
 				} ) {
 					name: "panel1"
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblBtnRed"
-						"text": "Red Button"
-						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkred32.png" )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 1
-						"gridY": 1
-					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRedLed"
-						"text": "LED ON"
+						name: "btnRespawn"
+						"text": "Respawn Signal"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
-					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblBtnGreen"
-						"text": "Green Button"
-						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkgreen32.png" )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 3
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRedLed2"
-						"text": "LED ON"
+						"text": "Time Signal"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
 						"gridX": 3
-					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblBtnStartStop"
-						"text": "Start/Stop"
-						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkblue32.png" )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 5
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRedLedBar"
@@ -261,27 +243,6 @@ new FormModel {
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
 						"gridY": 5
-					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblBtnQuit"
-						"text": "Quit"
-						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkyellow32.png" )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 7
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnYellowLedBar"
-						"text": "Yellow LED Bar"
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 3
-						"gridY": 7
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnGreenLedBar"
-						"text": "Green LED Bar"
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 9
-						"gridX": 3
 					} )
 				}, new FormLayoutConstraints( null ) {
 					"title": "HW-Test"

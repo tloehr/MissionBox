@@ -156,6 +156,30 @@ public class FrmTest extends JFrame {
         lblFCYCaptureActionPerformed(new ActionEvent(e.getSource(), 0, ""));
     }
 
+    private void lblFCYGametimeActionPerformed(ActionEvent e) {
+        JTextField txt = ((JTextField) e.getSource());
+        int capture = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
+        int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_GAMETIME, Integer.toString(value));
+        txt.setText(Integer.toString(value));
+    }
+
+    private void lblFCYGametimeFocusLost(FocusEvent e) {
+        lblFCYGametimeActionPerformed(new ActionEvent(e.getSource(), 0, ""));
+    }
+
+    private void lblFCYRespawnActionPerformed(ActionEvent e) {
+        JTextField txt = ((JTextField) e.getSource());
+        int capture = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
+        int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN, Integer.toString(value));
+        txt.setText(Integer.toString(value));
+    }
+
+    private void lblFCYRespawnFocusLost(FocusEvent e) {
+        lblFCYRespawnActionPerformed(new ActionEvent(e.getSource(), 0, ""));
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -185,15 +209,9 @@ public class FrmTest extends JFrame {
         btnSound = new JToggleButton();
         btnSiren = new JToggleButton();
         panel1 = new JPanel();
-        lblBtnRed = new JLabel();
-        btnRedLed = new JButton();
-        lblBtnGreen = new JLabel();
+        btnRespawn = new JButton();
         btnRedLed2 = new JButton();
-        lblBtnStartStop = new JLabel();
         btnRedLedBar = new JButton();
-        lblBtnQuit = new JLabel();
-        btnYellowLedBar = new JButton();
-        btnGreenLedBar = new JButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -300,6 +318,13 @@ public class FrmTest extends JFrame {
                 //---- lblFCYGametime ----
                 lblFCYGametime.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYGametime.setText("1");
+                lblFCYGametime.addActionListener(e -> lblFCYGametimeActionPerformed(e));
+                lblFCYGametime.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        lblFCYGametimeFocusLost(e);
+                    }
+                });
                 settingsPanel.add(lblFCYGametime, CC.xy(5, 3, CC.CENTER, CC.DEFAULT));
 
                 //---- btnFCYgametimeMinus ----
@@ -322,6 +347,13 @@ public class FrmTest extends JFrame {
                 //---- lblFCYRespawn ----
                 lblFCYRespawn.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYRespawn.setText("1");
+                lblFCYRespawn.addActionListener(e -> lblFCYRespawnActionPerformed(e));
+                lblFCYRespawn.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        lblFCYRespawnFocusLost(e);
+                    }
+                });
                 settingsPanel.add(lblFCYRespawn, CC.xy(5, 5, CC.CENTER, CC.DEFAULT));
 
                 //---- btnFCYrespawnMinus ----
@@ -350,46 +382,18 @@ public class FrmTest extends JFrame {
                     "default, $lcgap, default, 6dlu, default",
                     "4*(default, $lgap), default"));
 
-                //---- lblBtnRed ----
-                lblBtnRed.setText("Red Button");
-                lblBtnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred32.png")));
-                panel1.add(lblBtnRed, CC.xy(1, 1));
-
-                //---- btnRedLed ----
-                btnRedLed.setText("LED ON");
-                panel1.add(btnRedLed, CC.xy(3, 1));
-
-                //---- lblBtnGreen ----
-                lblBtnGreen.setText("Green Button");
-                lblBtnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
-                panel1.add(lblBtnGreen, CC.xy(1, 3));
+                //---- btnRespawn ----
+                btnRespawn.setText("Respawn Signal");
+                panel1.add(btnRespawn, CC.xy(3, 1));
 
                 //---- btnRedLed2 ----
-                btnRedLed2.setText("LED ON");
+                btnRedLed2.setText("Time Signal");
                 panel1.add(btnRedLed2, CC.xy(3, 3));
-
-                //---- lblBtnStartStop ----
-                lblBtnStartStop.setText("Start/Stop");
-                lblBtnStartStop.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
-                panel1.add(lblBtnStartStop, CC.xy(1, 5));
 
                 //---- btnRedLedBar ----
                 btnRedLedBar.setText("Red LED Bar");
                 btnRedLedBar.addActionListener(e -> btnRedLedBarActionPerformed(e));
                 panel1.add(btnRedLedBar, CC.xy(3, 5));
-
-                //---- lblBtnQuit ----
-                lblBtnQuit.setText("Quit");
-                lblBtnQuit.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkyellow32.png")));
-                panel1.add(lblBtnQuit, CC.xy(1, 7));
-
-                //---- btnYellowLedBar ----
-                btnYellowLedBar.setText("Yellow LED Bar");
-                panel1.add(btnYellowLedBar, CC.xy(3, 7));
-
-                //---- btnGreenLedBar ----
-                btnGreenLedBar.setText("Green LED Bar");
-                panel1.add(btnGreenLedBar, CC.xy(3, 9));
             }
             tabbedPane1.addTab("HW-Test", panel1);
         }
@@ -467,14 +471,8 @@ public class FrmTest extends JFrame {
     private JToggleButton btnSound;
     private JToggleButton btnSiren;
     private JPanel panel1;
-    private JLabel lblBtnRed;
-    private JButton btnRedLed;
-    private JLabel lblBtnGreen;
+    private JButton btnRespawn;
     private JButton btnRedLed2;
-    private JLabel lblBtnStartStop;
     private JButton btnRedLedBar;
-    private JLabel lblBtnQuit;
-    private JButton btnYellowLedBar;
-    private JButton btnGreenLedBar;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
