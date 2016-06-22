@@ -176,6 +176,18 @@ public class MissionBox {
 
         if (!SOUND) {
             startup_progress = 77;
+
+            // dummy time annoucements for the sirens
+
+            timeAnnouncements.put("05:00", null);
+            timeAnnouncements.put("04:00", null);
+            timeAnnouncements.put("03:00", null);
+            timeAnnouncements.put("02:00", null);
+            timeAnnouncements.put("01:00", null);
+            timeAnnouncements.put("00:30", null);
+            timeAnnouncements.put("00:20", null);
+            timeAnnouncements.put("00:10", null);
+
             return;
         }
 
@@ -550,7 +562,7 @@ public class MissionBox {
             outputMap.put("flagSiren", mapGPIO.get("mcp23017-01-B2"));
             outputMap.put("shutdownSiren", mapGPIO.get("mcp23017-01-B1"));
             outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B6"));
-            outputMap.put("minuteSignal", mapGPIO.get("mcp23017-01-B7"));
+            outputMap.put("timeSignal", mapGPIO.get("mcp23017-01-B7"));
 
             outputMap.put("siren1/3", mapGPIO.get("mcp23017-01-B2"));
             outputMap.put("siren2/3", mapGPIO.get("mcp23017-01-B0"));

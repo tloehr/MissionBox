@@ -150,6 +150,21 @@ public class Tools {
     }
 
 
+    public static int parseInt(String input, int min, int max, int previous){
+        int result = previous;
+        try {
+            result = Integer.parseInt(input);
+        } catch (NumberFormatException nfe){
+            result = previous;
+        }
+
+        if (result < min || result > max){
+            result = previous;
+        }
+
+        return result;
+    }
+
     public static String getSoundPath() {
         return getMissionboxDirectory() + File.separator + "sounds";
     }

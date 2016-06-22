@@ -4,8 +4,10 @@
 
 package main;
 
+import java.awt.event.*;
 import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.FormLayout;
+import misc.Tools;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -24,11 +26,6 @@ public class FrmTest extends JFrame {
     }
 
     private void initPanel() {
-        lblFCYCapture.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
-        lblFCYGametime.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
-        lblFCYRespawn.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
-        btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("true"));
-        btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("true"));
 
         btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "true" : "false"));
         btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "true" : "false"));
@@ -90,6 +87,12 @@ public class FrmTest extends JFrame {
     private void tabbedPane1StateChanged(ChangeEvent e) {
         if (tabbedPane1.getSelectedIndex() == 0) {
             MissionBox.saveLocalProps();
+        } else if (tabbedPane1.getSelectedIndex() == 1) {
+            lblFCYCapture.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
+            lblFCYGametime.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
+            lblFCYRespawn.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
+            btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("true"));
+            btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("true"));
         } else {
 
         }
@@ -141,6 +144,18 @@ public class FrmTest extends JFrame {
         });
     }
 
+    private void lblFCYCaptureActionPerformed(ActionEvent e) {
+        JTextField txt = ((JTextField) e.getSource());
+        int capture = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
+        int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_TIME2CAPTURE, Integer.toString(value));
+        txt.setText(Integer.toString(value));
+    }
+
+    private void lblFCYCaptureFocusLost(FocusEvent e) {
+        lblFCYCaptureActionPerformed(new ActionEvent(e.getSource(), 0, ""));
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -157,15 +172,15 @@ public class FrmTest extends JFrame {
         settingsPanel = new JPanel();
         label1 = new JLabel();
         btnFCYcapPlus = new JButton();
-        lblFCYCapture = new JLabel();
+        lblFCYCapture = new JTextField();
         btnFCYcapMinus = new JButton();
         label2 = new JLabel();
         btnFCYgametimePlus = new JButton();
-        lblFCYGametime = new JLabel();
+        lblFCYGametime = new JTextField();
         btnFCYgametimeMinus = new JButton();
         label3 = new JLabel();
         btnFCYrespawnPlus = new JButton();
-        lblFCYRespawn = new JLabel();
+        lblFCYRespawn = new JTextField();
         btnFCYrespawnMinus = new JButton();
         btnSound = new JToggleButton();
         btnSiren = new JToggleButton();
@@ -256,6 +271,13 @@ public class FrmTest extends JFrame {
                 //---- lblFCYCapture ----
                 lblFCYCapture.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYCapture.setText("1");
+                lblFCYCapture.addActionListener(e -> lblFCYCaptureActionPerformed(e));
+                lblFCYCapture.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        lblFCYCaptureFocusLost(e);
+                    }
+                });
                 settingsPanel.add(lblFCYCapture, CC.xy(5, 1, CC.CENTER, CC.DEFAULT));
 
                 //---- btnFCYcapMinus ----
@@ -432,15 +454,15 @@ public class FrmTest extends JFrame {
     private JPanel settingsPanel;
     private JLabel label1;
     private JButton btnFCYcapPlus;
-    private JLabel lblFCYCapture;
+    private JTextField lblFCYCapture;
     private JButton btnFCYcapMinus;
     private JLabel label2;
     private JButton btnFCYgametimePlus;
-    private JLabel lblFCYGametime;
+    private JTextField lblFCYGametime;
     private JButton btnFCYgametimeMinus;
     private JLabel label3;
     private JButton btnFCYrespawnPlus;
-    private JLabel lblFCYRespawn;
+    private JTextField lblFCYRespawn;
     private JButton btnFCYrespawnMinus;
     private JToggleButton btnSound;
     private JToggleButton btnSiren;

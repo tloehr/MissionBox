@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "5.2.3.0.281" Java: "1.8.0_76-release" encoding: "UTF-8"
+JFDML JFormDesigner: "5.2.3.0.281" Java: "1.8.0_77" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -107,10 +107,12 @@ new FormModel {
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
 					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
+					add( new FormComponent( "javax.swing.JTextField" ) {
 						name: "lblFCYCapture"
 						"font": &Font2 new java.awt.Font( "Dialog", 1, 20 )
 						"text": "1"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYCaptureActionPerformed", true ) )
+						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYCaptureFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
 						"gridX": 5
@@ -139,7 +141,7 @@ new FormModel {
 						"gridX": 3
 						"gridY": 3
 					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
+					add( new FormComponent( "javax.swing.JTextField" ) {
 						name: "lblFCYGametime"
 						"font": #Font2
 						"text": "1"
@@ -173,7 +175,7 @@ new FormModel {
 						"gridX": 3
 						"gridY": 5
 					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
+					add( new FormComponent( "javax.swing.JTextField" ) {
 						name: "lblFCYRespawn"
 						"font": #Font2
 						"text": "1"
