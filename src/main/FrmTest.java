@@ -5,8 +5,10 @@
 package main;
 
 import java.awt.event.*;
+
 import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.FormLayout;
+import com.pi4j.io.gpio.PinState;
 import misc.Tools;
 
 import javax.swing.*;
@@ -116,7 +118,7 @@ public class FrmTest extends JFrame {
     }
 
     private void btnRedLedBarActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        MissionBox.secondsSignal(30);
     }
 
     private void btnFCYrespawnPlusActionPerformed(ActionEvent e) {
@@ -180,6 +182,17 @@ public class FrmTest extends JFrame {
         lblFCYRespawnActionPerformed(new ActionEvent(e.getSource(), 0, ""));
     }
 
+    private void btnRespawnActionPerformed(ActionEvent e) {
+        MissionBox.blink("respawnSiren", 1000, 1000);
+    }
+
+    private void btnTimeSignalActionPerformed(ActionEvent e) {
+
+
+        MissionBox.minuteSignal(4);
+
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -210,7 +223,7 @@ public class FrmTest extends JFrame {
         btnSiren = new JToggleButton();
         panel1 = new JPanel();
         btnRespawn = new JButton();
-        btnRedLed2 = new JButton();
+        btnTimeSignal = new JButton();
         btnRedLedBar = new JButton();
 
         //======== this ========
@@ -384,14 +397,16 @@ public class FrmTest extends JFrame {
 
                 //---- btnRespawn ----
                 btnRespawn.setText("Respawn Signal");
+                btnRespawn.addActionListener(e -> btnRespawnActionPerformed(e));
                 panel1.add(btnRespawn, CC.xy(3, 1));
 
-                //---- btnRedLed2 ----
-                btnRedLed2.setText("Time Signal");
-                panel1.add(btnRedLed2, CC.xy(3, 3));
+                //---- btnTimeSignal ----
+                btnTimeSignal.setText("4 Minutes");
+                btnTimeSignal.addActionListener(e -> btnTimeSignalActionPerformed(e));
+                panel1.add(btnTimeSignal, CC.xy(3, 3));
 
                 //---- btnRedLedBar ----
-                btnRedLedBar.setText("Red LED Bar");
+                btnRedLedBar.setText("30 Seconds");
                 btnRedLedBar.addActionListener(e -> btnRedLedBarActionPerformed(e));
                 panel1.add(btnRedLedBar, CC.xy(3, 5));
             }
@@ -472,7 +487,7 @@ public class FrmTest extends JFrame {
     private JToggleButton btnSiren;
     private JPanel panel1;
     private JButton btnRespawn;
-    private JButton btnRedLed2;
+    private JButton btnTimeSignal;
     private JButton btnRedLedBar;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

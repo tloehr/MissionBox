@@ -45,13 +45,13 @@ public class Farcry1Assault implements GameModes {
                     if (MissionBox.isSOUND()) MissionBox.getTimeAnnouncements().get(thisAnnoucement).play();
 
                     int minutes = messageEvent.getTime().getMinuteOfHour();
-                    int seconds = messageEvent.getTime().getSecondOfMinute();
+                    int seconds = messageEvent.getTime().getSecondOfMinute() / 10;
                     if (minutes > 0 && minutes <= 5) {
-                        MissionBox.blink("timeSignal", 1000, minutes * 1000 + 300);  // blinks in the number of minutes. the +300ms is just a little more.
+                        MissionBox.minuteSignal(minutes);
                     }
 
                     if (minutes == 0) {
-                        MissionBox.blink("timeSignal", 500, seconds * 500 + 300);  // blinks in the number of minutes. the +300ms is just a little more.
+                        MissionBox.secondsSignal(seconds);
                     }
 
                 }
@@ -62,7 +62,7 @@ public class Farcry1Assault implements GameModes {
                     if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
                         lastRespawn = new DateTime();
                         MissionBox.play("minions");
-                        MissionBox.blink("respawnSiren", 2000, 2000);
+                        MissionBox.blink("respawnSiren", 2000);
                         logger.info("Respawn...");
                     }
                 }
@@ -106,7 +106,7 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.stop("shutdown");
                 MissionBox.play("siren", true);
                 MissionBox.blink("ledGreen", 100, PinState.HIGH);
-                MissionBox.blink("ledRed", 0);
+                MissionBox.off("ledRed", 0);
 
 
 //                MissionBox.blink("flagSiren", 1000);
@@ -294,6 +294,7 @@ public class Farcry1Assault implements GameModes {
 
     @Override
     public void quitGame() {
+        MissionBox.shutdownEverything();
         System.exit(0);
     }
 

@@ -42,12 +42,11 @@ public class RelaySirenPulse implements PercentageInterface {
             return;
         }
 
-        logger.debug(percent+" %");
+
         BigDecimal bd = new BigDecimal(myRelaisKeys.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent);
-        logger.debug("bd "+ bd);
+
         int relaynum = bd.intValue();
-        logger.debug("relaynum "+relaynum);
-        logger.debug("lastRelay "+lastRelay);
+
         if (lastRelay == relaynum) return;
 
         lastRelay = relaynum;
@@ -62,11 +61,7 @@ public class RelaySirenPulse implements PercentageInterface {
             for (int relay = 0; relay < myRelaisKeys.size(); relay++) {
                 boolean on = percent.compareTo(BigDecimal.ZERO) > 0 && relay == relaynum;
 
-                logger.debug("relaynum " + relaynum);
-                logger.debug("relay " + relay);
 
-                logger.debug("on: " + on);
-                logger.debug("myRelaisKeys.get(relay): " + myRelaisKeys.get(relay));
 
                 MissionBox.blink(myRelaisKeys.get(relay), (on ? pulsetimeinmillis : 0));
             }

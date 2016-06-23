@@ -226,19 +226,21 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRespawn"
 						"text": "Respawn Signal"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRespawnActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRedLed2"
-						"text": "Time Signal"
+						name: "btnTimeSignal"
+						"text": "4 Minutes"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnTimeSignalActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
 						"gridX": 3
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRedLedBar"
-						"text": "Red LED Bar"
+						"text": "30 Seconds"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRedLedBarActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3

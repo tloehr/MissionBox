@@ -18,10 +18,7 @@ import org.apache.log4j.*;
 import javax.swing.*;
 import java.io.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 
 /**
@@ -300,10 +297,39 @@ public class MissionBox {
 
     }
 
-    public static void blink(String key, long l) {
-        if (!outputMap.containsKey(key)) return;
-        outputMap.get(key).blink(l);
-        if (l == 0) outputMap.get(key).setState(PinState.LOW);
+
+    public static SwingWorker blink(String key, long duration, int repeat){
+        SwingWorker sw = new SwingWorker() {
+            @Override
+            protected Object doInBackground() throws Exception {
+                for (int i = 0; i < repeat; i++) {
+                    try {
+                        MissionBox.setState(key, PinState.HIGH);
+                        Thread.sleep(duration);
+                        MissionBox.setState(key, PinState.LOW);
+                        Thread.sleep(duration);
+                    } catch (InterruptedException ex) {
+                        setState(key, PinState.LOW);
+                        logger.info("blink() interrupted");
+                    }
+                }
+                return null;
+            }
+        };
+        sw.execute();
+        return sw;
+    }
+
+    public static void off(String key){
+        outputMap.get(key).setState(PinState.LOW);
+    }
+
+    public static SwingWorker blink(String key, long duration) {
+
+//        outputMap.get(key).blink(l);
+        blink(key, duration, 1);
+        if (duration == 0) outputMap.get(key).setState(PinState.LOW);
+
     }
 
     public static void blink(String key, long l, PinState pinState) {
@@ -469,18 +495,17 @@ public class MissionBox {
         if (GUI) frmTest.setTimer(message);
     }
 
+    public static void minuteSignal(int minutes){
+        blink("timeSignal", 1000, minutes);
+    }
 
-
-
-
+    public static void secondsSignal(int seconds){
+        blink("timeSignal", 500, seconds/10);
+    }
 
     public static void setRespawnTimer(String message) {
         if (GUI) frmTest.setRespawnTimer(message);
     }
-//
-//    public static RelaySiren getRelaisLEDs() {
-//        return relaisLEDs;
-//    }
 
     private static void hwinit() throws IOException {
 
@@ -562,7 +587,7 @@ public class MissionBox {
             outputMap.put("flagSiren", mapGPIO.get("mcp23017-01-B2"));
             outputMap.put("shutdownSiren", mapGPIO.get("mcp23017-01-B1"));
             outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B6"));
-            outputMap.put("timeSignal", mapGPIO.get("mcp23017-01-B7"));
+            outputMap.put("timeSignal", mapGPIO.get("mcp23017-01-B3"));
 
             outputMap.put("siren1/3", mapGPIO.get("mcp23017-01-B2"));
             outputMap.put("siren2/3", mapGPIO.get("mcp23017-01-B0"));
@@ -592,6 +617,13 @@ public class MissionBox {
 
         }
 
+    }
+
+
+    public static void shutdownEverything(){
+        for (String key : outputMap.keySet()){
+            blink(key, 0);
+        }
     }
 
 
