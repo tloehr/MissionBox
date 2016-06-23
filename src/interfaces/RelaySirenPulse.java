@@ -27,7 +27,7 @@ public class RelaySirenPulse implements PercentageInterface {
         this.myRelaisKeys = myRelaisKeys;
         logger.setLevel(MissionBox.getLogLevel());
         for (String pin : myRelaisKeys) {
-            MissionBox.setState(pin, PinState.LOW);
+            MissionBox.off(pin);
         }
     }
 
@@ -51,18 +51,13 @@ public class RelaySirenPulse implements PercentageInterface {
 
         lastRelay = relaynum;
 
-        if (relaynum >= myRelaisKeys.size()) {
+        if (percent.compareTo(new BigDecimal(100)) >= 0 || relaynum >= myRelaisKeys.size()) {
             for (int relay = 0; relay < myRelaisKeys.size(); relay++) {
                 MissionBox.blink(myRelaisKeys.get(relay), 0);
             }
-            // leave the last one blinking, when 100 (or above) percent is reached
-            MissionBox.blink(myRelaisKeys.get(myRelaisKeys.size() - 1), pulsetimeinmillis);
         } else {
             for (int relay = 0; relay < myRelaisKeys.size(); relay++) {
                 boolean on = percent.compareTo(BigDecimal.ZERO) > 0 && relay == relaynum;
-
-
-
                 MissionBox.blink(myRelaisKeys.get(relay), (on ? pulsetimeinmillis : 0));
             }
         }

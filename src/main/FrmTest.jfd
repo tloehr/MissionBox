@@ -7,7 +7,6 @@ new FormModel {
 			name: "this"
 			"defaultCloseOperation": 3
 			"$sizePolicy": 1
-			"undecorated": true
 			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 				name: "tabbedPane1"
 				"font": &Font0 new java.awt.Font( "Dialog", 0, 16 )

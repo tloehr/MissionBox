@@ -25,6 +25,7 @@ public class FrmTest extends JFrame {
     public FrmTest() {
         initComponents();
         initPanel();
+        setUndecorated(false);
     }
 
     private void initPanel() {
@@ -183,7 +184,7 @@ public class FrmTest extends JFrame {
     }
 
     private void btnRespawnActionPerformed(ActionEvent e) {
-        MissionBox.blink("respawnSiren", 1000, 1000);
+        MissionBox.blink("respawnSiren", 1000, 1);
     }
 
     private void btnTimeSignalActionPerformed(ActionEvent e) {
@@ -228,7 +229,6 @@ public class FrmTest extends JFrame {
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setUndecorated(true);
         Container contentPane = getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
 

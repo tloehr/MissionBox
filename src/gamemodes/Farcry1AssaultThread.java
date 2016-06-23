@@ -91,11 +91,11 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             switch (gameState) {
                 case GAME_PRE_GAME: {
+                    MissionBox.shutdownEverything();
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
-                    logger.info("resetting game timer");
                     this.GAMETIMEINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60;
                     this.TIME2CAP = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.active"));
@@ -175,7 +175,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     }
 
     protected synchronized void fireMessage(EventListenerList listeners, MessageEvent textMessage) {
-//        logger.debug(textMessage.getMessage().toString());
         for (MessageListener listener : listeners.getListeners(MessageListener.class)) {
             listener.messageReceived(textMessage);
         }

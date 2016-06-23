@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="missionbox" default="all">
+  
+      <!-- Custom Target for AppInfo.java -->
+	<target name="default">
+	<buildnumber file="appinfo.properties"/>
+	<propertyfile file="appinfo.properties" comment="Everything can be manually updated except buildnum and builddate.">
+	<entry key="program.PROGNAME" default="MissionBox" />
+	<entry key="program.AUTHOR" default="" />
+	<entry key="program.COMPANY" default="" />
+	<entry key="program.COPYRIGHT" default="now" type="date" pattern="yyyy" />
+	<entry key="program.DESCRIPTION" default="" />
+	<entry key="program.VERSION" default="1.0.0" />
+	<entry key="program.BUILDNUM" value="${build.number}" />
+	<entry key="program.BUILDDATE" type="date" value="now" pattern="yyyyMMddHHmm" />
+	</propertyfile>
+	<copy file="appinfo.properties" todir=""/>
+	</target>
+        
+</project>

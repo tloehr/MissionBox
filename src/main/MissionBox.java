@@ -35,6 +35,7 @@ public class MissionBox {
     private static int gamemode;
 
     private static final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
+    private static final HashMap<String, SwingWorker> mapWorker = new HashMap<>();
 
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc;
     private static RelaySiren relaisLEDs;
@@ -298,53 +299,55 @@ public class MissionBox {
     }
 
 
-    public static SwingWorker blink(String key, long duration, int repeat){
+    public static void blink(final String key, final long duration, final int repeat) {
+        if (mapWorker.containsKey(key)) {
+            mapWorker.get(key).cancel(true);
+            off(key);
+            mapWorker.remove(key);
+        }
+        if (duration == 0) {
+            off(key);
+            return;
+        }
+
         SwingWorker sw = new SwingWorker() {
+            int i = 0;
             @Override
             protected Object doInBackground() throws Exception {
-                for (int i = 0; i < repeat; i++) {
+                while (!isCancelled() && i < repeat){
+                    i++;
                     try {
-                        MissionBox.setState(key, PinState.HIGH);
+                        outputMap.get(key).setState(PinState.HIGH);
                         Thread.sleep(duration);
-                        MissionBox.setState(key, PinState.LOW);
+                        outputMap.get(key).setState(PinState.LOW);
                         Thread.sleep(duration);
                     } catch (InterruptedException ex) {
-                        setState(key, PinState.LOW);
+                        outputMap.get(key).setState(PinState.LOW);
                         logger.info("blink() interrupted");
                     }
                 }
                 return null;
             }
+
+            @Override
+            protected void done() {
+                super.done();
+                off(key);
+                mapWorker.remove(key);
+            }
         };
         sw.execute();
-        return sw;
+        mapWorker.put(key, sw);
     }
 
-    public static void off(String key){
+    public static void off(String key) {
+        if (!outputMap.containsKey(key)) return;
         outputMap.get(key).setState(PinState.LOW);
     }
 
-    public static SwingWorker blink(String key, long duration) {
-
-//        outputMap.get(key).blink(l);
-        blink(key, duration, 1);
-        if (duration == 0) outputMap.get(key).setState(PinState.LOW);
-
-    }
-
-    public static void blink(String key, long l, PinState pinState) {
+    public static void blink(String key, long duration) {
         if (!outputMap.containsKey(key)) return;
-        outputMap.get(key).blink(l, pinState);
-    }
-
-    public static void setState(String key, PinState pinState) {
-        if (!outputMap.containsKey(key)) return;
-        outputMap.get(key).setState(pinState);
-    }
-
-    public static void blink(String key, long l, long duration) {
-        if (!outputMap.containsKey(key)) return;
-        outputMap.get(key).blink(l, duration);
+        blink(key, duration, Integer.MAX_VALUE);
     }
 
     public static HashMap<String, GpioPinDigitalOutput> getOutputMap() {
@@ -427,7 +430,6 @@ public class MissionBox {
         config.put(MBX_LOGLEVEL, "debug");
 
 
-
         File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
 
         configFile.getParentFile().mkdirs();
@@ -478,8 +480,8 @@ public class MissionBox {
     }
 
     public static void setProgress(BigDecimal percent) {
-        if (GUI) frmTest.setProgress(percent.intValue());
         if (SIREN) relaisSirenProgress.setValue(percent);
+        if (GUI) frmTest.setProgress(percent.intValue());
         if (SIREN) relaisLEDs.setValue(new BigDecimal(100).subtract(percent));
     }
 
@@ -495,12 +497,12 @@ public class MissionBox {
         if (GUI) frmTest.setTimer(message);
     }
 
-    public static void minuteSignal(int minutes){
+    public static void minuteSignal(int minutes) {
         blink("timeSignal", 1000, minutes);
     }
 
-    public static void secondsSignal(int seconds){
-        blink("timeSignal", 500, seconds/10);
+    public static void secondsSignal(int seconds) {
+        blink("timeSignal", 500, seconds / 10);
     }
 
     public static void setRespawnTimer(String message) {
@@ -542,26 +544,6 @@ public class MissionBox {
                 mapGPIO.put(myOutputs[ioPin].getName(), myOutputs[ioPin]);
             }
 
-//            ArrayList<Relay> relayBoard = new ArrayList<>();
-//            // for our siren generator the order of the signals is the button 3-1-5-6
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B2")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B0")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B4")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B5")));
-
-
-
-
-//            relayBoard.clear();
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B0")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B1")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B2")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B3")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B4")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B5")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B6")));
-//            relayBoard.add(new Relay(mapGPIO.get("mcp23017-01-B7")));
-
             GpioPinDigitalInput ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN); // Board 11
             GpioPinDigitalInput ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN); // Board 13
             GpioPinDigitalInput ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN); // Board 15
@@ -584,7 +566,7 @@ public class MissionBox {
             outputMap.put("ledBarYellow", ioLedBarYellow);
             outputMap.put("ledBarRed", ioLedBarRed);
 
-            outputMap.put("flagSiren", mapGPIO.get("mcp23017-01-B2"));
+//            outputMap.put("flagSiren", mapGPIO.get("mcp23017-01-B2"));
             outputMap.put("shutdownSiren", mapGPIO.get("mcp23017-01-B1"));
             outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B6"));
             outputMap.put("timeSignal", mapGPIO.get("mcp23017-01-B3"));
@@ -620,9 +602,12 @@ public class MissionBox {
     }
 
 
-    public static void shutdownEverything(){
-        for (String key : outputMap.keySet()){
-            blink(key, 0);
+    public static void shutdownEverything() {
+        for (String key : mapWorker.keySet()) {
+            mapWorker.get(key).cancel(true);
+        }
+        for (String key : outputMap.keySet()) {
+            off(key);
         }
     }
 

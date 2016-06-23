@@ -31,7 +31,6 @@ public class RelaySirenBlinking implements PercentageInterface {
             for (int relay = 0; relay < myRelais.size(); relay++) {
                 myRelais.get(relay).setState(false);
             }
-            myRelais.get(myRelais.size() - 1).setState(PinState.HIGH);
         } else {
             for (int relay = 0; relay < myRelais.size(); relay++) {
                 myRelais.get(relay).setState(percent.compareTo(BigDecimal.ZERO) > 0 && relaynum == relay);

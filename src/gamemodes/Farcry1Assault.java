@@ -62,7 +62,7 @@ public class Farcry1Assault implements GameModes {
                     if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
                         lastRespawn = new DateTime();
                         MissionBox.play("minions");
-                        MissionBox.blink("respawnSiren", 2000);
+                        MissionBox.blink("respawnSiren", 2000, 1);
                         logger.info("Respawn...");
                     }
                 }
@@ -81,14 +81,10 @@ public class Farcry1Assault implements GameModes {
         };
 
         MessageListener percentageListener = messageEvent -> {
-//            logger.debug(messageEvent.getPercentage() + " %");
-
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
-                MissionBox.setProgress(messageEvent.getPercentage());
-            }
-
-
-            if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
+                // kickstart a little
+                BigDecimal percentage = messageEvent.getPercentage().add(BigDecimal.ONE);
+                MissionBox.setProgress(percentage);
                 int countdown_index = messageEvent.getPercentage().intValue() / 10;
                 if (prev_countdown_index != countdown_index) {
                     prev_countdown_index = countdown_index;
@@ -102,14 +98,10 @@ public class Farcry1Assault implements GameModes {
             MissionBox.setGamemode(messageEvent.getMode());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
-
                 MissionBox.stop("shutdown");
                 MissionBox.play("siren", true);
-                MissionBox.blink("ledGreen", 100, PinState.HIGH);
-                MissionBox.off("ledRed", 0);
-
-
-//                MissionBox.blink("flagSiren", 1000);
+                MissionBox.blink("ledGreen", 100);
+                MissionBox.blink("ledRed", 0);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.stop("siren");
                 MissionBox.setProgress(BigDecimal.ZERO);
@@ -117,20 +109,20 @@ public class Farcry1Assault implements GameModes {
                 if (prev_countdown_index > -1) {
 //                    MissionBox.blink("flagSiren", 0);
                     MissionBox.play("shutdown"); // plays only once when the flag has been touched during this round.
-                    MissionBox.blink("shutdownSiren", 1000, 1000);
+                    MissionBox.blink("shutdownSiren", 1000, 1);
                 }
 
-                MissionBox.blink("ledRed", 1000, PinState.HIGH);
+                MissionBox.blink("ledRed", 1000);
                 MissionBox.blink("ledGreen", 0);
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
                 MissionBox.stop("siren");
                 MissionBox.setProgress(BigDecimal.ZERO);
                 MissionBox.play("rocket");
 
-                MissionBox.blink("respawnSiren", 5000, 5000); // produces a high pitched airraid siren sound by a motor siren
+                MissionBox.blink("respawnSiren", 5000, 1); // produces a high pitched airraid siren sound by a motor siren
 
-                MissionBox.blink("ledRed", 50, PinState.HIGH);
-                MissionBox.blink("ledGreen", 50, PinState.LOW);
+                MissionBox.blink("ledRed", 50);
+                MissionBox.blink("ledGreen", 50);
                 MissionBox.blink("ledBarGreen", 50);
                 MissionBox.blink("ledBarYellow", 50);
                 MissionBox.blink("ledBarRed", 50);
@@ -142,13 +134,13 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.stopAllSongs();
                 MissionBox.enableSettings(true);
 
-                MissionBox.blink("ledRed", 500, PinState.HIGH);
-                MissionBox.blink("ledGreen", 500, PinState.LOW);
+                MissionBox.blink("ledRed", 500);
+                MissionBox.blink("ledGreen", 500);
                 MissionBox.blink("ledBarGreen", 1000);
                 MissionBox.blink("ledBarYellow", 1000);
                 MissionBox.blink("ledBarRed", 1000);
 
-                MissionBox.blink("flagSiren", 0);
+//                MissionBox.blink("flagSiren", 0);
                 MissionBox.blink("shutdownSiren", 0);
                 MissionBox.blink("respawnSiren", 0);
 
@@ -178,16 +170,16 @@ public class Farcry1Assault implements GameModes {
                     MissionBox.blink("ledBarRed", 1000);
 
                     MissionBox.blink("respawnSiren", 0);
-                    MissionBox.blink("shutdownSiren", 5000, 5000);
+                    MissionBox.blink("shutdownSiren", 5000, 1);
                 }
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
 
-                MissionBox.blink("flagSiren", 0);
+//                MissionBox.blink("flagSiren", 0);
                 MissionBox.blink("shutdownSiren", 0);
                 MissionBox.blink("respawnSiren", 0);
 
-                MissionBox.blink("ledRed", 500, PinState.HIGH);
-                MissionBox.blink("ledGreen", 500, PinState.LOW);
+                MissionBox.blink("ledRed", 500);
+                MissionBox.blink("ledGreen", 500);
                 MissionBox.blink("ledBarGreen", 500);
                 MissionBox.blink("ledBarYellow", 500);
                 MissionBox.blink("ledBarRed", 500);
@@ -204,7 +196,7 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.blink("ledBarRed", 0);
                 lastRespawn = new DateTime();
                 MissionBox.play("minions");
-                MissionBox.blink("respawnSiren", 2000, 2000);
+                MissionBox.blink("respawnSiren", 2000, 1);
             }
         };
 
