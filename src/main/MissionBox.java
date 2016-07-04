@@ -14,11 +14,14 @@ import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
 import misc.Tools;
 import org.apache.log4j.*;
+import org.apache.log4j.or.ThreadGroupRenderer;
 
 import javax.swing.*;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
+
+import static com.sun.org.apache.xalan.internal.utils.SecuritySupport.getResourceAsStream;
 
 
 /**
@@ -40,6 +43,8 @@ public class MissionBox {
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc;
     private static RelaySiren relaisLEDs;
     private static RelaySirenPulse relaisSirenProgress;
+
+    public static Properties appinfo = new Properties();
 
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
@@ -70,18 +75,16 @@ public class MissionBox {
         logger.addAppender(new ConsoleAppender(layout));
         logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
 
-//
-//        ArrayList relaisKeys = new ArrayList<String>();
-//        relaisKeys.add("siren1/3");
-//        relaisKeys.add("siren2/3");
-//        relaisKeys.add("siren3/3");
-//        relaisSirenProgress = new RelaySirenPulse(relaisKeys);
-//
-//        for (int i = 0; i < 100; i++){
-//            relaisSirenProgress.setValue(new BigDecimal(i));
+//        try {
+//            // Lade Build Informationen   2
+//            InputStream in2 = null;
+//            //Class clazz = getClass();
+//            in2 = getResourceAsStream("/appinfo.properties");
+//            appinfo.load(in2);
+//            in2.close();
+//        } catch (IOException iOException) {
+//            iOException.printStackTrace();
 //        }
-//
-//        System.exit(0);
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             StringWriter sw = new StringWriter();
@@ -300,53 +303,59 @@ public class MissionBox {
 
 
     public static void blink(final String key, final long duration, final int repeat) {
-        if (mapWorker.containsKey(key)) {
-            mapWorker.get(key).cancel(true);
-            off(key);
-            mapWorker.remove(key);
-        }
-        if (duration == 0) {
-            off(key);
-            return;
-        }
-
-        SwingWorker sw = new SwingWorker() {
-            int i = 0;
-            @Override
-            protected Object doInBackground() throws Exception {
-                while (!isCancelled() && i < repeat){
-                    i++;
-                    try {
-                        outputMap.get(key).setState(PinState.HIGH);
-                        Thread.sleep(duration);
-                        outputMap.get(key).setState(PinState.LOW);
-                        Thread.sleep(duration);
-                    } catch (InterruptedException ex) {
-                        outputMap.get(key).setState(PinState.LOW);
-                        logger.info("blink() interrupted");
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                super.done();
-                off(key);
-                mapWorker.remove(key);
-            }
-        };
-        sw.execute();
-        mapWorker.put(key, sw);
-    }
-
-    public static void off(String key) {
         if (!outputMap.containsKey(key)) return;
-        outputMap.get(key).setState(PinState.LOW);
+
+        synchronized (mapWorker) {
+            logger.debug("pin: " + key + "   duration: " + duration + "   repeat: " + repeat);
+            if (mapWorker.containsKey(key)) {
+                SwingWorker mySW = mapWorker.get(key);
+                if (!mySW.isDone()){
+                    mySW.cancel(true);
+                }
+                mapWorker.remove(key);
+                outputMap.get(key).setState(PinState.LOW);
+            }
+            if (duration == 0) {
+                logger.debug("switching off: " + key);
+                outputMap.get(key).setState(PinState.LOW);
+                return;
+            }
+
+            SwingWorker sw = new SwingWorker() {
+                int i = 0;
+                String uuid = UUID.randomUUID().toString();
+
+                @Override
+                protected Object doInBackground() throws Exception {
+                    logger.debug(key + " ==> " + uuid + "  starting");
+                    while (!isCancelled() && i < repeat) {
+                        i++;
+                        try {
+                            outputMap.get(key).setState(PinState.HIGH);
+                            Thread.sleep(duration);
+                            outputMap.get(key).setState(PinState.LOW);
+                            Thread.sleep(duration);
+                        } catch (InterruptedException ex) {
+                            logger.debug("blink() for '" + key + "' (" + uuid + " interrupted");
+                        }
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    super.done();
+                    logger.debug("blink() for '" + key + "' (" + uuid + " DONE !!!");
+                    outputMap.get(key).setState(PinState.LOW);
+                    mapWorker.remove(key);
+                }
+            };
+            mapWorker.put(key, sw);
+            sw.execute();
+        }
     }
 
     public static void blink(String key, long duration) {
-        if (!outputMap.containsKey(key)) return;
         blink(key, duration, Integer.MAX_VALUE);
     }
 
@@ -502,7 +511,7 @@ public class MissionBox {
     }
 
     public static void secondsSignal(int seconds) {
-        blink("timeSignal", 500, seconds / 10);
+        blink("timeSignal", 500, seconds);
     }
 
     public static void setRespawnTimer(String message) {
@@ -603,12 +612,14 @@ public class MissionBox {
 
 
     public static void shutdownEverything() {
-        for (String key : mapWorker.keySet()) {
-            mapWorker.get(key).cancel(true);
-        }
-        for (String key : outputMap.keySet()) {
-            off(key);
-        }
+//        synchronized (mapWorker) {
+//            Set<String> keys = mapWorker.keySet();
+//            for (String key : keys) {
+//                logger.debug("cleaning key: "+key);
+//                MissionBox.blink(key, 0);
+//            }
+//        }
+
     }
 
 

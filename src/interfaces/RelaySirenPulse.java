@@ -27,7 +27,7 @@ public class RelaySirenPulse implements PercentageInterface {
         this.myRelaisKeys = myRelaisKeys;
         logger.setLevel(MissionBox.getLogLevel());
         for (String pin : myRelaisKeys) {
-            MissionBox.off(pin);
+            MissionBox.blink(pin, 0);
         }
     }
 
