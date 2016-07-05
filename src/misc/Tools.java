@@ -24,10 +24,13 @@ public class Tools {
     public static final String SND_DEFEAT = "0071_female1_OnDefeat_1.wav";
     public static final String SND_LOSER = "loser.wav";
     public static final String SND_MIB = "mib.wav";
-    public static final String SND_QUEEN = "We Will Rock You - Queen - Greatest Hits - 16.wav";
+    public static final String SND_QUEEN = "we-will-rock-you.wav";
     public static final String SND_SKYFALL = "skyfall.wav";
+    public static final String SND_SKYFALL1 = "skyfall1.wav";
+    public static final String SND_TRANQUILITY = "tranquillity.wav";
     public static final String SND_EVERYBODY_DANCE_NOW = "gonna_make_you_sweat.wav";
     public static final String SND_WHO_WANTS_TO_LIVE_FOREVER = "who-wants-to-live-forever.wav";
+    public static final String SND_BE_HAPPY = "be-happy.wav";
     public static final String SND_START = "196889__ionicsmusic__race-robot-start.wav";
     public static final String SND_GAME_OVER = "196868__ionicsmusic__race-robot-game-over.wav";
     public static final String SND_BEEP = "153213__freezeman__beep1.wav";

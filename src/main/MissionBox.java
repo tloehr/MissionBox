@@ -20,6 +20,7 @@ import javax.swing.*;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static com.sun.org.apache.xalan.internal.utils.SecuritySupport.getResourceAsStream;
 
@@ -64,8 +65,11 @@ public class MissionBox {
     private static HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
     private static HashMap<String, Relay> relayMap = new HashMap<>();
 
-    private static ArrayList<Music> winnerSongs = new ArrayList<>();
-    private static ArrayList<Music> looserSongs = new ArrayList<>();
+    private static ArrayList<String> winnerSongs = new ArrayList<>();
+    private static ArrayList<String> looserSongs = new ArrayList<>();
+    private static int currentLooser = 0, currentWinner = 0;
+    private static Music winner = null, looser = null;
+
     private static HashMap<String, Sound> timeAnnouncements = new HashMap();
     private static Sound[] countdown = new Sound[11];
 
@@ -234,6 +238,9 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         soundMap.put("beep1", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_BEEP)));
 
+        startup_progress = startup_progress + 6;
+        Tools.printProgBar(startup_progress);
+        soundMap.put("tranquility", TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_TRANQUILITY)));
 
         /*
 
@@ -266,6 +273,16 @@ public class MissionBox {
             Tools.printProgBar(startup_progress);
             countdown[i] = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.COUNTDOWN[i]));
         }
+
+        winnerSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_QUEEN);
+        winnerSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_MIB);
+        winnerSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_EVERYBODY_DANCE_NOW);
+
+        looserSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_SKYFALL);
+        looserSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_LOSER);
+        looserSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_WHO_WANTS_TO_LIVE_FOREVER);
+        looserSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_BE_HAPPY);
+
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
@@ -309,7 +326,7 @@ public class MissionBox {
             logger.debug("pin: " + key + "   duration: " + duration + "   repeat: " + repeat);
             if (mapWorker.containsKey(key)) {
                 SwingWorker mySW = mapWorker.get(key);
-                if (!mySW.isDone()){
+                if (!mySW.isDone()) {
                     mySW.cancel(true);
                 }
                 mapWorker.remove(key);
@@ -376,11 +393,66 @@ public class MissionBox {
     }
 
     public static void playWinner() {
-//        playRandomSong(winnerSongs);
+        stopWinner();
+
+        currentWinner++;
+        if (currentWinner >= winnerSongs.size()) {
+            currentWinner = 0;
+        }
+
+
+        SwingWorker<Music, Music> sw = new SwingWorker() {
+            @Override
+            protected Music doInBackground() throws Exception {
+                return TinySound.loadMusic(new File(winnerSongs.get(currentWinner)));
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    winner = (Music) get();
+                    winner.play(false);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        sw.execute();
+
     }
 
     public static void playLooser() {
-//        playRandomSong(looserSongs);
+        stopLooser();
+
+        currentLooser++;
+        if (currentLooser >= looserSongs.size()) {
+            currentLooser = 0;
+        }
+
+        SwingWorker<Music, Music> sw = new SwingWorker() {
+            @Override
+            protected Music doInBackground() throws Exception {
+                return TinySound.loadMusic(new File(looserSongs.get(currentLooser)));
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    looser = (Music) get();
+                    looser.play(false);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        sw.execute();
+
     }
 
 
@@ -392,13 +464,31 @@ public class MissionBox {
         return (int) (Math.random() * (Max - Min)) + Min;
     }
 
+
+    private static void stopWinner() {
+        if (winner == null) return;
+
+        if (!winner.done()) {
+            winner.stop();
+            winner.unload();
+        }
+
+        winner = null;
+    }
+
+    private static void stopLooser() {
+        if (looser == null) return;
+
+        if (!looser.done()) {
+            looser.stop();
+            looser.unload();
+        }
+        looser = null;
+    }
+
     public static void stopAllSongs() {
-        for (Music song : winnerSongs) {
-            song.stop();
-        }
-        for (Music song : looserSongs) {
-            song.stop();
-        }
+        stopWinner();
+        stopLooser();
     }
 
     public static void play(String key) {
@@ -454,7 +544,7 @@ public class MissionBox {
 
         GUI = Boolean.parseBoolean(config.getProperty(MissionBox.MBX_GUI));
         SOUND = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND));
-        SIREN = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN));
+        SIREN = GPIO != null && Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN));
         logLevel = Level.toLevel(MissionBox.getConfig().getProperty(MissionBox.MBX_LOGLEVEL), Level.DEBUG);
 
     }

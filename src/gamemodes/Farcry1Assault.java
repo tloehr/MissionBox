@@ -27,6 +27,8 @@ public class Farcry1Assault implements GameModes {
     private DateTime lastRespawn = new DateTime();
     private int RESPAWNINSECONDS = 55;
 
+
+
     public Farcry1Assault() throws IOException {
 
 
@@ -152,13 +154,13 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.blink("ledBarYellow", 1000);
                 MissionBox.blink("ledBarRed", 1000);
 
-//                MissionBox.blink("flagSiren", 0);
                 MissionBox.blink("shutdownSiren", 0);
                 MissionBox.blink("respawnSiren", 0);
 
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
-                MissionBox.play("welcome");
+
+                MissionBox.play("tranquility");
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
                 logger.debug("GAME_OVER");
@@ -189,7 +191,6 @@ public class Farcry1Assault implements GameModes {
 
                 logger.debug("GAME_OUTCOME_FLAG_TAKEN");
 
-//                MissionBox.blink("flagSiren", 0);
                 MissionBox.blink("shutdownSiren", 0);
                 MissionBox.blink("respawnSiren", 0);
 
@@ -202,6 +203,8 @@ public class Farcry1Assault implements GameModes {
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
                 logger.debug("GAME_FLAG_ACTIVE");
+                MissionBox.stop("tranquility");
+                MissionBox.stopAllSongs();
                 MissionBox.enableSettings(false);
                 RESPAWNINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
                 lastAnnoucement = "";

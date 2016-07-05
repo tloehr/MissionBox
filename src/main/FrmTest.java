@@ -194,6 +194,10 @@ public class FrmTest extends JFrame {
 
     }
 
+    private void btnUndoActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -202,6 +206,7 @@ public class FrmTest extends JFrame {
         btn1 = new JButton();
         btn2 = new JButton();
         btnRed = new JButton();
+        btnUndo = new JButton();
         btnGreen = new JButton();
         pb1 = new JProgressBar();
         lblMessage = new JLabel();
@@ -251,12 +256,17 @@ public class FrmTest extends JFrame {
                 //---- btn2 ----
                 btn2.setText(null);
                 btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit.png")));
-                contentPanel.add(btn2, CC.xywh(3, 1, 1, 3));
+                contentPanel.add(btn2, CC.xy(3, 1));
 
                 //---- btnRed ----
                 btnRed.setText(null);
                 btnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred32.png")));
                 contentPanel.add(btnRed, CC.xy(5, 1, CC.FILL, CC.FILL));
+
+                //---- btnUndo ----
+                btnUndo.setText(null);
+                btnUndo.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
+                contentPanel.add(btnUndo, CC.xy(3, 3));
 
                 //---- btnGreen ----
                 btnGreen.setText(null);
@@ -465,6 +475,7 @@ public class FrmTest extends JFrame {
     private JButton btn1;
     private JButton btn2;
     private JButton btnRed;
+    private JButton btnUndo;
     private JButton btnGreen;
     private JProgressBar pb1;
     private JLabel lblMessage;

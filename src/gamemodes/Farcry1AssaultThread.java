@@ -2,6 +2,7 @@ package gamemodes;
 
 import interfaces.MessageEvent;
 import interfaces.MessageListener;
+import interfaces.Undoable;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -21,6 +22,8 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private final Thread thread;
     private int GAMETIMEINSECONDS;
     private int TIME2CAP;
+
+    private Undoable undo = null;
 
 //    private BigDecimal cycle;
 
@@ -78,6 +81,13 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
     }
 
+
+    public void setUndo(Undoable undo){
+        this.undo = undo;
+        setGameState(undo.getPreviousMode());
+    }
+
+
     /**
      * Hier ist die eingentliche Spielmechanik drin. Also was kommt nach was.
      *
@@ -106,8 +116,15 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_FLAG_HOT: {
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
-                    flagactivation = new DateTime();
-                    endtime = flagactivation.plusSeconds(TIME2CAP);
+                    if (undo != null){
+                        flagactivation = undo.getProgressTime();
+                        endtime = undo.getEndTime();
+                        undo = null;
+                    } else {
+                        flagactivation = new DateTime();
+                        endtime = flagactivation.plusSeconds(TIME2CAP);
+                    }
+
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
@@ -118,10 +135,16 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    flagactivation = new DateTime(0);
-                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
-                    endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
+                    if (undo != null){
+                        flagactivation = undo.getProgressTime();
+                        endtime = undo.getEndTime();
+                        undo = null;
+                    } else {
+                        flagactivation = new DateTime(0);
+                        endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
+                    }
 
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
