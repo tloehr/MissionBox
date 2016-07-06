@@ -9,7 +9,6 @@ public interface Undoable {
 
     public int getPreviousMode();
     public DateTime getProgressTime();
-
     public DateTime getEndTime();
 
 }

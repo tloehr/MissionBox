@@ -23,7 +23,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private int GAMETIMEINSECONDS;
     private int TIME2CAP;
 
-    private Undoable undo = null;
+    private Farcry1Undo undo = null;
 
 //    private BigDecimal cycle;
 
@@ -82,9 +82,11 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     }
 
 
-    public void setUndo(Undoable undo){
-        this.undo = undo;
-        setGameState(undo.getPreviousMode());
+    public void undo(){
+        if (undo == null) return;
+        undo.setApplyUndo(true);
+        MissionBox.stopAllSongs();
+        setGameState(undo.getGameState());
     }
 
 
@@ -116,15 +118,16 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_FLAG_HOT: {
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
-                    if (undo != null){
+                    if (undo != null && undo.isApplyUndo()){
+                        starttime = undo.getStartTime();
                         flagactivation = undo.getProgressTime();
                         endtime = undo.getEndTime();
-                        undo = null;
+                        undo.setApplyUndo(false);
                     } else {
                         flagactivation = new DateTime();
                         endtime = flagactivation.plusSeconds(TIME2CAP);
                     }
-
+                    undo = new Farcry1Undo(GAME_FLAG_COLD, starttime, flagactivation, endtime);
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
@@ -135,12 +138,13 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    if (undo != null){
+                    flagactivation = new DateTime(0);
+                    if (undo != null && undo.isApplyUndo()){
+                        starttime = undo.getStartTime();
                         flagactivation = undo.getProgressTime();
                         endtime = undo.getEndTime();
-                        undo = null;
+                        undo.setApplyUndo(false);
                     } else {
-                        flagactivation = new DateTime(0);
                         endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     }
 

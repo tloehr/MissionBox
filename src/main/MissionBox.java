@@ -41,7 +41,7 @@ public class MissionBox {
     private static final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
     private static final HashMap<String, SwingWorker> mapWorker = new HashMap<>();
 
-    private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc;
+    private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc, btnUndo;
     private static RelaySiren relaisLEDs;
     private static RelaySirenPulse relaisSirenProgress;
 
@@ -121,6 +121,7 @@ public class MissionBox {
         btnGreen = new MyAbstractButton(inputMap.get("btnGreen"), getGUIBtnGreen());
         btnGameStartStop = new MyAbstractButton(inputMap.get("btnGameStartStop"), getGUIBtn1());
         btnMisc = new MyAbstractButton(inputMap.get("btnMisc"), getGUIBtn2());
+        btnUndo = new MyAbstractButton(null, getGUIBtnUndo());
 
         startup_progress = 100;
         Tools.printProgBar(startup_progress);
@@ -130,6 +131,10 @@ public class MissionBox {
 
     public static HashMap<String, Sound> getTimeAnnouncements() {
         return timeAnnouncements;
+    }
+
+    public static MyAbstractButton getBtnUndo() {
+        return btnUndo;
     }
 
     public static MyAbstractButton getBtnRed() {
@@ -154,6 +159,10 @@ public class MissionBox {
 
     public static JButton getGUIBtnRed() {
         return GUI ? frmTest.getBtnRed() : null;
+    }
+
+    public static JButton getGUIBtnUndo() {
+        return GUI ? frmTest.getBtnUndo() : null;
     }
 
     public static Level getLogLevel() {

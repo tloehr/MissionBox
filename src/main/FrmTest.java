@@ -37,6 +37,10 @@ public class FrmTest extends JFrame {
 
     }
 
+    public JButton getBtnUndo() {
+        return btnUndo;
+    }
+
     private void btnFCYcapPlusActionPerformed(ActionEvent e) {
         int time2capture = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
         time2capture++;

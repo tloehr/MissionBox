@@ -28,7 +28,6 @@ public class Farcry1Assault implements GameModes {
     private int RESPAWNINSECONDS = 55;
 
 
-
     public Farcry1Assault() throws IOException {
 
 
@@ -103,12 +102,30 @@ public class Farcry1Assault implements GameModes {
             MissionBox.setGamemode(messageEvent.getMode());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
+                /***
+                 *      _____ _             _   _       _
+                 *     |  ___| | __ _  __ _| | | | ___ | |_
+                 *     | |_  | |/ _` |/ _` | |_| |/ _ \| __|
+                 *     |  _| | | (_| | (_| |  _  | (_) | |_
+                 *     |_|   |_|\__,_|\__, |_| |_|\___/ \__|
+                 *                    |___/
+                 */
                 logger.debug("GAME_FLAG_HOT");
                 MissionBox.stop("shutdown");
                 MissionBox.play("siren", true);
                 MissionBox.blink("ledGreen", 1000);
                 MissionBox.blink("ledRed", 0);
+
+
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
+                /***
+                 *      _____ _              ____      _     _
+                 *     |  ___| | __ _  __ _ / ___|___ | | __| |
+                 *     | |_  | |/ _` |/ _` | |   / _ \| |/ _` |
+                 *     |  _| | | (_| | (_| | |__| (_) | | (_| |
+                 *     |_|   |_|\__,_|\__, |\____\___/|_|\__,_|
+                 *                    |___/
+                 */
                 logger.debug("GAME_FLAG_COLD");
                 MissionBox.stop("siren");
                 MissionBox.setProgress(BigDecimal.ZERO);
@@ -281,6 +298,14 @@ public class Farcry1Assault implements GameModes {
                 } else {
                     farcryAssaultThread.restartGame();
                 }
+            }
+        });
+
+        MissionBox.getBtnUndo().addListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logger.debug("btnUndo");
+                farcryAssaultThread.undo();
             }
         });
 
