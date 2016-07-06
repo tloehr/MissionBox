@@ -1,51 +1,46 @@
 package gamemodes;
 
-import interfaces.Undoable;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.joda.time.Interval;
 
 /**
  * Created by Torsten on 05.07.2016.
  */
 public class Farcry1Undo {
     int pmode;
-    DateTime progress;
+    DateTime flagactivation;
     DateTime endtime;
     DateTime starttime;
     boolean applyUndo;
     DateTime initPointInTime;
     Duration difference;
+    Logger logger;
 
-    public Farcry1Undo(int pmode, DateTime starttime, DateTime progress, DateTime endtime) {
+    public Farcry1Undo(int pmode, DateTime starttime, DateTime flagactivation, DateTime endtime) {
+        this.logger = Logger.getLogger(this.getClass());
         this.pmode = pmode;
         this.starttime = starttime;
-        this.progress = progress;
+        this.flagactivation = flagactivation;
         this.endtime = endtime;
         this.applyUndo = false;
         this.initPointInTime = new DateTime();
     }
 
-    private void adaptToCurrentTime() {
+    public void adaptToCurrentTime() {
         difference = new Duration(initPointInTime, new DateTime());
     }
-
 
     public int getGameState() {
         return pmode;
     }
 
-    public boolean isApplyUndo() {
-        return applyUndo && starttime != null;
-    }
+    public DateTime getFlagActivation() {
+        logger.debug("old flagactivation time " + flagactivation.toString());
+        logger.debug("difference " + difference.toString());
+        logger.debug("new flagactivation time " + flagactivation.plus(difference).toString());
+        return flagactivation.plus(difference);
 
-    public void setApplyUndo(boolean applyUndo) {
-        if (applyUndo) adaptToCurrentTime();
-        this.applyUndo = applyUndo;
-    }
-
-    public DateTime getProgressTime() {
-        return progress.plus(difference);
     }
 
 
@@ -54,6 +49,23 @@ public class Farcry1Undo {
     }
 
     public DateTime getStartTime() {
+
+        logger.debug("old start time " + starttime.toString());
+        logger.debug("difference " + difference.toString());
+        logger.debug("new start time " + starttime.plus(difference).toString());
+
         return starttime.plus(difference);
+    }
+
+    @Override
+    public String toString() {
+        return "Farcry1Undo{" +
+                "pmode=" + pmode +
+                ", flagactivation=" + flagactivation +
+                ", endtime=" + endtime +
+                ", starttime=" + starttime +
+                ", initPointInTime=" + initPointInTime +
+                ", difference=" + difference +
+                '}';
     }
 }

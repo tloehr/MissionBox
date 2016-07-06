@@ -2,8 +2,8 @@ package gamemodes;
 
 import interfaces.MessageEvent;
 import interfaces.MessageListener;
-import interfaces.Undoable;
 import main.MissionBox;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -23,7 +23,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private int GAMETIMEINSECONDS;
     private int TIME2CAP;
 
-    private Farcry1Undo undo = null;
 
 //    private BigDecimal cycle;
 
@@ -35,6 +34,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private long threadcycles = 0;
     private final long millispercycle = 50;
 
+
+    CircularFifoQueue<Farcry1Undo> undoStack = null;
+    boolean undoNow = false;
 
     public static final int GAME_NON_EXISTENT = -1;
     public static final int GAME_PRE_GAME = 0;
@@ -72,6 +74,8 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         gameModeList.add(MessageListener.class, gameModeListener);
 
         previousGameState = GAME_NON_EXISTENT;
+        undoStack = new CircularFifoQueue<>(2);
+
 
         // die Maximalen-Zyklen für einen Spieldurchlauf ergeben sich aus der maximalen Anzahl der Minuten für ein Spiel.
 //        MAXCYCLES = new BigDecimal(GAMETIMEINSECONDS).multiply(new BigDecimal(60)).multiply(new BigDecimal(1000)).divide(millispercycle, BigDecimal.ROUND_HALF_UP);
@@ -82,11 +86,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     }
 
 
-    public void undo(){
-        if (undo == null) return;
-        undo.setApplyUndo(true);
-        MissionBox.stopAllSongs();
-        setGameState(undo.getGameState());
+    public void undo() {
+        logger.debug("trying undo...");
+        setGameState(-1);
     }
 
 
@@ -96,7 +98,22 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
      * @param state
      */
     public synchronized void setGameState(int state) {
-        this.gameState = state;
+        Farcry1Undo undo = null;
+        if (state == -1){ // means UNDO
+            if (undoStack.isEmpty()) return;
+
+            logger.debug(undoStack.toString());
+            undo = undoStack.get(0);
+            undoStack.clear();
+            logger.debug(undo);
+            MissionBox.stopAllSongs();
+            undo.adaptToCurrentTime();
+            this.gameState = undo.getGameState();
+        } else {
+            this.gameState = state;
+        }
+
+
         if (gameState != previousGameState) {
             previousGameState = gameState;
             fireMessage(gameModeList, new MessageEvent(this, gameState));
@@ -105,6 +122,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 case GAME_PRE_GAME: {
                     MissionBox.shutdownEverything();
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
+                    undoStack.clear();
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
@@ -117,36 +135,42 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
-                    if (undo != null && undo.isApplyUndo()){
+                    if (undo != null) {
+                        logger.debug("undoing the green button");
                         starttime = undo.getStartTime();
-                        flagactivation = undo.getProgressTime();
-                        endtime = undo.getEndTime();
-                        undo.setApplyUndo(false);
+                        flagactivation = undo.getFlagActivation();
                     } else {
+                        // save current state before changing it#
+                        undoStack.add(new Farcry1Undo(GAME_FLAG_COLD, starttime, flagactivation, endtime));
                         flagactivation = new DateTime();
-                        endtime = flagactivation.plusSeconds(TIME2CAP);
+                        logger.debug(undoStack.toString());
                     }
-                    undo = new Farcry1Undo(GAME_FLAG_COLD, starttime, flagactivation, endtime);
+                    endtime = flagactivation.plusSeconds(TIME2CAP);
+
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     break;
                 }
                 case GAME_ROCKET_LAUNCHED: {
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.rocket.launched"));
                     endtime = new DateTime();
                     rockettime = endtime.plusSeconds(rocketseconds); // hier wird noch kurz gewartet bis der raketensound abgespielt ist. danach wird gehts
-//                    afterglow = rockettime + (agseconds * 1000);
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    flagactivation = new DateTime(0);
-                    if (undo != null && undo.isApplyUndo()){
+
+                    if (undo != null) {
+                        logger.debug("undoing the red button");
                         starttime = undo.getStartTime();
-                        flagactivation = undo.getProgressTime();
-                        endtime = undo.getEndTime();
-                        undo.setApplyUndo(false);
+                        flagactivation = new DateTime(0);
                     } else {
-                        endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
+                        // save current state before changing it#
+                        if (!undoStack.isEmpty()) { // this prevents the FIRST COLD FLAG to be stored. makes no sense. Is directly after the pregame phase.
+                            undoStack.add(new Farcry1Undo(GAME_FLAG_HOT, starttime, flagactivation, endtime));
+                            logger.debug(undoStack.toString());
+                        }
+                        flagactivation = new DateTime(0);
                     }
+                    endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
 
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     break;
@@ -239,7 +263,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     if (timeIsUp()) {
                         setGameState(GAME_ROCKET_LAUNCHED);
                     }
-
 
                     BigDecimal progress = new BigDecimal(new DateTime().getMillis() - flagactivation.getMillis()).divide(new BigDecimal(endtime.getMillis() - flagactivation.getMillis()), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                     fireMessage(percentageList, new MessageEvent(this, gameState, progress));

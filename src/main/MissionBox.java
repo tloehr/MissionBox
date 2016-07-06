@@ -225,10 +225,6 @@ public class MissionBox {
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        soundMap.put("gameover", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_GAME_OVER)));
-
-        startup_progress = startup_progress + 2;
-        Tools.printProgBar(startup_progress);
         soundMap.put("minions", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_MINIONS_SPAWNED)));
 
         startup_progress = startup_progress + 2;
@@ -242,10 +238,6 @@ public class MissionBox {
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
         soundMap.put("shutdown", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN)));
-
-        startup_progress = startup_progress + 2;
-        Tools.printProgBar(startup_progress);
-        soundMap.put("beep1", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_BEEP)));
 
         startup_progress = startup_progress + 6;
         Tools.printProgBar(startup_progress);
