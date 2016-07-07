@@ -12,44 +12,44 @@ public class Farcry1Undo {
     DateTime flagactivation;
     DateTime endtime;
     DateTime starttime;
-    boolean applyUndo;
     DateTime initPointInTime;
-    Duration difference;
     Logger logger;
 
-    public Farcry1Undo(int pmode, DateTime starttime, DateTime flagactivation, DateTime endtime) {
+    public Farcry1Undo(int pmode) {
         this.logger = Logger.getLogger(this.getClass());
         this.pmode = pmode;
+    }
+
+    public void finalizeInit(DateTime starttime, DateTime flagactivation, DateTime endtime){
         this.starttime = starttime;
         this.flagactivation = flagactivation;
         this.endtime = endtime;
-        this.applyUndo = false;
         this.initPointInTime = new DateTime();
     }
 
-    public void adaptToCurrentTime() {
-        difference = new Duration(initPointInTime, new DateTime());
-    }
 
     public int getGameState() {
         return pmode;
     }
 
-    public DateTime getFlagActivation() {
+    public DateTime getFlagactivation() {
+        Duration difference = new Duration(initPointInTime, new DateTime());
         logger.debug("old flagactivation time " + flagactivation.toString());
         logger.debug("difference " + difference.toString());
         logger.debug("new flagactivation time " + flagactivation.plus(difference).toString());
+
         return flagactivation.plus(difference);
 
     }
 
 
-    public DateTime getEndTime() {
+    public DateTime getEndtime() {
+        Duration difference = new Duration(initPointInTime, new DateTime());
         return endtime.plus(difference);
     }
 
-    public DateTime getStartTime() {
-
+    public DateTime getStarttime() {
+        Duration difference = new Duration(initPointInTime, new DateTime());
         logger.debug("old start time " + starttime.toString());
         logger.debug("difference " + difference.toString());
         logger.debug("new start time " + starttime.plus(difference).toString());
@@ -60,12 +60,11 @@ public class Farcry1Undo {
     @Override
     public String toString() {
         return "Farcry1Undo{" +
-                "pmode=" + pmode +
+                "pmode=" + Farcry1AssaultThread.GAME_MODES[pmode] +
                 ", flagactivation=" + flagactivation +
                 ", endtime=" + endtime +
                 ", starttime=" + starttime +
                 ", initPointInTime=" + initPointInTime +
-                ", difference=" + difference +
                 '}';
     }
 }

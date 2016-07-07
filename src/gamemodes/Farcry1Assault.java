@@ -26,7 +26,7 @@ public class Farcry1Assault implements GameModes {
     private String lastAnnoucement = "";
     private DateTime lastRespawn = new DateTime();
     private int RESPAWNINSECONDS = 55;
-
+    private boolean firstStart = true;
 
     public Farcry1Assault() throws IOException {
 
@@ -177,7 +177,10 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
 
-                MissionBox.play("tranquility");
+                if (firstStart) {
+                    firstStart = false;
+                    MissionBox.play("tranquility");
+                }
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
                 logger.debug("GAME_OVER");

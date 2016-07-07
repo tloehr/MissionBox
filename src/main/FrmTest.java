@@ -202,6 +202,18 @@ public class FrmTest extends JFrame {
         // TODO add your code here
     }
 
+    private void btnTestWinnerActionPerformed(ActionEvent e) {
+        MissionBox.playWinner();
+    }
+
+    private void btnTestLooserActionPerformed(ActionEvent e) {
+        MissionBox.playLooser();
+    }
+
+    private void btnStopAllActionPerformed(ActionEvent e) {
+        MissionBox.stopAllSongs();
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -218,23 +230,20 @@ public class FrmTest extends JFrame {
         lblTimer = new JLabel();
         settingsPanel = new JPanel();
         label1 = new JLabel();
-        btnFCYcapPlus = new JButton();
         lblFCYCapture = new JTextField();
-        btnFCYcapMinus = new JButton();
         label2 = new JLabel();
-        btnFCYgametimePlus = new JButton();
         lblFCYGametime = new JTextField();
-        btnFCYgametimeMinus = new JButton();
         label3 = new JLabel();
-        btnFCYrespawnPlus = new JButton();
         lblFCYRespawn = new JTextField();
-        btnFCYrespawnMinus = new JButton();
         btnSound = new JToggleButton();
         btnSiren = new JToggleButton();
         panel1 = new JPanel();
         btnRespawn = new JButton();
+        btnTestWinner = new JButton();
         btnTimeSignal = new JButton();
+        btnTestLooser = new JButton();
         btnRedLedBar = new JButton();
+        btnStopAll = new JButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -299,7 +308,7 @@ public class FrmTest extends JFrame {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                    "default:grow, $ugap, default, $lcgap, default:grow, $lcgap, default",
+                    "default:grow, $rgap, default:grow, $ugap",
                     "3*(default, $lgap), default"));
 
                 //---- label1 ----
@@ -307,15 +316,10 @@ public class FrmTest extends JFrame {
                 label1.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label1, CC.xy(1, 1));
 
-                //---- btnFCYcapPlus ----
-                btnFCYcapPlus.setText(null);
-                btnFCYcapPlus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_add.png")));
-                btnFCYcapPlus.addActionListener(e -> btnFCYcapPlusActionPerformed(e));
-                settingsPanel.add(btnFCYcapPlus, CC.xy(3, 1));
-
                 //---- lblFCYCapture ----
                 lblFCYCapture.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYCapture.setText("1");
+                lblFCYCapture.setHorizontalAlignment(SwingConstants.RIGHT);
                 lblFCYCapture.addActionListener(e -> lblFCYCaptureActionPerformed(e));
                 lblFCYCapture.addFocusListener(new FocusAdapter() {
                     @Override
@@ -323,28 +327,17 @@ public class FrmTest extends JFrame {
                         lblFCYCaptureFocusLost(e);
                     }
                 });
-                settingsPanel.add(lblFCYCapture, CC.xy(5, 1, CC.CENTER, CC.DEFAULT));
-
-                //---- btnFCYcapMinus ----
-                btnFCYcapMinus.setText(null);
-                btnFCYcapMinus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_remove.png")));
-                btnFCYcapMinus.addActionListener(e -> btnFCYcapMinusActionPerformed(e));
-                settingsPanel.add(btnFCYcapMinus, CC.xy(7, 1));
+                settingsPanel.add(lblFCYCapture, CC.xy(3, 1, CC.FILL, CC.DEFAULT));
 
                 //---- label2 ----
                 label2.setText("gametime (min)");
                 label2.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label2, CC.xy(1, 3));
 
-                //---- btnFCYgametimePlus ----
-                btnFCYgametimePlus.setText(null);
-                btnFCYgametimePlus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_add.png")));
-                btnFCYgametimePlus.addActionListener(e -> btnFCYgametimePlusActionPerformed(e));
-                settingsPanel.add(btnFCYgametimePlus, CC.xy(3, 3));
-
                 //---- lblFCYGametime ----
                 lblFCYGametime.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYGametime.setText("1");
+                lblFCYGametime.setHorizontalAlignment(SwingConstants.RIGHT);
                 lblFCYGametime.addActionListener(e -> lblFCYGametimeActionPerformed(e));
                 lblFCYGametime.addFocusListener(new FocusAdapter() {
                     @Override
@@ -352,28 +345,17 @@ public class FrmTest extends JFrame {
                         lblFCYGametimeFocusLost(e);
                     }
                 });
-                settingsPanel.add(lblFCYGametime, CC.xy(5, 3, CC.CENTER, CC.DEFAULT));
-
-                //---- btnFCYgametimeMinus ----
-                btnFCYgametimeMinus.setText(null);
-                btnFCYgametimeMinus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_remove.png")));
-                btnFCYgametimeMinus.addActionListener(e -> btnFCYgametimeMinusActionPerformed(e));
-                settingsPanel.add(btnFCYgametimeMinus, CC.xy(7, 3));
+                settingsPanel.add(lblFCYGametime, CC.xy(3, 3, CC.FILL, CC.DEFAULT));
 
                 //---- label3 ----
                 label3.setText("respawn (sec)");
                 label3.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label3, CC.xy(1, 5));
 
-                //---- btnFCYrespawnPlus ----
-                btnFCYrespawnPlus.setText(null);
-                btnFCYrespawnPlus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_add.png")));
-                btnFCYrespawnPlus.addActionListener(e -> btnFCYrespawnPlusActionPerformed(e));
-                settingsPanel.add(btnFCYrespawnPlus, CC.xy(3, 5));
-
                 //---- lblFCYRespawn ----
                 lblFCYRespawn.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYRespawn.setText("1");
+                lblFCYRespawn.setHorizontalAlignment(SwingConstants.RIGHT);
                 lblFCYRespawn.addActionListener(e -> lblFCYRespawnActionPerformed(e));
                 lblFCYRespawn.addFocusListener(new FocusAdapter() {
                     @Override
@@ -381,25 +363,19 @@ public class FrmTest extends JFrame {
                         lblFCYRespawnFocusLost(e);
                     }
                 });
-                settingsPanel.add(lblFCYRespawn, CC.xy(5, 5, CC.CENTER, CC.DEFAULT));
-
-                //---- btnFCYrespawnMinus ----
-                btnFCYrespawnMinus.setText(null);
-                btnFCYrespawnMinus.setIcon(new ImageIcon(getClass().getResource("/artwork/edit_remove.png")));
-                btnFCYrespawnMinus.addActionListener(e -> btnFCYrespawnMinusActionPerformed(e));
-                settingsPanel.add(btnFCYrespawnMinus, CC.xy(7, 5));
+                settingsPanel.add(lblFCYRespawn, CC.xy(3, 5, CC.FILL, CC.DEFAULT));
 
                 //---- btnSound ----
-                btnSound.setText(null);
-                btnSound.setIcon(new ImageIcon(getClass().getResource("/artwork/soundoff.png")));
+                btnSound.setText("Sound");
+                btnSound.setIcon(null);
                 btnSound.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/sound.png")));
                 settingsPanel.add(btnSound, CC.xy(1, 7));
 
                 //---- btnSiren ----
-                btnSiren.setText(null);
-                btnSiren.setIcon(new ImageIcon(getClass().getResource("/artwork/speaker_mute.png")));
-                btnSiren.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/speaker.png")));
-                settingsPanel.add(btnSiren, CC.xywh(3, 7, 5, 1));
+                btnSiren.setText("Sirens");
+                btnSiren.setIcon(null);
+                btnSiren.setSelectedIcon(null);
+                settingsPanel.add(btnSiren, CC.xy(3, 7));
             }
             tabbedPane1.addTab("Settings", settingsPanel);
 
@@ -414,15 +390,30 @@ public class FrmTest extends JFrame {
                 btnRespawn.addActionListener(e -> btnRespawnActionPerformed(e));
                 panel1.add(btnRespawn, CC.xy(3, 1));
 
+                //---- btnTestWinner ----
+                btnTestWinner.setText("Winner Songs");
+                btnTestWinner.addActionListener(e -> btnTestWinnerActionPerformed(e));
+                panel1.add(btnTestWinner, CC.xy(5, 1));
+
                 //---- btnTimeSignal ----
                 btnTimeSignal.setText("4 Minutes");
                 btnTimeSignal.addActionListener(e -> btnTimeSignalActionPerformed(e));
                 panel1.add(btnTimeSignal, CC.xy(3, 3));
 
+                //---- btnTestLooser ----
+                btnTestLooser.setText("Loser Songs");
+                btnTestLooser.addActionListener(e -> btnTestLooserActionPerformed(e));
+                panel1.add(btnTestLooser, CC.xy(5, 3));
+
                 //---- btnRedLedBar ----
                 btnRedLedBar.setText("30 Seconds");
                 btnRedLedBar.addActionListener(e -> btnRedLedBarActionPerformed(e));
                 panel1.add(btnRedLedBar, CC.xy(3, 5));
+
+                //---- btnStopAll ----
+                btnStopAll.setText("Stop All Music");
+                btnStopAll.addActionListener(e -> btnStopAllActionPerformed(e));
+                panel1.add(btnStopAll, CC.xy(5, 5));
             }
             tabbedPane1.addTab("HW-Test", panel1);
         }
@@ -487,22 +478,19 @@ public class FrmTest extends JFrame {
     private JLabel lblTimer;
     private JPanel settingsPanel;
     private JLabel label1;
-    private JButton btnFCYcapPlus;
     private JTextField lblFCYCapture;
-    private JButton btnFCYcapMinus;
     private JLabel label2;
-    private JButton btnFCYgametimePlus;
     private JTextField lblFCYGametime;
-    private JButton btnFCYgametimeMinus;
     private JLabel label3;
-    private JButton btnFCYrespawnPlus;
     private JTextField lblFCYRespawn;
-    private JButton btnFCYrespawnMinus;
     private JToggleButton btnSound;
     private JToggleButton btnSiren;
     private JPanel panel1;
     private JButton btnRespawn;
+    private JButton btnTestWinner;
     private JButton btnTimeSignal;
+    private JButton btnTestLooser;
     private JButton btnRedLedBar;
+    private JButton btnStopAll;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
