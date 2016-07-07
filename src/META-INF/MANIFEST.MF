@@ -1,14 +1,47 @@
 Manifest-Version: 1.0
-Class-Path: joda-time-2.9.3.jar joda-time-2.9.3-javadoc.jar joda-time-
- 2.9.3-no-tzdb.jar joda-time-2.9.3-sources.jar jgoodies-common-1.9.0.j
- ar jgoodies-common-1.9.0-tests.jar jgoodies-common-1.9.0-javadoc.jar 
- jgoodies-common-1.9.0-sources.jar log4j-1.2.17.jar javaee-api-5.0-2.j
- ar pi4j-core-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-
- extension-1.0.jar joda-time-2.9.3.jar joda-time-2.9.3-javadoc.jar jod
- a-time-2.9.3-no-tzdb.jar joda-time-2.9.3-sources.jar pi4j-device-1.0.
+Class-Path: jgoodies-forms-1.10.jar jgoodies-forms-1.10-tests.jar jgoo
+ dies-forms-1.10-javadoc.jar jgoodies-forms-1.10-sources.jar pi4j-devi
+ ce-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar joda-time-2.
+ 9.3.jar joda-time-2.9.3-javadoc.jar joda-time-2.9.3-no-tzdb.jar joda-
+ time-2.9.3-sources.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpi
+ o-extension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-e
+ xtension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-exte
+ nsion-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extensi
+ on-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-
+ 1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0
+ .jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.ja
+ r pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar p
+ i4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j
+ -device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-de
+ vice-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-devic
+ e-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1
+ .0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1.0.
  jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1.0.jar
-  pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar jgoodies-forms-1.10.ja
- r jgoodies-forms-1.10-tests.jar jgoodies-forms-1.10-javadoc.jar jgood
- ies-forms-1.10-sources.jar
+  pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1.0.jar pi
+ 4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1.0.jar pi4j-
+ core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1.0.jar pi4j-cor
+ e-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1.0.jar pi4j-core-1
+ .0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.
+ jar pi4j-gpio-extension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar
+  pi4j-gpio-extension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi
+ 4j-gpio-extension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-
+ gpio-extension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpi
+ o-extension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-e
+ xtension-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-exte
+ nsion-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extensi
+ on-1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-
+ 1.0.jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0
+ .jar pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.ja
+ r pi4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar p
+ i4j-device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j
+ -device-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-de
+ vice-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-devic
+ e-1.0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar pi4j-device-1
+ .0.jar pi4j-core-1.0.jar pi4j-gpio-extension-1.0.jar joda-time-2.9.3.
+ jar joda-time-2.9.3-javadoc.jar joda-time-2.9.3-no-tzdb.jar joda-time
+ -2.9.3-sources.jar pi4j-core-1.0.jar jgoodies-common-1.9.0.jar jgoodi
+ es-common-1.9.0-tests.jar jgoodies-common-1.9.0-javadoc.jar jgoodies-
+ common-1.9.0-sources.jar log4j-1.2.17.jar javaee-api-5.0-2.jar common
+ s-collections4-4.1.jar
 Main-Class: main.MissionBox
 

@@ -5,10 +5,7 @@ import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
 import gamemodes.Farcry1Assault;
-import interfaces.MyAbstractButton;
-import interfaces.Relay;
-import interfaces.RelaySiren;
-import interfaces.RelaySirenPulse;
+import interfaces.*;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
@@ -43,7 +40,7 @@ public class MissionBox {
 
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc, btnUndo;
     private static RelaySiren relaisLEDs;
-    private static RelaySirenPulse relaisSirenProgress;
+    private static PercentageInterface relaisSirenProgress;
 
     public static Properties appinfo = new Properties();
 
@@ -73,22 +70,26 @@ public class MissionBox {
     private static HashMap<String, Sound> timeAnnouncements = new HashMap();
     private static Sound[] countdown = new Sound[11];
 
+    public static Properties getAppinfo() {
+        return appinfo;
+    }
+
     public static final void main(String[] args) throws Exception {
 
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
         logger.addAppender(new ConsoleAppender(layout));
         logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
 
-//        try {
-//            // Lade Build Informationen   2
-//            InputStream in2 = null;
-//            //Class clazz = getClass();
-//            in2 = getResourceAsStream("/appinfo.properties");
-//            appinfo.load(in2);
-//            in2.close();
-//        } catch (IOException iOException) {
-//            iOException.printStackTrace();
-//        }
+        try {
+            // Lade Build Informationen   2
+            InputStream in2 = null;
+            //Class clazz = getClass();
+            in2 = getResourceAsStream("appinfo.properties");
+            appinfo.load(in2);
+            in2.close();
+        } catch (IOException iOException) {
+            iOException.printStackTrace();
+        }
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             StringWriter sw = new StringWriter();
@@ -104,6 +105,10 @@ public class MissionBox {
 
         initSound();
         hwinit();
+
+        relaisSirenProgress = new RelaySirenEscalating("siren1/3");
+
+        if (GPIO == null) SIREN = false; // override for local pc usage
 
         startup_progress = startup_progress + 10;
         Tools.printProgBar(startup_progress);
@@ -319,12 +324,15 @@ public class MissionBox {
 
     }
 
-
     public static void blink(final String key, final long duration, final int repeat) {
+        blink(key, duration, duration, repeat);
+    }
+
+    public static void blink(final String key, final long onTime, final long offTime, final int repeat) {
         if (!outputMap.containsKey(key)) return;
 
         synchronized (mapWorker) {
-            logger.debug("pin: " + key + "   duration: " + duration + "   repeat: " + repeat);
+            logger.debug("pin: " + key + "   ontime: " + onTime + "  offtime: " + offTime + "   repeat: " + repeat);
             if (mapWorker.containsKey(key)) {
                 SwingWorker mySW = mapWorker.get(key);
                 if (!mySW.isDone()) {
@@ -333,7 +341,7 @@ public class MissionBox {
                 mapWorker.remove(key);
                 outputMap.get(key).setState(PinState.LOW);
             }
-            if (duration == 0) {
+            if (onTime == 0) {
                 logger.debug("switching off: " + key);
                 outputMap.get(key).setState(PinState.LOW);
                 return;
@@ -350,9 +358,9 @@ public class MissionBox {
                         i++;
                         try {
                             outputMap.get(key).setState(PinState.HIGH);
-                            Thread.sleep(duration);
+                            Thread.sleep(onTime);
                             outputMap.get(key).setState(PinState.LOW);
-                            Thread.sleep(duration);
+                            Thread.sleep(offTime);
                         } catch (InterruptedException ex) {
                             logger.debug("blink() for '" + key + "' (" + uuid + " interrupted");
                         }
@@ -412,7 +420,7 @@ public class MissionBox {
             protected void done() {
                 try {
                     winner = (Music) get();
-                    winner.play(false);
+                    if (winner != null) winner.play(false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
@@ -545,7 +553,7 @@ public class MissionBox {
 
         GUI = Boolean.parseBoolean(config.getProperty(MissionBox.MBX_GUI));
         SOUND = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND));
-        SIREN = GPIO != null && Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN));
+        SIREN = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN));
         logLevel = Level.toLevel(MissionBox.getConfig().getProperty(MissionBox.MBX_LOGLEVEL), Level.DEBUG);
 
     }
@@ -580,6 +588,9 @@ public class MissionBox {
     }
 
     public static void setProgress(BigDecimal percent) {
+
+        relaisSirenProgress.setValue(percent);
+
         if (SIREN) relaisSirenProgress.setValue(percent);
         if (GUI) frmTest.setProgress(percent.intValue());
         if (SIREN) relaisLEDs.setValue(new BigDecimal(100).subtract(percent));
@@ -675,11 +686,23 @@ public class MissionBox {
             outputMap.put("siren2/3", mapGPIO.get("mcp23017-01-B0"));
             outputMap.put("siren3/3", mapGPIO.get("mcp23017-01-B4"));
 
+            outputMap.put("relay0", mapGPIO.get("mcp23017-01-B0"));
+            outputMap.put("relay1", mapGPIO.get("mcp23017-01-B1"));
+            outputMap.put("relay2", mapGPIO.get("mcp23017-01-B2"));
+            outputMap.put("relay3", mapGPIO.get("mcp23017-01-B3"));
+            outputMap.put("relay4", mapGPIO.get("mcp23017-01-B4"));
+            outputMap.put("relay5", mapGPIO.get("mcp23017-01-B5"));
+            outputMap.put("relay6", mapGPIO.get("mcp23017-01-B6"));
+            outputMap.put("relay7", mapGPIO.get("mcp23017-01-B7"));
+
+
             ArrayList relaisKeys = new ArrayList<String>();
             relaisKeys.add("siren1/3");
             relaisKeys.add("siren2/3");
             relaisKeys.add("siren3/3");
-            relaisSirenProgress = new RelaySirenPulse(relaisKeys);
+            // relaisSirenProgress = new RelaySirenPulse(relaisKeys);
+            relaisSirenProgress = new RelaySirenEscalating("siren1/3");
+
 
 //            Relay ledGreen = new Relay(ioLedGreen);
 //            Relay ledRed = new Relay(ioLedRed);

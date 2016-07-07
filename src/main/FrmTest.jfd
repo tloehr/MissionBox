@@ -225,6 +225,14 @@ new FormModel {
 						"gridX": 5
 						"gridY": 5
 					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnRelayTest"
+						"text": "Relay Test"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRelayTestActionPerformed", true ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 7
+					} )
 				}, new FormLayoutConstraints( null ) {
 					"title": "HW-Test"
 				} )

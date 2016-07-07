@@ -33,6 +33,8 @@ public class FrmTest extends JFrame {
         btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "true" : "false"));
         btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "true" : "false"));
 
+        setTitle(MissionBox.getAppinfo().getProperty("program.BUILDDATE") + " ["+MissionBox.getAppinfo().getProperty("program.BUILDNUM")+"]");
+
         pb1.setVisible(true);
 
     }
@@ -123,7 +125,7 @@ public class FrmTest extends JFrame {
     }
 
     private void btnRedLedBarActionPerformed(ActionEvent e) {
-        MissionBox.secondsSignal(30);
+        MissionBox.secondsSignal(3);
     }
 
     private void btnFCYrespawnPlusActionPerformed(ActionEvent e) {
@@ -214,6 +216,17 @@ public class FrmTest extends JFrame {
         MissionBox.stopAllSongs();
     }
 
+    private void btnRelayTestActionPerformed(ActionEvent e) {
+        MissionBox.blink("relay0", 750, 1);
+        MissionBox.blink("relay1", 750, 1);
+        MissionBox.blink("relay2", 750, 1);
+        MissionBox.blink("relay3", 750, 1);
+        MissionBox.blink("relay4", 750, 1);
+        MissionBox.blink("relay5", 750, 1);
+        MissionBox.blink("relay6", 750, 1);
+        MissionBox.blink("relay7", 750, 1);
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -244,6 +257,7 @@ public class FrmTest extends JFrame {
         btnTestLooser = new JButton();
         btnRedLedBar = new JButton();
         btnStopAll = new JButton();
+        btnRelayTest = new JButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -414,6 +428,11 @@ public class FrmTest extends JFrame {
                 btnStopAll.setText("Stop All Music");
                 btnStopAll.addActionListener(e -> btnStopAllActionPerformed(e));
                 panel1.add(btnStopAll, CC.xy(5, 5));
+
+                //---- btnRelayTest ----
+                btnRelayTest.setText("Relay Test");
+                btnRelayTest.addActionListener(e -> btnRelayTestActionPerformed(e));
+                panel1.add(btnRelayTest, CC.xy(3, 7));
             }
             tabbedPane1.addTab("HW-Test", panel1);
         }
@@ -492,5 +511,6 @@ public class FrmTest extends JFrame {
     private JButton btnTestLooser;
     private JButton btnRedLedBar;
     private JButton btnStopAll;
+    private JButton btnRelayTest;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

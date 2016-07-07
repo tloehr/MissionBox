@@ -26,7 +26,7 @@ public class Tools {
     public static final String SND_MIB = "mib.wav";
     public static final String SND_QUEEN = "we-will-rock-you.wav";
     public static final String SND_SKYFALL = "skyfall1.wav";
-    public static final String SND_TRANQUILITY = "tranquillity.wav";
+    public static final String SND_TRANQUILITY = "tranquillity-mono.wav";
     public static final String SND_EVERYBODY_DANCE_NOW = "gonna_make_you_sweat.wav";
     public static final String SND_WHO_WANTS_TO_LIVE_FOREVER = "who-wants-to-live-forever.wav";
     public static final String SND_BE_HAPPY = "be-happy.wav";
