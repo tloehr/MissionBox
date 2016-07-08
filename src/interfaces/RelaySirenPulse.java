@@ -51,7 +51,7 @@ public class RelaySirenPulse implements PercentageInterface {
 
         lastRelay = relaynum;
 
-        if (percent.compareTo(new BigDecimal(100)) >= 0 || relaynum >= myRelaisKeys.size()) {
+        if (percent.compareTo(new BigDecimal(100)) > 0 || relaynum >= myRelaisKeys.size()) {
             for (int relay = 0; relay < myRelaisKeys.size(); relay++) {
                 MissionBox.blink(myRelaisKeys.get(relay), 0);
             }

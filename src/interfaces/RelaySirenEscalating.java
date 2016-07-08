@@ -15,6 +15,7 @@ public class RelaySirenEscalating implements PercentageInterface {
     protected final Logger logger = Logger.getLogger(getClass());
     final BigDecimal bd5000 = new BigDecimal(5000);
     BigDecimal lastPercentUsed = null;
+
     /**
      * @param key
      */
@@ -27,6 +28,9 @@ public class RelaySirenEscalating implements PercentageInterface {
 
     public void setValue(BigDecimal percent) {
         long iPercent = percent.intValue();
+        logger.debug("percent " + percent);
+        logger.debug("ipercent " + iPercent);
+
 
         BigDecimal mypercent = percent.divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
         logger.debug(mypercent + "%");
@@ -36,22 +40,32 @@ public class RelaySirenEscalating implements PercentageInterface {
             return;
         }
 
-        if (mypercent.equals(lastPercentUsed)){
+
+        if (mypercent.equals(lastPercentUsed)) {
             return;
         }
         lastPercentUsed = mypercent;
 
-        if (iPercent < 90){
-            if (iPercent % 10 == 0){
-                logger.debug("onTime "+ bd5000.multiply(mypercent));
-                logger.debug("offTime "+bd5000.subtract(bd5000.multiply(mypercent)));
-                 MissionBox.blink(key, bd5000.multiply(percent).longValue(), bd5000.subtract(bd5000.multiply(percent)).longValue(), Integer.MAX_VALUE);
+        BigDecimal onTime = bd5000.multiply(mypercent);
+        BigDecimal offTime = bd5000.subtract(bd5000.multiply(mypercent));
+        logger.debug("onTime " + onTime.longValue());
+        logger.debug("offTime " + offTime.longValue());
+
+        if (percent.equals(BigDecimal.ZERO)) {
+            // giving the siren a kickstart
+            onTime = bd5000.multiply(new BigDecimal(0.01d));
+            offTime = bd5000.subtract(bd5000.multiply(new BigDecimal(0.01d)));
+            MissionBox.blink(key, 0);
+            MissionBox.blink(key, onTime.longValue(), offTime.longValue(), Integer.MAX_VALUE);
+        } else if (iPercent < 90) {
+            if (iPercent % 10 == 0) {
+                MissionBox.blink(key, 0);
+                MissionBox.blink(key, onTime.longValue(), offTime.longValue(), Integer.MAX_VALUE);
             }
         } else { // the last to percent have a finer escalation
-            if (iPercent % 2 == 0){
-                logger.debug("onTime "+bd5000.multiply(mypercent));
-                logger.debug("offTime "+bd5000.subtract(bd5000.multiply(mypercent)));
-               MissionBox.blink(key, bd5000.multiply(percent).longValue(), bd5000.subtract(bd5000.multiply(percent)).longValue(), Integer.MAX_VALUE);
+            if (iPercent % 2 == 0) {
+                MissionBox.blink(key, 0);
+                MissionBox.blink(key, onTime.longValue(), offTime.longValue(), Integer.MAX_VALUE);
             }
         }
     }

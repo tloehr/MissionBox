@@ -2,6 +2,7 @@ package gamemodes;
 
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.sun.org.apache.regexp.internal.RE;
 import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
@@ -27,6 +28,7 @@ public class Farcry1Assault implements GameModes {
     private DateTime lastRespawn = new DateTime();
     private int RESPAWNINSECONDS = 55;
     private boolean firstStart = true;
+    private boolean RESPAWN = false;
 
     public Farcry1Assault() throws IOException {
 
@@ -61,13 +63,15 @@ public class Farcry1Assault implements GameModes {
                 }
 
                 // Respawn announcer
-                if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
-                    MissionBox.setRespawnTimer(Integer.toString(RESPAWNINSECONDS - Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds()));
-                    if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
-                        lastRespawn = new DateTime();
-                        MissionBox.play("minions");
-                        MissionBox.blink("respawnSiren", 2000, 1);
-                        logger.info("Respawn...");
+                if (RESPAWN) {
+                    if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
+                        MissionBox.setRespawnTimer(Integer.toString(RESPAWNINSECONDS - Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds()));
+                        if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
+                            lastRespawn = new DateTime();
+                            MissionBox.play("minions");
+                            MissionBox.blink("respawnSiren", 2000, 1);
+                            logger.info("Respawn...");
+                        }
                     }
                 }
             }
@@ -149,7 +153,8 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setProgress(BigDecimal.ZERO);
                 MissionBox.play("rocket");
 
-                MissionBox.blink("respawnSiren", 5000, 1); // produces a high pitched airraid siren sound by a motor siren
+                MissionBox.blink("rocketlaunched", 3000, 1); // produces a high pitched airraid siren sound by a motor siren
+                MissionBox.blink("siren1/3", 0);
 
                 MissionBox.blink("ledRed", 0);
                 MissionBox.blink("ledGreen", 0);
@@ -232,8 +237,10 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.blink("ledBarYellow", 0);
                 MissionBox.blink("ledBarRed", 0);
                 lastRespawn = new DateTime();
+
                 MissionBox.play("minions");
                 MissionBox.blink("respawnSiren", 2000, 1);
+
             }
         };
 

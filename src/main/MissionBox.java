@@ -106,8 +106,6 @@ public class MissionBox {
         initSound();
         hwinit();
 
-        relaisSirenProgress = new RelaySirenEscalating("siren1/3");
-
         if (GPIO == null) SIREN = false; // override for local pc usage
 
         startup_progress = startup_progress + 10;
@@ -248,32 +246,6 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         soundMap.put("tranquility", TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_TRANQUILITY)));
 
-        /*
-
-        startup_progress = startup_progress + 2;
-        Tools.printProgBar(startup_progress);
-        looserSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_LOSER)));
-
-        startup_progress = startup_progress + 2;
-        Tools.printProgBar(startup_progress);
-        looserSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_WHO_WANTS_TO_LIVE_FOREVER)));
-
-        startup_progress = startup_progress + 2;
-        Tools.printProgBar(startup_progress);
-        looserSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SKYFALL)));
-
-        startup_progress = startup_progress + 2;
-        Tools.printProgBar(startup_progress);
-        winnerSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_MIB)));
-
-        startup_progress = startup_progress + 2;
-        Tools.printProgBar(startup_progress);
-        winnerSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_QUEEN)));
-
-        startup_progress = startup_progress + 2;
-        Tools.printProgBar(startup_progress);
-        winnerSongs.add(TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_EVERYBODY_DANCE_NOW)));
-        */
         for (int i = 0; i <= 10; i++) {
             startup_progress = startup_progress + 2;
             Tools.printProgBar(startup_progress);
@@ -679,12 +651,16 @@ public class MissionBox {
 
 //            outputMap.put("flagSiren", mapGPIO.get("mcp23017-01-B2"));
             outputMap.put("shutdownSiren", mapGPIO.get("mcp23017-01-B1"));
-            outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B6"));
+//            outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B6"));
             outputMap.put("timeSignal", mapGPIO.get("mcp23017-01-B3"));
 
             outputMap.put("siren1/3", mapGPIO.get("mcp23017-01-B2"));
             outputMap.put("siren2/3", mapGPIO.get("mcp23017-01-B0"));
             outputMap.put("siren3/3", mapGPIO.get("mcp23017-01-B4"));
+
+
+            outputMap.put("rocketlaunched", mapGPIO.get("mcp23017-01-B0"));
+            outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B5"));
 
             outputMap.put("relay0", mapGPIO.get("mcp23017-01-B0"));
             outputMap.put("relay1", mapGPIO.get("mcp23017-01-B1"));
@@ -700,8 +676,8 @@ public class MissionBox {
             relaisKeys.add("siren1/3");
             relaisKeys.add("siren2/3");
             relaisKeys.add("siren3/3");
-            // relaisSirenProgress = new RelaySirenPulse(relaisKeys);
-            relaisSirenProgress = new RelaySirenEscalating("siren1/3");
+             relaisSirenProgress = new RelaySirenPulse(relaisKeys);
+//            relaisSirenProgress = new RelaySirenEscalating("siren1/3");
 
 
 //            Relay ledGreen = new Relay(ioLedGreen);
