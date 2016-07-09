@@ -90,9 +90,9 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener percentageListener = messageEvent -> {
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
-                // kickstart a little
-                BigDecimal percentage = messageEvent.getPercentage().add(BigDecimal.ONE);
-                MissionBox.setProgress(percentage);
+//                // kickstart a little
+//                BigDecimal percentage = messageEvent.getPercentage().add(BigDecimal.ONE);
+                MissionBox.setProgress(messageEvent.getPercentage());
                 int countdown_index = messageEvent.getPercentage().intValue() / 10;
                 if (prev_countdown_index != countdown_index) {
                     prev_countdown_index = countdown_index;
@@ -132,7 +132,7 @@ public class Farcry1Assault implements GameModes {
                  */
                 logger.debug("GAME_FLAG_COLD");
                 MissionBox.stop("siren");
-                MissionBox.setProgress(BigDecimal.ZERO);
+                MissionBox.setProgress(new BigDecimal(-1));
 
                 if (prev_countdown_index > -1) {
 //                    MissionBox.blink("flagSiren", 0);
@@ -150,7 +150,7 @@ public class Farcry1Assault implements GameModes {
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
                 logger.debug("GAME_ROCKET_LAUNCHED");
                 MissionBox.stop("siren");
-                MissionBox.setProgress(BigDecimal.ZERO);
+                MissionBox.setProgress(new BigDecimal(-1));
                 MissionBox.play("rocket");
 
                 MissionBox.blink("rocketlaunched", 3000, 1); // produces a high pitched airraid siren sound by a motor siren

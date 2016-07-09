@@ -26,6 +26,7 @@ public class RelaySirenEscalating implements PercentageInterface {
     }
 
 
+    @Override
     public void setValue(BigDecimal percent) {
         long iPercent = percent.intValue();
         logger.debug("percent " + percent);

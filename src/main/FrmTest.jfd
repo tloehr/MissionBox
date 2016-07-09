@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "5.2.3.0.281" Java: "1.8.0_77" encoding: "UTF-8"
+JFDML JFormDesigner: "5.2.3.0.281" Java: "1.8.0_76-release" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -94,7 +94,7 @@ new FormModel {
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 					"$columnSpecs": "default:grow, relgap, default:grow, unrelgap"
-					"$rowSpecs": "default, linegap, default, linegap, default, linegap, default"
+					"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, default"
 				} ) {
 					name: "settingsPanel"
 					add( new FormComponent( "javax.swing.JLabel" ) {
@@ -158,7 +158,7 @@ new FormModel {
 						name: "btnSound"
 						"text": "Sound"
 						"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"selectedIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/sound.png" )
+						"selectedIcon": &SwingIcon0 new com.jformdesigner.model.SwingIcon( 0, "/artwork/sound.png" )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
 					} )
@@ -169,6 +169,23 @@ new FormModel {
 						"selectedIcon": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
+						"gridX": 3
+					} )
+					add( new FormComponent( "javax.swing.JToggleButton" ) {
+						name: "btnMusic"
+						"text": "Music"
+						"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"selectedIcon": #SwingIcon0
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 9
+					} )
+					add( new FormComponent( "javax.swing.JToggleButton" ) {
+						name: "btnRespawnSignal"
+						"text": "Respawn Signal"
+						"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"selectedIcon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 9
 						"gridX": 3
 					} )
 				}, new FormLayoutConstraints( null ) {

@@ -256,7 +256,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     if (timeIsUp()) {
                         setGameState(GAME_OUTCOME_FLAG_DEFENDED);
                     }
-                    fireMessage(percentageList, new MessageEvent(this, gameState, BigDecimal.ZERO));
+                    fireMessage(percentageList, new MessageEvent(this, gameState, new BigDecimal(-1)));
                 }
 
                 if (gameState == GAME_FLAG_HOT) {

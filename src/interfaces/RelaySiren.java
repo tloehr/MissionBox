@@ -1,9 +1,5 @@
 package interfaces;
 
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioPinDigital;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinState;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 
@@ -30,19 +26,25 @@ public class RelaySiren implements PercentageInterface {
 
     @Override
     public void setValue(BigDecimal percent) {
+        if (percent.compareTo(BigDecimal.ZERO) < 0) {
+            for (int relay = 0; relay < myRelais.size(); relay++) {
+                myRelais.get(relay).setOn(false);
+            }
+            return;
+        }
+
+        BigDecimal myPercent = new BigDecimal(100).subtract(percent);
+
         lastChangeTime = System.currentTimeMillis();
-        int relaynum = new BigDecimal(myRelais.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent).intValue();
+        int relaynum = new BigDecimal(myRelais.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
 
         if (relaynum >= myRelais.size()) {
             for (int relay = 0; relay < myRelais.size(); relay++) {
                 myRelais.get(relay).setOn(false);
             }
-            // leave the last one on, when 100 percent is reached
-//            myRelais.get(myRelais.size() - 1).setState(PinState.HIGH);
-
         } else {
             for (int relay = 0; relay < myRelais.size(); relay++) {
-                myRelais.get(relay).setOn(percent.compareTo(BigDecimal.ZERO) > 0 && relaynum == relay);
+                myRelais.get(relay).setOn(myPercent.compareTo(BigDecimal.ZERO) > 0 && relaynum == relay);
             }
         }
 

@@ -46,6 +46,8 @@ public class MissionBox {
 
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
+    public static final String FCY_MUSIC = "fcy.music";
+    public static final String FCY_RESPAWN_SIGNAL = "fcy.respawn.signal";
     public static final String FCY_SOUND = "fcy.sound";
     public static final String FCY_SIREN = "fcy.siren";
     public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
@@ -56,6 +58,8 @@ public class MissionBox {
     public static boolean GUI = false;
     private static boolean SOUND = false;
     private static boolean SIREN = false;
+    private static boolean MUSIC = false;
+    private static boolean RESPAWN = false;
 
     private static HashMap<String, Object> soundMap = new HashMap<>();
     private static HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
@@ -105,6 +109,9 @@ public class MissionBox {
 
         initSound();
         hwinit();
+
+        // TODO: remove me
+        relaisSirenProgress = new RelaySirensOneSignal("key1");
 
         if (GPIO == null) SIREN = false; // override for local pc usage
 
@@ -374,6 +381,7 @@ public class MissionBox {
     }
 
     public static void playWinner() {
+        if (!MUSIC) return;
         stopWinner();
 
         currentWinner++;
@@ -406,6 +414,7 @@ public class MissionBox {
     }
 
     public static void playLooser() {
+        if (!MUSIC) return;
         stopLooser();
 
         currentLooser++;
@@ -503,7 +512,9 @@ public class MissionBox {
         config.put(FCY_TIME2CAPTURE, "20");
         config.put(FCY_GAMETIME, "5");
         config.put(FCY_SOUND, "true");
-        config.put(FCY_SIREN, "false");
+        config.put(FCY_MUSIC, "true");
+        config.put(FCY_RESPAWN_SIGNAL, "true");
+        config.put(FCY_SIREN, "true");
         config.put(MBX_SIREN_TIME, "750");
         config.put(FCY_RESPAWN, "40");
         config.put(MBX_GUI, "true");
@@ -526,6 +537,9 @@ public class MissionBox {
         GUI = Boolean.parseBoolean(config.getProperty(MissionBox.MBX_GUI));
         SOUND = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND));
         SIREN = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN));
+        MUSIC = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_MUSIC));
+        RESPAWN = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_SIGNAL));
+
         logLevel = Level.toLevel(MissionBox.getConfig().getProperty(MissionBox.MBX_LOGLEVEL), Level.DEBUG);
 
     }
@@ -560,16 +574,23 @@ public class MissionBox {
     }
 
     public static void setProgress(BigDecimal percent) {
+        // if (SIREN)
 
         relaisSirenProgress.setValue(percent);
-
-        if (SIREN) relaisSirenProgress.setValue(percent);
         if (GUI) frmTest.setProgress(percent.intValue());
-        if (SIREN) relaisLEDs.setValue(new BigDecimal(100).subtract(percent));
+        if (SIREN) relaisLEDs.setValue(percent);
     }
 
     public static boolean isSOUND() {
         return SOUND;
+    }
+
+    public static boolean isMUSIC() {
+        return MUSIC;
+    }
+
+    public static boolean isRESPAWN() {
+        return RESPAWN;
     }
 
     public static boolean isSIREN() {
@@ -577,7 +598,7 @@ public class MissionBox {
     }
 
     public static void setTimerMessage(String message) {
-        if (GUI) frmTest.setTimer(message);
+        if (GUI) frmTest.setTimer(message);logger.debug(message);
     }
 
     public static void minuteSignal(int minutes) {

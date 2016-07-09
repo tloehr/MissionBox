@@ -32,6 +32,8 @@ public class FrmTest extends JFrame {
 
         btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "true" : "false"));
         btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "true" : "false"));
+        btnMusic.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_MUSIC, btnMusic.isSelected() ? "true" : "false"));
+        btnRespawnSignal.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN_SIGNAL, btnRespawnSignal.isSelected() ? "true" : "false"));
 
         setTitle(MissionBox.getAppinfo().getProperty("program.BUILDDATE") + " ["+MissionBox.getAppinfo().getProperty("program.BUILDNUM")+"]");
 
@@ -102,14 +104,16 @@ public class FrmTest extends JFrame {
             lblFCYRespawn.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
             btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("true"));
             btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("true"));
+            btnRespawnSignal.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_SIGNAL).equals("true"));
+            btnMusic.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_MUSIC).equals("true"));
         } else {
 
         }
     }
 
     public void setProgress(int progress) {
-        pb1.setIndeterminate(progress <= 0);
-        if (progress > 0) {
+        pb1.setIndeterminate(progress < 0);
+        if (progress >= 0) {
             pb1.setValue(progress);
         }
     }
@@ -250,6 +254,8 @@ public class FrmTest extends JFrame {
         lblFCYRespawn = new JTextField();
         btnSound = new JToggleButton();
         btnSiren = new JToggleButton();
+        btnMusic = new JToggleButton();
+        btnRespawnSignal = new JToggleButton();
         panel1 = new JPanel();
         btnRespawn = new JButton();
         btnTestWinner = new JButton();
@@ -323,7 +329,7 @@ public class FrmTest extends JFrame {
             {
                 settingsPanel.setLayout(new FormLayout(
                     "default:grow, $rgap, default:grow, $ugap",
-                    "3*(default, $lgap), default"));
+                    "4*(default, $lgap), default"));
 
                 //---- label1 ----
                 label1.setText("capture (sec)");
@@ -390,6 +396,18 @@ public class FrmTest extends JFrame {
                 btnSiren.setIcon(null);
                 btnSiren.setSelectedIcon(null);
                 settingsPanel.add(btnSiren, CC.xy(3, 7));
+
+                //---- btnMusic ----
+                btnMusic.setText("Music");
+                btnMusic.setIcon(null);
+                btnMusic.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/sound.png")));
+                settingsPanel.add(btnMusic, CC.xy(1, 9));
+
+                //---- btnRespawnSignal ----
+                btnRespawnSignal.setText("Respawn Signal");
+                btnRespawnSignal.setIcon(null);
+                btnRespawnSignal.setSelectedIcon(null);
+                settingsPanel.add(btnRespawnSignal, CC.xy(3, 9));
             }
             tabbedPane1.addTab("Settings", settingsPanel);
 
@@ -504,6 +522,8 @@ public class FrmTest extends JFrame {
     private JTextField lblFCYRespawn;
     private JToggleButton btnSound;
     private JToggleButton btnSiren;
+    private JToggleButton btnMusic;
+    private JToggleButton btnRespawnSignal;
     private JPanel panel1;
     private JButton btnRespawn;
     private JButton btnTestWinner;
