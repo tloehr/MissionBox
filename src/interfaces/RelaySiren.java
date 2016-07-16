@@ -4,47 +4,54 @@ import main.MissionBox;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by tloehr on 07.06.15.
  */
 public class RelaySiren implements PercentageInterface {
 
-    protected final ArrayList<Relay> myRelais;
-    protected long lastChangeTime;
+    protected final List<String> keys;
     protected final Logger logger = Logger.getLogger(getClass());
+    protected int previousRelay = -1;
 
-    public RelaySiren(ArrayList<Relay> myRelais) {
-        this.myRelais = myRelais;
-        logger.setLevel(MissionBox.getLogLevel());
-        for (Relay pin : myRelais) {
-            pin.setOn(false);
-        }
+    public RelaySiren(String... myKeys) {
+        keys = Arrays.asList((String[]) myKeys);
     }
 
 
     @Override
     public void setValue(BigDecimal percent) {
+
+        logger.debug("PERCENT: " + percent);
+
         if (percent.compareTo(BigDecimal.ZERO) < 0) {
-            for (int relay = 0; relay < myRelais.size(); relay++) {
-                myRelais.get(relay).setOn(false);
+            for (String key : keys) {
+                MissionBox.off(key);
             }
             return;
         }
 
         BigDecimal myPercent = new BigDecimal(100).subtract(percent);
+        int relaynum = new BigDecimal(keys.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
 
-        lastChangeTime = System.currentTimeMillis();
-        int relaynum = new BigDecimal(myRelais.size()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
+        // shortcut
+        if (previousRelay == relaynum) return;
+        previousRelay = relaynum;
 
-        if (relaynum >= myRelais.size()) {
-            for (int relay = 0; relay < myRelais.size(); relay++) {
-                myRelais.get(relay).setOn(false);
+
+        if (relaynum >= keys.size()) {
+            for (String key : keys) {
+                MissionBox.off(key);
             }
         } else {
-            for (int relay = 0; relay < myRelais.size(); relay++) {
-                myRelais.get(relay).setOn(myPercent.compareTo(BigDecimal.ZERO) > 0 && relaynum == relay);
+            for (String key : keys) {
+                if (myPercent.compareTo(BigDecimal.ZERO) > 0 && relaynum == keys.indexOf(key)) {
+                    MissionBox.on(key);
+                } else {
+                    MissionBox.off(key);
+                }
             }
         }
 

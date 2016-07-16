@@ -5,23 +5,29 @@ import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashSet;
 
 /**
- * Created by tloehr on 09.07.16.
+ * This class progresses through a group of pins (defined by their keys within the outputMap. According to the number of defined pins
+ * and the current percentage set by setValue(), the corresponding pin is chosen to blink in the frequency pulsetimeinmillis.
  */
-public class RelaySirensOneSignal implements PercentageInterface {
-    protected final Logger logger = Logger.getLogger(getClass());
-    private final String key;
+public class RelaySirenPulsating implements PercentageInterface {
+    long pulsetimeinmillis = 1000; // Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.MBX_SIREN_TIME));
     private int previousTenth = -1;
+    protected final Logger logger = Logger.getLogger(getClass());
+    protected final String key;
+    private String FOREVER = Integer.toString(Integer.MAX_VALUE);
     private long MAXTIMEFORSIGNAL = 5000;
 
-    public RelaySirensOneSignal(String key) {
+    /**
+     * @param key
+     */
+    public RelaySirenPulsating(String key) {
         this.key = key;
     }
 
-    @Override
+
     public void setValue(BigDecimal percent) {
+        logger.debug("PERCENT: " + percent);
 
         if (percent.compareTo(BigDecimal.ZERO) < 0) {
             MissionBox.off(key);
@@ -34,14 +40,11 @@ public class RelaySirensOneSignal implements PercentageInterface {
         if (tenth == previousTenth) return;
         previousTenth = tenth;
 
-        logger.debug("tenth " + tenth);
-        String key = "";
-
         long onTime = -1, offTime = -1;
         if (tenth < 10) {
             onTime = 200;
         } else {
-            onTime =  MAXTIMEFORSIGNAL / 100 * tenth;
+            onTime = MAXTIMEFORSIGNAL / 100 * tenth;
         }
 
         offTime = MAXTIMEFORSIGNAL - onTime;
@@ -49,10 +52,6 @@ public class RelaySirensOneSignal implements PercentageInterface {
         logger.debug("onTime " + onTime);
         logger.debug("offTime " + offTime);
 
-
-        // MissionBox.blink(key, onTime, offTime, Integer.MAX_VALUE); // only when necessary
-
-
+        MissionBox.setScheme(key, FOREVER + ";" + onTime + "," + offTime);
     }
-
 }

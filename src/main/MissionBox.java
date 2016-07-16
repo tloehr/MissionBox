@@ -11,12 +11,13 @@ import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
 import misc.Tools;
 import org.apache.log4j.*;
-import org.apache.log4j.or.ThreadGroupRenderer;
 
 import javax.swing.*;
 import java.io.*;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import static com.sun.org.apache.xalan.internal.utils.SecuritySupport.getResourceAsStream;
@@ -32,15 +33,18 @@ public class MissionBox {
     private static Level logLevel = Level.DEBUG;
     private static GpioController GPIO;
     private static FrmTest frmTest;
+    private static FrmSimulator frmSimulator;
     private static Properties config;
     private static int gamemode;
 
     private static final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
     private static final HashMap<String, SwingWorker> mapWorker = new HashMap<>();
 
+    private static GpioPinDigitalInput ioRed, ioGreen, ioGameStartStop, ioMisc, ioUndo;
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc, btnUndo;
-    private static RelaySiren relaisLEDs;
-    private static PercentageInterface relaisSirenProgress;
+
+
+    private static PercentageInterface relaisSirens, relaisLEDs;
 
     public static Properties appinfo = new Properties();
 
@@ -62,8 +66,8 @@ public class MissionBox {
     private static boolean RESPAWN = false;
 
     private static HashMap<String, Object> soundMap = new HashMap<>();
-    private static HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
-    private static HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
+    //    private static HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
+//    private static HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
     private static HashMap<String, Relay> relayMap = new HashMap<>();
 
     private static ArrayList<String> winnerSongs = new ArrayList<>();
@@ -73,6 +77,9 @@ public class MissionBox {
 
     private static HashMap<String, Sound> timeAnnouncements = new HashMap();
     private static Sound[] countdown = new Sound[11];
+
+    private static PinHandler pinHandler = null;
+
 
     public static Properties getAppinfo() {
         return appinfo;
@@ -107,11 +114,12 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         loadLocalProperties();
 
+        frmSimulator = new FrmSimulator();
+
         initSound();
         hwinit();
-
-        // TODO: remove me
-        relaisSirenProgress = new RelaySirensOneSignal("key1");
+        initPinHandler();
+        initProgressSystem();
 
         if (GPIO == null) SIREN = false; // override for local pc usage
 
@@ -119,6 +127,9 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
 
         if (GUI) {
+
+            frmSimulator.setVisible(true);
+
             frmTest = new FrmTest();
             frmTest.pack();
             frmTest.setVisible(true);
@@ -127,16 +138,54 @@ public class MissionBox {
         startup_progress = startup_progress + 10;
         Tools.printProgBar(startup_progress);
 
-        btnRed = new MyAbstractButton(inputMap.get("btnRed"), getGUIBtnRed());
-        btnGreen = new MyAbstractButton(inputMap.get("btnGreen"), getGUIBtnGreen());
-        btnGameStartStop = new MyAbstractButton(inputMap.get("btnGameStartStop"), getGUIBtn1());
-        btnMisc = new MyAbstractButton(inputMap.get("btnMisc"), getGUIBtn2());
-        btnUndo = new MyAbstractButton(null, getGUIBtnUndo());
+        btnRed = new MyAbstractButton(ioRed, getGUIBtnRed());
+        btnGreen = new MyAbstractButton(ioGreen, getGUIBtnGreen());
+        btnGameStartStop = new MyAbstractButton(ioGameStartStop, getGUIBtn1());
+        btnMisc = new MyAbstractButton(ioMisc, getGUIBtn2());
+        btnUndo = new MyAbstractButton(ioUndo, getGUIBtnUndo());
 
         startup_progress = 100;
         Tools.printProgBar(startup_progress);
 
         Farcry1Assault fc = new Farcry1Assault();
+    }
+
+    private static void initProgressSystem() {
+        relaisLEDs = new RelaySiren("ledBarGreen", "ledBarYellow", "ledBarRed");
+        relaisSirens = new RelaySirenPulsating("siren1");
+    }
+
+    private static void initPinHandler() {
+        pinHandler = new PinHandler();
+
+        JPanel debugPanel4Pins = frmSimulator == null ? null : frmSimulator.getContentPanel();
+
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B1"), "shutdownSiren", debugPanel4Pins));
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B3"), "timeSignal", debugPanel4Pins));
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B2"), "siren1", debugPanel4Pins));
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B0"), "rocketlaunched", debugPanel4Pins)); // same sound for siren2
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B4"), "siren3", debugPanel4Pins));
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B5"), "respawnSiren", debugPanel4Pins));
+
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A0"), "ledGreen", debugPanel4Pins));
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A1"), "ledRed", debugPanel4Pins));
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A2"), "ledBarGreen", debugPanel4Pins));
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A3"), "ledBarYellow", debugPanel4Pins));
+        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A4"), "ledBarRed", debugPanel4Pins));
+
+
+    }
+
+    public static void setScheme(String name, String scheme) {
+        pinHandler.setScheme(name, scheme);
+    }
+
+    public static void off(String name) {
+        pinHandler.off(name);
+    }
+
+    public static void on(String name) {
+        pinHandler.on(name);
     }
 
     public static HashMap<String, Sound> getTimeAnnouncements() {
@@ -303,78 +352,6 @@ public class MissionBox {
 
     }
 
-    public static void blink(final String key, final long duration, final int repeat) {
-        blink(key, duration, duration, repeat);
-    }
-
-    public static void blink(final String key, final long onTime, final long offTime, final int repeat) {
-        if (!outputMap.containsKey(key)) return;
-
-        synchronized (mapWorker) {
-            logger.debug("pin: " + key + "   ontime: " + onTime + "  offtime: " + offTime + "   repeat: " + repeat);
-            if (mapWorker.containsKey(key)) {
-                SwingWorker mySW = mapWorker.get(key);
-                if (!mySW.isDone()) {
-                    mySW.cancel(true);
-                }
-                mapWorker.remove(key);
-                outputMap.get(key).setState(PinState.LOW);
-            }
-            if (onTime == 0) {
-                logger.debug("switching off: " + key);
-                outputMap.get(key).setState(PinState.LOW);
-                return;
-            }
-
-            SwingWorker sw = new SwingWorker() {
-                int i = 0;
-                String uuid = UUID.randomUUID().toString();
-
-                @Override
-                protected Object doInBackground() throws Exception {
-                    logger.debug(key + " ==> " + uuid + "  starting");
-                    while (!isCancelled() && i < repeat) {
-                        i++;
-                        try {
-                            outputMap.get(key).setState(PinState.HIGH);
-                            Thread.sleep(onTime);
-                            outputMap.get(key).setState(PinState.LOW);
-                            Thread.sleep(offTime);
-                        } catch (InterruptedException ex) {
-                            logger.debug("blink() for '" + key + "' (" + uuid + " interrupted");
-                        }
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    super.done();
-                    logger.debug("blink() for '" + key + "' (" + uuid + " DONE !!!");
-                    outputMap.get(key).setState(PinState.LOW);
-                    mapWorker.remove(key);
-                }
-            };
-            mapWorker.put(key, sw);
-            sw.execute();
-        }
-    }
-
-    public static void blink(String key, long duration) {
-        blink(key, duration, Integer.MAX_VALUE);
-    }
-
-    public static HashMap<String, GpioPinDigitalOutput> getOutputMap() {
-        return outputMap;
-    }
-
-    public static HashMap<String, GpioPinDigitalInput> getInputMap() {
-        return inputMap;
-    }
-
-    public static HashMap<String, Relay> getRelayMap() {
-        return relayMap;
-    }
 
     public static void enableSettings(boolean enable) {
         if (GUI) frmTest.enableSettings(enable);
@@ -576,9 +553,9 @@ public class MissionBox {
     public static void setProgress(BigDecimal percent) {
         // if (SIREN)
 
-        relaisSirenProgress.setValue(percent);
+        if (relaisSirens != null) relaisSirens.setValue(percent);
         if (GUI) frmTest.setProgress(percent.intValue());
-        if (SIREN) relaisLEDs.setValue(percent);
+        if (relaisLEDs != null) relaisLEDs.setValue(percent);
     }
 
     public static boolean isSOUND() {
@@ -598,15 +575,16 @@ public class MissionBox {
     }
 
     public static void setTimerMessage(String message) {
-        if (GUI) frmTest.setTimer(message);logger.debug(message);
+        if (GUI) frmTest.setTimer(message);
+        logger.debug(message);
     }
 
     public static void minuteSignal(int minutes) {
-        blink("timeSignal", 1000, minutes);
+        setScheme("timeSignal", minutes + ";1000,1000");
     }
 
     public static void secondsSignal(int seconds) {
-        blink("timeSignal", 500, seconds);
+        setScheme("timeSignal", seconds + ";500,500");
     }
 
     public static void setRespawnTimer(String message) {
@@ -621,6 +599,8 @@ public class MissionBox {
                 GPIO = GpioFactory.getInstance();
 
             } catch (Exception e) {
+                logger.fatal(e);
+                System.exit(0);
             }
 
 
@@ -648,74 +628,11 @@ public class MissionBox {
                 mapGPIO.put(myOutputs[ioPin].getName(), myOutputs[ioPin]);
             }
 
-            GpioPinDigitalInput ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN); // Board 11
-            GpioPinDigitalInput ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN); // Board 13
-            GpioPinDigitalInput ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN); // Board 15
-            GpioPinDigitalInput ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
+            ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN); // Board 11
+            ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN); // Board 13
+            ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN); // Board 15
+            ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
 
-            inputMap.put("btnRed", ioRed);
-            inputMap.put("btnGreen", ioGreen);
-            inputMap.put("btnGameStartStop", ioGameStartStop);
-            inputMap.put("btnMisc", ioMisc);
-
-            GpioPinDigitalOutput ioLedGreen = mapGPIO.get("mcp23017-01-A0");
-            GpioPinDigitalOutput ioLedRed = mapGPIO.get("mcp23017-01-A1");
-            GpioPinDigitalOutput ioLedBarGreen = mapGPIO.get("mcp23017-01-A2");
-            GpioPinDigitalOutput ioLedBarYellow = mapGPIO.get("mcp23017-01-A3");
-            GpioPinDigitalOutput ioLedBarRed = mapGPIO.get("mcp23017-01-A4");
-
-            outputMap.put("ledGreen", ioLedGreen);
-            outputMap.put("ledRed", ioLedRed);
-            outputMap.put("ledBarGreen", ioLedBarGreen);
-            outputMap.put("ledBarYellow", ioLedBarYellow);
-            outputMap.put("ledBarRed", ioLedBarRed);
-
-//            outputMap.put("flagSiren", mapGPIO.get("mcp23017-01-B2"));
-            outputMap.put("shutdownSiren", mapGPIO.get("mcp23017-01-B1"));
-//            outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B6"));
-            outputMap.put("timeSignal", mapGPIO.get("mcp23017-01-B3"));
-
-            outputMap.put("siren1/3", mapGPIO.get("mcp23017-01-B2"));
-            outputMap.put("siren2/3", mapGPIO.get("mcp23017-01-B0"));
-            outputMap.put("siren3/3", mapGPIO.get("mcp23017-01-B4"));
-
-
-            outputMap.put("rocketlaunched", mapGPIO.get("mcp23017-01-B0"));
-            outputMap.put("respawnSiren", mapGPIO.get("mcp23017-01-B5"));
-
-            outputMap.put("relay0", mapGPIO.get("mcp23017-01-B0"));
-            outputMap.put("relay1", mapGPIO.get("mcp23017-01-B1"));
-            outputMap.put("relay2", mapGPIO.get("mcp23017-01-B2"));
-            outputMap.put("relay3", mapGPIO.get("mcp23017-01-B3"));
-            outputMap.put("relay4", mapGPIO.get("mcp23017-01-B4"));
-            outputMap.put("relay5", mapGPIO.get("mcp23017-01-B5"));
-            outputMap.put("relay6", mapGPIO.get("mcp23017-01-B6"));
-            outputMap.put("relay7", mapGPIO.get("mcp23017-01-B7"));
-
-
-            ArrayList relaisKeys = new ArrayList<String>();
-            relaisKeys.add("siren1/3");
-            relaisKeys.add("siren2/3");
-            relaisKeys.add("siren3/3");
-             relaisSirenProgress = new RelaySirenPulse(relaisKeys);
-//            relaisSirenProgress = new RelaySirenEscalating("siren1/3");
-
-
-//            Relay ledGreen = new Relay(ioLedGreen);
-//            Relay ledRed = new Relay(ioLedRed);
-            Relay ledBarGreen = new Relay(ioLedBarGreen);
-            Relay ledBarYellow = new Relay(ioLedBarYellow);
-            Relay ledBarRed = new Relay(ioLedBarRed);
-
-            ArrayList<Relay> progressLEDs = new ArrayList<>();
-            progressLEDs.add(ledBarGreen);
-            progressLEDs.add(ledBarYellow);
-            progressLEDs.add(ledBarRed);
-
-            relaisLEDs = new RelaySiren(progressLEDs);
-//            relaisSirens = new RelaySirenPulse(relayBoard, 500);
-
-//            respawnSiren = new Relay(mapGPIO.get("mcp23017-01-B1"));
 
         }
 

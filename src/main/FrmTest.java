@@ -194,7 +194,7 @@ public class FrmTest extends JFrame {
     }
 
     private void btnRespawnActionPerformed(ActionEvent e) {
-        MissionBox.blink("respawnSiren", 1000, 1);
+        MissionBox.setScheme("respawnSiren", "1;1000,1000");
     }
 
     private void btnTimeSignalActionPerformed(ActionEvent e) {
@@ -221,14 +221,14 @@ public class FrmTest extends JFrame {
     }
 
     private void btnRelayTestActionPerformed(ActionEvent e) {
-        MissionBox.blink("relay0", 750, 1);
-        MissionBox.blink("relay1", 750, 1);
-        MissionBox.blink("relay2", 750, 1);
-        MissionBox.blink("relay3", 750, 1);
-        MissionBox.blink("relay4", 750, 1);
-        MissionBox.blink("relay5", 750, 1);
-        MissionBox.blink("relay6", 750, 1);
-        MissionBox.blink("relay7", 750, 1);
+//        MissionBox.blink("relay0", 750, 1);
+//        MissionBox.blink("relay1", 750, 1);
+//        MissionBox.blink("relay2", 750, 1);
+//        MissionBox.blink("relay3", 750, 1);
+//        MissionBox.blink("relay4", 750, 1);
+//        MissionBox.blink("relay5", 750, 1);
+//        MissionBox.blink("relay6", 750, 1);
+//        MissionBox.blink("relay7", 750, 1);
     }
 
 

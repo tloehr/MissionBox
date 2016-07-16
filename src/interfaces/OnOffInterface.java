@@ -6,6 +6,6 @@ package interfaces;
 public interface OnOffInterface {
 
     void setOn(boolean on);
-    void toggle();
+    String getName();
 
 }
