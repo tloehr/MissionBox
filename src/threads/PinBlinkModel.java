@@ -1,5 +1,6 @@
-package interfaces;
+package threads;
 
+import interfaces.Relay;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

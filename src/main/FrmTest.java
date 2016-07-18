@@ -455,7 +455,7 @@ public class FrmTest extends JFrame {
             tabbedPane1.addTab("HW-Test", panel1);
         }
         contentPane.add(tabbedPane1);
-        setSize(305, 240);
+        setSize(800, 480);
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }

@@ -11,6 +11,7 @@ import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
 import misc.Tools;
 import org.apache.log4j.*;
+import threads.PinHandler;
 
 import javax.swing.*;
 import java.io.*;
@@ -160,12 +161,13 @@ public class MissionBox {
 
         JPanel debugPanel4Pins = frmSimulator == null ? null : frmSimulator.getContentPanel();
 
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B1"), "shutdownSiren", debugPanel4Pins));
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B3"), "timeSignal", debugPanel4Pins));
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B2"), "siren1", debugPanel4Pins));
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B0"), "rocketlaunched", debugPanel4Pins)); // same sound for siren2
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B4"), "siren3", debugPanel4Pins));
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-B5"), "respawnSiren", debugPanel4Pins));
+        // these relays belong to one cd. They are all connected to the same siren circuit.
+        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B1"), "shutdownSiren", debugPanel4Pins));
+        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B3"), "timeSignal", debugPanel4Pins));
+        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B2"), "siren1", debugPanel4Pins));
+        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B0"), "rocketlaunched", debugPanel4Pins)); // same sound for siren2
+        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B4"), "siren3", debugPanel4Pins));
+        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B5"), "respawnSiren", debugPanel4Pins));
 
         pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A0"), "ledGreen", debugPanel4Pins));
         pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A1"), "ledRed", debugPanel4Pins));
