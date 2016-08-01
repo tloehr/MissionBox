@@ -449,6 +449,7 @@ public class FrmTest extends JFrame {
 
                 //---- btnRelayTest ----
                 btnRelayTest.setText("Relay Test");
+                btnRelayTest.setEnabled(false);
                 btnRelayTest.addActionListener(e -> btnRelayTestActionPerformed(e));
                 panel1.add(btnRelayTest, CC.xy(3, 7));
             }

@@ -263,8 +263,9 @@ public class Farcry1Assault implements GameModes {
 
         MissionBox.getBtnGreen().addListener((GpioPinListenerDigital) event -> {
             if (event.getState() == PinState.HIGH) {
+                logger.debug("GPIO GreenButton down");
                 // If both buttons are pressed, the red one wins.
-                if (MissionBox.getBtnRed().isHigh() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT)
+                if (MissionBox.getBtnRed().isLow() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT)
                     return;
                 logger.debug("GreenButton pressed");
                 farcryAssaultThread.setFlag(false);
@@ -274,7 +275,8 @@ public class Farcry1Assault implements GameModes {
         MissionBox.getBtnGreen().addListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (MissionBox.getBtnRed().isHigh() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT)
+                logger.debug("GUI GreenButton down");
+                if (MissionBox.getBtnRed().isLow() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT)
                     return;
                 logger.debug("GreenButton pressed");
                 farcryAssaultThread.setFlag(false);

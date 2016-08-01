@@ -23,25 +23,27 @@ public class RelaySirensOneSignal implements PercentageInterface {
     @Override
     public void setValue(BigDecimal percent) {
 
+
         if (percent.compareTo(BigDecimal.ZERO) < 0) {
             MissionBox.off(key);
             previousTenth = -1;
             return;
         }
 
+
         int tenth = percent.setScale(-1, RoundingMode.HALF_UP).intValue(); // Scale to the power of tenth
 
         if (tenth == previousTenth) return;
         previousTenth = tenth;
 
+
         logger.debug("tenth " + tenth);
-        String key = "";
 
         long onTime = -1, offTime = -1;
         if (tenth < 10) {
             onTime = 200;
         } else {
-            onTime =  MAXTIMEFORSIGNAL / 100 * tenth;
+            onTime = MAXTIMEFORSIGNAL / 100 * tenth;
         }
 
         offTime = MAXTIMEFORSIGNAL - onTime;
@@ -50,7 +52,7 @@ public class RelaySirensOneSignal implements PercentageInterface {
         logger.debug("offTime " + offTime);
 
 
-        // MissionBox.blink(key, onTime, offTime, Integer.MAX_VALUE); // only when necessary
+//        MissionBox.blink(key, onTime, offTime, Integer.MAX_VALUE); // only when necessary
 
 
     }

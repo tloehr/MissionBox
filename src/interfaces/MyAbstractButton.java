@@ -29,8 +29,8 @@ public class MyAbstractButton {
         btn.addActionListener(var1);
     }
 
-    public boolean isHigh(){
-        return gpio != null ? gpio.isHigh() : false;
+    public boolean isLow(){
+        return gpio != null ? gpio.isLow() : false;
     }
 
 }

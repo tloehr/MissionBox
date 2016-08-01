@@ -38,12 +38,11 @@ public class MissionBox {
     private static Properties config;
     private static int gamemode;
 
-    private static final HashMap<String, GpioPinDigitalOutput> mapGPIO = new HashMap<>();
-    private static final HashMap<String, SwingWorker> mapWorker = new HashMap<>();
-
     private static GpioPinDigitalInput ioRed, ioGreen, ioGameStartStop, ioMisc, ioUndo;
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc, btnUndo;
 
+    private static final HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
+    private static final HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
 
     private static PercentageInterface relaisSirens, relaisLEDs;
 
@@ -162,18 +161,18 @@ public class MissionBox {
         JPanel debugPanel4Pins = frmSimulator == null ? null : frmSimulator.getContentPanel();
 
         // these relays belong to one cd. They are all connected to the same siren circuit.
-        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B1"), "shutdownSiren", debugPanel4Pins));
-        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B3"), "timeSignal", debugPanel4Pins));
-        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B2"), "siren1", debugPanel4Pins));
-        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B0"), "rocketlaunched", debugPanel4Pins)); // same sound for siren2
-        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B4"), "siren3", debugPanel4Pins));
-        pinHandler.add(1, new Relay(mapGPIO.get("mcp23017-01-B5"), "respawnSiren", debugPanel4Pins));
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B1"), "shutdownSiren", debugPanel4Pins));
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B2"), "timeSignal", debugPanel4Pins));
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B3"), "siren1", debugPanel4Pins));
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B4"), "rocketlaunched", debugPanel4Pins)); // same sound for siren2
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B5"), "siren3", debugPanel4Pins));
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B6"), "respawnSiren", debugPanel4Pins));
 
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A0"), "ledGreen", debugPanel4Pins));
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A1"), "ledRed", debugPanel4Pins));
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A2"), "ledBarGreen", debugPanel4Pins));
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A3"), "ledBarYellow", debugPanel4Pins));
-        pinHandler.add(new Relay(mapGPIO.get("mcp23017-01-A4"), "ledBarRed", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A1"), "ledGreen", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A0"), "ledRed", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A4"), "ledBarGreen", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A3"), "ledBarYellow", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A2"), "ledBarRed", debugPanel4Pins));
 
 
     }
@@ -627,15 +626,44 @@ public class MissionBox {
                     GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B7, "mcp23017-01-B7", PinState.LOW)
             };
             for (int ioPin = 0; ioPin < myOutputs.length; ioPin++) {
-                mapGPIO.put(myOutputs[ioPin].getName(), myOutputs[ioPin]);
+                outputMap.put(myOutputs[ioPin].getName(), myOutputs[ioPin]);
             }
 
-            ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN); // Board 11
-            ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN); // Board 13
-            ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN); // Board 15
-            ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
+            MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, 0x21);
+            GpioPinDigitalInput myInputs[] = {
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_A0, "mcp23017-02-A0", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_A1, "mcp23017-02-A1", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_A2, "mcp23017-02-A2", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_A3, "mcp23017-02-A3", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_A4, "mcp23017-02-A4", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_A5, "mcp23017-02-A5", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_A6, "mcp23017-02-A6", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_A7, "mcp23017-02-A7", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B0, "mcp23017-02-B0", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B1, "mcp23017-02-B1", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B2, "mcp23017-02-B2", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B3, "mcp23017-02-B3", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B4, "mcp23017-02-B4", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B5, "mcp23017-02-B5", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B6, "mcp23017-02-B6", PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B7, "mcp23017-02-B7", PinPullResistance.PULL_UP)
+            };
+            for (int ioPin = 0; ioPin < myInputs.length; ioPin++) {
+                inputMap.put(myInputs[ioPin].getName(), myInputs[ioPin]);
+            }
 
 
+//            ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN); // Board 11
+//            ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN); // Board 13
+//            ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN); // Board 15
+//            ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
+
+
+            ioRed = inputMap.get("mcp23017-02-B0");
+            ioGreen = inputMap.get("mcp23017-02-B1");
+            ioGameStartStop = inputMap.get("mcp23017-02-B2");
+            ioMisc = inputMap.get("mcp23017-02-B3");
+            ioUndo = inputMap.get("mcp23017-02-B4");
         }
 
     }
