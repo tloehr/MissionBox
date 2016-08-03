@@ -4,6 +4,8 @@ import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
+import com.pi4j.wiringpi.Gpio;
+import com.pi4j.wiringpi.SoftPwm;
 import gamemodes.Farcry1Assault;
 import interfaces.*;
 import kuusisto.tinysound.Music;
@@ -14,6 +16,7 @@ import org.apache.log4j.*;
 import threads.PinHandler;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -44,7 +47,7 @@ public class MissionBox {
     private static final HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
     private static final HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
 
-    private static PercentageInterface relaisSirens, relaisLEDs;
+    private static PercentageInterface relaisSirens, relaisLEDs, relaisFlagpole;
 
     public static Properties appinfo = new Properties();
 
@@ -127,9 +130,7 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
 
         if (GUI) {
-
             frmSimulator.setVisible(true);
-
             frmTest = new FrmTest();
             frmTest.pack();
             frmTest.setVisible(true);
@@ -152,6 +153,7 @@ public class MissionBox {
 
     private static void initProgressSystem() {
         relaisLEDs = new RelaySiren("ledBarGreen", "ledBarYellow", "ledBarRed");
+        relaisFlagpole = new RelayProgressRGB("flagpoleRed", "flagpoleGreen", "flagpoleBlue");
         relaisSirens = new RelaySirenPulsating("siren1");
     }
 
@@ -173,6 +175,10 @@ public class MissionBox {
         pinHandler.add(new Relay(outputMap.get("mcp23017-01-A4"), "ledBarGreen", debugPanel4Pins));
         pinHandler.add(new Relay(outputMap.get("mcp23017-01-A3"), "ledBarYellow", debugPanel4Pins));
         pinHandler.add(new Relay(outputMap.get("mcp23017-01-A2"), "ledBarRed", debugPanel4Pins));
+
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A5"), "flagpoleBlue", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A6"), "flagpoleRed", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A7"), "flagpoleGreen", debugPanel4Pins));
 
 
     }
@@ -557,6 +563,7 @@ public class MissionBox {
         if (relaisSirens != null) relaisSirens.setValue(percent);
         if (GUI) frmTest.setProgress(percent.intValue());
         if (relaisLEDs != null) relaisLEDs.setValue(percent);
+        if (relaisFlagpole != null) relaisFlagpole.setValue(percent);
     }
 
     public static boolean isSOUND() {

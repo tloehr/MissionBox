@@ -89,8 +89,6 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener percentageListener = messageEvent -> {
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
-//                // kickstart a little
-//                BigDecimal percentage = messageEvent.getPercentage().add(BigDecimal.ONE);
                 MissionBox.setProgress(messageEvent.getPercentage());
                 int countdown_index = messageEvent.getPercentage().intValue() / 10;
                 if (prev_countdown_index != countdown_index) {
@@ -158,6 +156,8 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setScheme("ledBarYellow", FOREVER + ";50,50");
                 MissionBox.setScheme("ledBarRed", FOREVER + ";50,50");
 
+                MissionBox.setScheme("flagpoleRed", FOREVER + ";50,50");
+
                 gameWon = true;
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 logger.debug("GAME_PRE_GAME");
@@ -176,6 +176,10 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setScheme("ledBarGreen", FOREVER + ";1000,1000");
                 MissionBox.setScheme("ledBarYellow", FOREVER + ";1000,1000");
                 MissionBox.setScheme("ledBarRed", FOREVER + ";1000,1000");
+
+                MissionBox.setScheme("flagpoleGreen", FOREVER + ";1000,1000");
+                MissionBox.setScheme("flagpoleBlue", FOREVER + ";1000,1000");
+                MissionBox.setScheme("flagpoleRed", FOREVER + ";1000,1000");
 
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
@@ -197,12 +201,14 @@ public class Farcry1Assault implements GameModes {
                     MissionBox.play("victory");
                     MissionBox.playWinner();
                     MissionBox.setScheme("ledBarRed", FOREVER + ";1000,1000");
+                    MissionBox.setScheme("flagpoleRed", FOREVER + ";1000,1000");
                     MissionBox.off("ledBarYellow");
                     MissionBox.off("ledBarGreen");
                 } else {
                     MissionBox.play("defeat");
                     MissionBox.playLooser();
                     MissionBox.setScheme("ledBarGreen", FOREVER + ";1000,1000");
+                    MissionBox.setScheme("flagpoleGreen", FOREVER + ";1000,1000");
                     MissionBox.off("ledBarYellow");
                     MissionBox.off("ledBarRed");
                     MissionBox.setScheme("shutdownSiren", "1;5000,0");
@@ -218,6 +224,8 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setScheme("ledBarYellow", FOREVER+";500,500");
                 MissionBox.setScheme("ledBarRed", FOREVER+";500,500");
 
+                MissionBox.setScheme("flagpoleRed", FOREVER + ";500,500");
+
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
 
@@ -231,6 +239,9 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.off("ledBarGreen");
                 MissionBox.off("ledBarYellow");
                 MissionBox.off("ledBarRed");
+                MissionBox.off("flagpoleGreen");
+                MissionBox.off("flagpoleRed");
+                MissionBox.off("flagpoleBlue");
                 lastRespawn = new DateTime();
 
                 MissionBox.play("minions");
