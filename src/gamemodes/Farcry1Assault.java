@@ -173,7 +173,6 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.stopAllSongs();
                 MissionBox.enableSettings(true);
 
-
                 MissionBox.off("ledRed");
                 MissionBox.off("ledGreen");
                 MissionBox.off("shutdownSiren");
