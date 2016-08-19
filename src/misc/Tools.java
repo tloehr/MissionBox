@@ -3,12 +3,12 @@ package misc;
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.Pin;
 
-import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by tloehr on 01.05.15.
@@ -31,7 +31,7 @@ public class Tools {
     public static final String SND_WHO_WANTS_TO_LIVE_FOREVER = "who-wants-to-live-forever.wav";
     public static final String SND_BE_HAPPY = "be-happy.wav";
 
-    public static final String[] COUNTDOWN = new String[]{"10.wav","09.wav","08.wav","07.wav","06.wav","05.wav","04.wav","03.wav","02.wav","01.wav","00.wav"};
+    public static final String[] COUNTDOWN = new String[]{"10.wav", "09.wav", "08.wav", "07.wav", "06.wav", "05.wav", "04.wav", "03.wav", "02.wav", "01.wav", "00.wav"};
 
     public static final String SND_20_MINUTES = "20-minutes.wav";
     public static final String SND_10_MINUTES = "10-minutes.wav";
@@ -101,7 +101,6 @@ public class Tools {
     }
 
 
-
     public static Pin getPinByName(String provider, String pinname) {
         if (provider.equalsIgnoreCase("mcp23017")) {
             switch (pinname) {
@@ -149,15 +148,15 @@ public class Tools {
     }
 
 
-    public static int parseInt(String input, int min, int max, int previous){
+    public static int parseInt(String input, int min, int max, int previous) {
         int result = previous;
         try {
             result = Integer.parseInt(input);
-        } catch (NumberFormatException nfe){
+        } catch (NumberFormatException nfe) {
             result = previous;
         }
 
-        if (result < min || result > max){
+        if (result < min || result > max) {
             result = previous;
         }
 
@@ -220,6 +219,8 @@ public class Tools {
 //
 //        return animator;
 //    }
+
+
 
     public static void printProgBar(int percent) {
         StringBuilder bar = new StringBuilder("[");

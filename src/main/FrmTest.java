@@ -4,17 +4,19 @@
 
 package main;
 
-import java.awt.event.*;
-
 import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.FormLayout;
-import com.pi4j.io.gpio.PinState;
 import misc.Tools;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.text.DateFormat;
+import java.util.Date;
 
 
 /**
@@ -25,7 +27,7 @@ public class FrmTest extends JFrame {
     public FrmTest() {
         initComponents();
         initPanel();
-        setUndecorated(false);
+//        setUndecorated(false);
     }
 
     private void initPanel() {
@@ -35,7 +37,7 @@ public class FrmTest extends JFrame {
         btnMusic.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_MUSIC, btnMusic.isSelected() ? "true" : "false"));
         btnRespawnSignal.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN_SIGNAL, btnRespawnSignal.isSelected() ? "true" : "false"));
 
-        setTitle(MissionBox.getAppinfo().getProperty("program.BUILDDATE") + " ["+MissionBox.getAppinfo().getProperty("program.BUILDNUM")+"]");
+        setTitle(MissionBox.getAppinfo().getProperty("program.BUILDDATE") + " [" + MissionBox.getAppinfo().getProperty("program.BUILDNUM") + "]");
 
         pb1.setVisible(true);
 
@@ -94,6 +96,21 @@ public class FrmTest extends JFrame {
             repaint();
         });
     }
+
+    public void log(String text) {
+        log(0, "", text);
+    }
+
+    public void log(long someID, String someText, String text) {
+        DateFormat df = DateFormat.getDateTimeInstance();
+        String newTxt = txtLog.getText() + "\n(" + df.format(new Date()) + ") ";
+        newTxt += someID > 0 ? " [" + someID + "] " : "";
+        newTxt += !someText.isEmpty() ? " \"" + someText + "\" " : "";
+        newTxt += text;
+        txtLog.setText(newTxt);
+
+    }
+
 
     private void tabbedPane1StateChanged(ChangeEvent e) {
         if (tabbedPane1.getSelectedIndex() == 0) {
@@ -237,10 +254,13 @@ public class FrmTest extends JFrame {
         tabbedPane1 = new JTabbedPane();
         contentPanel = new JPanel();
         btn1 = new JButton();
-        btn2 = new JButton();
+        panel2 = new JPanel();
         btnRed = new JButton();
-        btnUndo = new JButton();
         btnGreen = new JButton();
+        scrollPane1 = new JScrollPane();
+        txtLog = new JTextPane();
+        btnUndo = new JButton();
+        btn2 = new JButton();
         pb1 = new JProgressBar();
         lblMessage = new JLabel();
         lblRespawn = new JLabel();
@@ -278,50 +298,70 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                    "min:grow, $lcgap, default, $rgap, min:grow",
-                    "fill:default:grow, $lgap, fill:pref:grow, $lgap, 10dlu, $lgap, default"));
+                    "pref, $lcgap, pref, $rgap, min:grow",
+                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
-                btn1.setText(null);
+                btn1.setText("Start / Stop");
                 btn1.setIcon(new ImageIcon(getClass().getResource("/artwork/farcry-logo.png")));
-                contentPanel.add(btn1, CC.xywh(1, 1, 1, 3));
+                btn1.setHorizontalTextPosition(SwingConstants.CENTER);
+                btn1.setVerticalTextPosition(SwingConstants.BOTTOM);
+                btn1.setFont(new Font("Dialog", Font.BOLD, 20));
+                contentPanel.add(btn1, CC.xy(1, 1));
+
+                //======== panel2 ========
+                {
+                    panel2.setLayout(new FormLayout(
+                        "default:grow",
+                        "fill:default:grow, $lgap, fill:default:grow"));
+
+                    //---- btnRed ----
+                    btnRed.setText(null);
+                    btnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/ledred128.png")));
+                    panel2.add(btnRed, CC.xy(1, 1, CC.FILL, CC.FILL));
+
+                    //---- btnGreen ----
+                    btnGreen.setText(null);
+                    btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen128.png")));
+                    panel2.add(btnGreen, CC.xy(1, 3, CC.FILL, CC.FILL));
+                }
+                contentPanel.add(panel2, CC.xywh(3, 1, 1, 5));
+
+                //======== scrollPane1 ========
+                {
+                    scrollPane1.setViewportView(txtLog);
+                }
+                contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 5));
+
+                //---- btnUndo ----
+                btnUndo.setText("Undo");
+                btnUndo.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue128.png")));
+                btnUndo.setFont(new Font("Dialog", Font.BOLD, 20));
+                btnUndo.setVerticalTextPosition(SwingConstants.BOTTOM);
+                btnUndo.setHorizontalTextPosition(SwingConstants.CENTER);
+                contentPanel.add(btnUndo, CC.xy(1, 3));
 
                 //---- btn2 ----
                 btn2.setText(null);
-                btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit.png")));
-                contentPanel.add(btn2, CC.xy(3, 1));
-
-                //---- btnRed ----
-                btnRed.setText(null);
-                btnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkred32.png")));
-                contentPanel.add(btnRed, CC.xy(5, 1, CC.FILL, CC.FILL));
-
-                //---- btnUndo ----
-                btnUndo.setText(null);
-                btnUndo.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
-                contentPanel.add(btnUndo, CC.xy(3, 3));
-
-                //---- btnGreen ----
-                btnGreen.setText(null);
-                btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
-                contentPanel.add(btnGreen, CC.xy(5, 3, CC.FILL, CC.FILL));
-                contentPanel.add(pb1, CC.xywh(1, 5, 5, 1));
+                btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit128.png")));
+                contentPanel.add(btn2, CC.xy(1, 5));
+                contentPanel.add(pb1, CC.xywh(1, 7, 5, 1));
 
                 //---- lblMessage ----
                 lblMessage.setText("text");
                 lblMessage.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblMessage, CC.xy(1, 7));
+                contentPanel.add(lblMessage, CC.xy(1, 9));
 
                 //---- lblRespawn ----
                 lblRespawn.setText("--");
                 lblRespawn.setFont(new Font("Dialog", Font.PLAIN, 16));
                 lblRespawn.setForeground(Color.red);
-                contentPanel.add(lblRespawn, CC.xy(3, 7, CC.CENTER, CC.DEFAULT));
+                contentPanel.add(lblRespawn, CC.xy(3, 9, CC.CENTER, CC.DEFAULT));
 
                 //---- lblTimer ----
                 lblTimer.setText("--");
                 lblTimer.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblTimer, CC.xy(5, 7, CC.CENTER, CC.DEFAULT));
+                contentPanel.add(lblTimer, CC.xy(5, 9, CC.CENTER, CC.DEFAULT));
             }
             tabbedPane1.addTab("Game", contentPanel);
 
@@ -456,7 +496,7 @@ public class FrmTest extends JFrame {
             tabbedPane1.addTab("HW-Test", panel1);
         }
         contentPane.add(tabbedPane1);
-        setSize(800, 480);
+        setSize(800, 590);
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -506,10 +546,13 @@ public class FrmTest extends JFrame {
     private JTabbedPane tabbedPane1;
     private JPanel contentPanel;
     private JButton btn1;
-    private JButton btn2;
+    private JPanel panel2;
     private JButton btnRed;
-    private JButton btnUndo;
     private JButton btnGreen;
+    private JScrollPane scrollPane1;
+    private JTextPane txtLog;
+    private JButton btnUndo;
+    private JButton btn2;
     private JProgressBar pb1;
     private JLabel lblMessage;
     private JLabel lblRespawn;

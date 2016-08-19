@@ -5,6 +5,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
+import misc.Tools;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
@@ -128,6 +129,9 @@ public class Farcry1Assault implements GameModes {
                  *                    |___/
                  */
                 logger.debug("GAME_FLAG_COLD");
+
+                MissionBox.log("Flagge inaktiv");
+
                 MissionBox.stop("siren");
                 MissionBox.setProgress(new BigDecimal(-1));
 
@@ -144,11 +148,13 @@ public class Farcry1Assault implements GameModes {
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
                 logger.debug("GAME_ROCKET_LAUNCHED");
+                MissionBox.log("Rakete gestartet");
+
                 MissionBox.stop("siren");
                 MissionBox.setProgress(new BigDecimal(-1));
                 MissionBox.play("rocket");
 
-                MissionBox.setScheme("rocketlaunched", "1;3000,0"); // produces a high pitched airraid siren sound by a motor siren
+                MissionBox.setScheme("siren2", "1;3000,0"); // this is the signal for the launched rocket. Its the same as siren 2
 
                 MissionBox.off("ledRed");
                 MissionBox.off("ledGreen");
