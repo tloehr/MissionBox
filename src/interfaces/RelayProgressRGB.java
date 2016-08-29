@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by tloehr on 07.06.15.
@@ -20,15 +18,21 @@ public class RelayProgressRGB implements PercentageInterface {
     private final String pinBlue;
     protected int previousRelay = -1;
 
-    final Color yellow = new Color(255,255,0);
-    final Color purple = new Color(255,0,255);
-    final Color cyan = new Color(0,255,255);
+    final Color yellow = new Color(255, 255, 0);
+    final Color purple = new Color(255, 0, 255);
+    final Color cyan = new Color(0, 255, 255);
 
-    final Color green = new Color(0,255,0);
-    final Color blue = new Color(0,0,255);
-    final Color red = new Color(255,0,0);
+    final Color green = new Color(0, 255, 0);
+    final Color blue = new Color(0, 0, 255);
+    final Color red = new Color(255, 0, 0);
 
-    final Color[] colors = {red, purple, blue, yellow, cyan, green};
+    final String on = "1;" + Long.MAX_VALUE + ",0";
+    final String slow = Integer.toString(Integer.MAX_VALUE) + ";750,750";
+    final String fast = Integer.toString(Integer.MAX_VALUE) + ";350,350";
+
+    final Color[] colors = {red, red, red, yellow, yellow, yellow, green, green, green};
+//    final String[] schemes = {on, slow, fast, on, slow, fast, on, slow, fast};
+    final String[] schemes = {fast, slow, on, fast, slow, on, fast, slow, on};
 
     public RelayProgressRGB(String pinRed, String pinGreen, String pinBlue) {
         this.pinRed = pinRed;
@@ -50,35 +54,38 @@ public class RelayProgressRGB implements PercentageInterface {
         }
 
         BigDecimal myPercent = new BigDecimal(100).subtract(percent);
-        int colnum = new BigDecimal(colors.length).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
+        int colornum = new BigDecimal(colors.length).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
 
         // shortcut
-        if (previousRelay == colnum) return;
-        previousRelay = colnum;
+        if (previousRelay == colornum) return;
+        previousRelay = colornum;
 
-        if (colnum >= colors.length) {
+        if (colornum >= colors.length) {
             MissionBox.off(pinRed);
             MissionBox.off(pinGreen);
             MissionBox.off(pinBlue);
         } else {
-            setColor(colors[colnum]);
+            setColor(colors[colornum], schemes[colornum]);
         }
 
     }
 
-    void setColor(Color color){
-        if (color.getRed() > 0){
-            MissionBox.on(pinRed);
+    void setColor(Color color, String scheme) {
+        if (color.getRed() > 0) {
+//            MissionBox.on(pinRed);
+            MissionBox.setScheme(pinRed, scheme);
         } else {
             MissionBox.off(pinRed);
         }
-        if (color.getBlue() > 0){
-            MissionBox.on(pinBlue);
+        if (color.getBlue() > 0) {
+//            MissionBox.on(pinBlue);
+            MissionBox.setScheme(pinBlue, scheme);
         } else {
             MissionBox.off(pinBlue);
         }
-        if (color.getGreen() > 0){
-            MissionBox.on(pinGreen);
+        if (color.getGreen() > 0) {
+//            MissionBox.on(pinGreen);
+            MissionBox.setScheme(pinGreen, scheme);
         } else {
             MissionBox.off(pinGreen);
         }

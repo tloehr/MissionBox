@@ -166,6 +166,14 @@ public class Farcry1Assault implements GameModes {
 
                 gameWon = true;
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
+                /***
+                 *      ____            ____
+                 *     |  _ \ _ __ ___ / ___| __ _ _ __ ___   ___
+                 *     | |_) | '__/ _ \ |  _ / _` | '_ ` _ \ / _ \
+                 *     |  __/| | |  __/ |_| | (_| | | | | | |  __/
+                 *     |_|   |_|  \___|\____|\__,_|_| |_| |_|\___|
+                 *
+                 */
                 logger.debug("GAME_PRE_GAME");
                 gameWon = false;
                 prev_countdown_index = -1;

@@ -4,6 +4,7 @@ import com.pi4j.gpio.extension.mcp.MCP23017GpioProvider;
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
+import com.pi4j.io.i2c.I2CFactory;
 import gamemodes.Farcry1Assault;
 import interfaces.*;
 import kuusisto.tinysound.Music;
@@ -149,7 +150,7 @@ public class MissionBox {
     }
 
     private static void initProgressSystem() {
-        relaisLEDs = new RelaySiren("ledBarGreen", "ledBarYellow", "ledBarRed");
+        relaisLEDs = new RelayProgressRGB("ledBarGreen", "ledBarYellow", "ledBarRed");
         relaisFlagpole = new RelayProgressRGB("flagpoleRed", "flagpoleGreen", "flagpoleBlue");
         relaisSirens = new RelaySirenPulsating("siren1");
     }
@@ -608,7 +609,7 @@ public class MissionBox {
         if (GUI) frmTest.setRespawnTimer(message);
     }
 
-    private static void hwinit() throws IOException {
+    private static void hwinit() throws IOException, I2CFactory.UnsupportedBusNumberException {
 
         GPIO = null;
         if (Tools.isArm()) {
