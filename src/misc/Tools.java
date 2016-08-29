@@ -3,11 +3,9 @@ package misc;
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.Pin;
 
-import javax.swing.text.JTextComponent;
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.ResourceBundle;
 
 /**
@@ -47,6 +45,20 @@ public class Tools {
 
     public static final String[] WINNING_SONGS = new String[]{SND_MIB, SND_QUEEN};
     public static final String[] LOSING_SONGS = new String[]{SND_LOSER};
+
+
+    public static final Icon icon22ledOrangeOn = new ImageIcon(Tools.class.getResource("/artwork/22x22/ledorange.png"));
+    public static final Icon icon22ledOrangeOff = new ImageIcon(Tools.class.getResource("/artwork/22x22/leddarkorange.png"));
+    public static final Icon icon22ledPurpleOff = new ImageIcon(Tools.class.getResource("/artwork/22x22/leddarkpurple.png"));
+    public static final Icon icon22ledPurpleOn = new ImageIcon(Tools.class.getResource("/artwork/22x22/ledpurple.png"));
+    public static final Icon icon22ledBlueOff = new ImageIcon(Tools.class.getResource("/artwork/22x22/leddarkblue.png"));
+    public static final Icon icon22ledBlueOn = new ImageIcon(Tools.class.getResource("/artwork/22x22/ledblue.png"));
+    public static final Icon icon22ledGreenOff = new ImageIcon(Tools.class.getResource("/artwork/22x22/leddarkgreen.png"));
+    public static final Icon icon22ledGreenOn = new ImageIcon(Tools.class.getResource("/artwork/22x22/ledgreen.png"));
+    public static final Icon icon22ledYellowOff = new ImageIcon(Tools.class.getResource("/artwork/22x22/leddarkyellow.png"));
+    public static final Icon icon22ledYellowOn = new ImageIcon(Tools.class.getResource("/artwork/22x22/ledyellow.png"));
+    public static final Icon icon22ledRedOff = new ImageIcon(Tools.class.getResource("/artwork/22x22/leddarkred.png"));
+    public static final Icon icon22ledRedOn = new ImageIcon(Tools.class.getResource("/artwork/22x22/ledred.png"));
 
 
     public static String xx(String message) {
@@ -219,7 +231,6 @@ public class Tools {
 //
 //        return animator;
 //    }
-
 
 
     public static void printProgBar(int percent) {

@@ -113,6 +113,7 @@ public class Farcry1Assault implements GameModes {
                  *                    |___/
                  */
                 logger.debug("GAME_FLAG_HOT");
+                MissionBox.log("Flagge aktiviert");
                 MissionBox.stop("shutdown");
                 MissionBox.play("siren", true);
                 MissionBox.setScheme("ledGreen", FOREVER + ";1000,1000");
@@ -175,6 +176,7 @@ public class Farcry1Assault implements GameModes {
                  *
                  */
                 logger.debug("GAME_PRE_GAME");
+                MissionBox.log("Spiel in Vorbereitung");
                 gameWon = false;
                 prev_countdown_index = -1;
 
@@ -204,6 +206,7 @@ public class Farcry1Assault implements GameModes {
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
                 logger.debug("GAME_OVER");
+                MissionBox.log("GAME OVER");
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
 
@@ -212,6 +215,7 @@ public class Farcry1Assault implements GameModes {
 
                 if (gameWon) {
                     MissionBox.play("victory");
+                    MissionBox.log("Angreifer haben gewonnen");
                     MissionBox.playWinner();
                     MissionBox.setScheme("ledBarRed", FOREVER + ";1000,1000");
                     MissionBox.setScheme("flagpoleRed", FOREVER + ";1000,1000");
@@ -219,6 +223,7 @@ public class Farcry1Assault implements GameModes {
                     MissionBox.off("ledBarGreen");
                 } else {
                     MissionBox.play("defeat");
+                    MissionBox.log("Verteidiger haben gewonnen");
                     MissionBox.playLooser();
                     MissionBox.setScheme("ledBarGreen", FOREVER + ";1000,1000");
                     MissionBox.setScheme("flagpoleGreen", FOREVER + ";1000,1000");
@@ -229,6 +234,7 @@ public class Farcry1Assault implements GameModes {
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
 
                 logger.debug("GAME_OUTCOME_FLAG_TAKEN");
+                MissionBox.log("Flagge erobert");
 
                 MissionBox.off("shutdownSiren");
                 MissionBox.off("respawnSiren");
@@ -244,6 +250,7 @@ public class Farcry1Assault implements GameModes {
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
                 logger.debug("GAME_FLAG_ACTIVE");
+                MissionBox.log("Flagge bereit zur Eroberung. Spiel läuft");
                 MissionBox.stop("tranquility");
                 MissionBox.stopAllSongs();
                 MissionBox.enableSettings(false);

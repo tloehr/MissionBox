@@ -11,7 +11,6 @@ import java.math.BigDecimal;
  */
 public class RelayProgressRGB implements PercentageInterface {
 
-
     protected final Logger logger = Logger.getLogger(getClass());
     private final String pinRed;
     private final String pinGreen;

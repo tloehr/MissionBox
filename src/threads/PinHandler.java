@@ -22,6 +22,7 @@ public class PinHandler {
     final HashMap<String, Future<String>> futures;
     final ExecutorService executor;
 
+
     /**
      * there relays that can be used at the same time. but others demand, that only *one* relay is used at the time (out of a set of relays). The sirens for instance.
      * Out of the 6 different signals that can be activated, ONLY ONE can be used at the time. If you activate more than two, the results are unpredictable.

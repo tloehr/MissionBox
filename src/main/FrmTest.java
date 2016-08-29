@@ -97,6 +97,10 @@ public class FrmTest extends JFrame {
         });
     }
 
+    public JPanel getDebugPanel4Pins() {
+        return debugPanel4Pins;
+    }
+
     public void log(String text) {
         log(0, "", text);
     }
@@ -215,14 +219,7 @@ public class FrmTest extends JFrame {
     }
 
     private void btnTimeSignalActionPerformed(ActionEvent e) {
-
-
         MissionBox.minuteSignal(4);
-
-    }
-
-    private void btnUndoActionPerformed(ActionEvent e) {
-        // TODO add your code here
     }
 
     private void btnTestWinnerActionPerformed(ActionEvent e) {
@@ -254,17 +251,19 @@ public class FrmTest extends JFrame {
         tabbedPane1 = new JTabbedPane();
         contentPanel = new JPanel();
         btn1 = new JButton();
+        scrollPane2 = new JScrollPane();
+        debugPanel4Pins = new JPanel();
+        scrollPane1 = new JScrollPane();
+        txtLog = new JTextPane();
         panel2 = new JPanel();
         btnRed = new JButton();
         btnGreen = new JButton();
-        scrollPane1 = new JScrollPane();
-        txtLog = new JTextPane();
         btnUndo = new JButton();
         btn2 = new JButton();
         pb1 = new JProgressBar();
         lblMessage = new JLabel();
-        lblRespawn = new JLabel();
         lblTimer = new JLabel();
+        lblRespawn = new JLabel();
         settingsPanel = new JPanel();
         label1 = new JLabel();
         lblFCYCapture = new JTextField();
@@ -298,7 +297,7 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                    "pref, $lcgap, pref, $rgap, min:grow",
+                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
                     "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
@@ -308,6 +307,23 @@ public class FrmTest extends JFrame {
                 btn1.setVerticalTextPosition(SwingConstants.BOTTOM);
                 btn1.setFont(new Font("Dialog", Font.BOLD, 20));
                 contentPanel.add(btn1, CC.xy(1, 1));
+
+                //======== scrollPane2 ========
+                {
+
+                    //======== debugPanel4Pins ========
+                    {
+                        debugPanel4Pins.setLayout(new BoxLayout(debugPanel4Pins, BoxLayout.PAGE_AXIS));
+                    }
+                    scrollPane2.setViewportView(debugPanel4Pins);
+                }
+                contentPanel.add(scrollPane2, CC.xywh(3, 1, 1, 5));
+
+                //======== scrollPane1 ========
+                {
+                    scrollPane1.setViewportView(txtLog);
+                }
+                contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 5));
 
                 //======== panel2 ========
                 {
@@ -325,13 +341,7 @@ public class FrmTest extends JFrame {
                     btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen128.png")));
                     panel2.add(btnGreen, CC.xy(1, 3, CC.FILL, CC.FILL));
                 }
-                contentPanel.add(panel2, CC.xywh(3, 1, 1, 5));
-
-                //======== scrollPane1 ========
-                {
-                    scrollPane1.setViewportView(txtLog);
-                }
-                contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 5));
+                contentPanel.add(panel2, CC.xywh(7, 1, 1, 5));
 
                 //---- btnUndo ----
                 btnUndo.setText("Undo");
@@ -345,23 +355,23 @@ public class FrmTest extends JFrame {
                 btn2.setText(null);
                 btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit128.png")));
                 contentPanel.add(btn2, CC.xy(1, 5));
-                contentPanel.add(pb1, CC.xywh(1, 7, 5, 1));
+                contentPanel.add(pb1, CC.xywh(1, 7, 7, 1));
 
                 //---- lblMessage ----
                 lblMessage.setText("text");
                 lblMessage.setFont(new Font("Dialog", Font.PLAIN, 16));
                 contentPanel.add(lblMessage, CC.xy(1, 9));
 
-                //---- lblRespawn ----
-                lblRespawn.setText("--");
-                lblRespawn.setFont(new Font("Dialog", Font.PLAIN, 16));
-                lblRespawn.setForeground(Color.red);
-                contentPanel.add(lblRespawn, CC.xy(3, 9, CC.CENTER, CC.DEFAULT));
-
                 //---- lblTimer ----
                 lblTimer.setText("--");
                 lblTimer.setFont(new Font("Dialog", Font.PLAIN, 16));
                 contentPanel.add(lblTimer, CC.xy(5, 9, CC.CENTER, CC.DEFAULT));
+
+                //---- lblRespawn ----
+                lblRespawn.setText("--");
+                lblRespawn.setFont(new Font("Dialog", Font.PLAIN, 16));
+                lblRespawn.setForeground(Color.red);
+                contentPanel.add(lblRespawn, CC.xy(7, 9, CC.CENTER, CC.DEFAULT));
             }
             tabbedPane1.addTab("Game", contentPanel);
 
@@ -546,17 +556,19 @@ public class FrmTest extends JFrame {
     private JTabbedPane tabbedPane1;
     private JPanel contentPanel;
     private JButton btn1;
+    private JScrollPane scrollPane2;
+    private JPanel debugPanel4Pins;
+    private JScrollPane scrollPane1;
+    private JTextPane txtLog;
     private JPanel panel2;
     private JButton btnRed;
     private JButton btnGreen;
-    private JScrollPane scrollPane1;
-    private JTextPane txtLog;
     private JButton btnUndo;
     private JButton btn2;
     private JProgressBar pb1;
     private JLabel lblMessage;
-    private JLabel lblRespawn;
     private JLabel lblTimer;
+    private JLabel lblRespawn;
     private JPanel settingsPanel;
     private JLabel label1;
     private JTextField lblFCYCapture;

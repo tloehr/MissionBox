@@ -19,6 +19,7 @@ public class PinBlinkModel implements Callable<String> {
     boolean currentlyOn;
     int positionInScheme;
     private final Logger logger = Logger.getLogger(getClass().getName());
+    String infinity = "\u221E";
 
     @Override
     public String call() throws Exception {
@@ -73,16 +74,23 @@ public class PinBlinkModel implements Callable<String> {
 
         String[] splitScheme = scheme.trim().split(";");
 
-        pin.setText(scheme);
 
+        String textScheme = "";
         this.repeat = Integer.parseInt(splitScheme[0]);
+        textScheme = (this.repeat == Integer.MAX_VALUE ? infinity : Integer.toString(this.repeat));
 
         if (repeat > 0) {
             StringTokenizer st = new StringTokenizer(splitScheme[1], ",");
+            textScheme += ";";
             while (st.hasMoreElements()) {
-                this.onOffScheme.add(Long.parseLong(st.nextToken()));
+                long myLong = Long.parseLong(st.nextToken());
+                textScheme += (myLong == Long.MAX_VALUE ? infinity : myLong) + (st.hasMoreElements() ? "," : "");
+                this.onOffScheme.add(myLong);
             }
         }
+
+
+        pin.setText(textScheme);
 
     }
 

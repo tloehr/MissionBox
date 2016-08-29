@@ -12,7 +12,7 @@ new FormModel {
 				"font": &Font0 new java.awt.Font( "Dialog", 0, 16 )
 				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "tabbedPane1StateChanged", true ) )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "pref, labelcompgap, pref, relgap, min:grow"
+					"$columnSpecs": "pref, relgap, default, labelcompgap, min:grow, labelcompgap, pref"
 					"$rowSpecs": "fill:default:grow, linegap, fill:default:grow, linegap, fill:pref:grow, linegap, 10dlu, linegap, default"
 				} ) {
 					name: "contentPanel"
@@ -24,6 +24,26 @@ new FormModel {
 						"verticalTextPosition": 3
 						"font": new java.awt.Font( "Dialog", 1, 20 )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane2"
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+							"axis": 3
+						} ) {
+							name: "debugPanel4Pins"
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridHeight": 5
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+						add( new FormComponent( "javax.swing.JTextPane" ) {
+							name: "txtLog"
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridHeight": 5
+					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 						"$columnSpecs": "default:grow"
 						"$rowSpecs": "fill:default:grow, linegap, fill:default:grow"
@@ -47,16 +67,7 @@ new FormModel {
 							"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 3
-						"gridHeight": 5
-					} )
-					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-						name: "scrollPane1"
-						add( new FormComponent( "javax.swing.JTextPane" ) {
-							name: "txtLog"
-						} )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 5
+						"gridX": 7
 						"gridHeight": 5
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
@@ -80,7 +91,7 @@ new FormModel {
 						name: "pb1"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
-						"gridWidth": 5
+						"gridWidth": 7
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblMessage"
@@ -90,22 +101,22 @@ new FormModel {
 						"gridY": 9
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblRespawn"
-						"text": "--"
-						"font": #Font1
-						"foreground": sfield java.awt.Color red
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 9
-						"gridX": 3
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
-					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblTimer"
 						"text": "--"
 						"font": #Font1
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
 						"gridX": 5
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "lblRespawn"
+						"text": "--"
+						"font": #Font1
+						"foreground": sfield java.awt.Color red
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 9
+						"gridX": 7
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
 					} )
 				}, new FormLayoutConstraints( null ) {

@@ -15,6 +15,7 @@ import org.apache.log4j.*;
 import threads.PinHandler;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class MissionBox {
     private static Level logLevel = Level.DEBUG;
     private static GpioController GPIO;
     private static FrmTest frmTest;
-    private static FrmSimulator frmSimulator;
+    //    private static FrmSimulator frmSimulator;
     private static Properties config;
     private static int gamemode;
 
@@ -115,7 +116,13 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         loadLocalProperties();
 
-        frmSimulator = new FrmSimulator();
+//        frmSimulator = new FrmSimulator();
+
+        if (GUI) {
+            frmTest = new FrmTest();
+//            frmTest.pack();
+            frmTest.setVisible(true);
+        }
 
         initSound();
         hwinit();
@@ -127,12 +134,6 @@ public class MissionBox {
         startup_progress = startup_progress + 10;
         Tools.printProgBar(startup_progress);
 
-        if (GUI) {
-            frmSimulator.setVisible(true);
-            frmTest = new FrmTest();
-            frmTest.pack();
-            frmTest.setVisible(true);
-        }
 
         startup_progress = startup_progress + 10;
         Tools.printProgBar(startup_progress);
@@ -150,7 +151,7 @@ public class MissionBox {
     }
 
     private static void initProgressSystem() {
-        relaisLEDs = new RelayProgressRGB("ledBarGreen", "ledBarYellow", "ledBarRed");
+        relaisLEDs = new RelayProgressRedYellowGreen("ledBarRed", "ledBarYellow", "ledBarGreen");
         relaisFlagpole = new RelayProgressRGB("flagpoleRed", "flagpoleGreen", "flagpoleBlue");
         relaisSirens = new RelaySirenPulsating("siren1");
     }
@@ -158,33 +159,33 @@ public class MissionBox {
     private static void initPinHandler() {
         pinHandler = new PinHandler();
 
-        JPanel debugPanel4Pins = frmSimulator == null ? null : frmSimulator.getContentPanel();
+        JPanel debugPanel4Pins = frmTest.getDebugPanel4Pins();
 
         // these relays belong to one cd. They are all connected to the same siren circuit.
 
         // three sirens now.
 
         // Siren 1
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B3"), "siren1", debugPanel4Pins)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B4"), "siren2", debugPanel4Pins)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B5"), "siren3", debugPanel4Pins)); // Original Siren Button 5
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B1"), "shutdownSiren", debugPanel4Pins)); // Original Siren Button 1
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B3"), "siren1", Color.ORANGE, debugPanel4Pins)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B4"), "siren2", Color.ORANGE, debugPanel4Pins)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B5"), "siren3", Color.ORANGE, debugPanel4Pins)); // Original Siren Button 5
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B1"), "shutdownSiren", Color.MAGENTA, debugPanel4Pins)); // Original Siren Button 1
 
         // Siren 2
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B2"), "timeSignal", debugPanel4Pins)); // Original Siren Button 2
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B2"), "timeSignal", Color.BLUE, debugPanel4Pins)); // Original Siren Button 2
 
         // Siren 3
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B6"), "respawnSiren", debugPanel4Pins)); // Original Siren Button 6
+        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B6"), "respawnSiren", Color.BLUE, debugPanel4Pins)); // Original Siren Button 6
 
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A1"), "ledGreen", debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A0"), "ledRed", debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A4"), "ledBarGreen", debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A3"), "ledBarYellow", debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A2"), "ledBarRed", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A1"), "ledGreen", Color.GREEN, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A0"), "ledRed", Color.RED, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A4"), "ledBarGreen", Color.GREEN, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A3"), "ledBarYellow", Color.YELLOW, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A2"), "ledBarRed", Color.RED, debugPanel4Pins));
 
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A7"), "flagpoleBlue", debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A6"), "flagpoleRed", debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A5"), "flagpoleGreen", debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A7"), "flagpoleBlue", Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A6"), "flagpoleRed", Color.RED, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A5"), "flagpoleGreen", Color.GREEN, debugPanel4Pins));
 
 
     }
@@ -551,7 +552,7 @@ public class MissionBox {
         return config;
     }
 
-    public static void log(String text){
+    public static void log(String text) {
         frmTest.log(text);
     }
 
