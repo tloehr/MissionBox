@@ -1,5 +1,6 @@
-package interfaces;
+package progresshandlers;
 
+import interfaces.PercentageInterface;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 
@@ -10,13 +11,14 @@ import java.util.List;
 /**
  * Created by tloehr on 07.06.15.
  */
-public class RelaySiren implements PercentageInterface {
+public class RelaySiren extends PercentageInterface {
 
     protected final List<String> keys;
     protected final Logger logger = Logger.getLogger(getClass());
     protected int previousRelay = -1;
 
     public RelaySiren(String... myKeys) {
+        super("Sirens Escalating");
         keys = Arrays.asList((String[]) myKeys);
     }
 

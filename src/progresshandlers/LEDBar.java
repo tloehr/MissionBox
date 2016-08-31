@@ -1,7 +1,8 @@
-package interfaces;
+package progresshandlers;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import interfaces.PercentageInterface;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Created by tloehr on 07.06.15.
  */
-public class LEDBar implements PercentageInterface, Runnable {
+public class LEDBar extends PercentageInterface implements Runnable {
 
     public final int PERCENTAGE = 0;
     public final int SIMPLE = 1;
@@ -29,6 +30,7 @@ public class LEDBar implements PercentageInterface, Runnable {
 
 
     public LEDBar(GpioController GPIO, ArrayList<GpioPinDigitalOutput> myLEDs) {
+        super("LEDBar");
         this.GPIO = GPIO;
         this.myLEDs = myLEDs;
         this.thread = new Thread(this);

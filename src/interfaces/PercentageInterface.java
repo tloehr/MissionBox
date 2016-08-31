@@ -5,8 +5,17 @@ import java.math.BigDecimal;
 /**
  * Created by tloehr on 28.04.15.
  */
-public interface PercentageInterface {
+public abstract class PercentageInterface {
+    private String name;
 
-    void setValue(BigDecimal percent);
+    public PercentageInterface(String name) {
+        this.name = name;
+    }
 
+    public abstract void setValue(BigDecimal percent);
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

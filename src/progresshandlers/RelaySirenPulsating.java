@@ -1,5 +1,6 @@
-package interfaces;
+package progresshandlers;
 
+import interfaces.PercentageInterface;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 
@@ -10,7 +11,7 @@ import java.math.RoundingMode;
  * This class progresses through a group of pins (defined by their keys within the outputMap. According to the number of defined pins
  * and the current percentage set by setValue(), the corresponding pin is chosen to blink in the frequency pulsetimeinmillis.
  */
-public class RelaySirenPulsating implements PercentageInterface {
+public class RelaySirenPulsating extends PercentageInterface {
     long pulsetimeinmillis = 1000; // Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.MBX_SIREN_TIME));
     private int previousTenth = -1;
     protected final Logger logger = Logger.getLogger(getClass());
@@ -22,6 +23,7 @@ public class RelaySirenPulsating implements PercentageInterface {
      * @param key
      */
     public RelaySirenPulsating(String key) {
+        super("Pulsating Siren");
         this.key = key;
     }
 

@@ -12,6 +12,9 @@ import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
 import misc.Tools;
 import org.apache.log4j.*;
+import progresshandlers.RelayProgressRGB;
+import progresshandlers.RelayProgressRedYellowGreen;
+import progresshandlers.RelaySirenPulsating;
 import threads.PinHandler;
 
 import javax.swing.*;
@@ -57,11 +60,11 @@ public class MissionBox {
     public static final String FCY_SOUND = "fcy.sound";
     public static final String FCY_SIREN = "fcy.siren";
     public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
-    public static final String MBX_GUI = "mbx.gui";
+//    public static final String MBX_GUI = "mbx.gui";
+    public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
     public static final String FCY_RESPAWN = "fcy.respawn";
 
-    public static boolean GUI = false;
     private static boolean SOUND = false;
     private static boolean SIREN = false;
     private static boolean MUSIC = false;
@@ -114,15 +117,13 @@ public class MissionBox {
         });
 
         Tools.printProgBar(startup_progress);
-        loadLocalProperties();
 
+        loadLocalProperties();
 //        frmSimulator = new FrmSimulator();
 
-        if (GUI) {
-            frmTest = new FrmTest();
-//            frmTest.pack();
-            frmTest.setVisible(true);
-        }
+
+        frmTest = new FrmTest();
+        frmTest.setVisible(true);
 
         initSound();
         hwinit();
@@ -133,10 +134,11 @@ public class MissionBox {
 
         startup_progress = startup_progress + 10;
         Tools.printProgBar(startup_progress);
-
+        frmTest.setProgress(startup_progress);
 
         startup_progress = startup_progress + 10;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
 
         btnRed = new MyAbstractButton(ioRed, getGUIBtnRed());
         btnGreen = new MyAbstractButton(ioGreen, getGUIBtnGreen());
@@ -146,6 +148,7 @@ public class MissionBox {
 
         startup_progress = 100;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
 
         Farcry1Assault fc = new Farcry1Assault();
     }
@@ -153,7 +156,10 @@ public class MissionBox {
     private static void initProgressSystem() {
         relaisLEDs = new RelayProgressRedYellowGreen("ledBarRed", "ledBarYellow", "ledBarGreen");
         relaisFlagpole = new RelayProgressRGB("flagpoleRed", "flagpoleGreen", "flagpoleBlue");
-        relaisSirens = new RelaySirenPulsating("siren1");
+    }
+
+    public static void setRelaisSirens(PercentageInterface relaisSirens) {
+        MissionBox.relaisSirens = relaisSirens;
     }
 
     private static void initPinHandler() {
@@ -215,7 +221,7 @@ public class MissionBox {
     }
 
     public static boolean isGameStartable() {
-        return GUI ? frmTest.isGameStartable() : true;
+        return frmTest.isGameStartable();
     }
 
     public static MyAbstractButton getBtnGreen() {
@@ -231,11 +237,11 @@ public class MissionBox {
     }
 
     public static JButton getGUIBtnRed() {
-        return GUI ? frmTest.getBtnRed() : null;
+        return frmTest.getBtnRed() ;
     }
 
     public static JButton getGUIBtnUndo() {
-        return GUI ? frmTest.getBtnUndo() : null;
+        return  frmTest.getBtnUndo();
     }
 
     public static Level getLogLevel() {
@@ -243,15 +249,15 @@ public class MissionBox {
     }
 
     public static JButton getGUIBtnGreen() {
-        return GUI ? frmTest.getBtnGreen() : null;
+        return frmTest.getBtnGreen();
     }
 
     public static JButton getGUIBtn1() {
-        return GUI ? frmTest.getBtn1() : null;
+        return frmTest.getBtn1();
     }
 
     public static JButton getGUIBtn2() {
-        return GUI ? frmTest.getBtn2() : null;
+        return frmTest.getBtn2();
     }
 
 
@@ -280,45 +286,55 @@ public class MissionBox {
 
         startup_progress = 5;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
 
         TinySound.init();
 
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         soundMap.put("siren", TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SIREN)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         soundMap.put("welcome", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_WELCOME)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         soundMap.put("rocket", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_FLARE)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         soundMap.put("minions", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_MINIONS_SPAWNED)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         soundMap.put("victory", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_VICTORY)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         soundMap.put("defeat", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_DEFEAT)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         soundMap.put("shutdown", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN)));
 
         startup_progress = startup_progress + 6;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         soundMap.put("tranquility", TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_TRANQUILITY)));
 
         for (int i = 0; i <= 10; i++) {
             startup_progress = startup_progress + 2;
             Tools.printProgBar(startup_progress);
+            frmTest.setProgress(startup_progress);
             countdown[i] = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.COUNTDOWN[i]));
         }
 
@@ -334,33 +350,43 @@ public class MissionBox {
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("20:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_20_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("10:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_10_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("05:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_5_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("04:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_4_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("03:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_3_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("02:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_2_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("01:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_1_MINUTE)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("00:30", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_30_SECONDS)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("00:20", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_20_SECONDS)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
+        frmTest.setProgress(startup_progress);
         timeAnnouncements.put("00:10", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_10_SECONDS)));
 
 
@@ -368,7 +394,7 @@ public class MissionBox {
 
 
     public static void enableSettings(boolean enable) {
-        if (GUI) frmTest.enableSettings(enable);
+        frmTest.enableSettings(enable);
     }
 
     public static void playWinner() {
@@ -508,7 +534,6 @@ public class MissionBox {
         config.put(FCY_SIREN, "true");
         config.put(MBX_SIREN_TIME, "750");
         config.put(FCY_RESPAWN, "40");
-        config.put(MBX_GUI, "true");
         config.put(MBX_LOGLEVEL, "debug");
 
 
@@ -525,7 +550,6 @@ public class MissionBox {
         p.clear();
         in.close();
 
-        GUI = Boolean.parseBoolean(config.getProperty(MissionBox.MBX_GUI));
         SOUND = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND));
         SIREN = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN));
         MUSIC = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_MUSIC));
@@ -552,12 +576,17 @@ public class MissionBox {
         return config;
     }
 
+
+    public static void clearLog() {
+        frmTest.log(null);
+    }
+
     public static void log(String text) {
         frmTest.log(text);
     }
 
     public static void setMessage(String message) {
-        if (GUI) frmTest.setMessage(message);
+        frmTest.setMessage(message);
     }
 
     public static int getGamemode() {
@@ -572,7 +601,7 @@ public class MissionBox {
         // if (SIREN)
 
         if (relaisSirens != null) relaisSirens.setValue(percent);
-        if (GUI) frmTest.setProgress(percent.intValue());
+        frmTest.setProgress(percent.intValue());
         if (relaisLEDs != null) relaisLEDs.setValue(percent);
         if (relaisFlagpole != null) relaisFlagpole.setValue(percent);
     }
@@ -594,7 +623,7 @@ public class MissionBox {
     }
 
     public static void setTimerMessage(String message) {
-        if (GUI) frmTest.setTimer(message);
+        frmTest.setTimer(message);
         logger.debug(message);
     }
 
@@ -607,7 +636,7 @@ public class MissionBox {
     }
 
     public static void setRespawnTimer(String message) {
-        if (GUI) frmTest.setRespawnTimer(message);
+        frmTest.setRespawnTimer(message);
     }
 
     private static void hwinit() throws IOException, I2CFactory.UnsupportedBusNumberException {

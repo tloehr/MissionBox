@@ -123,13 +123,13 @@ new FormModel {
 					"title": "Game"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "default:grow, relgap, default:grow, unrelgap"
-					"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, default"
+					"$columnSpecs": "pref:grow, relgap, pref:grow, relgap, pref"
+					"$rowSpecs": "default, linegap, default, linegap, default, linegap, fill:default:grow"
 				} ) {
 					name: "settingsPanel"
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label1"
-						"text": "capture (sec)"
+						"text": "Flaggenzeit (sec)"
 						"font": #Font0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 1
@@ -140,15 +140,62 @@ new FormModel {
 						"font": &Font2 new java.awt.Font( "Dialog", 1, 20 )
 						"text": "1"
 						"horizontalAlignment": 4
+						"background": sfield java.awt.Color orange
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYCaptureActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYCaptureFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"gridX": 3
 					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 2
+					} ) {
+						name: "panel3"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyPlus60"
+							"text": "+60"
+							"font": &Font3 new java.awt.Font( "Dialog", 1, 16 )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyPlus60ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyPlus10"
+							"text": "+10"
+							"font": #Font3
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyPlus10ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFCYcapPlus"
+							"text": "+1"
+							"font": &Font4 new java.awt.Font( "Dialog", 1, 16 )
+							"actionCommand": "+"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFCYcapPlusActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFCYcapMinus"
+							"text": "-1"
+							"font": &Font5 new java.awt.Font( "Dialog", 1, 16 )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFCYcapMinusActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyMinus10"
+							"text": "-10"
+							"font": #Font5
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyMinus10ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyMinus60"
+							"text": "-60"
+							"font": #Font5
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyMinus60ActionPerformed", true ) )
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 1
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label2"
-						"text": "gametime (min)"
+						"text": "Spieldauer (min)"
 						"font": #Font0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
@@ -158,12 +205,47 @@ new FormModel {
 						"font": #Font2
 						"text": "1"
 						"horizontalAlignment": 4
+						"background": sfield java.awt.Color orange
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYGametimeActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYGametimeFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
 						"gridY": 3
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 2
+					} ) {
+						name: "panel4"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyGTPlus10"
+							"text": "+10"
+							"font": #Font3
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyGTPlus10ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyGTPlus1"
+							"text": "+1"
+							"font": #Font4
+							"actionCommand": "+"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyGTPlus1ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyGTMinus1"
+							"text": "-1"
+							"font": #Font5
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyGTMinus1ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyGTMinus10"
+							"text": "-10"
+							"font": #Font5
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyGTMinus10ActionPerformed", true ) )
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 3
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label3"
@@ -177,6 +259,7 @@ new FormModel {
 						"font": #Font2
 						"text": "1"
 						"horizontalAlignment": 4
+						"background": sfield java.awt.Color orange
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYRespawnActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYRespawnFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
@@ -184,39 +267,91 @@ new FormModel {
 						"gridY": 5
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
-						name: "btnSound"
-						"text": "Sound"
-						"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"selectedIcon": &SwingIcon0 new com.jformdesigner.model.SwingIcon( 0, "/artwork/sound.png" )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 2
+					} ) {
+						name: "panel6"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyRpwnPlus60"
+							"text": "+60"
+							"font": #Font3
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyRpwnPlus60ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyRpwnPlus10"
+							"text": "+10"
+							"font": #Font3
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyRpwnPlus10ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyRpwnPlus1"
+							"text": "+1"
+							"font": #Font4
+							"actionCommand": "+"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyRpwnPlus1ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyRpwnMinus1"
+							"text": "-1"
+							"font": #Font5
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyRpwnMinus1ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyRpwnMinus10"
+							"text": "-10"
+							"font": #Font5
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyRpwnMinus10ActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFcyRpwnMinus60"
+							"text": "-60"
+							"font": #Font5
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnFcyRpwnMinus60ActionPerformed", true ) )
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 5
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+						"columns": 2
+						"rows": 3
+					} ) {
+						name: "panel5"
+						add( new FormComponent( "javax.swing.JToggleButton" ) {
+							name: "btnSiren"
+							"text": "Sirens"
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkgreen32.png" )
+							"selectedIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledgreen32.png" )
+							"font": &Font6 new java.awt.Font( "Dialog", 1, 16 )
+						} )
+						add( new FormComponent( "javax.swing.JToggleButton" ) {
+							name: "btnSound"
+							"text": "Sound"
+							"icon": &SwingIcon0 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkgreen32.png" )
+							"selectedIcon": &SwingIcon1 new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledgreen32.png" )
+							"font": #Font6
+						} )
+						add( new FormComponent( "javax.swing.JToggleButton" ) {
+							name: "btnRespawnSignal"
+							"text": "Respawn Signal"
+							"icon": #SwingIcon0
+							"selectedIcon": #SwingIcon1
+							"font": #Font6
+						} )
+						add( new FormComponent( "javax.swing.JToggleButton" ) {
+							name: "btnMusic"
+							"text": "Music"
+							"icon": #SwingIcon0
+							"selectedIcon": #SwingIcon1
+							"font": #Font6
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "cmbSirenHandler"
+							"font": new java.awt.Font( "Dialog", 1, 16 )
+						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
-					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
-						name: "btnSiren"
-						"text": "Sirens"
-						"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"selectedIcon": sfield com.jformdesigner.model.FormObject NULL_VALUE
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 7
-						"gridX": 3
-					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
-						name: "btnMusic"
-						"text": "Music"
-						"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"selectedIcon": #SwingIcon0
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 9
-					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
-						name: "btnRespawnSignal"
-						"text": "Respawn Signal"
-						"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"selectedIcon": sfield com.jformdesigner.model.FormObject NULL_VALUE
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 9
-						"gridX": 3
+						"gridWidth": 5
 					} )
 				}, new FormLayoutConstraints( null ) {
 					"title": "Settings"

@@ -250,6 +250,7 @@ public class Farcry1Assault implements GameModes {
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
                 logger.debug("GAME_FLAG_ACTIVE");
+                MissionBox.clearLog();
                 MissionBox.log("Flagge bereit zur Eroberung. Spiel läuft");
                 MissionBox.stop("tranquility");
                 MissionBox.stopAllSongs();

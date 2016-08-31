@@ -1,5 +1,6 @@
-package interfaces;
+package progresshandlers;
 
+import interfaces.PercentageInterface;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * Created by tloehr on 07.06.15.
  */
-public class RelayProgressRedYellowGreen implements PercentageInterface {
+public class RelayProgressRedYellowGreen extends PercentageInterface {
 
     protected final Logger logger = Logger.getLogger(getClass());
     private final String pinRed;
@@ -25,6 +26,7 @@ public class RelayProgressRedYellowGreen implements PercentageInterface {
     final String[] schemes = {fast, slow, on, fast, slow, on, fast, slow, on};
 
     public RelayProgressRedYellowGreen(String pinRed, String pinYellow, String pinGreen) {
+        super("");
         this.pinRed = pinRed;
         this.pinGreen = pinGreen;
         this.pinYellow = pinYellow;
@@ -32,6 +34,10 @@ public class RelayProgressRedYellowGreen implements PercentageInterface {
     }
 
     @Override
+    public String toString() {
+        return super.toString();
+    }
+
     public void setValue(BigDecimal percent) {
 
         logger.debug("PERCENT: " + percent);

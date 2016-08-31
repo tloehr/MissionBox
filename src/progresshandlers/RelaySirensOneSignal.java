@@ -1,5 +1,6 @@
-package interfaces;
+package progresshandlers;
 
+import interfaces.PercentageInterface;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 
@@ -10,13 +11,14 @@ import java.util.HashSet;
 /**
  * Created by tloehr on 09.07.16.
  */
-public class RelaySirensOneSignal implements PercentageInterface {
+public class RelaySirensOneSignal extends PercentageInterface {
     protected final Logger logger = Logger.getLogger(getClass());
     private final String key;
     private int previousTenth = -1;
     private long MAXTIMEFORSIGNAL = 5000;
 
     public RelaySirensOneSignal(String key) {
+        super("One Signal");
         this.key = key;
     }
 

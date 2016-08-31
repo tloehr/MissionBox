@@ -99,6 +99,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             logger.debug("Reverting back to the following state");
             logger.debug(undo);
+            MissionBox.log("Reverting back to the following state");
+            MissionBox.log(undo.toString());
+
             MissionBox.stopAllSongs();
 
             this.gameState = undo.getGameState();
@@ -136,7 +139,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                         // save current state before changing it
                         undoStack.get(undoStack.size() - 1).finalizeInit(starttime, flagactivation, endtime);
                         // add the new state as new undo point
-                        undoStack.add(new Farcry1Undo(state));
+                        Farcry1Undo myundo = new Farcry1Undo(state);
+                        undoStack.add(myundo);
+
                         flagactivation = new DateTime();
                         logger.debug(undoStack.toString());
                     }
@@ -166,7 +171,8 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                         if (!undoStack.isEmpty())
                             undoStack.get(undoStack.size() - 1).finalizeInit(starttime, flagactivation, endtime);
                         // add the new state as new undo point
-                        undoStack.add(new Farcry1Undo(state));
+                        Farcry1Undo myundo = new Farcry1Undo(state);
+                        undoStack.add(myundo);
                         logger.debug(undoStack.toString());
                         flagactivation = new DateTime(0);
                     }

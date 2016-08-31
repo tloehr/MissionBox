@@ -1,5 +1,6 @@
-package interfaces;
+package progresshandlers;
 
+import interfaces.PercentageInterface;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 
@@ -9,13 +10,14 @@ import java.math.RoundingMode;
 /**
  * Created by tloehr on 09.07.16.
  */
-public class RelaySirensTwoSignals implements PercentageInterface {
+public class RelaySirensTwoSignals extends PercentageInterface {
     protected final Logger logger = Logger.getLogger(getClass());
 //    private final String key1, key2;
     private int previousTenth = -1;
     private long MAXTIMEFORSIGNAL = 5000;
 
     public RelaySirensTwoSignals(String key1, String key2) {
+        super("Two Signals");
 //        this.key1 = key1;
 //        this.key2 = key2;
     }
