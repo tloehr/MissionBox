@@ -5,6 +5,7 @@ import main.MissionBox;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +20,12 @@ public class RelaySiren extends PercentageInterface {
 
     public RelaySiren(String... myKeys) {
         super("Sirens Escalating");
-        keys = Arrays.asList((String[]) myKeys);
+
+        keys = new ArrayList<>();
+        for (String mykey : Arrays.asList((String[]) myKeys)){
+            keys.add(MissionBox.getConfig().getProperty(mykey));
+        }
+
     }
 
 

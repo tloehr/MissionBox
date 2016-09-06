@@ -6,7 +6,9 @@ import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CFactory;
 import gamemodes.Farcry1Assault;
-import interfaces.*;
+import interfaces.MyAbstractButton;
+import interfaces.PercentageInterface;
+import interfaces.Relay;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
@@ -14,7 +16,6 @@ import misc.Tools;
 import org.apache.log4j.*;
 import progresshandlers.RelayProgressRGB;
 import progresshandlers.RelayProgressRedYellowGreen;
-import progresshandlers.RelaySirenPulsating;
 import threads.PinHandler;
 
 import javax.swing.*;
@@ -60,10 +61,32 @@ public class MissionBox {
     public static final String FCY_SOUND = "fcy.sound";
     public static final String FCY_SIREN = "fcy.siren";
     public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
-//    public static final String MBX_GUI = "mbx.gui";
+    //    public static final String MBX_GUI = "mbx.gui";
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
     public static final String FCY_RESPAWN = "fcy.respawn";
+
+    public static final String MBX_SIREN1 = "mbx.siren1";
+    public static final String MBX_SIREN2 = "mbx.siren2";
+    public static final String MBX_SIREN3 = "mbx.siren3";
+    public static final String MBX_SHUTDOWN_SIREN = "mbx.shutdown.siren";
+    public static final String MBX_TIME_SIREN = "mbx.time.siren";
+    public static final String MBX_RESPAWN_SIREN = "mbx.respawn.siren";
+    public static final String MBX_LED_GREEN = "mbx.led.green";
+    public static final String MBX_LED_RED = "mbx.led.red";
+    public static final String MBX_LED_PB_GREEN = "mbx.led.progress.green";
+    public static final String MBX_LED_PB_YELLOW = "mbx.led.progress.yellow";
+    public static final String MBX_LED_PB_RED = "mbx.led.progress.red";
+    public static final String MBX_LED_RGB_RED = "mbx.led.rgb.red";
+    public static final String MBX_LED_RGB_GREEN = "mbx.led.rgb.green";
+    public static final String MBX_LED_RGB_BLUE = "mbx.led.rgb.blue";
+    public static final String MBX_I2C_1 = "mbx.i2c.1";
+    public static final String MBX_I2C_2 = "mbx.i2c.2";
+    public static final String MBX_BTN_GREEN = "mbx.button.green";
+    public static final String MBX_BTN_RED = "mbx.button.red";
+    public static final String MBX_BTN_START_STOP = "mbx.button.startstop";
+    public static final String MBX_BTN_QUIT = "mbx.button.quit";
+    public static final String MBX_BTN_UNDO = "mbx.button.undo";
 
     private static boolean SOUND = false;
     private static boolean SIREN = false;
@@ -154,12 +177,16 @@ public class MissionBox {
     }
 
     private static void initProgressSystem() {
-        relaisLEDs = new RelayProgressRedYellowGreen("ledBarRed", "ledBarYellow", "ledBarGreen");
-        relaisFlagpole = new RelayProgressRGB("flagpoleRed", "flagpoleGreen", "flagpoleBlue");
+        relaisLEDs = new RelayProgressRedYellowGreen(MBX_LED_PB_RED, MBX_LED_PB_YELLOW, MBX_LED_PB_GREEN);
+        relaisFlagpole = new RelayProgressRGB(MBX_LED_RGB_RED, MBX_LED_RGB_BLUE, MBX_LED_RGB_GREEN);
     }
 
     public static void setRelaisSirens(PercentageInterface relaisSirens) {
         MissionBox.relaisSirens = relaisSirens;
+    }
+
+    public static HashMap<String, GpioPinDigitalOutput> getOutputMap() {
+        return outputMap;
     }
 
     private static void initPinHandler() {
@@ -170,28 +197,27 @@ public class MissionBox {
         // these relays belong to one cd. They are all connected to the same siren circuit.
 
         // three sirens now.
-
         // Siren 1
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B3"), "siren1", Color.ORANGE, debugPanel4Pins)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B4"), "siren2", Color.ORANGE, debugPanel4Pins)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B5"), "siren3", Color.ORANGE, debugPanel4Pins)); // Original Siren Button 5
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B1"), "shutdownSiren", Color.MAGENTA, debugPanel4Pins)); // Original Siren Button 1
+        pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins)); // Original Siren Button 5
+        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins)); // Original Siren Button 1
 
         // Siren 2
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B2"), "timeSignal", Color.BLUE, debugPanel4Pins)); // Original Siren Button 2
+        pinHandler.add(1, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins)); // Original Siren Button 2
 
         // Siren 3
-        pinHandler.add(1, new Relay(outputMap.get("mcp23017-01-B6"), "respawnSiren", Color.BLUE, debugPanel4Pins)); // Original Siren Button 6
+        pinHandler.add(1, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins)); // Original Siren Button 6
 
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A1"), "ledGreen", Color.GREEN, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A0"), "ledRed", Color.RED, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A4"), "ledBarGreen", Color.GREEN, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A3"), "ledBarYellow", Color.YELLOW, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A2"), "ledBarRed", Color.RED, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_PB_GREEN, Color.GREEN, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_PB_YELLOW, Color.YELLOW, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_PB_RED, Color.RED, debugPanel4Pins));
 
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A7"), "flagpoleBlue", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A6"), "flagpoleRed", Color.RED, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A5"), "flagpoleGreen", Color.GREEN, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_RGB_BLUE, Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_RGB_RED, Color.RED, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_RGB_GREEN, Color.GREEN, debugPanel4Pins));
 
 
     }
@@ -237,11 +263,11 @@ public class MissionBox {
     }
 
     public static JButton getGUIBtnRed() {
-        return frmTest.getBtnRed() ;
+        return frmTest.getBtnRed();
     }
 
     public static JButton getGUIBtnUndo() {
-        return  frmTest.getBtnUndo();
+        return frmTest.getBtnUndo();
     }
 
     public static Level getLogLevel() {
@@ -535,7 +561,28 @@ public class MissionBox {
         config.put(MBX_SIREN_TIME, "750");
         config.put(FCY_RESPAWN, "40");
         config.put(MBX_LOGLEVEL, "debug");
+        config.put(MBX_I2C_1, "0x20");
+        config.put(MBX_I2C_2, "0x24");
+        config.put(MBX_SIREN1, "mcp23017-01-B3");
+        config.put(MBX_SIREN2, "mcp23017-01-B4");
+        config.put(MBX_SIREN3, "mcp23017-01-B5");
+        config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B1");
+        config.put(MBX_TIME_SIREN, "mcp23017-01-B2");
+        config.put(MBX_RESPAWN_SIREN, "mcp23017-01-B6");
+        config.put(MBX_LED_GREEN, "mcp23017-01-A1");
+        config.put(MBX_LED_RED, "mcp23017-01-A0");
+        config.put(MBX_LED_PB_GREEN, "mcp23017-01-A4");
+        config.put(MBX_LED_PB_YELLOW, "mcp23017-01-A3");
+        config.put(MBX_LED_PB_RED, "mcp23017-01-A2");
+        config.put(MBX_LED_RGB_BLUE, "mcp23017-01-A7");
+        config.put(MBX_LED_RGB_RED, "mcp23017-01-A6");
+        config.put(MBX_LED_RGB_GREEN, "mcp23017-01-A5");
 
+        config.put(MBX_BTN_RED, "mcp23017-02-B0");
+        config.put(MBX_BTN_GREEN, "mcp23017-02-B1");
+        config.put(MBX_BTN_START_STOP, "mcp23017-02-B2");
+        config.put(MBX_BTN_QUIT, "mcp23017-02-B3");
+        config.put(MBX_BTN_UNDO, "mcp23017-02-B4");
 
         File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
 
@@ -653,8 +700,8 @@ public class MissionBox {
 
 
             // this map provides an easier access to the gpioProvider0
-            MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, 0x20);
-            MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, 0x21);
+            MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.decode(getConfig().getProperty(MissionBox.MBX_I2C_1)));
+            MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.decode(getConfig().getProperty(MissionBox.MBX_I2C_2)));
 
             GpioPinDigitalOutput myOutputs[] = {
                     GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A0, "mcp23017-01-A0", PinState.LOW),
@@ -708,11 +755,11 @@ public class MissionBox {
 //            ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
 
 
-            ioRed = inputMap.get("mcp23017-02-B0");
-            ioGreen = inputMap.get("mcp23017-02-B1");
-            ioGameStartStop = inputMap.get("mcp23017-02-B2");
-            ioMisc = inputMap.get("mcp23017-02-B3");
-            ioUndo = inputMap.get("mcp23017-02-B4");
+            ioRed = inputMap.get(getConfig().getProperty(MBX_BTN_RED));
+            ioGreen = inputMap.get(getConfig().getProperty(MBX_BTN_GREEN));
+            ioGameStartStop = inputMap.get((getConfig().getProperty(MBX_BTN_START_STOP)));
+            ioMisc = inputMap.get((getConfig().getProperty(MBX_BTN_QUIT)));
+            ioUndo = inputMap.get((getConfig().getProperty(MBX_BTN_UNDO)));
         }
 
     }
