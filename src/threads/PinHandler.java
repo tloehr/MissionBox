@@ -93,13 +93,13 @@ public class PinHandler {
                     // get all the potentially colliding relays and check them.
                     for (String collidingName : collisionDomainReverse.get(cd)) {
                         if (futures.containsKey(collidingName) && !futures.get(collidingName).isDone()) { // but only if it runs
-                            logger.debug("terminating: " + collidingName + ": colliding with " + (collidingName.equals(name) ? ">>itself<<" : name));
+//                            logger.debug("terminating: " + collidingName + ": colliding with " + (collidingName.equals(name) ? ">>itself<<" : name));
                             futures.get(collidingName).cancel(true);
                         }
                     }
                 } else {
                     if (futures.containsKey(name) && !futures.get(name).isDone()) { // but only if it runs
-                        logger.debug("terminating: " + name + ": was already running");
+//                        logger.debug("terminating: " + name + ": was already running");
                         futures.get(name).cancel(true);
                     }
                 }
@@ -125,6 +125,12 @@ public class PinHandler {
             collisionDomainReverse.put(cd, new HashSet<>());
         }
         collisionDomainReverse.get(cd).add(name);
+    }
+
+    public void off(){
+        for (String name : pinMap.keySet()){
+            off(name);
+        }
     }
 
 }

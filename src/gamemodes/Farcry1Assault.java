@@ -137,7 +137,7 @@ public class Farcry1Assault implements GameModes {
 
                 if (prev_countdown_index > -1) {
                     MissionBox.play("shutdown"); // plays only once when the flag has been touched during this round.
-                    MissionBox.setScheme("shutdownSiren", "1;1000,0");
+                    MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;1000,0");
                 }
 
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
@@ -162,7 +162,7 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setProgress(new BigDecimal(-1));
                 MissionBox.play("rocket");
 
-                MissionBox.setScheme("siren2", "1;3000,0"); // this is the signal for the launched rocket. Its the same as siren 2
+                MissionBox.setScheme(MissionBox.MBX_SIREN2, "1;3000,0"); // this is the signal for the launched rocket. Its the same as siren 2
 
                 MissionBox.off(MissionBox.MBX_LED_RED);
                 MissionBox.off(MissionBox.MBX_LED_GREEN);

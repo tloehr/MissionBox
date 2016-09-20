@@ -24,7 +24,7 @@ public class RelaySirenPulsating extends PercentageInterface {
      */
     public RelaySirenPulsating(String key) {
         super("Pulsating Siren");
-        this.key = MissionBox.getConfig().getProperty(key);
+        this.key = key;
     }
 
 

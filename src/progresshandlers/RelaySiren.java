@@ -20,12 +20,7 @@ public class RelaySiren extends PercentageInterface {
 
     public RelaySiren(String... myKeys) {
         super("Sirens Escalating");
-
-        keys = new ArrayList<>();
-        for (String mykey : Arrays.asList((String[]) myKeys)){
-            keys.add(MissionBox.getConfig().getProperty(mykey));
-        }
-
+        keys = Arrays.asList((String[]) myKeys);
     }
 
 

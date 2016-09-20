@@ -19,7 +19,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btn1"
 						"text": "Start / Stop"
-						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/farcry-logo.png" )
+						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/farcry-logo-64.png" )
 						"horizontalTextPosition": 0
 						"verticalTextPosition": 3
 						"font": new java.awt.Font( "Dialog", 1, 20 )
@@ -52,7 +52,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "btnRed"
 							"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
-							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledred128.png" )
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledred64.png" )
 						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 							"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
@@ -60,7 +60,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "btnGreen"
 							"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
-							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledgreen128.png" )
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledgreen64.png" )
 						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 							"gridY": 3
 							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
@@ -73,7 +73,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnUndo"
 						"text": "Undo"
-						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledblue128.png" )
+						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledblue64.png" )
 						"font": new java.awt.Font( "Dialog", 1, 20 )
 						"verticalTextPosition": 3
 						"horizontalTextPosition": 0
@@ -83,7 +83,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btn2"
 						"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/exit128.png" )
+						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/exit64.png" )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
 					} )
@@ -377,7 +377,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRedLED"
-						"text": "LED red"
+						"text": "LEDred"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 7
 					} )
@@ -405,7 +405,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnGreenLED"
-						"text": "LED green"
+						"text": "LEDgreen"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
 						"gridX": 7
@@ -435,7 +435,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRedProgress"
-						"text": "Progress red"
+						"text": "PBred"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
 						"gridX": 7
@@ -465,7 +465,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnYellowProgress"
-						"text": "Progress yellow"
+						"text": "PByellow"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 7
 						"gridY": 7
@@ -495,7 +495,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnGreenProgress"
-						"text": "Progress green"
+						"text": "PBgreen"
 						"actionCommand": "Progress yellow"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
@@ -516,9 +516,9 @@ new FormModel {
 						"gridY": 11
 						"gridX": 5
 					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
+					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRGBred"
-						"text": "RGB red"
+						"text": "RGBred"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 11
 						"gridX": 7
@@ -538,9 +538,9 @@ new FormModel {
 						"gridY": 13
 						"gridX": 5
 					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
+					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRGBgreen"
-						"text": "RGB green"
+						"text": "RGBgreen"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 13
 						"gridX": 7
@@ -552,9 +552,9 @@ new FormModel {
 						"gridY": 15
 						"gridX": 5
 					} )
-					add( new FormComponent( "javax.swing.JToggleButton" ) {
+					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRGBblue"
-						"text": "RGB blue"
+						"text": "RGBblue"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 15
 						"gridX": 7
@@ -565,7 +565,7 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 800, 590 )
+			"size": new java.awt.Dimension( 675, 395 )
 		} )
 	}
 }

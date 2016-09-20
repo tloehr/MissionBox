@@ -71,13 +71,66 @@ public class FrmTest extends JFrame {
         btnRelayTest7.addActionListener(e -> relayAction(e));
         btnRelayTest8.addActionListener(e -> relayAction(e));
 
+        btnRedLED.addActionListener(e -> relayAction(e));
+        btnGreenLED.addActionListener(e -> relayAction(e));
+        btnRedProgress.addActionListener(e -> relayAction(e));
+        btnYellowProgress.addActionListener(e -> relayAction(e));
+        btnGreenProgress.addActionListener(e -> relayAction(e));
+
+        btnRGBred.addActionListener(e -> relayAction(e));
+        btnRGBgreen.addActionListener(e -> relayAction(e));
+        btnRGBblue.addActionListener(e -> relayAction(e));
+
+
+        btnRelayTest1.setToolTipText("mcp23017-01-B0");
+        btnRelayTest2.setToolTipText("mcp23017-01-B1");
+        btnRelayTest3.setToolTipText("mcp23017-01-B2");
+        btnRelayTest4.setToolTipText("mcp23017-01-B3");
+        btnRelayTest5.setToolTipText("mcp23017-01-B4");
+        btnRelayTest6.setToolTipText("mcp23017-01-B5");
+        btnRelayTest7.setToolTipText("mcp23017-01-B6");
+        btnRelayTest8.setToolTipText("mcp23017-01-B7");
+
 
     }
 
     private void relayAction(ActionEvent e) {
-        logger.debug(e.getSource().toString());
-        logger.debug(((JButton) e.getSource()).getText());
-        MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;1000,1000");
+        String text = ((JButton) e.getSource()).getText();
+        if (text.equalsIgnoreCase("relay1")) {
+            MissionBox.setScheme("mcp23017-01-B0", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("relay2")) {
+            MissionBox.setScheme("mcp23017-01-B1", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("relay3")) {
+            MissionBox.setScheme("mcp23017-01-B2", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("relay4")) {
+            MissionBox.setScheme("mcp23017-01-B3", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("relay5")) {
+            MissionBox.setScheme("mcp23017-01-B4", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("relay6")) {
+            MissionBox.setScheme("mcp23017-01-B5", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("relay7")) {
+            MissionBox.setScheme("mcp23017-01-B6", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("relay8")) {
+            MissionBox.setScheme("mcp23017-01-B7", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("LEDred")) {
+            MissionBox.setScheme("mcp23017-01-A7", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("LEDgreen")) {
+            MissionBox.setScheme("mcp23017-01-A6", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("PBred")) {
+            MissionBox.setScheme("mcp23017-01-A5", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("PByellow")) {
+            MissionBox.setScheme("mcp23017-01-A4", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("PBgreen")) {
+            MissionBox.setScheme("mcp23017-01-A3", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("RGBred")) {
+            MissionBox.setScheme("mcp23017-02-A7", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("RGBgreen")) {
+            MissionBox.setScheme("mcp23017-02-A6", "1;1000,1000");
+        } else if (text.equalsIgnoreCase("RGBblue")) {
+            MissionBox.setScheme("mcp23017-02-A5", "1;1000,1000");
+        }
+
+
     }
 
     public JButton getBtnUndo() {
@@ -173,7 +226,7 @@ public class FrmTest extends JFrame {
             btnRespawnSignal.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_SIGNAL).equals("true"));
             btnMusic.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_MUSIC).equals("true"));
         } else {
-
+            MissionBox.getPinHandler().off();
         }
     }
 
@@ -419,12 +472,12 @@ public class FrmTest extends JFrame {
         btnGreenProgress = new JButton();
         btnTimeSignal = new JButton();
         btnRelayTest6 = new JButton();
-        btnRGBred = new JToggleButton();
+        btnRGBred = new JButton();
         btnRedLedBar = new JButton();
         btnRelayTest7 = new JButton();
-        btnRGBgreen = new JToggleButton();
+        btnRGBgreen = new JButton();
         btnRelayTest8 = new JButton();
-        btnRGBblue = new JToggleButton();
+        btnRGBblue = new JButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -439,12 +492,12 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, 10dlu, $lgap, default"));
+                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
-                btn1.setIcon(new ImageIcon(getClass().getResource("/artwork/farcry-logo.png")));
+                btn1.setIcon(new ImageIcon(getClass().getResource("/artwork/farcry-logo-64.png")));
                 btn1.setHorizontalTextPosition(SwingConstants.CENTER);
                 btn1.setVerticalTextPosition(SwingConstants.BOTTOM);
                 btn1.setFont(new Font("Dialog", Font.BOLD, 20));
@@ -470,24 +523,24 @@ public class FrmTest extends JFrame {
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                            "default:grow",
-                            "fill:default:grow, $lgap, fill:default:grow"));
+                        "default:grow",
+                        "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
-                    btnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/ledred128.png")));
+                    btnRed.setIcon(new ImageIcon(getClass().getResource("/artwork/ledred64.png")));
                     panel2.add(btnRed, CC.xy(1, 1, CC.FILL, CC.FILL));
 
                     //---- btnGreen ----
                     btnGreen.setText(null);
-                    btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen128.png")));
+                    btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen64.png")));
                     panel2.add(btnGreen, CC.xy(1, 3, CC.FILL, CC.FILL));
                 }
                 contentPanel.add(panel2, CC.xywh(7, 1, 1, 5));
 
                 //---- btnUndo ----
                 btnUndo.setText("Undo");
-                btnUndo.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue128.png")));
+                btnUndo.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue64.png")));
                 btnUndo.setFont(new Font("Dialog", Font.BOLD, 20));
                 btnUndo.setVerticalTextPosition(SwingConstants.BOTTOM);
                 btnUndo.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -495,7 +548,7 @@ public class FrmTest extends JFrame {
 
                 //---- btn2 ----
                 btn2.setText(null);
-                btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit128.png")));
+                btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit64.png")));
                 contentPanel.add(btn2, CC.xy(1, 5));
                 contentPanel.add(pb1, CC.xywh(1, 7, 7, 1));
 
@@ -520,8 +573,8 @@ public class FrmTest extends JFrame {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                        "2*(pref:grow, $rgap), pref",
-                        "3*(default, $lgap), fill:default:grow"));
+                    "2*(pref:grow, $rgap), pref",
+                    "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -740,8 +793,8 @@ public class FrmTest extends JFrame {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                        "default, $lcgap, 3*(default, $ugap), default",
-                        "8*(default, $lgap), default"));
+                    "default, $lcgap, 3*(default, $ugap), default",
+                    "8*(default, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
@@ -753,7 +806,7 @@ public class FrmTest extends JFrame {
                 panel1.add(btnRelayTest1, CC.xy(5, 1));
 
                 //---- btnRedLED ----
-                btnRedLED.setText("LED red");
+                btnRedLED.setText("LEDred");
                 panel1.add(btnRedLED, CC.xy(7, 1));
 
                 //---- btnTestWinner ----
@@ -771,7 +824,7 @@ public class FrmTest extends JFrame {
                 panel1.add(btnRelayTest2, CC.xy(5, 3));
 
                 //---- btnGreenLED ----
-                btnGreenLED.setText("LED green");
+                btnGreenLED.setText("LEDgreen");
                 panel1.add(btnGreenLED, CC.xy(7, 3));
 
                 //---- btnTestLooser ----
@@ -789,7 +842,7 @@ public class FrmTest extends JFrame {
                 panel1.add(btnRelayTest3, CC.xy(5, 5));
 
                 //---- btnRedProgress ----
-                btnRedProgress.setText("Progress red");
+                btnRedProgress.setText("PBred");
                 panel1.add(btnRedProgress, CC.xy(7, 5));
 
                 //---- btnStopAll ----
@@ -807,7 +860,7 @@ public class FrmTest extends JFrame {
                 panel1.add(btnRelayTest4, CC.xy(5, 7));
 
                 //---- btnYellowProgress ----
-                btnYellowProgress.setText("Progress yellow");
+                btnYellowProgress.setText("PByellow");
                 panel1.add(btnYellowProgress, CC.xy(7, 7));
 
                 //---- btnRespawn ----
@@ -825,7 +878,7 @@ public class FrmTest extends JFrame {
                 panel1.add(btnRelayTest5, CC.xy(5, 9));
 
                 //---- btnGreenProgress ----
-                btnGreenProgress.setText("Progress green");
+                btnGreenProgress.setText("PBgreen");
                 btnGreenProgress.setActionCommand("Progress yellow");
                 panel1.add(btnGreenProgress, CC.xy(7, 9));
 
@@ -839,7 +892,7 @@ public class FrmTest extends JFrame {
                 panel1.add(btnRelayTest6, CC.xy(5, 11));
 
                 //---- btnRGBred ----
-                btnRGBred.setText("RGB red");
+                btnRGBred.setText("RGBred");
                 panel1.add(btnRGBred, CC.xy(7, 11));
 
                 //---- btnRedLedBar ----
@@ -852,7 +905,7 @@ public class FrmTest extends JFrame {
                 panel1.add(btnRelayTest7, CC.xy(5, 13));
 
                 //---- btnRGBgreen ----
-                btnRGBgreen.setText("RGB green");
+                btnRGBgreen.setText("RGBgreen");
                 panel1.add(btnRGBgreen, CC.xy(7, 13));
 
                 //---- btnRelayTest8 ----
@@ -860,13 +913,13 @@ public class FrmTest extends JFrame {
                 panel1.add(btnRelayTest8, CC.xy(5, 15));
 
                 //---- btnRGBblue ----
-                btnRGBblue.setText("RGB blue");
+                btnRGBblue.setText("RGBblue");
                 panel1.add(btnRGBblue, CC.xy(7, 15));
             }
             tabbedPane1.addTab("HW-Test", panel1);
         }
         contentPane.add(tabbedPane1);
-        setSize(800, 590);
+        setSize(675, 395);
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -983,11 +1036,11 @@ public class FrmTest extends JFrame {
     private JButton btnGreenProgress;
     private JButton btnTimeSignal;
     private JButton btnRelayTest6;
-    private JToggleButton btnRGBred;
+    private JButton btnRGBred;
     private JButton btnRedLedBar;
     private JButton btnRelayTest7;
-    private JToggleButton btnRGBgreen;
+    private JButton btnRGBgreen;
     private JButton btnRelayTest8;
-    private JToggleButton btnRGBblue;
+    private JButton btnRGBblue;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

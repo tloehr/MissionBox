@@ -17,19 +17,16 @@ public class Relay implements OnOffInterface {
     private final String name;
     private MyLED debugLED; // for on screen debugging
 
-    public Relay(GpioPinDigitalOutput pin, String name) {
+    private Relay(GpioPinDigitalOutput pin, String name) {
+        if (pin == null) {
+            logger.fatal("WRONG CONFIG FOR " + name);
+            System.exit(1);
+        }
         this.pin = pin;
         this.name = name;
         if (pin != null) pin.setState(PinState.LOW);
     }
 
-    /**
-     *
-     * @param pin
-     * @param name
-     * @param color the color of the on screen visualisation for this relay
-     * @param addYourself2this
-     */
     public Relay(GpioPinDigitalOutput pin, String name, Color color, JPanel addYourself2this) {
         this(pin, name);
         debugLED = new MyLED(name, color);
@@ -37,10 +34,10 @@ public class Relay implements OnOffInterface {
     }
 
     public Relay(String configKey, Color color, JPanel addYourself2this) {
-            this(MissionBox.getOutputMap().get(configKey), configKey);
-            debugLED = new MyLED(name, color);
-            addYourself2this.add(debugLED);
-        }
+        this(MissionBox.getOutputMap().get(MissionBox.getConfig().getProperty(configKey)), configKey);
+        debugLED = new MyLED(configKey, color);
+        addYourself2this.add(debugLED);
+    }
 
     public void setText(String text) {
         if (text.isEmpty()) {
