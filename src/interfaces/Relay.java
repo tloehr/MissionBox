@@ -18,7 +18,7 @@ public class Relay implements OnOffInterface {
     private MyLED debugLED; // for on screen debugging
 
     private Relay(GpioPinDigitalOutput pin, String name) {
-        if (pin == null) {
+        if (MissionBox.getGPIO() != null && pin == null) {
             logger.fatal("WRONG CONFIG FOR " + name);
             System.exit(1);
         }
