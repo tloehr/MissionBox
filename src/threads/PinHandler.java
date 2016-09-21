@@ -42,7 +42,7 @@ public class PinHandler {
         futures = new HashMap<>();
         executor = Executors.newFixedThreadPool(12);
         collisionDomain = new HashMap<>();
-        collisionDomainReverse = new HashMap<Integer, Set<String>>();
+        collisionDomainReverse = new HashMap<>();
         logger = Logger.getLogger(getClass());
     }
 
@@ -93,7 +93,7 @@ public class PinHandler {
                     // get all the potentially colliding relays and check them.
                     for (String collidingName : collisionDomainReverse.get(cd)) {
                         if (futures.containsKey(collidingName) && !futures.get(collidingName).isDone()) { // but only if it runs
-//                            logger.debug("terminating: " + collidingName + ": colliding with " + (collidingName.equals(name) ? ">>itself<<" : name));
+                            logger.debug("terminating: " + collidingName + ": colliding with " + (collidingName.equals(name) ? ">>itself<<" : name));
                             futures.get(collidingName).cancel(true);
                         }
                     }

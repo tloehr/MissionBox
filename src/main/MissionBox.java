@@ -12,6 +12,7 @@ import interfaces.Relay;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
+import misc.SortedProperties;
 import misc.Tools;
 import org.apache.log4j.*;
 import progresshandlers.RelayProgressRGB;
@@ -57,7 +58,7 @@ public class MissionBox {
 
     private static PercentageInterface relaisSirens, relaisLEDs, relaisFlagpole;
 
-    public static Properties appinfo = new Properties();
+    public static SortedProperties appinfo = new SortedProperties();
 
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
@@ -210,10 +211,10 @@ public class MissionBox {
         pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins)); // Original Siren Button 1
 
         // Siren 2
-        pinHandler.add(1, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins)); // Original Siren Button 2
+        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins)); // Original Siren Button 2
 
         // Siren 3
-        pinHandler.add(1, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins)); // Original Siren Button 6
+        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins)); // Original Siren Button 6
 
         pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));
@@ -586,7 +587,7 @@ public class MissionBox {
     }
 
     private static void loadLocalProperties() throws IOException {
-        config = new Properties();
+        config = new SortedProperties();
         // some defaults
 
         config.put(FCY_TIME2CAPTURE, "20");
@@ -628,7 +629,7 @@ public class MissionBox {
         configFile.createNewFile();
 
         FileInputStream in = new FileInputStream(configFile);
-        Properties p = new Properties();
+        Properties p = new SortedProperties();
         p.load(in);
         config.putAll(p);
         p.clear();

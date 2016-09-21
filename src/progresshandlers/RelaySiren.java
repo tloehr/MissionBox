@@ -5,7 +5,6 @@ import main.MissionBox;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +17,10 @@ public class RelaySiren extends PercentageInterface {
     protected final Logger logger = Logger.getLogger(getClass());
     protected int previousRelay = -1;
 
+    /**
+     * please note that all the pins have to be within the same CD in order for this Interface to run properly.
+     * @param myKeys
+     */
     public RelaySiren(String... myKeys) {
         super("Sirens Escalating");
         keys = Arrays.asList((String[]) myKeys);
@@ -44,16 +47,24 @@ public class RelaySiren extends PercentageInterface {
         previousRelay = relaynum;
 
 
+
+        // as we use the PinHandler, and all the sirens are within the same CD, we only need to set ONE pin to off. The others are handled automatically.
         if (relaynum >= keys.size()) {
-            for (String key : keys) {
-                MissionBox.off(key);
-            }
+
+
+
+//            for (String key : keys) {
+//                MissionBox.off(key);
+//            }
+
+
+            MissionBox.off(keys.get(0));
+
+
         } else {
             for (String key : keys) {
                 if (myPercent.compareTo(BigDecimal.ZERO) > 0 && relaynum == keys.indexOf(key)) {
                     MissionBox.on(key);
-                } else {
-                    MissionBox.off(key);
                 }
             }
         }
