@@ -169,6 +169,14 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         frmTest.setProgress(startup_progress);
 
+        /***
+         *      ____        _   _
+         *     | __ ) _   _| |_| |_ ___  _ __  ___
+         *     |  _ \| | | | __| __/ _ \| '_ \/ __|
+         *     | |_) | |_| | |_| || (_) | | | \__ \
+         *     |____/ \__,_|\__|\__\___/|_| |_|___/
+         *
+         */
         btnRed = new MyAbstractButton(ioRed, getGUIBtnRed());
         btnGreen = new MyAbstractButton(ioGreen, getGUIBtnGreen());
         btnGameStartStop = new MyAbstractButton(ioGameStartStop, getGUIBtn1());
@@ -205,16 +213,16 @@ public class MissionBox {
 
         // three sirens now.
         // Siren 1
-        pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins)); // Original Siren Button 5
-        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins)); // Original Siren Button 1
+        pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, true)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, true)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins, true)); // Original Siren Button 5
+        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, true)); // Original Siren Button 1
 
         // Siren 2
-        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins)); // Original Siren Button 2
+        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 2
 
         // Siren 3
-        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins)); // Original Siren Button 6
+        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
 
         pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));
@@ -452,6 +460,9 @@ public class MissionBox {
 
     }
 
+    public static FrmTest getFrmTest() {
+        return frmTest;
+    }
 
     public static void enableSettings(boolean enable) {
         frmTest.enableSettings(enable);
@@ -792,6 +803,14 @@ public class MissionBox {
 //            ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
 
 
+            /***
+             *      ____        _   _
+             *     | __ ) _   _| |_| |_ ___  _ __  ___
+             *     |  _ \| | | | __| __/ _ \| '_ \/ __|
+             *     | |_) | |_| | |_| || (_) | | | \__ \
+             *     |____/ \__,_|\__|\__\___/|_| |_|___/
+             *
+             */
             ioRed = inputMap.get(getConfig().getProperty(MBX_BTN_RED));
             ioGreen = inputMap.get(getConfig().getProperty(MBX_BTN_GREEN));
             ioGameStartStop = inputMap.get((getConfig().getProperty(MBX_BTN_START_STOP)));

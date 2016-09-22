@@ -364,7 +364,9 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonGreen"
 						"text": "Button Green"
-						"icon": &SwingIcon2 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkblue32.png" )
+						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledblue32.png" )
+						"disabledIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkblue32.png" )
+						"enabled": false
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
 						"gridY": 1
@@ -391,7 +393,9 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonRed"
 						"text": "Button RED"
-						"icon": #SwingIcon2
+						"icon": &SwingIcon2 new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledblue32.png" )
+						"enabled": false
+						"disabledIcon": &SwingIcon3 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkblue32.png" )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
 						"gridX": 3
@@ -422,6 +426,8 @@ new FormModel {
 						name: "lblButtonUNDO"
 						"text": "Button UNDO"
 						"icon": #SwingIcon2
+						"enabled": false
+						"disabledIcon": #SwingIcon3
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
 						"gridX": 3
@@ -452,6 +458,8 @@ new FormModel {
 						name: "lblButtonStartStop"
 						"text": "Button Start/Stop"
 						"icon": #SwingIcon2
+						"enabled": false
+						"disabledIcon": #SwingIcon3
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
 						"gridX": 3
@@ -482,6 +490,8 @@ new FormModel {
 						name: "lblButtonQuit"
 						"text": "Button Quit"
 						"icon": #SwingIcon2
+						"enabled": false
+						"disabledIcon": #SwingIcon3
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
 						"gridX": 3

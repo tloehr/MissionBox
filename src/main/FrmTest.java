@@ -81,7 +81,6 @@ public class FrmTest extends JFrame {
         btnRGBgreen.addActionListener(e -> relayAction(e));
         btnRGBblue.addActionListener(e -> relayAction(e));
 
-
         btnRelayTest1.setToolTipText("mcp23017-01-B0");
         btnRelayTest2.setToolTipText("mcp23017-01-B1");
         btnRelayTest3.setToolTipText("mcp23017-01-B2");
@@ -91,7 +90,21 @@ public class FrmTest extends JFrame {
         btnRelayTest7.setToolTipText("mcp23017-01-B6");
         btnRelayTest8.setToolTipText("mcp23017-01-B7");
 
+    }
 
+    public void setButtonTestLabel(String name, boolean on) {
+        if (tabbedPane1.getSelectedIndex() != 2) return; // only react when in debug mode
+        if (name.equalsIgnoreCase("red")) {
+            lblButtonRed.setEnabled(on);
+        } else if (name.equalsIgnoreCase("green")) {
+            lblButtonGreen.setEnabled(on);
+        } else if (name.equalsIgnoreCase("undo")) {
+            lblButtonUNDO.setEnabled(on);
+        } else if (name.equalsIgnoreCase("start")) {
+            lblButtonStartStop.setEnabled(on);
+        } else if (name.equalsIgnoreCase("quit")) {
+            lblButtonQuit.setEnabled(on);
+        }
     }
 
     private void relayAction(ActionEvent e) {
@@ -240,6 +253,7 @@ public class FrmTest extends JFrame {
     public void enableSettings(boolean yes) {
         tabbedPane1.setEnabledAt(1, yes);
         tabbedPane1.setEnabledAt(2, yes);
+        tabbedPane1.setEnabledAt(3, yes);
     }
 
 
@@ -249,31 +263,6 @@ public class FrmTest extends JFrame {
 
     private void btnRedLedBarActionPerformed(ActionEvent e) {
         MissionBox.secondsSignal(3);
-    }
-
-    private void btnFCYrespawnPlusActionPerformed(ActionEvent e) {
-        int respawn = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
-        respawn++;
-        final String text = Integer.toString(respawn);
-        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN, text);
-        SwingUtilities.invokeLater(() -> {
-            lblFCYRespawn.setText(text);
-            revalidate();
-            repaint();
-        });
-    }
-
-    private void btnFCYrespawnMinusActionPerformed(ActionEvent e) {
-        int respawn = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
-        respawn--;
-        if (respawn == 1) return;
-        final String text = Integer.toString(respawn);
-        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN, text);
-        SwingUtilities.invokeLater(() -> {
-            lblFCYRespawn.setText(text);
-            revalidate();
-            repaint();
-        });
     }
 
     private void lblFCYCaptureActionPerformed(ActionEvent e) {
@@ -798,7 +787,9 @@ public class FrmTest extends JFrame {
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
-                lblButtonGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
+                lblButtonGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
+                lblButtonGreen.setDisabledIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
+                lblButtonGreen.setEnabled(false);
                 panel1.add(lblButtonGreen, CC.xy(3, 1));
 
                 //---- btnRelayTest1 ----
@@ -816,7 +807,9 @@ public class FrmTest extends JFrame {
 
                 //---- lblButtonRed ----
                 lblButtonRed.setText("Button RED");
-                lblButtonRed.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
+                lblButtonRed.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
+                lblButtonRed.setEnabled(false);
+                lblButtonRed.setDisabledIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
                 panel1.add(lblButtonRed, CC.xy(3, 3));
 
                 //---- btnRelayTest2 ----
@@ -834,7 +827,9 @@ public class FrmTest extends JFrame {
 
                 //---- lblButtonUNDO ----
                 lblButtonUNDO.setText("Button UNDO");
-                lblButtonUNDO.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
+                lblButtonUNDO.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
+                lblButtonUNDO.setEnabled(false);
+                lblButtonUNDO.setDisabledIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
                 panel1.add(lblButtonUNDO, CC.xy(3, 5));
 
                 //---- btnRelayTest3 ----
@@ -852,7 +847,9 @@ public class FrmTest extends JFrame {
 
                 //---- lblButtonStartStop ----
                 lblButtonStartStop.setText("Button Start/Stop");
-                lblButtonStartStop.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
+                lblButtonStartStop.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
+                lblButtonStartStop.setEnabled(false);
+                lblButtonStartStop.setDisabledIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
                 panel1.add(lblButtonStartStop, CC.xy(3, 7));
 
                 //---- btnRelayTest4 ----
@@ -870,7 +867,9 @@ public class FrmTest extends JFrame {
 
                 //---- lblButtonQuit ----
                 lblButtonQuit.setText("Button Quit");
-                lblButtonQuit.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
+                lblButtonQuit.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
+                lblButtonQuit.setEnabled(false);
+                lblButtonQuit.setDisabledIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
                 panel1.add(lblButtonQuit, CC.xy(3, 9));
 
                 //---- btnRelayTest5 ----
