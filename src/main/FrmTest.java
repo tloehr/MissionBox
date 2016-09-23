@@ -253,7 +253,6 @@ public class FrmTest extends JFrame {
     public void enableSettings(boolean yes) {
         tabbedPane1.setEnabledAt(1, yes);
         tabbedPane1.setEnabledAt(2, yes);
-        tabbedPane1.setEnabledAt(3, yes);
     }
 
 

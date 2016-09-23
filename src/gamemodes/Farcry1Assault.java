@@ -166,8 +166,8 @@ public class Farcry1Assault implements GameModes {
 
                 MissionBox.off(MissionBox.MBX_LED_RED);
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";50,50");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";50,50");
+//                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";50,50");
+//                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";50,50");
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";50,50");
 
                 MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";50,50");
