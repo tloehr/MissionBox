@@ -36,10 +36,10 @@ public class FrmTest extends JFrame {
 
     private void initPanel() {
 
-        btnSiren.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SIREN, btnSiren.isSelected() ? "true" : "false"));
-        btnSound.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_SOUND, btnSound.isSelected() ? "true" : "false"));
-        btnMusic.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_MUSIC, btnMusic.isSelected() ? "true" : "false"));
-        btnRespawnSignal.addActionListener(e -> MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN_SIGNAL, btnRespawnSignal.isSelected() ? "true" : "false"));
+        btnSiren.addActionListener(e -> MissionBox.setSIREN(btnSiren.isSelected()));
+        btnSound.addActionListener(e -> MissionBox.setSOUND(btnSound.isSelected()));
+        btnMusic.addActionListener(e -> MissionBox.setMUSIC(btnMusic.isSelected()));
+        btnRespawnSignal.addActionListener(e -> MissionBox.setRESPAWN(btnRespawn.isSelected()));
 
         setTitle(MissionBox.getAppinfo().getProperty("program.BUILDDATE") + " [" + MissionBox.getAppinfo().getProperty("program.BUILDNUM") + "]");
 
