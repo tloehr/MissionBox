@@ -9,8 +9,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import interfaces.PercentageInterface;
 import misc.Tools;
 import org.apache.log4j.Logger;
-import progresshandlers.RelaySiren;
-import progresshandlers.RelaySirenPulsating;
+import progresshandlers.EscalatingSirens;
+import progresshandlers.EscalatingSirensTime;
+import progresshandlers.EscalatingTime;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -24,7 +25,10 @@ import java.util.Date;
  * @author Torsten Löhr
  */
 public class FrmTest extends JFrame {
-    PercentageInterface[] progressHandlers = new PercentageInterface[]{new RelaySirenPulsating(MissionBox.MBX_SIREN1), new RelaySiren(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3)};
+    PercentageInterface[] progressHandlers = new PercentageInterface[]{
+            new EscalatingTime(MissionBox.MBX_SIREN1),
+            new EscalatingSirens(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3),
+            new EscalatingSirensTime(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3)};
     Logger logger = Logger.getLogger(getClass());
 
 
@@ -480,8 +484,8 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, 10dlu, $lgap, default"));
+                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
@@ -511,8 +515,8 @@ public class FrmTest extends JFrame {
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                        "default:grow",
-                        "fill:default:grow, $lgap, fill:default:grow"));
+                            "default:grow",
+                            "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
@@ -561,8 +565,8 @@ public class FrmTest extends JFrame {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                    "2*(pref:grow, $rgap), pref",
-                    "3*(default, $lgap), fill:default:grow"));
+                        "2*(pref:grow, $rgap), pref",
+                        "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -781,8 +785,8 @@ public class FrmTest extends JFrame {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                    "default, $lcgap, 3*(default, $ugap), default",
-                    "8*(default, $lgap), default"));
+                        "default, $lcgap, 3*(default, $ugap), default",
+                        "8*(default, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");

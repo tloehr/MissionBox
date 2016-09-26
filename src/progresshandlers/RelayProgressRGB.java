@@ -45,7 +45,7 @@ public class RelayProgressRGB extends PercentageInterface {
     @Override
     public void setValue(BigDecimal percent) {
 
-        logger.debug("PERCENT: " + percent);
+//        logger.debug("PERCENT: " + percent);
 
         if (percent.compareTo(BigDecimal.ZERO) < 0) {
             MissionBox.off(pinRed);

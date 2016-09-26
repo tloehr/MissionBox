@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by tloehr on 07.06.15.
  */
-public class RelaySiren extends PercentageInterface {
+public class EscalatingSirens extends PercentageInterface {
 
     protected final List<String> keys;
     protected final Logger logger = Logger.getLogger(getClass());
@@ -21,8 +21,8 @@ public class RelaySiren extends PercentageInterface {
      * please note that all the pins have to be within the same CD in order for this Interface to run properly.
      * @param myKeys
      */
-    public RelaySiren(String... myKeys) {
-        super("Sirens Escalating");
+    public EscalatingSirens(String... myKeys) {
+        super("Escalating over Sirens");
         keys = Arrays.asList((String[]) myKeys);
     }
 

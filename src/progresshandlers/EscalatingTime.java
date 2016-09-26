@@ -11,7 +11,7 @@ import java.math.RoundingMode;
  * This class progresses through a group of pins (defined by their keys within the outputMap. According to the number of defined pins
  * and the current percentage set by setValue(), the corresponding pin is chosen to blink in the frequency pulsetimeinmillis.
  */
-public class RelaySirenPulsating extends PercentageInterface {
+public class EscalatingTime extends PercentageInterface {
     long pulsetimeinmillis = 1000; // Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.MBX_SIREN_TIME));
     private int previousTenth = -1;
     protected final Logger logger = Logger.getLogger(getClass());
@@ -22,8 +22,8 @@ public class RelaySirenPulsating extends PercentageInterface {
     /**
      * @param key
      */
-    public RelaySirenPulsating(String key) {
-        super("Pulsating Siren");
+    public EscalatingTime(String key) {
+        super("Escalating over Time");
         this.key = key;
     }
 
@@ -54,6 +54,6 @@ public class RelaySirenPulsating extends PercentageInterface {
         logger.debug("onTime " + onTime);
         logger.debug("offTime " + offTime);
 
-        MissionBox.setScheme(key, FOREVER + ";" + onTime + "," + offTime);
+        // MissionBox.setScheme(key, FOREVER + ";" + onTime + "," + offTime);
     }
 }

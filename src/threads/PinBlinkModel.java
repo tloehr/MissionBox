@@ -33,7 +33,7 @@ public class PinBlinkModel implements Callable<String> {
                 while (hasNext()) {
                     if (Thread.currentThread().isInterrupted()) {
                         pin.setOn(false);
-                        logger.debug(pin.getName() + ": interrupted");
+//                        logger.debug(pin.getName() + ": interrupted");
                         pin.setText("");
                         return null;
                     }
@@ -42,11 +42,11 @@ public class PinBlinkModel implements Callable<String> {
                     pin.setOn(currentlyOn);
 
                     try {
-                        logger.debug(time + "ms");
-                        Thread.sleep(time);
+//                        logger.debug(time + "ms");
+                        if (time > 0) Thread.sleep(time);
                     } catch (InterruptedException exc) {
                         pin.setOn(false);
-                        logger.debug(pin.getName() + ": interrupted");
+//                        logger.debug(pin.getName() + ": interrupted");
                         pin.setText("");
                         return null;
                     }

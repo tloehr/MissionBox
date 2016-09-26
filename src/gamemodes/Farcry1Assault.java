@@ -2,15 +2,12 @@ package gamemodes;
 
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -168,7 +165,7 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
 //                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";50,50");
 //                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";50,50");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";50,50");
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";150,150");
 
                 MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";50,50");
 
@@ -195,13 +192,15 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
                 MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
 
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";1000,1000");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";1000,1000");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";1000,1000");
 
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";1000,1000");
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_BLUE, FOREVER + ";1000,1000");
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";1000,1000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";1000,2000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";0,1000,1000,1000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";0,2000,1000,0");
+
+                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";2000,1000");
+                MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";0,1000,2000,0");
+                MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
+
 
                 MissionBox.stop("siren");
                 MissionBox.stop("rocket");
@@ -233,6 +232,8 @@ public class Farcry1Assault implements GameModes {
                     MissionBox.log("Angreifer haben gewonnen");
                     MissionBox.playWinner();
 
+                    MissionBox.off(MissionBox.MBX_LED_RGB_GREEN);
+                    MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
                     MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
                     MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";1000,1000");
                     MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
@@ -241,6 +242,8 @@ public class Farcry1Assault implements GameModes {
                     MissionBox.play("defeat");
                     MissionBox.log("Verteidiger haben gewonnen");
                     MissionBox.playLooser();
+                    MissionBox.off(MissionBox.MBX_LED_RGB_RED);
+                    MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
                     MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";1000,1000");
                     MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";1000,1000");
                     MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
@@ -262,10 +265,10 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
                 MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
 
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";500,500");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";500,500");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";500,500");
 
+                MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
+                MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";500,500");
                 MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";500,500");
 
                 MissionBox.stop("siren");

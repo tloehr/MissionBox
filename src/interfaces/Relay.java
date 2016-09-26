@@ -51,13 +51,16 @@ public class Relay implements OnOffInterface {
 
     public Relay(String configKey, Color color, JPanel addYourself2this, boolean thisIsASiren) {
         this(MissionBox.getOutputMap().get(MissionBox.getConfig().getProperty(configKey)), configKey, thisIsASiren);
-        debugLED = new MyLED(configKey, color);
-        addYourself2this.add(debugLED);
+
+        if (addYourself2this != null) {
+            debugLED = new MyLED(configKey, color);
+            addYourself2this.add(debugLED);
+        }
     }
 
 
-
     public void setText(String text) {
+
         if (text.isEmpty()) {
             debugLED.setText(name);
         } else {
@@ -76,6 +79,6 @@ public class Relay implements OnOffInterface {
         // only activate this pin, when its generally allowed to play sirens or when this pin is NOT a siren
         if (pin != null && (MissionBox.isSIREN() || !isSiren())) pin.setState(on ? PinState.HIGH : PinState.LOW);
         if (debugLED != null) debugLED.setOn(on);
-        logger.debug(name + " " + (on ? "on" : "off"));
+//        logger.debug(name + " " + (on ? "on" : "off"));
     }
 }
