@@ -23,7 +23,7 @@ public class Farcry1Assault implements GameModes {
     private DateTime lastRespawn = new DateTime();
     private int RESPAWNINSECONDS = 55;
     private boolean firstStart = true;
-    private boolean RESPAWN = false;
+
     private String FOREVER = Integer.toString(Integer.MAX_VALUE);
 
     public Farcry1Assault() throws IOException {
@@ -31,8 +31,14 @@ public class Farcry1Assault implements GameModes {
 
         logger.setLevel(MissionBox.getLogLevel());
 
-//        MessageListener textListener = messageEvent -> logger.debug(messageEvent.getMessage().toString());
-
+        /***
+         *       ____                     _____ _                     _
+         *      / ___| __ _ _ __ ___   __|_   _(_)_ __ ___   ___     / \   _ __  _ __   ___  _   _ _ __   ___ ___ _ __
+         *     | |  _ / _` | '_ ` _ \ / _ \| | | | '_ ` _ \ / _ \   / _ \ | '_ \| '_ \ / _ \| | | | '_ \ / __/ _ \ '__|
+         *     | |_| | (_| | | | | | |  __/| | | | | | | | |  __/  / ___ \| | | | | | | (_) | |_| | | | | (_|  __/ |
+         *      \____|\__,_|_| |_| |_|\___||_| |_|_| |_| |_|\___| /_/   \_\_| |_|_| |_|\___/ \__,_|_| |_|\___\___|_|
+         *
+         */
         MessageListener gameTimeListener = messageEvent -> {
             String thisAnnoucement = messageEvent.getDateTimeFormatted();
 
@@ -44,7 +50,7 @@ public class Farcry1Assault implements GameModes {
                     if (MissionBox.isSOUND()) MissionBox.getTimeAnnouncements().get(thisAnnoucement).play();
 
                     int minutes = messageEvent.getTime().getMinuteOfHour();
-                    int seconds = messageEvent.getTime().getSecondOfMinute() / 10;
+                    int seconds = messageEvent.getTime().getSecondOfMinute();
 
                     logger.debug("time announcer: " + minutes + ":" + seconds);
 
@@ -53,19 +59,19 @@ public class Farcry1Assault implements GameModes {
                     }
 
                     if (minutes == 0) {
-                        MissionBox.secondsSignal(seconds);
+                        if (seconds > 10) MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, seconds/10 + ";500,500");
+                        else if (seconds == 10) MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, seconds + ";500,500");
                     }
-
                 }
 
                 // Respawn announcer
-                if (RESPAWN) {
+                if (MissionBox.isRESPAWN()) {
                     if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                         MissionBox.setRespawnTimer(Integer.toString(RESPAWNINSECONDS - Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds()));
                         if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
                             lastRespawn = new DateTime();
                             MissionBox.play("minions");
-                            MissionBox.setScheme("respawnSiren", "1;2000,0");
+                            MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;2000,0");
                             logger.info("Respawn...");
                         }
                     }
@@ -207,8 +213,9 @@ public class Farcry1Assault implements GameModes {
 
                 if (firstStart) {
                     firstStart = false;
-                    MissionBox.play("tranquility");
+//                    MissionBox.play("tranquility");
                 }
+                MissionBox.play("tranquility");
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
                 /***
@@ -248,7 +255,7 @@ public class Farcry1Assault implements GameModes {
                     MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";1000,1000");
                     MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
                     MissionBox.off(MissionBox.MBX_LED_PB_RED);
-                    MissionBox.setScheme("shutdownSiren", "1;5000,0");
+                    MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;5000,0");
                 }
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
                 /***

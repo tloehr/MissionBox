@@ -5,6 +5,7 @@
 package main;
 
 import com.jgoodies.forms.factories.CC;
+import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import interfaces.PercentageInterface;
 import misc.Tools;
@@ -44,6 +45,32 @@ public class FrmTest extends JFrame {
         btnSound.addActionListener(e -> MissionBox.setSOUND(btnSound.isSelected()));
         btnMusic.addActionListener(e -> MissionBox.setMUSIC(btnMusic.isSelected()));
         btnRespawnSignal.addActionListener(e -> MissionBox.setRESPAWN(btnRespawn.isSelected()));
+
+        tbDebug.setSelected(MissionBox.getConfig().getProperty(MissionBox.MBX_DEBUG).equals("true"));
+        tbDebug.addItemListener(i -> {
+            MissionBox.getConfig().setProperty(MissionBox.MBX_DEBUG, i.getStateChange() == ItemEvent.SELECTED ? "true" : "false");
+
+            SwingUtilities.invokeLater(() -> {
+                if (i.getStateChange() == ItemEvent.SELECTED) {
+                    ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("default"));
+                } else {
+                    ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("0dlu"));
+                }
+                contentPanel.revalidate();
+                contentPanel.repaint();
+            });
+        });
+
+
+        SwingUtilities.invokeLater(() -> {
+            if (tbDebug.isSelected()) {
+                ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("default"));
+            } else {
+                ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("0dlu"));
+            }
+            contentPanel.revalidate();
+            contentPanel.repaint();
+        });
 
         setTitle(MissionBox.getAppinfo().getProperty("program.BUILDDATE") + " [" + MissionBox.getAppinfo().getProperty("program.BUILDNUM") + "]");
 
@@ -109,6 +136,10 @@ public class FrmTest extends JFrame {
         } else if (name.equalsIgnoreCase("quit")) {
             lblButtonQuit.setEnabled(on);
         }
+    }
+
+    public JToggleButton getTbDebug() {
+        return tbDebug;
     }
 
     private void relayAction(ActionEvent e) {
@@ -265,7 +296,7 @@ public class FrmTest extends JFrame {
     }
 
     private void btnRedLedBarActionPerformed(ActionEvent e) {
-        MissionBox.secondsSignal(3);
+        MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, "3;500,500");
     }
 
     private void lblFCYCaptureActionPerformed(ActionEvent e) {
@@ -305,7 +336,7 @@ public class FrmTest extends JFrame {
     }
 
     private void btnRespawnActionPerformed(ActionEvent e) {
-        MissionBox.setScheme("respawnSiren", "1;1000,1000");
+        MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;1000,1000");
     }
 
     private void btnTimeSignalActionPerformed(ActionEvent e) {
@@ -406,6 +437,7 @@ public class FrmTest extends JFrame {
         btnGreen = new JButton();
         btnUndo = new JButton();
         btn2 = new JButton();
+        tbDebug = new JToggleButton();
         pb1 = new JProgressBar();
         lblMessage = new JLabel();
         lblTimer = new JLabel();
@@ -485,14 +517,14 @@ public class FrmTest extends JFrame {
             {
                 contentPanel.setLayout(new FormLayout(
                         "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, 10dlu, $lgap, default"));
+                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
                 btn1.setIcon(new ImageIcon(getClass().getResource("/artwork/farcry-logo-64.png")));
                 btn1.setHorizontalTextPosition(SwingConstants.CENTER);
                 btn1.setVerticalTextPosition(SwingConstants.BOTTOM);
-                btn1.setFont(new Font("Dialog", Font.BOLD, 20));
+                btn1.setFont(new Font("Dialog", Font.BOLD, 18));
                 contentPanel.add(btn1, CC.xy(1, 1));
 
                 //======== scrollPane2 ========
@@ -504,13 +536,13 @@ public class FrmTest extends JFrame {
                     }
                     scrollPane2.setViewportView(debugPanel4Pins);
                 }
-                contentPanel.add(scrollPane2, CC.xywh(3, 1, 1, 5));
+                contentPanel.add(scrollPane2, CC.xywh(3, 1, 1, 7));
 
                 //======== scrollPane1 ========
                 {
                     scrollPane1.setViewportView(txtLog);
                 }
-                contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 5));
+                contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 7));
 
                 //======== panel2 ========
                 {
@@ -528,12 +560,12 @@ public class FrmTest extends JFrame {
                     btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen64.png")));
                     panel2.add(btnGreen, CC.xy(1, 3, CC.FILL, CC.FILL));
                 }
-                contentPanel.add(panel2, CC.xywh(7, 1, 1, 5));
+                contentPanel.add(panel2, CC.xywh(7, 1, 1, 7));
 
                 //---- btnUndo ----
                 btnUndo.setText("Undo");
                 btnUndo.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue64.png")));
-                btnUndo.setFont(new Font("Dialog", Font.BOLD, 20));
+                btnUndo.setFont(new Font("Dialog", Font.BOLD, 18));
                 btnUndo.setVerticalTextPosition(SwingConstants.BOTTOM);
                 btnUndo.setHorizontalTextPosition(SwingConstants.CENTER);
                 contentPanel.add(btnUndo, CC.xy(1, 3));
@@ -542,23 +574,32 @@ public class FrmTest extends JFrame {
                 btn2.setText(null);
                 btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit64.png")));
                 contentPanel.add(btn2, CC.xy(1, 5));
-                contentPanel.add(pb1, CC.xywh(1, 7, 7, 1));
+
+                //---- tbDebug ----
+                tbDebug.setText("Debug");
+                tbDebug.setFont(new Font("Dialog", Font.BOLD, 18));
+                tbDebug.setIcon(new ImageIcon(getClass().getResource("/artwork/circle_grey_64.png")));
+                tbDebug.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/circle_yellow_64.png")));
+                tbDebug.setVerticalTextPosition(SwingConstants.BOTTOM);
+                tbDebug.setHorizontalTextPosition(SwingConstants.CENTER);
+                contentPanel.add(tbDebug, CC.xy(1, 7));
+                contentPanel.add(pb1, CC.xywh(1, 8, 7, 1));
 
                 //---- lblMessage ----
                 lblMessage.setText("text");
                 lblMessage.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblMessage, CC.xy(1, 9));
+                contentPanel.add(lblMessage, CC.xy(1, 10));
 
                 //---- lblTimer ----
                 lblTimer.setText("--");
                 lblTimer.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblTimer, CC.xy(5, 9, CC.CENTER, CC.DEFAULT));
+                contentPanel.add(lblTimer, CC.xy(5, 10, CC.CENTER, CC.DEFAULT));
 
                 //---- lblRespawn ----
                 lblRespawn.setText("--");
                 lblRespawn.setFont(new Font("Dialog", Font.PLAIN, 16));
                 lblRespawn.setForeground(Color.red);
-                contentPanel.add(lblRespawn, CC.xy(7, 9, CC.CENTER, CC.DEFAULT));
+                contentPanel.add(lblRespawn, CC.xy(7, 10, CC.CENTER, CC.DEFAULT));
             }
             tabbedPane1.addTab("Game", contentPanel);
 
@@ -921,7 +962,7 @@ public class FrmTest extends JFrame {
             tabbedPane1.addTab("HW-Test", panel1);
         }
         contentPane.add(tabbedPane1);
-        setSize(675, 395);
+        setSize(675, 470);
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -980,6 +1021,7 @@ public class FrmTest extends JFrame {
     private JButton btnGreen;
     private JButton btnUndo;
     private JButton btn2;
+    private JToggleButton tbDebug;
     private JProgressBar pb1;
     private JLabel lblMessage;
     private JLabel lblTimer;

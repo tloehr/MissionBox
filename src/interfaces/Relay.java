@@ -60,7 +60,7 @@ public class Relay implements OnOffInterface {
 
 
     public void setText(String text) {
-
+        if (!MissionBox.getFrmTest().getTbDebug().isSelected()) return;
         if (text.isEmpty()) {
             debugLED.setText(name);
         } else {
@@ -78,7 +78,6 @@ public class Relay implements OnOffInterface {
     public void setOn(boolean on) {
         // only activate this pin, when its generally allowed to play sirens or when this pin is NOT a siren
         if (pin != null && (MissionBox.isSIREN() || !isSiren())) pin.setState(on ? PinState.HIGH : PinState.LOW);
-        if (debugLED != null) debugLED.setOn(on);
-//        logger.debug(name + " " + (on ? "on" : "off"));
+        if (debugLED != null && MissionBox.getFrmTest().getTbDebug().isSelected()) debugLED.setOn(on);
     }
 }

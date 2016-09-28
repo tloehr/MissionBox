@@ -71,6 +71,7 @@ public class MissionBox {
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
     public static final String FCY_RESPAWN = "fcy.respawn";
+    public static final String MBX_DEBUG = "mbx.debug";
 
     public static final String MBX_SIREN1 = "mbx.siren1";
     public static final String MBX_SIREN2 = "mbx.siren2";
@@ -179,6 +180,8 @@ public class MissionBox {
         hwinit();
         initPinHandler();
         initProgressSystem();
+
+        if (GPIO != null) frmTest.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         if (GPIO == null) SIREN = false; // override for local pc usage
 
@@ -652,7 +655,7 @@ public class MissionBox {
         config.put(MBX_BTN_GREEN, "mcp23017-02-B1");
         config.put(MBX_BTN_START_STOP, "mcp23017-02-B2");
         config.put(MBX_BTN_QUIT, "mcp23017-02-B3");
-        config.put(MBX_BTN_UNDO, "mcp23017-02-B4");
+        config.put(MBX_DEBUG, "true");
 
         File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
 
@@ -745,12 +748,9 @@ public class MissionBox {
     }
 
     public static void minuteSignal(int minutes) {
-        setScheme("timeSignal", minutes + ";1000,1000");
+        setScheme(MBX_TIME_SIREN, minutes + ";1000,1000");
     }
 
-    public static void secondsSignal(int seconds) {
-        setScheme("timeSignal", seconds + ";500,500");
-    }
 
     public static void setRespawnTimer(String message) {
         frmTest.setRespawnTimer(message);
