@@ -44,7 +44,7 @@ public class FrmTest extends JFrame {
         btnSiren.addActionListener(e -> MissionBox.setSIREN(btnSiren.isSelected()));
         btnSound.addActionListener(e -> MissionBox.setSOUND(btnSound.isSelected()));
         btnMusic.addActionListener(e -> MissionBox.setMUSIC(btnMusic.isSelected()));
-        btnRespawnSignal.addActionListener(e -> MissionBox.setRESPAWN(btnRespawn.isSelected()));
+        btnRespawnSignal.addActionListener(e -> MissionBox.setRESPAWN(btnRespawnSignal.isSelected()));
 
         tbDebug.setSelected(MissionBox.getConfig().getProperty(MissionBox.MBX_DEBUG).equals("true"));
         tbDebug.addItemListener(i -> {
@@ -220,13 +220,13 @@ public class FrmTest extends JFrame {
     }
 
     void fcyRespawnChange(int seconds) {
-        int respawn = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
+        int respawn = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_TIME));
 
         if (respawn + seconds < 1) respawn = 1;
         else respawn += seconds;
 
         final String text = Integer.toString(respawn);
-        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN, text);
+        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN_TIME, text);
         SwingUtilities.invokeLater(() -> {
             lblFCYRespawn.setText(text);
             revalidate();
@@ -268,7 +268,7 @@ public class FrmTest extends JFrame {
         } else if (tabbedPane1.getSelectedIndex() == 1) {
             lblFCYCapture.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
             lblFCYGametime.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
-            lblFCYRespawn.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
+            lblFCYRespawn.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_TIME));
             btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("true"));
             btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("true"));
             btnRespawnSignal.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_SIGNAL).equals("true"));
@@ -325,9 +325,9 @@ public class FrmTest extends JFrame {
 
     private void lblFCYRespawnActionPerformed(ActionEvent e) {
         JTextField txt = ((JTextField) e.getSource());
-        int capture = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN));
+        int capture = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_TIME));
         int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
-        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN, Integer.toString(value));
+        MissionBox.getConfig().setProperty(MissionBox.FCY_RESPAWN_TIME, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
 
@@ -437,10 +437,10 @@ public class FrmTest extends JFrame {
         btnGreen = new JButton();
         btnUndo = new JButton();
         btn2 = new JButton();
-        tbDebug = new JToggleButton();
-        pb1 = new JProgressBar();
-        lblMessage = new JLabel();
         lblTimer = new JLabel();
+        tbDebug = new JToggleButton();
+        lblMessage = new JLabel();
+        pb1 = new JProgressBar();
         lblRespawn = new JLabel();
         settingsPanel = new JPanel();
         label1 = new JLabel();
@@ -516,8 +516,8 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
+                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
@@ -542,13 +542,13 @@ public class FrmTest extends JFrame {
                 {
                     scrollPane1.setViewportView(txtLog);
                 }
-                contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 7));
+                contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 3));
 
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                            "default:grow",
-                            "fill:default:grow, $lgap, fill:default:grow"));
+                        "default:grow",
+                        "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
@@ -575,25 +575,25 @@ public class FrmTest extends JFrame {
                 btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit64.png")));
                 contentPanel.add(btn2, CC.xy(1, 5));
 
+                //---- lblTimer ----
+                lblTimer.setText("--");
+                lblTimer.setFont(new Font("Dialog", Font.BOLD, 64));
+                lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
+                contentPanel.add(lblTimer, CC.xy(5, 5, CC.FILL, CC.DEFAULT));
+
                 //---- tbDebug ----
                 tbDebug.setText("Debug");
                 tbDebug.setFont(new Font("Dialog", Font.BOLD, 18));
-                tbDebug.setIcon(new ImageIcon(getClass().getResource("/artwork/circle_grey_64.png")));
-                tbDebug.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/circle_yellow_64.png")));
-                tbDebug.setVerticalTextPosition(SwingConstants.BOTTOM);
-                tbDebug.setHorizontalTextPosition(SwingConstants.CENTER);
-                contentPanel.add(tbDebug, CC.xy(1, 7));
-                contentPanel.add(pb1, CC.xywh(1, 8, 7, 1));
+                tbDebug.setIcon(new ImageIcon(getClass().getResource("/artwork/circle_grey_32.png")));
+                tbDebug.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/circle_yellow_32.png")));
+                contentPanel.add(tbDebug, CC.xy(1, 7, CC.FILL, CC.DEFAULT));
 
                 //---- lblMessage ----
                 lblMessage.setText("text");
-                lblMessage.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblMessage, CC.xy(1, 10));
-
-                //---- lblTimer ----
-                lblTimer.setText("--");
-                lblTimer.setFont(new Font("Dialog", Font.PLAIN, 16));
-                contentPanel.add(lblTimer, CC.xy(5, 10, CC.CENTER, CC.DEFAULT));
+                lblMessage.setFont(new Font("Dialog", Font.BOLD, 28));
+                lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
+                contentPanel.add(lblMessage, CC.xy(5, 7));
+                contentPanel.add(pb1, CC.xywh(1, 8, 7, 1));
 
                 //---- lblRespawn ----
                 lblRespawn.setText("--");
@@ -606,8 +606,8 @@ public class FrmTest extends JFrame {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                        "2*(pref:grow, $rgap), pref",
-                        "3*(default, $lgap), fill:default:grow"));
+                    "2*(pref:grow, $rgap), pref",
+                    "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -826,8 +826,8 @@ public class FrmTest extends JFrame {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                        "default, $lcgap, 3*(default, $ugap), default",
-                        "8*(default, $lgap), default"));
+                    "default, $lcgap, 3*(default, $ugap), default",
+                    "8*(default, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
@@ -1021,10 +1021,10 @@ public class FrmTest extends JFrame {
     private JButton btnGreen;
     private JButton btnUndo;
     private JButton btn2;
-    private JToggleButton tbDebug;
-    private JProgressBar pb1;
-    private JLabel lblMessage;
     private JLabel lblTimer;
+    private JToggleButton tbDebug;
+    private JLabel lblMessage;
+    private JProgressBar pb1;
     private JLabel lblRespawn;
     private JPanel settingsPanel;
     private JLabel label1;

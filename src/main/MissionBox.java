@@ -63,14 +63,15 @@ public class MissionBox {
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
     public static final String FCY_MUSIC = "fcy.music";
-    public static final String FCY_RESPAWN_SIGNAL = "fcy.respawn.signal";
+
     public static final String FCY_SOUND = "fcy.sound";
     public static final String FCY_SIREN = "fcy.siren";
     public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
     //    public static final String MBX_GUI = "mbx.gui";
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
-    public static final String FCY_RESPAWN = "fcy.respawn";
+    public static final String FCY_RESPAWN_TIME = "fcy.respawn.time";
+    public static final String FCY_RESPAWN_SIGNAL = "fcy.respawn.signal";
     public static final String MBX_DEBUG = "mbx.debug";
 
     public static final String MBX_SIREN1 = "mbx.siren1";
@@ -114,7 +115,7 @@ public class MissionBox {
 
     public static void setRESPAWN(boolean RESPAWN) {
         MissionBox.RESPAWN = RESPAWN;
-        config.setProperty(MissionBox.FCY_RESPAWN, RESPAWN ? "true" : "false");
+        config.setProperty(MissionBox.FCY_RESPAWN_SIGNAL, RESPAWN ? "true" : "false");
     }
 
     private static boolean SIREN = false;
@@ -632,7 +633,7 @@ public class MissionBox {
         config.put(FCY_RESPAWN_SIGNAL, "true");
         config.put(FCY_SIREN, "true");
         config.put(MBX_SIREN_TIME, "750");
-        config.put(FCY_RESPAWN, "40");
+        config.put(FCY_RESPAWN_TIME, "40");
         config.put(MBX_LOGLEVEL, "debug");
         config.put(MBX_I2C_1, "0x20");
         config.put(MBX_I2C_2, "0x24");
@@ -642,8 +643,8 @@ public class MissionBox {
         config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B4");
         config.put(MBX_TIME_SIREN, "mcp23017-01-B3");
         config.put(MBX_RESPAWN_SIREN, "mcp23017-01-B2");
-        config.put(MBX_LED_GREEN, "mcp23017-01-A1");
-        config.put(MBX_LED_RED, "mcp23017-01-A0");
+        config.put(MBX_LED_GREEN, "mcp23017-01-A7");
+        config.put(MBX_LED_RED, "mcp23017-01-A6");
         config.put(MBX_LED_PB_GREEN, "mcp23017-01-A3");
         config.put(MBX_LED_PB_YELLOW, "mcp23017-01-A4");
         config.put(MBX_LED_PB_RED, "mcp23017-01-A5");

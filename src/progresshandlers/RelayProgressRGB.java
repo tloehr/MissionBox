@@ -27,10 +27,10 @@ public class RelayProgressRGB extends PercentageInterface {
     final Color red = new Color(255, 0, 0);
 
     final String on = "1;" + Long.MAX_VALUE + ",0";
-    final String slow = Integer.toString(Integer.MAX_VALUE) + ";750,750";
-    final String fast = Integer.toString(Integer.MAX_VALUE) + ";350,350";
+    final String slow = Integer.toString(Integer.MAX_VALUE) + ";1000,1000";
+    final String fast = Integer.toString(Integer.MAX_VALUE) + ";500,500";
 
-    final Color[] colors = {red, red, red, yellow, yellow, yellow, green, green, green};
+    final Color[] colors = {red, red, red, blue, blue, blue, green, green, green};
 //    final String[] schemes = {on, slow, fast, on, slow, fast, on, slow, fast};
     final String[] schemes = {fast, slow, on, fast, slow, on, fast, slow, on};
 
