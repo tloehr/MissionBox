@@ -626,6 +626,9 @@ public class MissionBox {
         config = new SortedProperties();
         // some defaults
 
+
+
+
         config.put(FCY_TIME2CAPTURE, "20");
         config.put(FCY_GAMETIME, "5");
         config.put(FCY_SOUND, "true");
@@ -637,9 +640,9 @@ public class MissionBox {
         config.put(MBX_LOGLEVEL, "debug");
         config.put(MBX_I2C_1, "0x20");
         config.put(MBX_I2C_2, "0x24");
-        config.put(MBX_SIREN1, "mcp23017-01-B5");
+        config.put(MBX_SIREN1, "mcp23017-01-B7");
         config.put(MBX_SIREN2, "mcp23017-01-B6");
-        config.put(MBX_SIREN3, "mcp23017-01-B7");
+        config.put(MBX_SIREN3, "mcp23017-01-B5");
         config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B4");
         config.put(MBX_TIME_SIREN, "mcp23017-01-B3");
         config.put(MBX_RESPAWN_SIREN, "mcp23017-01-B2");

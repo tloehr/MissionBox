@@ -145,37 +145,37 @@ public class FrmTest extends JFrame {
     private void relayAction(ActionEvent e) {
         String text = ((JButton) e.getSource()).getText();
         if (text.equalsIgnoreCase("relay1")) {
-            MissionBox.setScheme("mcp23017-01-B0", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-B7", "1;2000,1000");
         } else if (text.equalsIgnoreCase("relay2")) {
-            MissionBox.setScheme("mcp23017-01-B1", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-B6", "1;2000,1000");
         } else if (text.equalsIgnoreCase("relay3")) {
-            MissionBox.setScheme("mcp23017-01-B2", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-B5", "1;2000,1000");
         } else if (text.equalsIgnoreCase("relay4")) {
-            MissionBox.setScheme("mcp23017-01-B3", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-B4", "1;2000,1000");
         } else if (text.equalsIgnoreCase("relay5")) {
-            MissionBox.setScheme("mcp23017-01-B4", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-B3", "1;2000,1000");
         } else if (text.equalsIgnoreCase("relay6")) {
-            MissionBox.setScheme("mcp23017-01-B5", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-B2", "1;2000,1000");
         } else if (text.equalsIgnoreCase("relay7")) {
-            MissionBox.setScheme("mcp23017-01-B6", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-B1", "1;2000,1000");
         } else if (text.equalsIgnoreCase("relay8")) {
-            MissionBox.setScheme("mcp23017-01-B7", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-B0", "1;2000,1000");
         } else if (text.equalsIgnoreCase("LEDred")) {
-            MissionBox.setScheme("mcp23017-01-A7", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-A7", "1;2000,1000");
         } else if (text.equalsIgnoreCase("LEDgreen")) {
-            MissionBox.setScheme("mcp23017-01-A6", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-A6", "1;2000,1000");
         } else if (text.equalsIgnoreCase("PBred")) {
-            MissionBox.setScheme("mcp23017-01-A5", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-A5", "1;2000,1000");
         } else if (text.equalsIgnoreCase("PByellow")) {
-            MissionBox.setScheme("mcp23017-01-A4", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-A4", "1;2000,1000");
         } else if (text.equalsIgnoreCase("PBgreen")) {
-            MissionBox.setScheme("mcp23017-01-A3", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-01-A3", "1;2000,1000");
         } else if (text.equalsIgnoreCase("RGBred")) {
-            MissionBox.setScheme("mcp23017-02-A7", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-02-A7", "1;2000,1000");
         } else if (text.equalsIgnoreCase("RGBgreen")) {
-            MissionBox.setScheme("mcp23017-02-A6", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-02-A6", "1;2000,1000");
         } else if (text.equalsIgnoreCase("RGBblue")) {
-            MissionBox.setScheme("mcp23017-02-A5", "1;1000,1000");
+            MissionBox.setScheme("mcp23017-02-A5", "1;2000,1000");
         }
 
 
