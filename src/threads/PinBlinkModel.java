@@ -74,6 +74,8 @@ public class PinBlinkModel implements Callable<String> {
     public void setScheme(String scheme) {
         onOffScheme.clear();
 
+        logger.debug("new scheme for pin: " + pin.getName() + " : " + scheme);
+
         String[] splitScheme = scheme.trim().split(";");
 
         String textScheme = "";
@@ -90,9 +92,7 @@ public class PinBlinkModel implements Callable<String> {
             }
         }
 
-
         pin.setText(textScheme);
-
     }
 
 

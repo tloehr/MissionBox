@@ -129,8 +129,9 @@ public class MissionBox {
 
     private static ArrayList<String> winnerSongs = new ArrayList<>();
     private static ArrayList<String> looserSongs = new ArrayList<>();
-    private static int currentLooser = 0, currentWinner = 0;
-    private static Music winner = null, looser = null;
+    private static ArrayList<String> pregameSongs = new ArrayList<>();
+    private static int currentLooser = 0, currentWinner = 0, currentPregame = 0;
+    private static Music winner = null, looser = null, pregame = null;
 
     private static HashMap<String, Sound> timeAnnouncements = new HashMap();
     private static Sound[] countdown = new Sound[11];
@@ -171,8 +172,6 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
 
         loadLocalProperties();
-//        frmSimulator = new FrmSimulator();
-
 
         frmTest = new FrmTest();
         frmTest.setVisible(true);
@@ -181,6 +180,7 @@ public class MissionBox {
         hwinit();
         initPinHandler();
         initProgressSystem();
+
 
         if (GPIO != null) frmTest.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -379,55 +379,48 @@ public class MissionBox {
 
         startup_progress = 5;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
 
         TinySound.init();
 
-
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         soundMap.put("siren", TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_SIREN)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         soundMap.put("welcome", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_WELCOME)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         soundMap.put("rocket", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_FLARE)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         soundMap.put("minions", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_MINIONS_SPAWNED)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         soundMap.put("victory", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_VICTORY)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
         soundMap.put("defeat", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_DEFEAT)));
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
-        soundMap.put("shutdown", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN)));
 
-        startup_progress = startup_progress + 6;
-        Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
-        soundMap.put("tranquility", TinySound.loadMusic(new File(Tools.getSoundPath() + File.separator + Tools.SND_TRANQUILITY)));
+        soundMap.put("shutdown", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_SHUTDOWN)));
 
         for (int i = 0; i <= 10; i++) {
             startup_progress = startup_progress + 2;
             Tools.printProgBar(startup_progress);
-            frmTest.setProgress(startup_progress);
+
             countdown[i] = TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.COUNTDOWN[i]));
         }
 
@@ -440,46 +433,49 @@ public class MissionBox {
         looserSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_WHO_WANTS_TO_LIVE_FOREVER);
         looserSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_BE_HAPPY);
 
+        pregameSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_TRANQUILITY);
+        pregameSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_SIRIUS);
+        pregameSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_ZZTOP);
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("20:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_20_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("10:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_10_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("05:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_5_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("04:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_4_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("03:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_3_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("02:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_2_MINUTES)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("01:00", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_1_MINUTE)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("00:30", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_30_SECONDS)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("00:20", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_20_SECONDS)));
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
-        frmTest.setProgress(startup_progress);
+
         timeAnnouncements.put("00:10", TinySound.loadSound(new File(Tools.getSoundPath() + File.separator + Tools.SND_10_SECONDS)));
 
 
@@ -491,6 +487,39 @@ public class MissionBox {
 
     public static void enableSettings(boolean enable) {
         frmTest.enableSettings(enable);
+    }
+
+    public static void playPregame() {
+        if (!MUSIC) return;
+        stopPregame();
+
+        currentPregame++;
+        if (currentPregame >= pregameSongs.size()) {
+            currentPregame = 0;
+        }
+
+
+        SwingWorker<Music, Music> sw = new SwingWorker() {
+            @Override
+            protected Music doInBackground() throws Exception {
+                return TinySound.loadMusic(new File(pregameSongs.get(currentPregame)));
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    pregame = (Music) get();
+                    if (pregame != null) pregame.play(false);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        sw.execute();
+
     }
 
     public static void playWinner() {
@@ -589,9 +618,20 @@ public class MissionBox {
         looser = null;
     }
 
+    private static void stopPregame() {
+        if (pregame == null) return;
+
+        if (!pregame.done()) {
+            pregame.stop();
+            pregame.unload();
+        }
+        pregame = null;
+    }
+
     public static void stopAllSongs() {
         stopWinner();
         stopLooser();
+        stopPregame();
     }
 
     public static void play(String key) {
@@ -625,8 +665,6 @@ public class MissionBox {
     private static void loadLocalProperties() throws IOException {
         config = new SortedProperties();
         // some defaults
-
-
 
 
         config.put(FCY_TIME2CAPTURE, "20");

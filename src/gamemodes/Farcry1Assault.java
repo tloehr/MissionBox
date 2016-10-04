@@ -223,7 +223,7 @@ public class Farcry1Assault implements GameModes {
                     firstStart = false;
 //                    MissionBox.play("tranquility");
                 }
-                MissionBox.play("tranquility");
+                MissionBox.playPregame();
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
                 /***
@@ -301,7 +301,6 @@ public class Farcry1Assault implements GameModes {
                 logger.debug("GAME_FLAG_ACTIVE");
                 MissionBox.clearLog();
                 MissionBox.log("Flagge bereit zur Eroberung. Spiel läuft");
-                MissionBox.stop("tranquility");
                 MissionBox.stopAllSongs();
                 MissionBox.enableSettings(false);
                 RESPAWNINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_TIME));
