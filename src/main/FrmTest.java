@@ -159,7 +159,8 @@ public class FrmTest extends JFrame {
         } else if (text.equalsIgnoreCase("relay7")) {
             MissionBox.setScheme("mcp23017-01-B1", "1;2000,1000");
         } else if (text.equalsIgnoreCase("relay8")) {
-            MissionBox.setScheme("mcp23017-01-B0", "1;2000,1000");
+            // airsiren
+            MissionBox.setScheme("mcp23017-01-B0", "5;750,1000");
         } else if (text.equalsIgnoreCase("LEDred")) {
             MissionBox.setScheme("mcp23017-01-A7", "1;2000,1000");
         } else if (text.equalsIgnoreCase("LEDgreen")) {

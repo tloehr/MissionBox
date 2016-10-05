@@ -53,6 +53,7 @@ public class PinBlinkModel implements Callable<String> {
                 }
             }
         }
+        pin.setText("");
         return null;
     }
 

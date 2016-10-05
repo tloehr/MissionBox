@@ -2,6 +2,7 @@ package interfaces;
 
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
+import com.sun.org.apache.regexp.internal.RE;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 
@@ -61,11 +62,12 @@ public class Relay implements OnOffInterface {
 
     public void setText(String text) {
         if (!MissionBox.getFrmTest().getTbDebug().isSelected()) return;
-        if (text.isEmpty()) {
-            debugLED.setText(name);
-        } else {
-            debugLED.setText(name + " [" + text + "]");
-        }
+        SwingUtilities.invokeLater(() -> {
+            debugLED.setText(text.isEmpty() ? name : name + " [" + text + "]");
+            debugLED.revalidate();
+            debugLED.repaint();
+        });
+
 
     }
 

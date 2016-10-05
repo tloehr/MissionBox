@@ -59,7 +59,7 @@ public class Farcry1Assault implements GameModes {
                     }
 
                     if (minutes == 0) {
-                        if (seconds > 10) MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, seconds/10 + ";500,500");
+                        if (seconds > 10) MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, seconds / 10 + ";500,500");
                         else if (seconds == 10) MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, seconds + ";500,500");
                     }
                 }
@@ -144,10 +144,10 @@ public class Farcry1Assault implements GameModes {
                 }
 
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN,FOREVER + ";350,3000");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW,FOREVER + ";350,3000");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED,FOREVER + ";350,3000");
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED,FOREVER + ";350,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";350,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";350,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";350,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";350,3000");
 
                 MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
 
@@ -167,7 +167,8 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setProgress(new BigDecimal(-1));
                 MissionBox.play("rocket");
 
-                MissionBox.setScheme(MissionBox.MBX_SIREN2, "1;3000,0"); // this is the signal for the launched rocket. Its the same as siren 2
+                //MissionBox.setScheme(MissionBox.MBX_SIREN2, "1;3000,0"); // this is the signal for the launched rocket. Its the same as siren 2
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "5;750,1000"); // 8,75 seconds
 
                 MissionBox.off(MissionBox.MBX_LED_RED);
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
@@ -200,7 +201,7 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
                 MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
-
+                MissionBox.off(MissionBox.MBX_AIRSIREN);
 
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";1000,2000");
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";0,1000,1000,1000");
@@ -253,6 +254,8 @@ public class Farcry1Assault implements GameModes {
                     MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";1000,1000");
                     MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
                     MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
+
+
                 } else {
                     MissionBox.play("defeat");
                     MissionBox.log("Verteidiger haben gewonnen");
@@ -263,8 +266,14 @@ public class Farcry1Assault implements GameModes {
                     MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";1000,1000");
                     MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
                     MissionBox.off(MissionBox.MBX_LED_PB_RED);
-                    MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;5000,0");
+                    //MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;5000,0");
+
                 }
+
+
+                // the end siren
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;2000,0");
+
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
                 /***
                  *      _____ _            _____     _
@@ -279,7 +288,6 @@ public class Farcry1Assault implements GameModes {
 
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
                 MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
-
 
                 MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
                 MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
@@ -317,7 +325,11 @@ public class Farcry1Assault implements GameModes {
                 lastRespawn = new DateTime();
 
                 MissionBox.play("minions");
-                MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;2000,0");
+                //MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;2000,0");
+
+                // the starting siren
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;2000,0");
+
             }
         };
 

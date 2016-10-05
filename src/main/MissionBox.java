@@ -77,6 +77,7 @@ public class MissionBox {
     public static final String MBX_SIREN1 = "mbx.siren1";
     public static final String MBX_SIREN2 = "mbx.siren2";
     public static final String MBX_SIREN3 = "mbx.siren3";
+    public static final String MBX_AIRSIREN = "mbx.airsiren";
     public static final String MBX_SHUTDOWN_SIREN = "mbx.shutdown.siren";
     public static final String MBX_TIME_SIREN = "mbx.time.siren";
     public static final String MBX_RESPAWN_SIREN = "mbx.respawn.siren";
@@ -248,6 +249,9 @@ public class MissionBox {
 
         // Siren 3
         pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
+
+        // The Airsiren
+        pinHandler.add(new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, true)); // Motor Siren
 
         pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));
@@ -678,12 +682,15 @@ public class MissionBox {
         config.put(MBX_LOGLEVEL, "debug");
         config.put(MBX_I2C_1, "0x20");
         config.put(MBX_I2C_2, "0x24");
+
         config.put(MBX_SIREN1, "mcp23017-01-B7");
         config.put(MBX_SIREN2, "mcp23017-01-B6");
         config.put(MBX_SIREN3, "mcp23017-01-B5");
+        config.put(MBX_AIRSIREN, "mcp23017-01-B0");
         config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B4");
         config.put(MBX_TIME_SIREN, "mcp23017-01-B3");
         config.put(MBX_RESPAWN_SIREN, "mcp23017-01-B2");
+
         config.put(MBX_LED_GREEN, "mcp23017-01-A7");
         config.put(MBX_LED_RED, "mcp23017-01-A6");
         config.put(MBX_LED_PB_GREEN, "mcp23017-01-A3");
