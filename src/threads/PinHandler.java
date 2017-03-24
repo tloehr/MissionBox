@@ -49,6 +49,7 @@ public class PinHandler {
 
     /**
      * add the relay but don't care about collision domains.
+     *
      * @param relay
      */
     public void add(Relay relay) {
@@ -107,6 +108,8 @@ public class PinHandler {
 
             pinBlinkModel.setScheme(scheme);
             futures.put(name, executor.submit(pinBlinkModel));
+        } catch (Exception e) {
+            logger.fatal(e);
         } finally {
             lock.unlock();
         }
@@ -127,8 +130,8 @@ public class PinHandler {
         collisionDomainReverse.get(cd).add(name);
     }
 
-    public void off(){
-        for (String name : pinMap.keySet()){
+    public void off() {
+        for (String name : pinMap.keySet()) {
             off(name);
         }
     }

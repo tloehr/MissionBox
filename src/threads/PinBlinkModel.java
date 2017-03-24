@@ -72,7 +72,7 @@ public class PinBlinkModel implements Callable<String> {
      *
      * @param scheme
      */
-    public void setScheme(String scheme) {
+    public void setScheme(String scheme) throws Exception {
         onOffScheme.clear();
 
         logger.debug("new scheme for pin: " + pin.getName() + " : " + scheme);

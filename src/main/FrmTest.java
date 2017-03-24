@@ -125,6 +125,7 @@ public class FrmTest extends JFrame {
 
     public void setButtonTestLabel(String name, boolean on) {
         if (tabbedPane1.getSelectedIndex() != 2) return; // only react when in debug mode
+
         if (name.equalsIgnoreCase("red")) {
             lblButtonRed.setEnabled(on);
         } else if (name.equalsIgnoreCase("green")) {
@@ -341,7 +342,7 @@ public class FrmTest extends JFrame {
     }
 
     private void btnTimeSignalActionPerformed(ActionEvent e) {
-        MissionBox.minuteSignal(4);
+        MissionBox.minuteSignal(2);
     }
 
     private void btnTestWinnerActionPerformed(ActionEvent e) {
@@ -427,6 +428,22 @@ public class FrmTest extends JFrame {
         MissionBox.playPregame();
     }
 
+    private void btnSiren1ActionPerformed(ActionEvent e) {
+        MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;1000,1000");
+    }
+
+    private void btnSiren2ActionPerformed(ActionEvent e) {
+        MissionBox.setScheme(MissionBox.MBX_SIREN2, "1;1000,1000");
+    }
+
+    private void btnSiren3ActionPerformed(ActionEvent e) {
+        MissionBox.setScheme(MissionBox.MBX_SIREN3, "1;1000,1000");
+    }
+
+    private void btnAirSirenActionPerformed(ActionEvent e) {
+        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;1000,1000");
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -483,18 +500,22 @@ public class FrmTest extends JFrame {
         lblButtonGreen = new JLabel();
         btnRelayTest1 = new JButton();
         btnRedLED = new JButton();
+        btnSiren1 = new JButton();
         btnTestWinner = new JButton();
         lblButtonRed = new JLabel();
         btnRelayTest2 = new JButton();
         btnGreenLED = new JButton();
+        btnSiren2 = new JButton();
         btnTestLooser = new JButton();
         lblButtonUNDO = new JLabel();
         btnRelayTest3 = new JButton();
         btnRedProgress = new JButton();
+        btnSiren3 = new JButton();
         btnTestPregame = new JButton();
         lblButtonStartStop = new JLabel();
         btnRelayTest4 = new JButton();
         btnYellowProgress = new JButton();
+        btnAirSiren = new JButton();
         btnStopAll = new JButton();
         lblButtonQuit = new JLabel();
         btnRelayTest5 = new JButton();
@@ -832,8 +853,8 @@ public class FrmTest extends JFrame {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                    "3*(default, $ugap), default",
-                    "8*(default, $lgap), default"));
+                    "default, 3*($ugap, default:grow), $lcgap, default:grow",
+                    "8*(default:grow, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
@@ -844,16 +865,21 @@ public class FrmTest extends JFrame {
 
                 //---- btnRelayTest1 ----
                 btnRelayTest1.setText("Relay1");
-                panel1.add(btnRelayTest1, CC.xy(3, 1));
+                panel1.add(btnRelayTest1, CC.xy(3, 1, CC.FILL, CC.FILL));
 
                 //---- btnRedLED ----
                 btnRedLED.setText("LEDred");
-                panel1.add(btnRedLED, CC.xy(5, 1));
+                panel1.add(btnRedLED, CC.xy(5, 1, CC.FILL, CC.FILL));
+
+                //---- btnSiren1 ----
+                btnSiren1.setText("Siren 1");
+                btnSiren1.addActionListener(e -> btnSiren1ActionPerformed(e));
+                panel1.add(btnSiren1, CC.xy(7, 1, CC.FILL, CC.FILL));
 
                 //---- btnTestWinner ----
                 btnTestWinner.setText("Winner Songs");
                 btnTestWinner.addActionListener(e -> btnTestWinnerActionPerformed(e));
-                panel1.add(btnTestWinner, CC.xy(7, 1));
+                panel1.add(btnTestWinner, CC.xy(9, 1, CC.FILL, CC.FILL));
 
                 //---- lblButtonRed ----
                 lblButtonRed.setText("Button RED");
@@ -864,16 +890,21 @@ public class FrmTest extends JFrame {
 
                 //---- btnRelayTest2 ----
                 btnRelayTest2.setText("Relay2");
-                panel1.add(btnRelayTest2, CC.xy(3, 3));
+                panel1.add(btnRelayTest2, CC.xy(3, 3, CC.FILL, CC.FILL));
 
                 //---- btnGreenLED ----
                 btnGreenLED.setText("LEDgreen");
-                panel1.add(btnGreenLED, CC.xy(5, 3));
+                panel1.add(btnGreenLED, CC.xy(5, 3, CC.FILL, CC.FILL));
+
+                //---- btnSiren2 ----
+                btnSiren2.setText("Siren 2");
+                btnSiren2.addActionListener(e -> btnSiren2ActionPerformed(e));
+                panel1.add(btnSiren2, CC.xy(7, 3, CC.FILL, CC.FILL));
 
                 //---- btnTestLooser ----
                 btnTestLooser.setText("Loser Songs");
                 btnTestLooser.addActionListener(e -> btnTestLooserActionPerformed(e));
-                panel1.add(btnTestLooser, CC.xy(7, 3));
+                panel1.add(btnTestLooser, CC.xy(9, 3, CC.FILL, CC.FILL));
 
                 //---- lblButtonUNDO ----
                 lblButtonUNDO.setText("Button UNDO");
@@ -884,16 +915,21 @@ public class FrmTest extends JFrame {
 
                 //---- btnRelayTest3 ----
                 btnRelayTest3.setText("Relay3");
-                panel1.add(btnRelayTest3, CC.xy(3, 5));
+                panel1.add(btnRelayTest3, CC.xy(3, 5, CC.FILL, CC.FILL));
 
                 //---- btnRedProgress ----
                 btnRedProgress.setText("PBred");
-                panel1.add(btnRedProgress, CC.xy(5, 5));
+                panel1.add(btnRedProgress, CC.xy(5, 5, CC.FILL, CC.FILL));
+
+                //---- btnSiren3 ----
+                btnSiren3.setText("Siren 3");
+                btnSiren3.addActionListener(e -> btnSiren3ActionPerformed(e));
+                panel1.add(btnSiren3, CC.xy(7, 5, CC.FILL, CC.FILL));
 
                 //---- btnTestPregame ----
                 btnTestPregame.setText("Pregame Songs");
                 btnTestPregame.addActionListener(e -> btnTestPregameActionPerformed(e));
-                panel1.add(btnTestPregame, CC.xy(7, 5));
+                panel1.add(btnTestPregame, CC.xy(9, 5, CC.FILL, CC.FILL));
 
                 //---- lblButtonStartStop ----
                 lblButtonStartStop.setText("Button Start/Stop");
@@ -904,16 +940,21 @@ public class FrmTest extends JFrame {
 
                 //---- btnRelayTest4 ----
                 btnRelayTest4.setText("Relay4");
-                panel1.add(btnRelayTest4, CC.xy(3, 7));
+                panel1.add(btnRelayTest4, CC.xy(3, 7, CC.FILL, CC.FILL));
 
                 //---- btnYellowProgress ----
                 btnYellowProgress.setText("PByellow");
-                panel1.add(btnYellowProgress, CC.xy(5, 7));
+                panel1.add(btnYellowProgress, CC.xy(5, 7, CC.FILL, CC.FILL));
+
+                //---- btnAirSiren ----
+                btnAirSiren.setText("AirSiren");
+                btnAirSiren.addActionListener(e -> btnAirSirenActionPerformed(e));
+                panel1.add(btnAirSiren, CC.xy(7, 7, CC.FILL, CC.FILL));
 
                 //---- btnStopAll ----
                 btnStopAll.setText("Stop All Music");
                 btnStopAll.addActionListener(e -> btnStopAllActionPerformed(e));
-                panel1.add(btnStopAll, CC.xy(7, 7));
+                panel1.add(btnStopAll, CC.xy(9, 7, CC.FILL, CC.FILL));
 
                 //---- lblButtonQuit ----
                 lblButtonQuit.setText("Button Quit");
@@ -924,51 +965,51 @@ public class FrmTest extends JFrame {
 
                 //---- btnRelayTest5 ----
                 btnRelayTest5.setText("Relay5");
-                panel1.add(btnRelayTest5, CC.xy(3, 9));
+                panel1.add(btnRelayTest5, CC.xy(3, 9, CC.FILL, CC.FILL));
 
                 //---- btnGreenProgress ----
                 btnGreenProgress.setText("PBgreen");
                 btnGreenProgress.setActionCommand("Progress yellow");
-                panel1.add(btnGreenProgress, CC.xy(5, 9));
+                panel1.add(btnGreenProgress, CC.xy(5, 9, CC.FILL, CC.FILL));
 
                 //---- btnRespawn ----
                 btnRespawn.setText("Respawn Signal");
                 btnRespawn.addActionListener(e -> btnRespawnActionPerformed(e));
-                panel1.add(btnRespawn, CC.xy(7, 9));
+                panel1.add(btnRespawn, CC.xy(7, 9, CC.FILL, CC.FILL));
 
                 //---- btnRelayTest6 ----
                 btnRelayTest6.setText("Relay6");
-                panel1.add(btnRelayTest6, CC.xy(3, 11));
+                panel1.add(btnRelayTest6, CC.xy(3, 11, CC.FILL, CC.FILL));
 
                 //---- btnRGBred ----
                 btnRGBred.setText("RGBred");
-                panel1.add(btnRGBred, CC.xy(5, 11));
+                panel1.add(btnRGBred, CC.xy(5, 11, CC.FILL, CC.FILL));
 
                 //---- btnTimeSignal ----
-                btnTimeSignal.setText("4 Minutes");
+                btnTimeSignal.setText("2 Minutes");
                 btnTimeSignal.addActionListener(e -> btnTimeSignalActionPerformed(e));
-                panel1.add(btnTimeSignal, CC.xy(7, 11));
+                panel1.add(btnTimeSignal, CC.xy(7, 11, CC.FILL, CC.FILL));
 
                 //---- btnRelayTest7 ----
                 btnRelayTest7.setText("Relay7");
-                panel1.add(btnRelayTest7, CC.xy(3, 13));
+                panel1.add(btnRelayTest7, CC.xy(3, 13, CC.FILL, CC.FILL));
 
                 //---- btnRGBgreen ----
                 btnRGBgreen.setText("RGBgreen");
-                panel1.add(btnRGBgreen, CC.xy(5, 13));
+                panel1.add(btnRGBgreen, CC.xy(5, 13, CC.FILL, CC.FILL));
 
                 //---- btnRedLedBar ----
                 btnRedLedBar.setText("30 Seconds");
                 btnRedLedBar.addActionListener(e -> btnRedLedBarActionPerformed(e));
-                panel1.add(btnRedLedBar, CC.xy(7, 13));
+                panel1.add(btnRedLedBar, CC.xy(7, 13, CC.FILL, CC.FILL));
 
                 //---- btnRelayTest8 ----
                 btnRelayTest8.setText("Relay8");
-                panel1.add(btnRelayTest8, CC.xy(3, 15));
+                panel1.add(btnRelayTest8, CC.xy(3, 15, CC.FILL, CC.FILL));
 
                 //---- btnRGBblue ----
                 btnRGBblue.setText("RGBblue");
-                panel1.add(btnRGBblue, CC.xy(5, 15));
+                panel1.add(btnRGBblue, CC.xy(5, 15, CC.FILL, CC.FILL));
             }
             tabbedPane1.addTab("HW-Test", panel1);
         }
@@ -1073,18 +1114,22 @@ public class FrmTest extends JFrame {
     private JLabel lblButtonGreen;
     private JButton btnRelayTest1;
     private JButton btnRedLED;
+    private JButton btnSiren1;
     private JButton btnTestWinner;
     private JLabel lblButtonRed;
     private JButton btnRelayTest2;
     private JButton btnGreenLED;
+    private JButton btnSiren2;
     private JButton btnTestLooser;
     private JLabel lblButtonUNDO;
     private JButton btnRelayTest3;
     private JButton btnRedProgress;
+    private JButton btnSiren3;
     private JButton btnTestPregame;
     private JLabel lblButtonStartStop;
     private JButton btnRelayTest4;
     private JButton btnYellowProgress;
+    private JButton btnAirSiren;
     private JButton btnStopAll;
     private JLabel lblButtonQuit;
     private JButton btnRelayTest5;

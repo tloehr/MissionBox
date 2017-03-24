@@ -151,7 +151,7 @@ public class MissionBox {
         logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
 
         try {
-            // Lade Build Informationen   2
+            // Lade Build Informationen
             InputStream in2 = null;
             //Class clazz = getClass();
             in2 = getResourceAsStream("appinfo.properties");
@@ -439,7 +439,7 @@ public class MissionBox {
 
         pregameSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_TRANQUILITY);
         pregameSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_SIRIUS);
-        pregameSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_ZZTOP);
+//        pregameSongs.add(Tools.getSoundPath() + File.separator + Tools.SND_ZZTOP);
 
         startup_progress = startup_progress + 2;
         Tools.printProgBar(startup_progress);
