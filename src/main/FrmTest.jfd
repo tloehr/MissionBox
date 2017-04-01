@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "5.2.4.0.321" Java: "1.8.0_112-release" encoding: "UTF-8"
+JFDML JFormDesigner: "6.0.0.0.84" Java: "1.8.0_112-release" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -71,8 +71,8 @@ new FormModel {
 						"gridHeight": 7
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnUndo"
-						"text": "Undo"
+						name: "btnPause"
+						"text": "PAUSE"
 						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledblue64.png" )
 						"font": new java.awt.Font( "Dialog", 1, 18 )
 						"verticalTextPosition": 3
@@ -338,24 +338,10 @@ new FormModel {
 							"font": &Font5 new java.awt.Font( "Dialog", 1, 16 )
 						} )
 						add( new FormComponent( "javax.swing.JToggleButton" ) {
-							name: "btnSound"
-							"text": "Sound"
-							"icon": &SwingIcon0 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkgreen32.png" )
-							"selectedIcon": &SwingIcon1 new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledgreen32.png" )
-							"font": #Font5
-						} )
-						add( new FormComponent( "javax.swing.JToggleButton" ) {
 							name: "btnRespawnSignal"
 							"text": "Respawn Signal"
-							"icon": #SwingIcon0
-							"selectedIcon": #SwingIcon1
-							"font": #Font5
-						} )
-						add( new FormComponent( "javax.swing.JToggleButton" ) {
-							name: "btnMusic"
-							"text": "Music"
-							"icon": #SwingIcon0
-							"selectedIcon": #SwingIcon1
+							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkgreen32.png" )
+							"selectedIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledgreen32.png" )
 							"font": #Font5
 						} )
 						add( new FormComponent( "javax.swing.JComboBox" ) {
@@ -408,21 +394,12 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"gridX": 7
 					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnTestWinner"
-						"text": "Winner Songs"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnTestWinnerActionPerformed", true ) )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 9
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonRed"
 						"text": "Button RED"
-						"icon": &SwingIcon2 new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledblue32.png" )
+						"icon": &SwingIcon0 new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledblue32.png" )
 						"enabled": false
-						"disabledIcon": &SwingIcon3 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkblue32.png" )
+						"disabledIcon": &SwingIcon1 new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkblue32.png" )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
 					} )
@@ -454,22 +431,12 @@ new FormModel {
 						"gridY": 3
 						"gridX": 7
 					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnTestLooser"
-						"text": "Loser Songs"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnTestLooserActionPerformed", true ) )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 9
-						"gridY": 3
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblButtonUNDO"
-						"text": "Button UNDO"
-						"icon": #SwingIcon2
+						name: "lblButtonPAUSE"
+						"text": "Button PAUSE"
+						"icon": #SwingIcon0
 						"enabled": false
-						"disabledIcon": #SwingIcon3
+						"disabledIcon": #SwingIcon1
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
 					} )
@@ -501,22 +468,12 @@ new FormModel {
 						"gridY": 5
 						"gridX": 7
 					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnTestPregame"
-						"text": "Pregame Songs"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnTestPregameActionPerformed", true ) )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 5
-						"gridX": 9
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonStartStop"
 						"text": "Button Start/Stop"
-						"icon": #SwingIcon2
+						"icon": #SwingIcon0
 						"enabled": false
-						"disabledIcon": #SwingIcon3
+						"disabledIcon": #SwingIcon1
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
 					} )
@@ -548,22 +505,12 @@ new FormModel {
 						"gridY": 7
 						"gridX": 7
 					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnStopAll"
-						"text": "Stop All Music"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnStopAllActionPerformed", true ) )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 9
-						"gridY": 7
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonQuit"
 						"text": "Button Quit"
-						"icon": #SwingIcon2
+						"icon": #SwingIcon0
 						"enabled": false
-						"disabledIcon": #SwingIcon3
+						"disabledIcon": #SwingIcon1
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
 					} )

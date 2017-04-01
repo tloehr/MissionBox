@@ -17,12 +17,15 @@ public class PinBlinkModel implements Callable<String> {
     ArrayList<Long> onOffScheme;
     int repeat;
     boolean currentlyOn;
+    boolean paused = false;
     int positionInScheme;
     private final Logger logger = Logger.getLogger(getClass().getName());
     String infinity = "\u221E";
 
     @Override
     public String call() throws Exception {
+        if (paused) return null;
+
         if (repeat == 0) {
             restart();
             pin.setOn(false);
@@ -31,30 +34,40 @@ public class PinBlinkModel implements Callable<String> {
                 restart();
 
                 while (hasNext()) {
-                    if (Thread.currentThread().isInterrupted()) {
-                        pin.setOn(false);
-//                        logger.debug(pin.getName() + ": interrupted");
-                        pin.setText("");
-                        return null;
-                    }
+                    long time = 0;
+                    if (!paused) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            pin.setOn(false);
+                            pin.setText("");
+                            return null;
+                        }
 
-                    long time = next();
-                    pin.setOn(currentlyOn);
 
-                    try {
-//                        logger.debug(time + "ms");
-                        if (time > 0) Thread.sleep(time);
-                    } catch (InterruptedException exc) {
-                        pin.setOn(false);
-//                        logger.debug(pin.getName() + ": interrupted");
-                        pin.setText("");
-                        return null;
+                        time = next();
+                        pin.setOn(currentlyOn);
+
+                        try {
+                            if (time > 0) Thread.sleep(time);
+                        } catch (InterruptedException exc) {
+                            pin.setOn(false);
+                            pin.setText("");
+                            return null;
+                        }
                     }
                 }
             }
         }
         pin.setText("");
         return null;
+    }
+
+    public void pause() {
+        paused = true;
+        pin.setOn(false);
+    }
+
+    public void resume() {
+        paused = false;
     }
 
     public PinBlinkModel(Relay pin) {
@@ -107,6 +120,10 @@ public class PinBlinkModel implements Callable<String> {
     }
 
     private long next() {
+        if (paused) {
+            currentlyOn = false;
+            return 0;
+        }
         long next = onOffScheme.get(positionInScheme);
         currentlyOn = !currentlyOn;
         positionInScheme++;

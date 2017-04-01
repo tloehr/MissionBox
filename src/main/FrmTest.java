@@ -41,9 +41,6 @@ public class FrmTest extends JFrame {
 
     private void initPanel() {
 
-        btnSiren.addActionListener(e -> MissionBox.setSIREN(btnSiren.isSelected()));
-        btnSound.addActionListener(e -> MissionBox.setSOUND(btnSound.isSelected()));
-        btnMusic.addActionListener(e -> MissionBox.setMUSIC(btnMusic.isSelected()));
         btnRespawnSignal.addActionListener(e -> MissionBox.setRESPAWN(btnRespawnSignal.isSelected()));
 
         tbDebug.setSelected(MissionBox.getConfig().getProperty(MissionBox.MBX_DEBUG).equals("true"));
@@ -130,8 +127,8 @@ public class FrmTest extends JFrame {
             lblButtonRed.setEnabled(on);
         } else if (name.equalsIgnoreCase("green")) {
             lblButtonGreen.setEnabled(on);
-        } else if (name.equalsIgnoreCase("undo")) {
-            lblButtonUNDO.setEnabled(on);
+        } else if (name.equalsIgnoreCase("pause")) {
+            lblButtonPAUSE.setEnabled(on);
         } else if (name.equalsIgnoreCase("start")) {
             lblButtonStartStop.setEnabled(on);
         } else if (name.equalsIgnoreCase("quit")) {
@@ -183,9 +180,7 @@ public class FrmTest extends JFrame {
 
     }
 
-    public JButton getBtnUndo() {
-        return btnUndo;
-    }
+
 
     private void btnFCYcapPlusActionPerformed(ActionEvent e) {
         fcyCapChange(1);
@@ -272,9 +267,7 @@ public class FrmTest extends JFrame {
             lblFCYGametime.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME));
             lblFCYRespawn.setText(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_TIME));
             btnSiren.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SIREN).equals("true"));
-            btnSound.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_SOUND).equals("true"));
             btnRespawnSignal.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_SIGNAL).equals("true"));
-            btnMusic.setSelected(MissionBox.getConfig().getProperty(MissionBox.FCY_MUSIC).equals("true"));
         } else {
             MissionBox.getPinHandler().off();
         }
@@ -345,29 +338,6 @@ public class FrmTest extends JFrame {
         MissionBox.minuteSignal(2);
     }
 
-    private void btnTestWinnerActionPerformed(ActionEvent e) {
-        MissionBox.playWinner();
-    }
-
-    private void btnTestLooserActionPerformed(ActionEvent e) {
-        MissionBox.playLooser();
-    }
-
-    private void btnStopAllActionPerformed(ActionEvent e) {
-        MissionBox.stopAllSongs();
-    }
-
-    private void btnRelayTestActionPerformed(ActionEvent e) {
-//        MissionBox.blink("relay0", 750, 1);
-//        MissionBox.blink("relay1", 750, 1);
-//        MissionBox.blink("relay2", 750, 1);
-//        MissionBox.blink("relay3", 750, 1);
-//        MissionBox.blink("relay4", 750, 1);
-//        MissionBox.blink("relay5", 750, 1);
-//        MissionBox.blink("relay6", 750, 1);
-//        MissionBox.blink("relay7", 750, 1);
-    }
-
     private void btnFcyMinus60ActionPerformed(ActionEvent e) {
         fcyCapChange(-60);
     }
@@ -424,9 +394,6 @@ public class FrmTest extends JFrame {
         fcyRespawnChange(60);
     }
 
-    private void btnTestPregameActionPerformed(ActionEvent e) {
-        MissionBox.playPregame();
-    }
 
     private void btnSiren1ActionPerformed(ActionEvent e) {
         MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;1000,1000");
@@ -457,7 +424,7 @@ public class FrmTest extends JFrame {
         panel2 = new JPanel();
         btnRed = new JButton();
         btnGreen = new JButton();
-        btnUndo = new JButton();
+        btnPause = new JButton();
         btn2 = new JButton();
         lblTimer = new JLabel();
         tbDebug = new JToggleButton();
@@ -492,31 +459,25 @@ public class FrmTest extends JFrame {
         btnFcyRpwnMinus60 = new JButton();
         panel5 = new JPanel();
         btnSiren = new JToggleButton();
-        btnSound = new JToggleButton();
         btnRespawnSignal = new JToggleButton();
-        btnMusic = new JToggleButton();
         cmbSirenHandler = new JComboBox();
         panel1 = new JPanel();
         lblButtonGreen = new JLabel();
         btnRelayTest1 = new JButton();
         btnRedLED = new JButton();
         btnSiren1 = new JButton();
-        btnTestWinner = new JButton();
         lblButtonRed = new JLabel();
         btnRelayTest2 = new JButton();
         btnGreenLED = new JButton();
         btnSiren2 = new JButton();
-        btnTestLooser = new JButton();
-        lblButtonUNDO = new JLabel();
+        lblButtonPAUSE = new JLabel();
         btnRelayTest3 = new JButton();
         btnRedProgress = new JButton();
         btnSiren3 = new JButton();
-        btnTestPregame = new JButton();
         lblButtonStartStop = new JLabel();
         btnRelayTest4 = new JButton();
         btnYellowProgress = new JButton();
         btnAirSiren = new JButton();
-        btnStopAll = new JButton();
         lblButtonQuit = new JLabel();
         btnRelayTest5 = new JButton();
         btnGreenProgress = new JButton();
@@ -589,13 +550,13 @@ public class FrmTest extends JFrame {
                 }
                 contentPanel.add(panel2, CC.xywh(7, 1, 1, 7));
 
-                //---- btnUndo ----
-                btnUndo.setText("Undo");
-                btnUndo.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue64.png")));
-                btnUndo.setFont(new Font("Dialog", Font.BOLD, 18));
-                btnUndo.setVerticalTextPosition(SwingConstants.BOTTOM);
-                btnUndo.setHorizontalTextPosition(SwingConstants.CENTER);
-                contentPanel.add(btnUndo, CC.xy(1, 3));
+                //---- btnPause ----
+                btnPause.setText("PAUSE");
+                btnPause.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue64.png")));
+                btnPause.setFont(new Font("Dialog", Font.BOLD, 18));
+                btnPause.setVerticalTextPosition(SwingConstants.BOTTOM);
+                btnPause.setHorizontalTextPosition(SwingConstants.CENTER);
+                contentPanel.add(btnPause, CC.xy(1, 3));
 
                 //---- btn2 ----
                 btn2.setText(null);
@@ -821,26 +782,12 @@ public class FrmTest extends JFrame {
                     btnSiren.setFont(new Font("Dialog", Font.BOLD, 16));
                     panel5.add(btnSiren);
 
-                    //---- btnSound ----
-                    btnSound.setText("Sound");
-                    btnSound.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
-                    btnSound.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen32.png")));
-                    btnSound.setFont(new Font("Dialog", Font.BOLD, 16));
-                    panel5.add(btnSound);
-
                     //---- btnRespawnSignal ----
                     btnRespawnSignal.setText("Respawn Signal");
                     btnRespawnSignal.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
                     btnRespawnSignal.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen32.png")));
                     btnRespawnSignal.setFont(new Font("Dialog", Font.BOLD, 16));
                     panel5.add(btnRespawnSignal);
-
-                    //---- btnMusic ----
-                    btnMusic.setText("Music");
-                    btnMusic.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
-                    btnMusic.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen32.png")));
-                    btnMusic.setFont(new Font("Dialog", Font.BOLD, 16));
-                    panel5.add(btnMusic);
 
                     //---- cmbSirenHandler ----
                     cmbSirenHandler.setFont(new Font("Dialog", Font.BOLD, 16));
@@ -876,11 +823,6 @@ public class FrmTest extends JFrame {
                 btnSiren1.addActionListener(e -> btnSiren1ActionPerformed(e));
                 panel1.add(btnSiren1, CC.xy(7, 1, CC.FILL, CC.FILL));
 
-                //---- btnTestWinner ----
-                btnTestWinner.setText("Winner Songs");
-                btnTestWinner.addActionListener(e -> btnTestWinnerActionPerformed(e));
-                panel1.add(btnTestWinner, CC.xy(9, 1, CC.FILL, CC.FILL));
-
                 //---- lblButtonRed ----
                 lblButtonRed.setText("Button RED");
                 lblButtonRed.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
@@ -901,17 +843,12 @@ public class FrmTest extends JFrame {
                 btnSiren2.addActionListener(e -> btnSiren2ActionPerformed(e));
                 panel1.add(btnSiren2, CC.xy(7, 3, CC.FILL, CC.FILL));
 
-                //---- btnTestLooser ----
-                btnTestLooser.setText("Loser Songs");
-                btnTestLooser.addActionListener(e -> btnTestLooserActionPerformed(e));
-                panel1.add(btnTestLooser, CC.xy(9, 3, CC.FILL, CC.FILL));
-
-                //---- lblButtonUNDO ----
-                lblButtonUNDO.setText("Button UNDO");
-                lblButtonUNDO.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
-                lblButtonUNDO.setEnabled(false);
-                lblButtonUNDO.setDisabledIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
-                panel1.add(lblButtonUNDO, CC.xy(1, 5));
+                //---- lblButtonPAUSE ----
+                lblButtonPAUSE.setText("Button PAUSE");
+                lblButtonPAUSE.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
+                lblButtonPAUSE.setEnabled(false);
+                lblButtonPAUSE.setDisabledIcon(new ImageIcon(getClass().getResource("/artwork/leddarkblue32.png")));
+                panel1.add(lblButtonPAUSE, CC.xy(1, 5));
 
                 //---- btnRelayTest3 ----
                 btnRelayTest3.setText("Relay3");
@@ -925,11 +862,6 @@ public class FrmTest extends JFrame {
                 btnSiren3.setText("Siren 3");
                 btnSiren3.addActionListener(e -> btnSiren3ActionPerformed(e));
                 panel1.add(btnSiren3, CC.xy(7, 5, CC.FILL, CC.FILL));
-
-                //---- btnTestPregame ----
-                btnTestPregame.setText("Pregame Songs");
-                btnTestPregame.addActionListener(e -> btnTestPregameActionPerformed(e));
-                panel1.add(btnTestPregame, CC.xy(9, 5, CC.FILL, CC.FILL));
 
                 //---- lblButtonStartStop ----
                 lblButtonStartStop.setText("Button Start/Stop");
@@ -950,11 +882,6 @@ public class FrmTest extends JFrame {
                 btnAirSiren.setText("AirSiren");
                 btnAirSiren.addActionListener(e -> btnAirSirenActionPerformed(e));
                 panel1.add(btnAirSiren, CC.xy(7, 7, CC.FILL, CC.FILL));
-
-                //---- btnStopAll ----
-                btnStopAll.setText("Stop All Music");
-                btnStopAll.addActionListener(e -> btnStopAllActionPerformed(e));
-                panel1.add(btnStopAll, CC.xy(9, 7, CC.FILL, CC.FILL));
 
                 //---- lblButtonQuit ----
                 lblButtonQuit.setText("Button Quit");
@@ -1023,6 +950,10 @@ public class FrmTest extends JFrame {
         return btnRed;
     }
 
+    public JButton getBtnPause() {
+        return btnPause;
+    }
+
     public JButton getBtnGreen() {
         return btnGreen;
     }
@@ -1071,7 +1002,7 @@ public class FrmTest extends JFrame {
     private JPanel panel2;
     private JButton btnRed;
     private JButton btnGreen;
-    private JButton btnUndo;
+    private JButton btnPause;
     private JButton btn2;
     private JLabel lblTimer;
     private JToggleButton tbDebug;
@@ -1106,31 +1037,25 @@ public class FrmTest extends JFrame {
     private JButton btnFcyRpwnMinus60;
     private JPanel panel5;
     private JToggleButton btnSiren;
-    private JToggleButton btnSound;
     private JToggleButton btnRespawnSignal;
-    private JToggleButton btnMusic;
     private JComboBox cmbSirenHandler;
     private JPanel panel1;
     private JLabel lblButtonGreen;
     private JButton btnRelayTest1;
     private JButton btnRedLED;
     private JButton btnSiren1;
-    private JButton btnTestWinner;
     private JLabel lblButtonRed;
     private JButton btnRelayTest2;
     private JButton btnGreenLED;
     private JButton btnSiren2;
-    private JButton btnTestLooser;
-    private JLabel lblButtonUNDO;
+    private JLabel lblButtonPAUSE;
     private JButton btnRelayTest3;
     private JButton btnRedProgress;
     private JButton btnSiren3;
-    private JButton btnTestPregame;
     private JLabel lblButtonStartStop;
     private JButton btnRelayTest4;
     private JButton btnYellowProgress;
     private JButton btnAirSiren;
-    private JButton btnStopAll;
     private JLabel lblButtonQuit;
     private JButton btnRelayTest5;
     private JButton btnGreenProgress;

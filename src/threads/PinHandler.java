@@ -13,7 +13,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This handler runs parallel to the main programm and handles all the blinking needs of the specific pins. It knows to handle collision between pins that must not be run at the same time.
+ * Dieser Handler läuft parallel zum Hauptprogramm. Er steuert alles Relais und achtet auch auf widersprüchliche Befehle und Kollisionen (falls bestimmte Relais nicht gleichzeitig anziehen dürfen, gibt mittlerweile nicht mehr).
  */
+
 public class PinHandler {
 
     final Logger logger;
@@ -21,7 +23,7 @@ public class PinHandler {
     final HashMap<String, PinBlinkModel> pinMap;
     final HashMap<String, Future<String>> futures;
     final ExecutorService executor;
-
+    boolean paused = false;
 
     /**
      * there relays that can be used at the same time. but others demand, that only *one* relay is used at the time (out of a set of relays). The sirens for instance.
@@ -35,7 +37,6 @@ public class PinHandler {
     final HashMap<String, Integer> collisionDomain;
     final HashMap<Integer, Set<String>> collisionDomainReverse; // helper map to ease the finding process
 
-
     public PinHandler() {
         lock = new ReentrantLock();
         pinMap = new HashMap<>();
@@ -44,6 +45,22 @@ public class PinHandler {
         collisionDomain = new HashMap<>();
         collisionDomainReverse = new HashMap<>();
         logger = Logger.getLogger(getClass());
+    }
+
+    public void pause() {
+        if (paused) return;
+        paused = true;
+        for (PinBlinkModel pbm : pinMap.values()) {
+            pbm.pause();
+        }
+    }
+
+    public void resume() {
+        if (!paused) return;
+        paused = false;
+        for (PinBlinkModel pbm : pinMap.values()) {
+            pbm.resume();
+        }
     }
 
 
@@ -113,6 +130,10 @@ public class PinHandler {
         } finally {
             lock.unlock();
         }
+    }
+
+    public boolean isShutdown() {
+        return executor.isShutdown();
     }
 
 
