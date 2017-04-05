@@ -16,6 +16,11 @@ import java.util.ArrayList;
 /**
  * Dieser Thread läuft wie ein Motor in Zyklen ab. Jeder Zyklus dauert <b>millispercycle</b> millisekunden.
  * Nach <b>maxcycles</b> Zyklen ist das Spiel vorbei. <b>TIME2CAP</b> ist die Anzahl der Sekunden, die es braucht, bis die Flagge genommen wurde. (Wenn sie vorher nicht deaktiviert wurde).
+ * <p>
+ * Farcry1Assault
+ * Farcry1AssaultThread
+ * setGameState(state) – setzt die Spielmechanik. Also was passiert bei einem bestimmten GameMode
+ * run() - Das ist der innere Auswertungszyklus. Eine Art Motor, der bei jedem Durchgang die Situation bewertet und entsprechende Änderungen am Zustand der Box vornimmt.
  */
 public class Farcry1AssaultThread implements Runnable, GameThreads {
     final Logger logger = Logger.getLogger(getClass());
@@ -35,7 +40,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private final long millispercycle = 50;
     private DateTime pausedSince = null;
 
-    ArrayList<Farcry1Undo> undoList = null;
+    ArrayList<Farcry1GameEvent> eventList = null;
 
     public static final int GAME_NON_EXISTENT = -1;
     public static final int GAME_PRE_GAME = 0;
@@ -71,7 +76,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         gameModeList.add(MessageListener.class, gameModeListener);
 
         previousGameState = GAME_NON_EXISTENT;
-        undoList = new ArrayList<>();
+        eventList = new ArrayList<>();
 
         restartGame();
     }
@@ -92,14 +97,14 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
      * @param state
      */
     public synchronized void setGameState(int state) {
-        Farcry1Undo undo = null;
+//        Farcry1GameEvent undo = null;
 //        if (state == -1) { // means UNDO
-//            if (undoList.size() != 2) return; // need 2 states to pause
+//            if (eventList.size() != 2) return; // need 2 states to pause
 //
-//            logger.debug(undoList.toString());
+//            logger.debug(eventList.toString());
 //            // in case of pause, we use the first one, and remove the second.
-//            pause = undoList.get(0);
-//            undoList.remove(undoList.get(1));
+//            pause = eventList.get(0);
+//            eventList.remove(eventList.get(1));
 //
 //            logger.debug("Reverting back to the following state");
 //            logger.debug(pause);
@@ -108,9 +113,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 //
 //            this.gameState = pause.getGameState();
 //        } else {
-//            this.gameState = state;
+//
 //        }
-
+        this.gameState = state;
 
         if (gameState != previousGameState) {
             previousGameState = gameState;
@@ -120,7 +125,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 case GAME_PRE_GAME: {
                     MissionBox.shutdownEverything();
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
-                    undoList.clear();
+                    eventList.clear();
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
@@ -135,6 +140,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 case GAME_RESUME: {
                     MissionBox.getPinHandler().resume();
                     pausedSince = null;
+                    break;
                 }
                 case GAME_PAUSED: {
                     MissionBox.getPinHandler().pause();
@@ -154,19 +160,19 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 //                        starttime = undo.getStarttime();
 //                        flagactivation = undo.getFlagactivation();
 //                    } else {
-                        // save current state before changing it
+                    // save current state before changing it
 
                     // hier gehts weiter. denk nochmal über den undo nach
 
-                    akdjksjd;
-                        undoList.get(undoList.size() - 1).finalizeInit(starttime, flagactivation, endtime);
-                        // add the new state as new pause point
-                        Farcry1Undo myundo = new Farcry1Undo(state);
-                        undoList.add(myundo);
 
-                        flagactivation = new DateTime();
-                        logger.debug(undoList.toString());
-//                    }
+//                        eventList.get(eventList.size() - 1).finalizeInit(starttime, flagactivation, endtime);
+                    // add the new state as new pause point
+                    Farcry1GameEvent myEvent = new Farcry1GameEvent(state);
+                    MissionBox.log(myEvent.toString());
+                    eventList.add(myEvent);
+
+                    flagactivation = new DateTime();
+
                     endtime = flagactivation.plusSeconds(TIME2CAP);
 
                     logger.debug("Starttime: " + starttime);
@@ -184,20 +190,20 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_FLAG_COLD: {
 
-                    if (undo != null) {
-                        logger.debug("undoing the red button");
-                        starttime = undo.getStarttime();
-                        flagactivation = new DateTime(0);
-                    } else {
-                        // save current state before changing it
-                        if (!undoList.isEmpty())
-                            undoList.get(undoList.size() - 1).finalizeInit(starttime, flagactivation, endtime);
-                        // add the new state as new pause point
-                        Farcry1Undo myundo = new Farcry1Undo(state);
-                        undoList.add(myundo);
-                        logger.debug(undoList.toString());
-                        flagactivation = new DateTime(0);
-                    }
+//                    if (undo != null) {
+//                        logger.debug("undoing the red button");
+//                        starttime = undo.getStarttime();
+//                        flagactivation = new DateTime(0);
+//                    } else {
+                    // save current state before changing it
+//                        if (!eventList.isEmpty())
+//                            eventList.get(eventList.size() - 1).finalizeInit(starttime, flagactivation, endtime);
+                    // add the new state as new pause point
+                    Farcry1GameEvent myEvent = new Farcry1GameEvent(state);
+                    MissionBox.log(myEvent.toString());
+                    eventList.add(myEvent);
+                    flagactivation = new DateTime(0);
+//                    }
                     endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
 
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));

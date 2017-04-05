@@ -7,25 +7,26 @@ import org.joda.time.Duration;
 /**
  * Created by Torsten on 05.07.2016.
  */
-public class Farcry1Undo {
+public class Farcry1GameEvent {
     int pmode;
     DateTime flagactivation;
     DateTime endtime;
     DateTime starttime;
-    DateTime initPointInTime;
+    DateTime eventTime;
     Logger logger;
 
-    public Farcry1Undo(int pmode) {
+    public Farcry1GameEvent(int pmode) {
         this.logger = Logger.getLogger(this.getClass());
         this.pmode = pmode;
+        this.eventTime = new DateTime();
     }
 
-    public void finalizeInit(DateTime starttime, DateTime flagactivation, DateTime endtime){
-        this.starttime = starttime;
-        this.flagactivation = flagactivation;
-        this.endtime = endtime;
-        this.initPointInTime = new DateTime();
-    }
+//    public void finalizeInit(DateTime starttime, DateTime flagactivation, DateTime endtime){
+//        this.starttime = starttime;
+//        this.flagactivation = flagactivation;
+//        this.endtime = endtime;
+//        this.initPointInTime = new DateTime();
+//    }
 
 
     public int getGameState() {
@@ -33,7 +34,7 @@ public class Farcry1Undo {
     }
 
     public DateTime getFlagactivation() {
-        Duration difference = new Duration(initPointInTime, new DateTime());
+        Duration difference = new Duration(eventTime, new DateTime());
         logger.debug("old flagactivation time " + flagactivation.toString());
         logger.debug("difference " + difference.toString());
         logger.debug("new flagactivation time " + flagactivation.plus(difference).toString());
@@ -44,12 +45,12 @@ public class Farcry1Undo {
 
 
     public DateTime getEndtime() {
-        Duration difference = new Duration(initPointInTime, new DateTime());
+        Duration difference = new Duration(eventTime, new DateTime());
         return endtime.plus(difference);
     }
 
     public DateTime getStarttime() {
-        Duration difference = new Duration(initPointInTime, new DateTime());
+        Duration difference = new Duration(eventTime, new DateTime());
         logger.debug("old start time " + starttime.toString());
         logger.debug("difference " + difference.toString());
         logger.debug("new start time " + starttime.plus(difference).toString());
@@ -59,12 +60,10 @@ public class Farcry1Undo {
 
     @Override
     public String toString() {
-        return "Farcry1Undo{" +
+        return "Farcry1GameEvent{" +
                 "pmode=" + Farcry1AssaultThread.GAME_MODES[pmode] +
                 ", flagactivation=" + flagactivation +
-                ", endtime=" + endtime +
-                ", starttime=" + starttime +
-                ", initPointInTime=" + initPointInTime +
+                ", eventTime=" + eventTime +
                 '}';
     }
 }
