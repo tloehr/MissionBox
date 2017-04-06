@@ -37,8 +37,9 @@ new FormModel {
 					} )
 					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 						name: "scrollPane1"
-						add( new FormComponent( "javax.swing.JTextPane" ) {
-							name: "txtLog"
+						add( new FormComponent( "javax.swing.JList" ) {
+							name: "listEvents"
+							"selectionMode": 0
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 5

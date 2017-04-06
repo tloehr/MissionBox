@@ -40,7 +40,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private final long millispercycle = 50;
     private DateTime pausedSince = null;
 
-    ArrayList<Farcry1GameEvent> eventList = null;
+//    ArrayList<Farcry1GameEvent> eventList = null;
 
     public static final int GAME_NON_EXISTENT = -1;
     public static final int GAME_PRE_GAME = 0;
@@ -76,7 +76,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         gameModeList.add(MessageListener.class, gameModeListener);
 
         previousGameState = GAME_NON_EXISTENT;
-        eventList = new ArrayList<>();
 
         restartGame();
     }
@@ -125,7 +124,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 case GAME_PRE_GAME: {
                     MissionBox.shutdownEverything();
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
-                    eventList.clear();
+                    MissionBox.getFrmTest().clear();
                     break;
                 }
                 case GAME_FLAG_ACTIVE: {
@@ -155,21 +154,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_HOT: {
-//                    if (undo != null) {
-//                        logger.debug("undoing the green button");
-//                        starttime = undo.getStarttime();
-//                        flagactivation = undo.getFlagactivation();
-//                    } else {
-                    // save current state before changing it
-
-                    // hier gehts weiter. denk nochmal über den undo nach
-
-
-//                        eventList.get(eventList.size() - 1).finalizeInit(starttime, flagactivation, endtime);
-                    // add the new state as new pause point
-                    Farcry1GameEvent myEvent = new Farcry1GameEvent(state);
-                    MissionBox.log(myEvent.toString());
-                    eventList.add(myEvent);
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(state));
 
                     flagactivation = new DateTime();
 
@@ -189,21 +174,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_COLD: {
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(state));
 
-//                    if (undo != null) {
-//                        logger.debug("undoing the red button");
-//                        starttime = undo.getStarttime();
-//                        flagactivation = new DateTime(0);
-//                    } else {
-                    // save current state before changing it
-//                        if (!eventList.isEmpty())
-//                            eventList.get(eventList.size() - 1).finalizeInit(starttime, flagactivation, endtime);
-                    // add the new state as new pause point
-                    Farcry1GameEvent myEvent = new Farcry1GameEvent(state);
-                    MissionBox.log(myEvent.toString());
-                    eventList.add(myEvent);
                     flagactivation = new DateTime(0);
-//                    }
                     endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
 
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));

@@ -3,6 +3,10 @@ package gamemodes;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.format.DateTimeFormat;
+
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 /**
  * Created by Torsten on 05.07.2016.
@@ -14,6 +18,7 @@ public class Farcry1GameEvent {
     DateTime starttime;
     DateTime eventTime;
     Logger logger;
+
 
     public Farcry1GameEvent(int pmode) {
         this.logger = Logger.getLogger(this.getClass());
@@ -60,10 +65,16 @@ public class Farcry1GameEvent {
 
     @Override
     public String toString() {
-        return "Farcry1GameEvent{" +
-                "pmode=" + Farcry1AssaultThread.GAME_MODES[pmode] +
-                ", flagactivation=" + flagactivation +
-                ", eventTime=" + eventTime +
-                '}';
+
+        String html = "<b>"+eventTime.toString(DateTimeFormat.fullTime())+"</b>&nbsp;";
+        html += Farcry1AssaultThread.GAME_MODES[pmode];
+
+        return "<html>"+html+"</html>";
+
+//        return "Farcry1GameEvent{" +
+//                "pmode=" + Farcry1AssaultThread.GAME_MODES[pmode] +
+//                ", flagactivation=" + flagactivation +
+//                ", eventTime=" + eventTime +
+//                '}';
     }
 }

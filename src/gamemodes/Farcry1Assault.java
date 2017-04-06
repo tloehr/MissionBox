@@ -106,7 +106,6 @@ public class Farcry1Assault implements GameModes {
                  *                    |___/
                  */
                 logger.debug("GAME_FLAG_HOT");
-                MissionBox.log("Flagge aktiviert");
                 MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";1000,1000");
                 MissionBox.off(MissionBox.MBX_LED_RED);
 
@@ -121,8 +120,6 @@ public class Farcry1Assault implements GameModes {
                  *                    |___/
                  */
                 logger.debug("GAME_FLAG_COLD");
-
-                MissionBox.log("Flagge inaktiv");
 
                 MissionBox.setProgress(new BigDecimal(-1));
 
@@ -148,7 +145,6 @@ public class Farcry1Assault implements GameModes {
                  *
                  */
                 logger.debug("GAME_ROCKET_LAUNCHED");
-                MissionBox.log("Rakete gestartet");
 
                 MissionBox.setProgress(new BigDecimal(-1));
 
@@ -175,7 +171,6 @@ public class Farcry1Assault implements GameModes {
                  *
                  */
                 logger.debug("GAME_PRE_GAME");
-                MissionBox.log("Spiel in Vorbereitung");
                 gameWon = false;
                 prev_countdown_index = -1;
 
@@ -206,14 +201,11 @@ public class Farcry1Assault implements GameModes {
                  *
                  */
                 logger.debug("GAME_OVER");
-                MissionBox.log("GAME OVER");
 
                 MissionBox.off(MissionBox.MBX_LED_RED);
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
 
                 if (gameWon) {
-                    MissionBox.log("Angreifer haben gewonnen");
-
                     MissionBox.off(MissionBox.MBX_LED_RGB_GREEN);
                     MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
                     MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
@@ -223,7 +215,6 @@ public class Farcry1Assault implements GameModes {
 
 
                 } else {
-                    MissionBox.log("Verteidiger haben gewonnen");
                     MissionBox.off(MissionBox.MBX_LED_RGB_RED);
                     MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
                     MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";1000,1000");
@@ -248,7 +239,6 @@ public class Farcry1Assault implements GameModes {
                  *                    |___/
                  */
                 logger.debug("GAME_OUTCOME_FLAG_TAKEN");
-                MissionBox.log("Flagge erobert");
 
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
                 MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
@@ -268,8 +258,6 @@ public class Farcry1Assault implements GameModes {
                  *                    |___/
                  */
                 logger.debug("GAME_FLAG_ACTIVE");
-                MissionBox.clearLog();
-                MissionBox.log("Flagge bereit zur Eroberung. Spiel läuft");
                 MissionBox.enableSettings(false);
                 RESPAWNINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_TIME));
                 lastAnnoucement = "";
@@ -356,14 +344,25 @@ public class Farcry1Assault implements GameModes {
         });
 
         MissionBox.getBtnPAUSE().addListener(e -> {
-            logger.debug("btnPause");
+            logger.debug("btnPause - on Screen");
+
+            Warum klappt das nihct ?
+
+            if (isGameRunning(farcryAssaultThread.getGameState())){
+                if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PAUSED){
+                    MissionBox.getPinHandler().resume();
+                } else {
+                    MissionBox.getPinHandler().pause();
+                }
+            }
+
 
         });
 
         MissionBox.getBtnPAUSE().addListener((GpioPinListenerDigital) event -> {
             MissionBox.getFrmTest().setButtonTestLabel("undo", event.getState() == PinState.LOW); // for debugging
             if (event.getState() == PinState.LOW) {
-                logger.debug("btnUndo");
+                logger.debug("btnPause - GPIO");
                 farcryAssaultThread.pause();
             }
             //quitGame();

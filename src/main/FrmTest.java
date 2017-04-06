@@ -7,6 +7,7 @@ package main;
 import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import gamemodes.Farcry1GameEvent;
 import interfaces.PercentageInterface;
 import misc.Tools;
 import org.apache.log4j.Logger;
@@ -18,8 +19,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.DateFormat;
-import java.util.Date;
 
 
 /**
@@ -32,11 +31,29 @@ public class FrmTest extends JFrame {
             new EscalatingSirensTime(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3)};
     Logger logger = Logger.getLogger(getClass());
 
+    DefaultListModel<Farcry1GameEvent> eventModel = new DefaultListModel<>();
+
 
     public FrmTest() {
         initComponents();
         initPanel();
 //        setUndecorated(false);
+    }
+
+    public void addGameEvent(Farcry1GameEvent event){
+        eventModel.addElement(event);
+    }
+
+    public void clear(){
+        eventModel.removeAllElements();
+    }
+
+    public Farcry1GameEvent resetTo(int index){
+        Farcry1GameEvent event = eventModel.get(index);
+        for (int pos = eventModel.capacity()-1; pos >= index; pos--){
+            eventModel.remove(pos);
+        }
+        return event;
     }
 
     private void initPanel() {
@@ -118,6 +135,8 @@ public class FrmTest extends JFrame {
         btnRelayTest7.setToolTipText("mcp23017-01-B6");
         btnRelayTest8.setToolTipText("mcp23017-01-B7");
 
+        listEvents.setModel(eventModel);
+
     }
 
     public void setButtonTestLabel(String name, boolean on) {
@@ -181,7 +200,6 @@ public class FrmTest extends JFrame {
     }
 
 
-
     private void btnFCYcapPlusActionPerformed(ActionEvent e) {
         fcyCapChange(1);
     }
@@ -240,23 +258,23 @@ public class FrmTest extends JFrame {
         return debugPanel4Pins;
     }
 
-    public void log(String text) {
-
-        if (text == null) {
-            txtLog.setText("");
-        } else {
-            log(0, "", text);
-        }
-    }
-
-    public void log(long someID, String someText, String text) {
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        String newTxt = txtLog.getText() + "\n(" + df.format(new Date()) + ") ";
-        newTxt += someID > 0 ? " [" + someID + "] " : "";
-        newTxt += !someText.isEmpty() ? " \"" + someText + "\" " : "";
-        newTxt += text;
-        txtLog.setText(newTxt);
-    }
+//    public void log(String text) {
+//
+//        if (text == null) {
+//            txtLog.setText("");
+//        } else {
+//            log(0, "", text);
+//        }
+//    }
+//
+//    public void log(long someID, String someText, String text) {
+//        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+//        String newTxt = txtLog.getText() + "\n(" + df.format(new Date()) + ") ";
+//        newTxt += someID > 0 ? " [" + someID + "] " : "";
+//        newTxt += !someText.isEmpty() ? " \"" + someText + "\" " : "";
+//        newTxt += text;
+//        txtLog.setText(newTxt);
+//    }
 
 
     private void tabbedPane1StateChanged(ChangeEvent e) {
@@ -420,7 +438,7 @@ public class FrmTest extends JFrame {
         scrollPane2 = new JScrollPane();
         debugPanel4Pins = new JPanel();
         scrollPane1 = new JScrollPane();
-        txtLog = new JTextPane();
+        listEvents = new JList();
         panel2 = new JPanel();
         btnRed = new JButton();
         btnGreen = new JButton();
@@ -528,7 +546,10 @@ public class FrmTest extends JFrame {
 
                 //======== scrollPane1 ========
                 {
-                    scrollPane1.setViewportView(txtLog);
+
+                    //---- listEvents ----
+                    listEvents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                    scrollPane1.setViewportView(listEvents);
                 }
                 contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 3));
 
@@ -998,7 +1019,7 @@ public class FrmTest extends JFrame {
     private JScrollPane scrollPane2;
     private JPanel debugPanel4Pins;
     private JScrollPane scrollPane1;
-    private JTextPane txtLog;
+    private JList listEvents;
     private JPanel panel2;
     private JButton btnRed;
     private JButton btnGreen;

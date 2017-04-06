@@ -412,14 +412,6 @@ public class MissionBox {
     }
 
 
-    public static void clearLog() {
-        frmTest.log(null);
-    }
-
-    public static void log(String text) {
-        frmTest.log(text);
-    }
-
     public static void setMessage(String message) {
         frmTest.setMessage(message);
     }
