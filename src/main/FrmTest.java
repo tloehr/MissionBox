@@ -48,6 +48,10 @@ public class FrmTest extends JFrame {
         eventModel.removeAllElements();
     }
 
+    public Farcry1GameEvent getLastEvent(){
+        return eventModel.getElementAt(eventModel.getSize()-1);
+    }
+
     public Farcry1GameEvent resetTo(int index){
         Farcry1GameEvent event = eventModel.get(index);
         for (int pos = eventModel.capacity()-1; pos >= index; pos--){

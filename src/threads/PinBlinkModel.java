@@ -24,8 +24,7 @@ public class PinBlinkModel implements Callable<String> {
 
     @Override
     public String call() throws Exception {
-        if (paused) return null;
-
+      
         if (repeat == 0) {
             restart();
             pin.setOn(false);
@@ -36,6 +35,7 @@ public class PinBlinkModel implements Callable<String> {
                 while (hasNext()) {
                     long time = 0;
                     if (!paused) {
+                        logger.debug("running:"+pin.getName());
                         if (Thread.currentThread().isInterrupted()) {
                             pin.setOn(false);
                             pin.setText("");
@@ -53,6 +53,8 @@ public class PinBlinkModel implements Callable<String> {
                             pin.setText("");
                             return null;
                         }
+                    } else {
+                        logger.debug("pausing:"+pin.getName());
                     }
                 }
             }
@@ -120,10 +122,6 @@ public class PinBlinkModel implements Callable<String> {
     }
 
     private long next() {
-        if (paused) {
-            currentlyOn = false;
-            return 0;
-        }
         long next = onOffScheme.get(positionInScheme);
         currentlyOn = !currentlyOn;
         positionInScheme++;

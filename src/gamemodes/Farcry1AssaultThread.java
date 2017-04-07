@@ -4,14 +4,11 @@ import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 
 import javax.swing.event.EventListenerList;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 /**
  * Dieser Thread läuft wie ein Motor in Zyklen ab. Jeder Zyklus dauert <b>millispercycle</b> millisekunden.
@@ -25,20 +22,24 @@ import java.util.ArrayList;
 public class Farcry1AssaultThread implements Runnable, GameThreads {
     final Logger logger = Logger.getLogger(getClass());
     private final Thread thread;
-    private int GAMETIMEINSECONDS;
-    private int TIME2CAP;
 
 
-//    private BigDecimal cycle;
-
-    //    private BigDecimal MAXCYCLES;
     private int gameState, previousGameState;
-    private int afterglow = 0, agseconds = 20, rocketseconds = 9;
-    private DateTime starttime, flagactivation, endtime, rockettime;
+
+
     // makes sure that the time event is only triggered once a second
     private long threadcycles = 0;
+
     private final long millispercycle = 50;
-    private DateTime pausedSince = null;
+
+    private long starttime = 0l; //in millis(), when did the game start ?
+    private long gametimer = 0l; //how long is the game running ?
+    private long maxgametime = 0l; // how long can this game last (pauses and reverts excepted)
+    //    private long endtime = 0l; // wann wird das Spiel vorrüber sein. Solange die Flagge nicht aktiviert ist, ist endtime = maxgametime. Ansonsten endtime = flagactivation + capturetime;
+    private long capturetime = 0l; // how long do we have to hold the flag on order to capture it.
+
+
+    private long pause = 0l;
 
 //    ArrayList<Farcry1GameEvent> eventList = null;
 
@@ -50,11 +51,8 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     public static final int GAME_ROCKET_LAUNCHED = 4;
     public static final int GAME_OUTCOME_FLAG_TAKEN = 5;
     public static final int GAME_OUTCOME_FLAG_DEFENDED = 6;
-    public static final int GAME_OVER = 7;
-    public static final int GAME_PAUSED = 8;
-    public static final int GAME_RESUME = 9;
 
-    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "ROCKET", "FLAG_TAKEN", "FLAG_DEFENDED", "GAME_OVER", "GAME_PAUSE", "GAME_RESUME"};
+    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "ROCKET", "FLAG_TAKEN", "FLAG_DEFENDED"};
 
     DateFormat formatter = new SimpleDateFormat("mm:ss");
 
@@ -77,16 +75,28 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
         previousGameState = GAME_NON_EXISTENT;
 
+        maxgametime = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60000l;
+        capturetime = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE)) * 1000l;
+
+
         restartGame();
     }
 
 
+    public boolean isPaused(){
+        return pause > 0;
+    }
+
+
     public void pause() {
-        setGameState(GAME_PAUSED);
+        MissionBox.getPinHandler().pause();
+        pause = System.currentTimeMillis();
     }
 
     public void resume() {
-        setGameState(GAME_RESUME);
+        MissionBox.getPinHandler().resume();
+        starttime = starttime + pause; // ursprüngliche Startzeit anpassen
+        pause = 0l;
     }
 
 
@@ -115,6 +125,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 //
 //        }
         this.gameState = state;
+        logger.debug(GAME_MODES[gameState]);
 
         if (gameState != previousGameState) {
             previousGameState = gameState;
@@ -127,58 +138,20 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     MissionBox.getFrmTest().clear();
                     break;
                 }
-                case GAME_FLAG_ACTIVE: {
-                    this.GAMETIMEINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60;
-                    this.TIME2CAP = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
+                case GAME_FLAG_ACTIVE: { // hier wird das Spiel gestartet
+                    gametimer = 0l;
+                    starttime = System.currentTimeMillis();
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.active"));
-                    starttime = new DateTime();
-                    endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
-                    setGameState(GAME_FLAG_COLD);
-                    break;
-                }
-                case GAME_RESUME: {
-                    MissionBox.getPinHandler().resume();
-                    pausedSince = null;
-                    break;
-                }
-                case GAME_PAUSED: {
-                    MissionBox.getPinHandler().pause();
-                    pausedSince = new DateTime();
-
-                    this.GAMETIMEINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60;
-                    this.TIME2CAP = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE));
-                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.active"));
-                    starttime = new DateTime();
-                    endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
                     setGameState(GAME_FLAG_COLD);
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(state));
-
-                    flagactivation = new DateTime();
-
-                    endtime = flagactivation.plusSeconds(TIME2CAP);
-
-                    logger.debug("Starttime: " + starttime);
-                    logger.debug("Flagactivation: " + flagactivation);
-                    logger.debug("Endtime: " + endtime);
-
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(state, gametimer, maxgametime, capturetime));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     break;
                 }
-                case GAME_ROCKET_LAUNCHED: {
-                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.rocket.launched"));
-                    endtime = new DateTime();
-                    rockettime = endtime.plusSeconds(rocketseconds); // hier wird noch kurz gewartet bis der raketensound abgespielt ist. danach wird gehts
-                    break;
-                }
                 case GAME_FLAG_COLD: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(state));
-
-                    flagactivation = new DateTime(0);
-                    endtime = starttime.plusSeconds(GAMETIMEINSECONDS);
-
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(state, gametimer, maxgametime, capturetime));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     break;
                 }
@@ -188,10 +161,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 }
                 case GAME_OUTCOME_FLAG_DEFENDED: {
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
-                    break;
-                }
-                case GAME_OVER: {
-                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.after.game"));
                     break;
                 }
                 default: {
@@ -214,7 +183,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
     @Override
     public void quitGame() {
-        setGameState(GAME_OVER);
         thread.interrupt();
     }
 
@@ -241,23 +209,40 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     }
 
     public boolean timeIsUp() {
-        return endtime != null && endtime.isBeforeNow();
+        long endtime = maxgametime;
+
+        if (gameState == GAME_FLAG_HOT) {
+            Farcry1GameEvent lastEvent = MissionBox.getFrmTest().getLastEvent();
+            endtime = lastEvent.getGametimer() + capturetime;
+        }
+
+        return gametimer >= endtime;
+    }
+
+    public boolean isGameRunning() {
+        return gameState == Farcry1AssaultThread.GAME_FLAG_ACTIVE || gameState == Farcry1AssaultThread.GAME_FLAG_HOT || gameState == Farcry1AssaultThread.GAME_FLAG_COLD;
     }
 
 
     // Die bewertung der Spielsituation erfolgt in Zyklen.
     public void run() {
-        while (!thread.isInterrupted()) {
 
-            threadcycles++;
+        while (!thread.isInterrupted() && pause == 0l) {
 
-            if (threadcycles % 15 == 0) { // nicht jedes mal die gameTime bestimmen. Ist nicht nötig.
-                DateTime gameTime = new LocalDate().toDateTimeAtStartOfDay();
-                if (endtime != null && endtime.isAfterNow()) {
-                    gameTime = endtime.minus(new DateTime().getMillis());
+            if (isGameRunning()) {
+
+                gametimer = System.currentTimeMillis() - starttime;
+                logger.debug(gametimer);
+
+                threadcycles++;
+
+                if (threadcycles % 15 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
+
+                    fireMessage(gameTimerList, new MessageEvent(this, gameState, MissionBox.getFrmTest().getLastEvent().getEndtime() - gametimer)); // verbleibende Zeit
                 }
-                fireMessage(gameTimerList, new MessageEvent(this, gameState, gameTime));
+
             }
+
 
             try {
 
@@ -272,23 +257,19 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
                 if (gameState == GAME_FLAG_HOT) {
                     if (timeIsUp()) {
-                        setGameState(GAME_ROCKET_LAUNCHED);
+                        setGameState(GAME_OUTCOME_FLAG_TAKEN);
                     }
 
-                    BigDecimal progress = new BigDecimal(new DateTime().getMillis() - flagactivation.getMillis()).divide(new BigDecimal(endtime.getMillis() - flagactivation.getMillis()), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+                    Farcry1GameEvent lastEvent = MissionBox.getFrmTest().getLastEvent();
+                    long endtime = lastEvent.getGametimer() + capturetime;
+
+                    BigDecimal progress = new BigDecimal(gametimer - lastEvent.getGametimer()).divide(new BigDecimal(endtime - lastEvent.getGametimer()), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                     fireMessage(percentageList, new MessageEvent(this, gameState, progress));
                 }
 
-                if (gameState == GAME_ROCKET_LAUNCHED) {
-                    // hier wird auf FlagTaken umgesschaltet, sobald die Rakete abgespielt wurde
-                    if (rockettime.isBeforeNow()) {
-                        setGameState(GAME_OUTCOME_FLAG_TAKEN);
-                    }
-                }
-
-                if (gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED) {
-                    setGameState(GAME_OVER);
-                }
+//                if (gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED) {
+//                    setGameState(GAME_OVER);
+//                }
 
                 Thread.sleep(millispercycle);
             } catch (InterruptedException ie) {

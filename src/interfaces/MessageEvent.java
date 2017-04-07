@@ -26,12 +26,12 @@ public class MessageEvent extends EventObject {
         this.message = Tools.xx(message);
     }
 
-    public MessageEvent(Object source, int mode, DateTime message) {
-            super(source);
-            LOGGER.setLevel(MissionBox.getLogLevel());
-            this.mode = mode;
-            this.message = message;
-        }
+    public MessageEvent(Object source, int mode, Long message) { //
+        super(source);
+        LOGGER.setLevel(MissionBox.getLogLevel());
+        this.mode = mode;
+        this.message = message;
+    }
 
     public MessageEvent(Object source, int mode, BigDecimal percentage) {
         super(source);
@@ -47,7 +47,7 @@ public class MessageEvent extends EventObject {
         this.message = new Integer(mode);
     }
 
-    public MessageEvent(Object source,  int mode, Boolean on) {
+    public MessageEvent(Object source, int mode, Boolean on) {
         super(source);
         LOGGER.setLevel(MissionBox.getLogLevel());
         this.mode = mode;
@@ -76,10 +76,10 @@ public class MessageEvent extends EventObject {
     }
 
     public DateTime getTime() {
-            return (DateTime) message;
-        }
+        return new DateTime(message);
+    }
 
-    public String getDateTimeFormatted(){
+    public String getDateTimeFormatted() {
         return getTime().toString("mm:ss");
     }
 

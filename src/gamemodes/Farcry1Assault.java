@@ -72,8 +72,11 @@ public class Farcry1Assault implements GameModes {
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 MissionBox.setTimerMessage("--");
                 MissionBox.setRespawnTimer("--");
-            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
-                MissionBox.setTimerMessage(gameWon ? "Flag taken" : "Flag defended");
+            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
+                MissionBox.setTimerMessage("Flag taken");
+                MissionBox.setRespawnTimer("--");
+            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
+                MissionBox.setTimerMessage("Flag defended");
                 MissionBox.setRespawnTimer("--");
             } else {
                 MissionBox.setTimerMessage(thisAnnoucement);
@@ -191,39 +194,19 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";0,2000,1000,0");
 
 
-            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OVER) {
-                /***
-                 *       ____                       ___
-                 *      / ___| __ _ _ __ ___   ___ / _ \__   _____ _ __
-                 *     | |  _ / _` | '_ ` _ \ / _ \ | | \ \ / / _ \ '__|
-                 *     | |_| | (_| | | | | | |  __/ |_| |\ V /  __/ |
-                 *      \____|\__,_|_| |_| |_|\___|\___/  \_/ \___|_|
-                 *
-                 */
-                logger.debug("GAME_OVER");
+            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
+
+                logger.debug("GAME_OUTCOME_FLAG_DEFENDED");
 
                 MissionBox.off(MissionBox.MBX_LED_RED);
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
 
-                if (gameWon) {
-                    MissionBox.off(MissionBox.MBX_LED_RGB_GREEN);
-                    MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
-                    MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
-                    MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";1000,1000");
-                    MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
-                    MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
-
-
-                } else {
-                    MissionBox.off(MissionBox.MBX_LED_RGB_RED);
-                    MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
-                    MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";1000,1000");
-                    MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";1000,1000");
-                    MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
-                    MissionBox.off(MissionBox.MBX_LED_PB_RED);
-                    //MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;5000,0");
-
-                }
+                MissionBox.off(MissionBox.MBX_LED_RGB_RED);
+                MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
+                MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";1000,1000");
+                MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";1000,1000");
+                MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PB_RED);
 
 
                 // the end siren
@@ -247,6 +230,14 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";500,500");
                 MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";500,500");
+
+
+                MissionBox.off(MissionBox.MBX_LED_RGB_GREEN);
+                MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
+                MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
+                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";1000,1000");
+                MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
 
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
                 /***
@@ -277,7 +268,6 @@ public class Farcry1Assault implements GameModes {
                 // the starting siren
                 MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;5000,0");
 
-            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PAUSED) {
             }
         };
 
@@ -346,16 +336,12 @@ public class Farcry1Assault implements GameModes {
         MissionBox.getBtnPAUSE().addListener(e -> {
             logger.debug("btnPause - on Screen");
 
-            Warum klappt das nihct ?
+            if (farcryAssaultThread.isPaused()) {
+                farcryAssaultThread.resume();
+            } else if (farcryAssaultThread.isGameRunning()) {
+                farcryAssaultThread.pause();
 
-            if (isGameRunning(farcryAssaultThread.getGameState())){
-                if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PAUSED){
-                    MissionBox.getPinHandler().resume();
-                } else {
-                    MissionBox.getPinHandler().pause();
-                }
             }
-
 
         });
 
@@ -363,7 +349,12 @@ public class Farcry1Assault implements GameModes {
             MissionBox.getFrmTest().setButtonTestLabel("undo", event.getState() == PinState.LOW); // for debugging
             if (event.getState() == PinState.LOW) {
                 logger.debug("btnPause - GPIO");
-                farcryAssaultThread.pause();
+                if (farcryAssaultThread.isPaused()) {
+                    farcryAssaultThread.resume();
+                } else if (farcryAssaultThread.isGameRunning()) {
+                    farcryAssaultThread.pause();
+
+                }
             }
             //quitGame();
         });
@@ -372,9 +363,6 @@ public class Farcry1Assault implements GameModes {
         farcryAssaultThread.run();
     }
 
-    boolean isGameRunning(int mode) {
-        return mode == Farcry1AssaultThread.GAME_FLAG_ACTIVE || mode == Farcry1AssaultThread.GAME_FLAG_HOT || mode == Farcry1AssaultThread.GAME_FLAG_COLD;
-    }
 
     @Override
     public void quitGame() {
