@@ -48,11 +48,10 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     public static final int GAME_FLAG_ACTIVE = 1;
     public static final int GAME_FLAG_COLD = 2;
     public static final int GAME_FLAG_HOT = 3;
-    public static final int GAME_ROCKET_LAUNCHED = 4;
     public static final int GAME_OUTCOME_FLAG_TAKEN = 5;
     public static final int GAME_OUTCOME_FLAG_DEFENDED = 6;
 
-    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "ROCKET", "FLAG_TAKEN", "FLAG_DEFENDED"};
+    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "FLAG_TAKEN", "FLAG_DEFENDED"};
 
     DateFormat formatter = new SimpleDateFormat("mm:ss");
 
@@ -83,7 +82,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     }
 
 
-    public boolean isPaused(){
+    public boolean isPaused() {
         return pause > 0;
     }
 
@@ -99,31 +98,27 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         pause = 0l;
     }
 
+    public void setFlagHot(boolean hot) {
+        if (hot) {
+            if (gameState == GAME_FLAG_COLD) {
+                setGameState(GAME_FLAG_HOT);
+            }
+        } else {
+            if (gameState == GAME_FLAG_HOT) {
+                setGameState(GAME_FLAG_COLD);
+            }
+        }
+    }
+
 
     /**
      * Hier ist die eingentliche Spielmechanik drin. Also was kommt nach was.
+     * Durch die Game Event Messages wird das übergeordnete Farcry1Assault verständigt. DORT werden
+     * dann die Sirenen und die Leucht-Signale gesetzt.
      *
      * @param state
      */
-    public synchronized void setGameState(int state) {
-//        Farcry1GameEvent undo = null;
-//        if (state == -1) { // means UNDO
-//            if (eventList.size() != 2) return; // need 2 states to pause
-//
-//            logger.debug(eventList.toString());
-//            // in case of pause, we use the first one, and remove the second.
-//            pause = eventList.get(0);
-//            eventList.remove(eventList.get(1));
-//
-//            logger.debug("Reverting back to the following state");
-//            logger.debug(pause);
-//            MissionBox.log("Reverting back to the following state");
-//            MissionBox.log(pause.toString());
-//
-//            this.gameState = pause.getGameState();
-//        } else {
-//
-//        }
+    private synchronized void setGameState(int state) {
         this.gameState = state;
         logger.debug(GAME_MODES[gameState]);
 
@@ -146,12 +141,12 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(state, gametimer, maxgametime, capturetime));
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(state, gametimer, maxgametime, capturetime));
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     break;
                 }
@@ -190,17 +185,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         return gameState;
     }
 
-    public synchronized boolean isFlagHot() {
-        return gameState == GAME_FLAG_HOT;
-    }
-
-    public synchronized void setFlag(boolean on) {
-//        if (gameState == GAME_PRE_GAME || gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED || gameState == GAME_OVER)
-//            return;
-
-        if (gameState != GAME_FLAG_HOT && gameState != GAME_FLAG_COLD) return;
-        setGameState(on ? GAME_FLAG_HOT : GAME_FLAG_COLD);
-    }
 
     protected synchronized void fireMessage(EventListenerList listeners, MessageEvent textMessage) {
         for (MessageListener listener : listeners.getListeners(MessageListener.class)) {

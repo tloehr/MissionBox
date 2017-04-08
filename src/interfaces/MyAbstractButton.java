@@ -33,4 +33,8 @@ public class MyAbstractButton {
         return gpio != null ? gpio.isLow() : false;
     }
 
+    public boolean isHigh(){
+            return gpio != null ? gpio.isHigh() : false;
+        }
+
 }

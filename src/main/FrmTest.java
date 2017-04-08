@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 
 /**
@@ -31,32 +32,39 @@ public class FrmTest extends JFrame {
             new EscalatingSirensTime(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3)};
     Logger logger = Logger.getLogger(getClass());
 
-    DefaultListModel<Farcry1GameEvent> eventModel = new DefaultListModel<>();
+    ArrayList<Farcry1GameEvent> eventModel = new ArrayList<>();
 
 
     public FrmTest() {
         initComponents();
         initPanel();
-//        setUndecorated(false);
     }
 
-    public void addGameEvent(Farcry1GameEvent event){
-        eventModel.addElement(event);
+    public void addGameEvent(Farcry1GameEvent event) {
+        if (!eventModel.isEmpty()) {
+            Farcry1GameEvent lastEvent = getLastEvent();
+            lastEvent.setEventDuration();
+        }
+        eventModel.add(event);
+        listEvents.add(event.getGUI());
     }
 
-    public void clear(){
-        eventModel.removeAllElements();
+    public void clear() {
+        eventModel.clear();
+        listEvents.removeAll();
     }
 
-    public Farcry1GameEvent getLastEvent(){
-        return eventModel.getElementAt(eventModel.getSize()-1);
+    public Farcry1GameEvent getLastEvent() {
+        return eventModel.get(eventModel.size() - 1);
     }
 
     public Farcry1GameEvent resetTo(int index){
         Farcry1GameEvent event = eventModel.get(index);
-        for (int pos = eventModel.capacity()-1; pos >= index; pos--){
-            eventModel.remove(pos);
-        }
+        listEvents.removeAll();
+
+//        for (int pos = 0; pos < eventModel.size()){
+//            eventModel.remove(pos);
+//        }
         return event;
     }
 
@@ -139,7 +147,6 @@ public class FrmTest extends JFrame {
         btnRelayTest7.setToolTipText("mcp23017-01-B6");
         btnRelayTest8.setToolTipText("mcp23017-01-B7");
 
-        listEvents.setModel(eventModel);
 
     }
 
@@ -441,8 +448,8 @@ public class FrmTest extends JFrame {
         btn1 = new JButton();
         scrollPane2 = new JScrollPane();
         debugPanel4Pins = new JPanel();
-        scrollPane1 = new JScrollPane();
-        listEvents = new JList();
+        panel7 = new JScrollPane();
+        listEvents = new JPanel();
         panel2 = new JPanel();
         btnRed = new JButton();
         btnGreen = new JButton();
@@ -526,8 +533,8 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
+                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
@@ -548,20 +555,22 @@ public class FrmTest extends JFrame {
                 }
                 contentPanel.add(scrollPane2, CC.xywh(3, 1, 1, 7));
 
-                //======== scrollPane1 ========
+                //======== panel7 ========
                 {
 
-                    //---- listEvents ----
-                    listEvents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-                    scrollPane1.setViewportView(listEvents);
+                    //======== listEvents ========
+                    {
+                        listEvents.setLayout(new BoxLayout(listEvents, BoxLayout.PAGE_AXIS));
+                    }
+                    panel7.setViewportView(listEvents);
                 }
-                contentPanel.add(scrollPane1, CC.xywh(5, 1, 1, 3));
+                contentPanel.add(panel7, CC.xywh(5, 1, 1, 3));
 
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                        "default:grow",
-                        "fill:default:grow, $lgap, fill:default:grow"));
+                            "default:grow",
+                            "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
@@ -619,8 +628,8 @@ public class FrmTest extends JFrame {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                    "2*(pref:grow, $rgap), pref",
-                    "3*(default, $lgap), fill:default:grow"));
+                        "2*(pref:grow, $rgap), pref",
+                        "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -825,8 +834,8 @@ public class FrmTest extends JFrame {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                    "default, 3*($ugap, default:grow), $lcgap, default:grow",
-                    "8*(default:grow, $lgap), default"));
+                        "default, 3*($ugap, default:grow), $lcgap, default:grow",
+                        "8*(default:grow, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
@@ -1022,8 +1031,8 @@ public class FrmTest extends JFrame {
     private JButton btn1;
     private JScrollPane scrollPane2;
     private JPanel debugPanel4Pins;
-    private JScrollPane scrollPane1;
-    private JList listEvents;
+    private JScrollPane panel7;
+    private JPanel listEvents;
     private JPanel panel2;
     private JButton btnRed;
     private JButton btnGreen;

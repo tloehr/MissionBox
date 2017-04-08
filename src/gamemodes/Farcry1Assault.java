@@ -138,32 +138,6 @@ public class Farcry1Assault implements GameModes {
 
                 MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
 
-            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_ROCKET_LAUNCHED) {
-                /***
-                 *      ____            _        _     _                           _              _
-                 *     |  _ \ ___   ___| | _____| |_  | |    __ _ _   _ _ __   ___| |__   ___  __| |
-                 *     | |_) / _ \ / __| |/ / _ \ __| | |   / _` | | | | '_ \ / __| '_ \ / _ \/ _` |
-                 *     |  _ < (_) | (__|   <  __/ |_  | |__| (_| | |_| | | | | (__| | | |  __/ (_| |
-                 *     |_| \_\___/ \___|_|\_\___|\__| |_____\__,_|\__,_|_| |_|\___|_| |_|\___|\__,_|
-                 *
-                 */
-                logger.debug("GAME_ROCKET_LAUNCHED");
-
-                MissionBox.setProgress(new BigDecimal(-1));
-
-                //MissionBox.setScheme(MissionBox.MBX_SIREN2, "1;3000,0"); // this is the signal for the launched rocket. Its the same as siren 2
-                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "5;750,1000"); // 8,75 seconds
-
-                MissionBox.off(MissionBox.MBX_LED_RED);
-                MissionBox.off(MissionBox.MBX_LED_GREEN);
-//                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";50,50");
-//                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";50,50");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";150,150");
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";150,150");
-
-                MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";50,50");
-
-                gameWon = true;
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 /***
                  *      ____            ____
@@ -277,43 +251,41 @@ public class Farcry1Assault implements GameModes {
 
         MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
             logger.debug(event);
-            MissionBox.getFrmTest().setButtonTestLabel("red", event.getState() == PinState.LOW); // for debugging
-            if (event.getState() == PinState.LOW) {
+            MissionBox.getFrmTest().setButtonTestLabel("red", event.getState() == PinState.HIGH); // for debugging
+            if (event.getState() == PinState.HIGH) {
                 logger.debug("RedButton pressed");
-                farcryAssaultThread.setFlag(true);
+
+                farcryAssaultThread.setFlagHot(true);
             }
         });
 
         MissionBox.getBtnRed().addListener(e -> {
-            logger.debug("RedButton pressed");
-            farcryAssaultThread.setFlag(true);
+            farcryAssaultThread.setFlagHot(true);
         });
 
         MissionBox.getBtnGreen().addListener((GpioPinListenerDigital) event -> {
             logger.debug(event);
-            MissionBox.getFrmTest().setButtonTestLabel("green", event.getState() == PinState.LOW); // for debugging
-            if (event.getState() == PinState.LOW) {
+            MissionBox.getFrmTest().setButtonTestLabel("green", event.getState() == PinState.HIGH); // for debugging
+            if (event.getState() == PinState.HIGH) {
                 logger.debug("GPIO GreenButton down");
+
                 // If both buttons are pressed, the red one wins.
-                if (MissionBox.getBtnRed().isLow() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT)
+                if (MissionBox.getBtnRed().isHigh())
                     return;
-                logger.debug("GreenButton pressed");
-                farcryAssaultThread.setFlag(false);
+
+                farcryAssaultThread.setFlagHot(false);
             }
         });
 
         MissionBox.getBtnGreen().addListener(e -> {
-            logger.debug("GUI GreenButton down");
-            if (MissionBox.getBtnRed().isLow() || MissionBox.getGamemode() != Farcry1AssaultThread.GAME_FLAG_HOT)
-                return;
-            logger.debug("GreenButton pressed");
-            farcryAssaultThread.setFlag(false);
+            logger.debug("GreenButton clicked");
+            farcryAssaultThread.setFlagHot(false);
         });
 
         MissionBox.getBtnGameStartStop().addListener((GpioPinListenerDigital) event -> {
-            MissionBox.getFrmTest().setButtonTestLabel("start", event.getState() == PinState.LOW); // for debugging
+            MissionBox.getFrmTest().setButtonTestLabel("start", event.getState() == PinState.HIGH); // for debugging
             if (!MissionBox.isGameStartable()) return;
-            if (event.getState() == PinState.LOW) {
+            if (event.getState() == PinState.HIGH) {
                 logger.debug("btnGameStartStop");
                 if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                     farcryAssaultThread.startGame();
@@ -346,8 +318,8 @@ public class Farcry1Assault implements GameModes {
         });
 
         MissionBox.getBtnPAUSE().addListener((GpioPinListenerDigital) event -> {
-            MissionBox.getFrmTest().setButtonTestLabel("undo", event.getState() == PinState.LOW); // for debugging
-            if (event.getState() == PinState.LOW) {
+            MissionBox.getFrmTest().setButtonTestLabel("undo", event.getState() == PinState.HIGH); // for debugging
+            if (event.getState() == PinState.HIGH) {
                 logger.debug("btnPause - GPIO");
                 if (farcryAssaultThread.isPaused()) {
                     farcryAssaultThread.resume();
