@@ -5,6 +5,10 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.EventListener;
+import java.util.EventObject;
 
 /**
  * Created by Torsten on 05.07.2016.
@@ -19,55 +23,64 @@ public class Farcry1GameEvent {
     // Echtzeit umgerechnet.
     // Dadurch wird die Verzögerung während der Pausen eingerechnet.
     private long eventDuration; // wie lange hat dieses Ereignis gedauert, bevor es vom nächsten abgelöst wurde.
-    // wie lange wird das Spiel insgesamt dauern.
-    private final long maxgametime;
-    // wie lange ist die Capture Zeit
-    private final long capturetime;
+
     // in welchem Zustand befindet sich das Spiel ?
     private int gameState;
 
-    private long endtime;
-    // wann hat dieses Ereignis stattgefunden ?
-
+    // wie stand der Gametimer zum Zeitpunkt des Events. gametimer fangen bei 0 an.
     private long gametimer;
+
     private Logger logger;
 
+    // wie soll bei der Zeitabfrage gerechnet werden ? Zu Beginn des Events oder zum Ende.
     private boolean endOfEvent = true;
+
     private JButton btnStartOfEvent, btnEndOfEvent;
     private JLabel lbl;
+    private GameEventListener gameEventListener;
 
-
-    public Farcry1GameEvent(int gameState, long gametimer, long maxgametime, long capturetime) {
+    public Farcry1GameEvent(int gameState, long gametimer) {
         btnStartOfEvent = new JButton(new ImageIcon((Farcry1GameEvent.class.getResource("/artwork/22x22/3leftarrow.png"))));
         btnEndOfEvent = new JButton(new ImageIcon((Farcry1GameEvent.class.getResource("/artwork/22x22/3rightarrow.png"))));
 
-        btnStartOfEvent.addActionListener(e -> endOfEvent = false);
-        btnEndOfEvent.addActionListener(e -> endOfEvent = true);
+        btnStartOfEvent.addActionListener(e -> {
+            endOfEvent = false;
+            gameEventListener.eventSent(this);
+        });
+        btnEndOfEvent.addActionListener(e -> {
+            endOfEvent = true;
+            gameEventListener.eventSent(this);
+        });
         lbl = new JLabel(toString());
 
-        this.maxgametime = maxgametime;
-        this.capturetime = capturetime;
         this.gameState = gameState;
         this.eventStartTime = System.currentTimeMillis();
-        this.eventDuration = -1l; // never
+        this.eventDuration = -1l; // not yet
         this.gametimer = gametimer;
         refreshTextLine();
+    }
 
+    /**
+     * Bevor das nächste Ereignis eintritt, muss dieses erst abgeschlossen werden.
+     * Erst in diesem Moment kann entschieden werden, wie lange dieses Ereignis angehalten hat.
+     */
+    public void finalizeEvent() {
+        long now = System.currentTimeMillis();
+        this.eventDuration = now - eventStartTime - 1;
+        refreshTextLine();
+    }
+
+    /**
+     * wenn der Spielzustand auf dieses Ereignis zurückgesetzt wird, dann ist es auch wieder aktiv.
+     * somit läuft dieses Ereignis jetzt weiter und es nicht mehr FINALIZED.
+     */
+    public void unfinalizeEvent() {
+        this.eventDuration = -1;
+        refreshTextLine();
     }
 
     public long getEventDuration() {
         return eventDuration;
-    }
-
-    public void resetEventDuration() {
-        this.eventDuration = -1l;
-        refreshTextLine();
-    }
-
-    public void setEventDuration() {
-        long now = System.currentTimeMillis();
-        this.eventDuration = now - eventStartTime;
-        refreshTextLine();
     }
 
     private void refreshTextLine() {
@@ -87,11 +100,15 @@ public class Farcry1GameEvent {
         return eventStartTime;
     }
 
-    public long getGametimer() {
-        return gametimer;
-    }
+//    public long getGametimer() {
+//        return eventDuration == -1l ? -1l : (endOfEvent ? gametimer + eventDuration : gametimer);
+//    }
 
-    public long getEndtime() {
+        public long getGametimer() {
+            return gametimer;
+        }
+
+    public long getEndtime(long maxgametime, long capturetime) {
         long endtime = maxgametime;
         if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
             endtime = gametimer + capturetime;
@@ -134,7 +151,10 @@ public class Farcry1GameEvent {
         pnl.add(btnEndOfEvent);
 
         return pnl;
+    }
 
+    public void setGameEventListener(GameEventListener al){
+       gameEventListener = al;
     }
 
     @Override

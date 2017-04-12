@@ -29,7 +29,7 @@ public class EscalatingTime extends PercentageInterface {
 
 
     public void setValue(BigDecimal percent) {
-        logger.debug("PERCENT: " + percent);
+//        logger.debug("PERCENT: " + percent);
 
         if (percent.compareTo(BigDecimal.ZERO) < 0) {
             MissionBox.off(key);
@@ -51,8 +51,8 @@ public class EscalatingTime extends PercentageInterface {
 
         offTime = MAXTIMEFORSIGNAL - onTime;
 
-        logger.debug("onTime " + onTime);
-        logger.debug("offTime " + offTime);
+//        logger.debug("onTime " + onTime);
+//        logger.debug("offTime " + offTime);
 
         // MissionBox.setScheme(key, FOREVER + ";" + onTime + "," + offTime);
     }

@@ -8,6 +8,7 @@ import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import gamemodes.Farcry1GameEvent;
+import gamemodes.GameEventListener;
 import interfaces.PercentageInterface;
 import misc.Tools;
 import org.apache.log4j.Logger;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 /**
  * @author Torsten Löhr
  */
-public class FrmTest extends JFrame {
+public class FrmTest extends JFrame implements GameEventListener {
     PercentageInterface[] progressHandlers = new PercentageInterface[]{
             new EscalatingTime(MissionBox.MBX_SIREN1),
             new EscalatingSirens(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3),
@@ -33,6 +34,7 @@ public class FrmTest extends JFrame {
     Logger logger = Logger.getLogger(getClass());
 
     ArrayList<Farcry1GameEvent> eventModel = new ArrayList<>();
+    private Farcry1GameEvent revertEvent = null;
 
 
     public FrmTest() {
@@ -40,32 +42,51 @@ public class FrmTest extends JFrame {
         initPanel();
     }
 
+    @Override
+    public void eventSent(Farcry1GameEvent event) {
+        setRevertEvent(event);
+    }
+
     public void addGameEvent(Farcry1GameEvent event) {
+        event.setGameEventListener(this);
         if (!eventModel.isEmpty()) {
             Farcry1GameEvent lastEvent = getLastEvent();
-            lastEvent.setEventDuration();
+            lastEvent.finalizeEvent();
         }
         eventModel.add(event);
         listEvents.add(event.getGUI());
     }
 
-    public void clear() {
+    public void clearEvents() {
         eventModel.clear();
         listEvents.removeAll();
+        revertEvent = null;
     }
 
     public Farcry1GameEvent getLastEvent() {
         return eventModel.get(eventModel.size() - 1);
     }
 
-    public Farcry1GameEvent resetTo(int index){
-        Farcry1GameEvent event = eventModel.get(index);
+    // setzt einen Revert Event fest, zu dem zurückgesprungen werden soll.
+    public void setRevertEvent(Farcry1GameEvent revertEvent){
+        this.revertEvent = revertEvent;
+        lblRevertEvent.setText(revertEvent.toString());
+    }
+
+    public void revert(){
+        int pos = eventModel.indexOf(revertEvent);
         listEvents.removeAll();
 
-//        for (int pos = 0; pos < eventModel.size()){
-//            eventModel.remove(pos);
-//        }
-        return event;
+        ArrayList<Farcry1GameEvent> tmpList = new ArrayList<>();
+
+
+        for (int p = 0; p < pos; p++){
+            tmpList.add(eventModel.get(p));
+        }
+        eventModel.clear();
+        eventModel.addAll(tmpList);
+        tmpList.clear();
+        
     }
 
     private void initPanel() {
@@ -454,6 +475,7 @@ public class FrmTest extends JFrame {
         btnRed = new JButton();
         btnGreen = new JButton();
         btnPause = new JButton();
+        lblRevertEvent = new JLabel();
         btn2 = new JButton();
         lblTimer = new JLabel();
         tbDebug = new JToggleButton();
@@ -533,8 +555,8 @@ public class FrmTest extends JFrame {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
+                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                    "3*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
@@ -553,7 +575,7 @@ public class FrmTest extends JFrame {
                     }
                     scrollPane2.setViewportView(debugPanel4Pins);
                 }
-                contentPanel.add(scrollPane2, CC.xywh(3, 1, 1, 7));
+                contentPanel.add(scrollPane2, CC.xywh(3, 1, 1, 9));
 
                 //======== panel7 ========
                 {
@@ -569,8 +591,8 @@ public class FrmTest extends JFrame {
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                            "default:grow",
-                            "fill:default:grow, $lgap, fill:default:grow"));
+                        "default:grow",
+                        "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
@@ -582,7 +604,7 @@ public class FrmTest extends JFrame {
                     btnGreen.setIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen64.png")));
                     panel2.add(btnGreen, CC.xy(1, 3, CC.FILL, CC.FILL));
                 }
-                contentPanel.add(panel2, CC.xywh(7, 1, 1, 7));
+                contentPanel.add(panel2, CC.xywh(7, 1, 1, 9));
 
                 //---- btnPause ----
                 btnPause.setText("PAUSE");
@@ -590,46 +612,50 @@ public class FrmTest extends JFrame {
                 btnPause.setFont(new Font("Dialog", Font.BOLD, 18));
                 btnPause.setVerticalTextPosition(SwingConstants.BOTTOM);
                 btnPause.setHorizontalTextPosition(SwingConstants.CENTER);
-                contentPanel.add(btnPause, CC.xy(1, 3));
+                contentPanel.add(btnPause, CC.xywh(1, 3, 1, 3));
+
+                //---- lblRevertEvent ----
+                lblRevertEvent.setText("text");
+                contentPanel.add(lblRevertEvent, CC.xy(5, 5));
 
                 //---- btn2 ----
                 btn2.setText(null);
                 btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit64.png")));
-                contentPanel.add(btn2, CC.xy(1, 5));
+                contentPanel.add(btn2, CC.xy(1, 7));
 
                 //---- lblTimer ----
                 lblTimer.setText("--");
                 lblTimer.setFont(new Font("Dialog", Font.BOLD, 64));
                 lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
-                contentPanel.add(lblTimer, CC.xy(5, 5, CC.FILL, CC.DEFAULT));
+                contentPanel.add(lblTimer, CC.xy(5, 7, CC.FILL, CC.DEFAULT));
 
                 //---- tbDebug ----
                 tbDebug.setText("Debug");
                 tbDebug.setFont(new Font("Dialog", Font.BOLD, 18));
                 tbDebug.setIcon(new ImageIcon(getClass().getResource("/artwork/circle_grey_32.png")));
                 tbDebug.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/circle_yellow_32.png")));
-                contentPanel.add(tbDebug, CC.xy(1, 7, CC.FILL, CC.DEFAULT));
+                contentPanel.add(tbDebug, CC.xy(1, 9, CC.FILL, CC.DEFAULT));
 
                 //---- lblMessage ----
                 lblMessage.setText("text");
                 lblMessage.setFont(new Font("Dialog", Font.BOLD, 28));
                 lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
-                contentPanel.add(lblMessage, CC.xy(5, 7));
-                contentPanel.add(pb1, CC.xywh(1, 8, 7, 1));
+                contentPanel.add(lblMessage, CC.xy(5, 9));
+                contentPanel.add(pb1, CC.xywh(1, 10, 7, 1));
 
                 //---- lblRespawn ----
                 lblRespawn.setText("--");
                 lblRespawn.setFont(new Font("Dialog", Font.PLAIN, 16));
                 lblRespawn.setForeground(Color.red);
-                contentPanel.add(lblRespawn, CC.xy(7, 10, CC.CENTER, CC.DEFAULT));
+                contentPanel.add(lblRespawn, CC.xy(7, 12, CC.CENTER, CC.DEFAULT));
             }
             tabbedPane1.addTab("Game", contentPanel);
 
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                        "2*(pref:grow, $rgap), pref",
-                        "3*(default, $lgap), fill:default:grow"));
+                    "2*(pref:grow, $rgap), pref",
+                    "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -834,8 +860,8 @@ public class FrmTest extends JFrame {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                        "default, 3*($ugap, default:grow), $lcgap, default:grow",
-                        "8*(default:grow, $lgap), default"));
+                    "default, 3*($ugap, default:grow), $lcgap, default:grow",
+                    "8*(default:grow, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
@@ -1037,6 +1063,7 @@ public class FrmTest extends JFrame {
     private JButton btnRed;
     private JButton btnGreen;
     private JButton btnPause;
+    private JLabel lblRevertEvent;
     private JButton btn2;
     private JLabel lblTimer;
     private JToggleButton tbDebug;

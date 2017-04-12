@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
 public class PinBlinkModel implements Callable<String> {
 
     Relay pin;
-    ArrayList<Long> onOffScheme;
+    private ArrayList<Long> onOffScheme;
     int repeat;
     boolean currentlyOn;
     boolean paused = false;
@@ -35,7 +35,7 @@ public class PinBlinkModel implements Callable<String> {
                 while (hasNext()) {
                     long time = 0;
                     if (!paused) {
-                        logger.debug("running:"+pin.getName());
+//                        logger.debug("running:"+pin.getName());
                         if (Thread.currentThread().isInterrupted()) {
                             pin.setOn(false);
                             pin.setText("");
@@ -68,6 +68,11 @@ public class PinBlinkModel implements Callable<String> {
         pin.setOn(false);
     }
 
+    public void clear(){
+        onOffScheme.clear();
+        restart();
+    }
+
     public void resume() {
         paused = false;
     }
@@ -90,7 +95,7 @@ public class PinBlinkModel implements Callable<String> {
     public void setScheme(String scheme) throws Exception {
         onOffScheme.clear();
 
-        logger.debug("new scheme for pin: " + pin.getName() + " : " + scheme);
+//        logger.debug("new scheme for pin: " + pin.getName() + " : " + scheme);
 
         String[] splitScheme = scheme.trim().split(";");
 

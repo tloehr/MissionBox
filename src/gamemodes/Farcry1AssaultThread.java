@@ -33,29 +33,26 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     private final long millispercycle = 50;
 
     private long starttime = 0l; //in millis(), when did the game start ?
-    private long gametimer = 0l; //how long is the game running ?
-    private long maxgametime = 0l; // how long can this game last (pauses and reverts excepted)
-    //    private long endtime = 0l; // wann wird das Spiel vorrüber sein. Solange die Flagge nicht aktiviert ist, ist endtime = maxgametime. Ansonsten endtime = flagactivation + capturetime;
-    private long capturetime = 0l; // how long do we have to hold the flag on order to capture it.
-
+    private long gametimer = 0l; //how long is the game running ? starting at 0.
+    private long maxgametime = 0l; // wie lange kann dieses Spiel maximal laufen
+    private long capturetime = 0l; // wie lange muss die Flagge gehalten werden bis sie erobert wurde ?
 
     private long pause = 0l;
-
-//    ArrayList<Farcry1GameEvent> eventList = null;
 
     public static final int GAME_NON_EXISTENT = -1;
     public static final int GAME_PRE_GAME = 0;
     public static final int GAME_FLAG_ACTIVE = 1;
     public static final int GAME_FLAG_COLD = 2;
     public static final int GAME_FLAG_HOT = 3;
-    public static final int GAME_OUTCOME_FLAG_TAKEN = 5;
-    public static final int GAME_OUTCOME_FLAG_DEFENDED = 6;
+    public static final int GAME_OUTCOME_FLAG_TAKEN = 4;
+    public static final int GAME_OUTCOME_FLAG_DEFENDED = 5;
 
     public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "FLAG_TAKEN", "FLAG_DEFENDED"};
 
     DateFormat formatter = new SimpleDateFormat("mm:ss");
 
     private final EventListenerList textMessageList, gameTimerList, percentageList, gameModeList;
+
 
     public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener) {
         super();
@@ -112,7 +109,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
 
     /**
-     * Hier ist die eingentliche Spielmechanik drin. Also was kommt nach was.
+     * Hier ist die eigentliche Spielmechanik drin. Also was kommt nach was.
      * Durch die Game Event Messages wird das übergeordnete Farcry1Assault verständigt. DORT werden
      * dann die Sirenen und die Leucht-Signale gesetzt.
      *
@@ -130,7 +127,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                 case GAME_PRE_GAME: {
                     MissionBox.shutdownEverything();
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
-                    MissionBox.getFrmTest().clear();
+                    MissionBox.getFrmTest().clearEvents();
                     break;
                 }
                 case GAME_FLAG_ACTIVE: { // hier wird das Spiel gestartet
@@ -141,20 +138,22 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime));
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime));
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.taken"));
                     break;
                 }
                 case GAME_OUTCOME_FLAG_DEFENDED: {
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
                     break;
                 }
@@ -216,13 +215,13 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
             if (isGameRunning()) {
 
                 gametimer = System.currentTimeMillis() - starttime;
-                logger.debug(gametimer);
+//                logger.debug(gametimer);
 
                 threadcycles++;
 
                 if (threadcycles % 15 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
-
-                    fireMessage(gameTimerList, new MessageEvent(this, gameState, MissionBox.getFrmTest().getLastEvent().getEndtime() - gametimer)); // verbleibende Zeit
+                    Farcry1GameEvent lastEvent = MissionBox.getFrmTest().getLastEvent();
+                    fireMessage(gameTimerList, new MessageEvent(this, gameState, lastEvent.getEndtime(maxgametime, capturetime) - gametimer)); // verbleibende Zeit
                 }
 
             }
@@ -245,9 +244,12 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     }
 
                     Farcry1GameEvent lastEvent = MissionBox.getFrmTest().getLastEvent();
-                    long endtime = lastEvent.getGametimer() + capturetime;
+                    long flagactivation = lastEvent.getGametimer();
+                    long rocketWillLaunch = flagactivation + capturetime;
 
-                    BigDecimal progress = new BigDecimal(gametimer - lastEvent.getGametimer()).divide(new BigDecimal(endtime - lastEvent.getGametimer()), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+
+                    BigDecimal progress = new BigDecimal(gametimer - flagactivation).divide(new BigDecimal(rocketWillLaunch - flagactivation), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+                    
                     fireMessage(percentageList, new MessageEvent(this, gameState, progress));
                 }
 

@@ -13,7 +13,7 @@ new FormModel {
 				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "tabbedPane1StateChanged", true ) )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 					"$columnSpecs": "pref, relgap, default, labelcompgap, min:grow, labelcompgap, pref"
-					"$rowSpecs": "fill:default:grow, linegap, fill:default:grow, linegap, fill:pref:grow, linegap, fill:default:grow, 10dlu, linegap, default"
+					"$rowSpecs": "fill:default:grow, linegap, fill:default:grow, linegap, fill:default:grow, linegap, fill:pref:grow, linegap, fill:default:grow, 10dlu, linegap, default"
 				} ) {
 					name: "contentPanel"
 					add( new FormComponent( "javax.swing.JButton" ) {
@@ -33,7 +33,7 @@ new FormModel {
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
-						"gridHeight": 7
+						"gridHeight": 9
 					} )
 					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 						name: "panel7"
@@ -70,7 +70,7 @@ new FormModel {
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 7
-						"gridHeight": 7
+						"gridHeight": 9
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnPause"
@@ -81,13 +81,21 @@ new FormModel {
 						"horizontalTextPosition": 0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
+						"gridHeight": 3
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "lblRevertEvent"
+						"text": "text"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 5
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btn2"
 						"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/exit64.png" )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 5
+						"gridY": 7
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblTimer"
@@ -95,7 +103,7 @@ new FormModel {
 						"font": new java.awt.Font( "Dialog", 1, 64 )
 						"horizontalAlignment": 0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 5
+						"gridY": 7
 						"gridX": 5
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
@@ -106,7 +114,7 @@ new FormModel {
 						"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/circle_grey_32.png" )
 						"selectedIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/circle_yellow_32.png" )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 7
+						"gridY": 9
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
@@ -115,13 +123,13 @@ new FormModel {
 						"font": new java.awt.Font( "Dialog", 1, 28 )
 						"horizontalAlignment": 0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 7
+						"gridY": 9
 						"gridX": 5
 					} )
 					add( new FormComponent( "javax.swing.JProgressBar" ) {
 						name: "pb1"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 8
+						"gridY": 10
 						"gridWidth": 7
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
@@ -130,7 +138,7 @@ new FormModel {
 						"font": new java.awt.Font( "Dialog", 0, 16 )
 						"foreground": sfield java.awt.Color red
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 10
+						"gridY": 12
 						"gridX": 7
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
 					} )

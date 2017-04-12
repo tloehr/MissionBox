@@ -50,16 +50,50 @@ public class PinHandler {
     public void pause() {
         if (paused) return;
         paused = true;
-        for (PinBlinkModel pbm : pinMap.values()) {
-            pbm.pause();
+
+        lock.lock();
+        try {
+            for (PinBlinkModel pbm : pinMap.values()) {
+                pbm.pause();
+            }
+        } catch (Exception e) {
+            logger.fatal(e);
+        } finally {
+            lock.unlock();
         }
+
+
     }
 
     public void resume() {
         if (!paused) return;
         paused = false;
-        for (PinBlinkModel pbm : pinMap.values()) {
-            pbm.resume();
+
+        lock.lock();
+        try {
+            for (PinBlinkModel pbm : pinMap.values()) {
+                pbm.resume();
+            }
+        } catch (Exception e) {
+            logger.fatal(e);
+        } finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void clear() {
+        paused = false;
+
+        lock.lock();
+        try {
+            for (PinBlinkModel pbm : pinMap.values()) {
+                pbm.clear();
+            }
+        } catch (Exception e) {
+            logger.fatal(e);
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -111,7 +145,7 @@ public class PinHandler {
                     // get all the potentially colliding relays and check them.
                     for (String collidingName : collisionDomainReverse.get(cd)) {
                         if (futures.containsKey(collidingName) && !futures.get(collidingName).isDone()) { // but only if it runs
-                            logger.debug("terminating: " + collidingName + ": colliding with " + (collidingName.equals(name) ? ">>itself<<" : name));
+//                            logger.debug("terminating: " + collidingName + ": colliding with " + (collidingName.equals(name) ? ">>itself<<" : name));
                             futures.get(collidingName).cancel(true);
                         }
                     }
@@ -143,7 +177,7 @@ public class PinHandler {
      * @param cd
      * @param name
      */
-    void add2ReverseMap(int cd, String name) {
+    private void add2ReverseMap(int cd, String name) {
         // no locking necessary, because the calling method is thread safe.
         if (!collisionDomainReverse.containsKey(cd)) {
             collisionDomainReverse.put(cd, new HashSet<>());
