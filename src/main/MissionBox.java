@@ -425,8 +425,6 @@ public class MissionBox {
     }
 
     public static void setProgress(BigDecimal percent) {
-        // if (SIREN)
-
         if (relaisSirens != null) relaisSirens.setValue(percent);
         frmTest.setProgress(percent.intValue());
         if (relaisLEDs != null) relaisLEDs.setValue(percent);

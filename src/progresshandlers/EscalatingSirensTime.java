@@ -34,6 +34,9 @@ public class EscalatingSirensTime extends PercentageInterface {
     @Override
     public void setValue(BigDecimal percent) {
 
+        asd
+        logger.debug("Progress: "+percent.toString());
+
         if (percent.compareTo(BigDecimal.ZERO) < 0) {
             // as we use the PinHandler, and all the sirens are within the same CD, we only need to set ONE pin to off. The others are handled automatically.
             MissionBox.off(keys.get(0));

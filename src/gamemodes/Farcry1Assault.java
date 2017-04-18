@@ -18,7 +18,7 @@ public class Farcry1Assault implements GameModes {
     private final Logger logger = Logger.getLogger(getClass());
     private boolean gameWon = false;
     private Farcry1AssaultThread farcryAssaultThread;
-    private int prev_countdown_index;
+//    private int prev_countdown_index;
     private String lastAnnoucement = "";
     private DateTime lastRespawn = new DateTime();
     private int RESPAWNINSECONDS = 55;
@@ -28,6 +28,13 @@ public class Farcry1Assault implements GameModes {
 
     HashSet<String> timeAnnouncements = new HashSet<>();
 
+    /**
+     * Diese ganze Klasse besteht eigentlich nur auf einem riesigen Konstruktor,
+     * der alle Listener für den eigentlichen Thread erstellt.
+     * Diese Listener sind es dann, die die Reaktionen der Box auf die Ereignisse innerhalb
+     * des Threads steuern.
+     * @throws IOException
+     */
     public Farcry1Assault() throws IOException {
 
         logger.setLevel(MissionBox.getLogLevel());
@@ -87,11 +94,11 @@ public class Farcry1Assault implements GameModes {
         MessageListener percentageListener = messageEvent -> {
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 MissionBox.setProgress(messageEvent.getPercentage());
-                int countdown_index = messageEvent.getPercentage().intValue() / 10;
-                if (prev_countdown_index != countdown_index) {
-                    prev_countdown_index = countdown_index;
-//                    MissionBox.countdown(countdown_index);
-                }
+//                int countdown_index = messageEvent.getPercentage().intValue() / 10;
+//                if (prev_countdown_index != countdown_index) {
+//                    prev_countdown_index = countdown_index;
+////                    MissionBox.countdown(countdown_index);
+//                }
             }
         };
 
@@ -112,7 +119,6 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";1000,1000");
                 MissionBox.off(MissionBox.MBX_LED_RED);
 
-
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 /***
                  *      _____ _              ____      _     _
@@ -126,9 +132,10 @@ public class Farcry1Assault implements GameModes {
 
                 MissionBox.setProgress(new BigDecimal(-1));
 
-                if (prev_countdown_index > -1) {
-                    MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;1000,0");
-                }
+                // Das kann wieder rein, wenn eine Shutdown Siren wieder benötigt werden.
+//                if (prev_countdown_index > -1) {
+//                    MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;1000,0");
+//                }
 
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";350,3000");
@@ -149,7 +156,7 @@ public class Farcry1Assault implements GameModes {
                  */
                 logger.debug("GAME_PRE_GAME");
                 gameWon = false;
-                prev_countdown_index = -1;
+//                prev_countdown_index = -1;
 
                 MissionBox.enableSettings(true);
 
@@ -167,7 +174,6 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setScheme(MissionBox.MBX_LED_RGB_BLUE, FOREVER + ";0,1000,1000,1000");
                 MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";0,2000,1000,0");
 
-
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
 
                 logger.debug("GAME_OUTCOME_FLAG_DEFENDED");
@@ -181,7 +187,6 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";1000,1000");
                 MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
                 MissionBox.off(MissionBox.MBX_LED_PB_RED);
-
 
                 // the end siren
                 MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;5000,0");
@@ -241,13 +246,10 @@ public class Farcry1Assault implements GameModes {
 
                 // the starting siren
                 MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;5000,0");
-
             }
         };
 
-        farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {
-
-        }, gameTimeListener, percentageListener, gameModeListener);
+        farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {}, gameTimeListener, percentageListener, gameModeListener);
 
         MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
             logger.debug(event);

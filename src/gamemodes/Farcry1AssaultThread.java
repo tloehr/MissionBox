@@ -249,7 +249,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
 
                     BigDecimal progress = new BigDecimal(gametimer - flagactivation).divide(new BigDecimal(rocketWillLaunch - flagactivation), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-                    
+
+
+
                     fireMessage(percentageList, new MessageEvent(this, gameState, progress));
                 }
 
