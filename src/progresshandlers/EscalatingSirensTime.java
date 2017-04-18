@@ -34,7 +34,6 @@ public class EscalatingSirensTime extends PercentageInterface {
     @Override
     public void setValue(BigDecimal percent) {
 
-        asd
         logger.debug("Progress: "+percent.toString());
 
         if (percent.compareTo(BigDecimal.ZERO) < 0) {
