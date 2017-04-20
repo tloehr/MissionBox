@@ -6,6 +6,8 @@ import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CFactory;
 import gamemodes.Farcry1Assault;
+import gamemodes.Farcry1GameEvent;
+import gamemodes.GameMode;
 import interfaces.MyAbstractButton;
 import interfaces.PercentageInterface;
 import interfaces.Relay;
@@ -39,11 +41,12 @@ public class MissionBox {
     //    private static FrmSimulator frmSimulator;
     private static Properties config;
 
+
     public static PinHandler getPinHandler() {
         return pinHandler;
     }
 
-    private static int gamemode;
+    private static GameMode gameMode;
 
     private static GpioPinDigitalInput ioRed, ioGreen, ioGameStartStop, ioMisc, ioPAUSE;
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc, btnPAUSE;
@@ -92,11 +95,11 @@ public class MissionBox {
 
 
     public static void setRESPAWN(boolean RESPAWN) {
-        MissionBox.RESPAWN = RESPAWN;
+//        MissionBox.RESPAWN = RESPAWN;
         config.setProperty(MissionBox.FCY_RESPAWN_SIGNAL, RESPAWN ? "true" : "false");
     }
 
-    private static boolean RESPAWN = false, SIREN = false;
+//    private static boolean RESPAWN = false, SIREN = false;
 
 
     //    private static HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
@@ -176,7 +179,7 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         frmTest.setProgress(startup_progress);
 
-        Farcry1Assault fc = new Farcry1Assault();
+        gameMode = new Farcry1Assault();
     }
 
     private static void initProgressSystem() {
@@ -388,9 +391,9 @@ public class MissionBox {
         p.clear();
         in.close();
 
-        RESPAWN = Boolean.parseBoolean(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_SIGNAL));
+//        RESPAWN = Boolean.parseBoolean(config.getProperty(MissionBox.FCY_RESPAWN_SIGNAL));
 
-        logLevel = Level.toLevel(MissionBox.getConfig().getProperty(MissionBox.MBX_LOGLEVEL), Level.DEBUG);
+        logLevel = Level.toLevel(config.getProperty(MissionBox.MBX_LOGLEVEL), Level.DEBUG);
 
     }
 
@@ -407,22 +410,49 @@ public class MissionBox {
     }
 
 
-    public static Properties getConfig() {
-        return config;
+//    public static Properties getConfig() {
+//        return config;
+//    }
+
+
+    public static void setConfig(String key, String value) {
+        config.setProperty(key, value);
+
+        if (key.equalsIgnoreCase(FCY_TIME2CAPTURE)) {
+            ((Farcry1Assault) gameMode).setCapturetime(Long.parseLong(value));
+        }
+        if (key.equalsIgnoreCase(FCY_GAMETIME)) {
+            ((Farcry1Assault) gameMode).setMaxgametime(Long.parseLong(value));
+        }
+
+        saveLocalProps();
     }
 
+
+    public static String getConfig(String key) {
+        return getConfig(key, "");
+    }
+
+    /**
+     * @param key
+     * @param neutral - wenn es den key nicht gibt, wir dieser Neutralwert zurück gegeben
+     * @return
+     */
+    public static String getConfig(String key, String neutral) {
+        return config.containsKey(key) ? config.getProperty(key) : neutral;
+    }
 
     public static void setMessage(String message) {
         frmTest.setMessage(message);
     }
 
-    public static int getGamemode() {
-        return gamemode;
-    }
-
-    public static void setGamemode(int gamemode) {
-        MissionBox.gamemode = gamemode;
-    }
+//    public static int getGamemode() {
+//        return gamemode;
+//    }
+//
+//    public static void setGamemode(int gamemode) {
+//        MissionBox.gamemode = gamemode;
+//    }
 
     public static void setProgress(BigDecimal percent) {
         if (relaisSirens != null) relaisSirens.setValue(percent);
@@ -430,15 +460,15 @@ public class MissionBox {
         if (relaisLEDs != null) relaisLEDs.setValue(percent);
         if (relaisFlagpole != null) relaisFlagpole.setValue(percent);
     }
-
-
-    public static boolean isRESPAWN() {
-        return RESPAWN;
-    }
-
-    public static boolean isSIREN() {
-        return SIREN;
-    }
+//
+//
+//    public static boolean isRESPAWN() {
+//        return RESPAWN;
+//    }
+//
+//    public static boolean isSIREN() {
+//        return SIREN;
+//    }
 
     public static void setTimerMessage(String message) {
         frmTest.setTimer(message);
@@ -468,8 +498,8 @@ public class MissionBox {
 
 
             // this map provides an easier access to the gpioProvider0
-            MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.decode(getConfig().getProperty(MissionBox.MBX_I2C_1)));
-            MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.decode(getConfig().getProperty(MissionBox.MBX_I2C_2)));
+            MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.decode(config.getProperty(MissionBox.MBX_I2C_1)));
+            MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.decode(config.getProperty(MissionBox.MBX_I2C_2)));
 
             GpioPinDigitalOutput myOutputs[] = {
                     GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A0, "mcp23017-01-A0", PinState.LOW),
@@ -530,11 +560,11 @@ public class MissionBox {
              *     |____/ \__,_|\__|\__\___/|_| |_|___/
              *
              */
-            ioRed = inputMap.get(getConfig().getProperty(MBX_BTN_RED));
-            ioGreen = inputMap.get(getConfig().getProperty(MBX_BTN_GREEN));
-            ioGameStartStop = inputMap.get((getConfig().getProperty(MBX_BTN_START_STOP)));
-            ioMisc = inputMap.get((getConfig().getProperty(MBX_BTN_QUIT)));
-            ioPAUSE = inputMap.get((getConfig().getProperty(MBX_BTN_UNDO)));
+            ioRed = inputMap.get(config.getProperty(MBX_BTN_RED));
+            ioGreen = inputMap.get(config.getProperty(MBX_BTN_GREEN));
+            ioGameStartStop = inputMap.get((config.getProperty(MBX_BTN_START_STOP)));
+            ioMisc = inputMap.get((config.getProperty(MBX_BTN_QUIT)));
+            ioPAUSE = inputMap.get((config.getProperty(MBX_BTN_UNDO)));
         }
 
     }
@@ -552,4 +582,7 @@ public class MissionBox {
     }
 
 
+    public static void setRevertEvent(Farcry1GameEvent revert2Event) {
+        ((Farcry1Assault) MissionBox.gameMode).setRevertEvent(revert2Event);
+    }
 }

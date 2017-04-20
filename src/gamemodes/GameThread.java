@@ -3,14 +3,16 @@ package gamemodes;
 /**
  * Created by tloehr on 31.05.15.
  */
-public interface GameThreads {
+public interface GameThread {
 
 
-    void restartGame();
+    void prepareGame();
 
     void startGame();
 
     void quitGame();
+
+    void togglePause();
 
 
 

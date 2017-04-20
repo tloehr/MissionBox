@@ -7,24 +7,23 @@ import org.apache.log4j.Logger;
 
 import javax.swing.event.EventListenerList;
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * Dieser Thread läuft wie ein Motor in Zyklen ab. Jeder Zyklus dauert <b>millispercycle</b> millisekunden.
  * Nach <b>maxcycles</b> Zyklen ist das Spiel vorbei. <b>TIME2CAP</b> ist die Anzahl der Sekunden, die es braucht, bis die Flagge genommen wurde. (Wenn sie vorher nicht deaktiviert wurde).
  * <p>
- * Farcry1Assault
- * Farcry1AssaultThread
- * setGameState(state) – setzt die Spielmechanik. Also was passiert bei einem bestimmten GameMode
- * run() - Das ist der innere Auswertungszyklus. Eine Art Motor, der bei jedem Durchgang die Situation bewertet und entsprechende Änderungen am Zustand der Box vornimmt.
+ * <p>
+ * Wir müssen das so sehen, dass der GameThread (interface) die GameEvents auslöst (bemerkt), die zeitabhängig sind.
+ * Der übergeordnete bzw. aufrufende GameMode (interface) die Button Ereignisse auslöst bzw. bemerkt.
+ * <p>
+ * Der Thread informiert den GameMode über EventListener, wenn etwas zu melden ist.
  */
-public class Farcry1AssaultThread implements Runnable, GameThreads {
+public class Farcry1AssaultThread implements Runnable, GameThread {
     final Logger logger = Logger.getLogger(getClass());
     private final Thread thread;
 
 
-    private int gameState, previousGameState;
+    private int gameState, previousGameState, resumeToState = -1;
 
 
     // makes sure that the time event is only triggered once a second
@@ -32,12 +31,12 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
     private final long millispercycle = 50;
 
-    private long starttime = 0l; //in millis(), when did the game start ?
+    private long starttime = -1l; // systemzeit des starts. wird nur gebraucht um den gametimer zu setzen. das er bei 0 anfängt muss er relativ zur Startzeit berechnet werden.
     private long gametimer = 0l; //how long is the game running ? starting at 0.
     private long maxgametime = 0l; // wie lange kann dieses Spiel maximal laufen
     private long capturetime = 0l; // wie lange muss die Flagge gehalten werden bis sie erobert wurde ?
 
-    private long pause = 0l;
+    private long pausingSince = -1l;
 
     public static final int GAME_NON_EXISTENT = -1;
     public static final int GAME_PRE_GAME = 0;
@@ -46,16 +45,39 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     public static final int GAME_FLAG_HOT = 3;
     public static final int GAME_OUTCOME_FLAG_TAKEN = 4;
     public static final int GAME_OUTCOME_FLAG_DEFENDED = 5;
+    public static final int GAME_GOING_TO_PAUSE = 6;
+    public static final int GAME_PAUSING = 7; // Box pausiert
+    public static final int GAME_GOING_TO_RESUME = 8;
+    public static final int GAME_RESUMED = 9; // unmittelbar vor der Spielwiederaufnahme
 
-    public static final String[] GAME_MODES = new String[]{"PREGAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "FLAG_TAKEN", "FLAG_DEFENDED"};
-
-    DateFormat formatter = new SimpleDateFormat("mm:ss");
-
-    private final EventListenerList textMessageList, gameTimerList, percentageList, gameModeList;
+    public static final String[] GAME_MODES = new String[]{"PREPARE_GAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "FLAG_TAKEN", "FLAG_DEFENDED", "GOING_TO_PAUSE", "PAUSING", "GOING_TO_RESUME", "GAME_RESUMED"};
 
 
-    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener) {
+//    DateFormat formatter = new SimpleDateFormat("mm:ss");
+
+    /**
+     * hiermit werden beliebige Texte verschickt, die dann auf Displays weitergeleitet werden können.
+     */
+    private final EventListenerList textMessageList;
+    /**
+     * die Spielzeit wird regelmässig als Event gemeldet.
+     */
+    private final EventListenerList gameTimerList;
+    /**
+     * Wenn irgendwelche Countdowns laufen, dann wird der Fortschritt als Event gesendet.
+     */
+    private final EventListenerList percentageList;
+    /**
+     * Veränderungen im Spielzustand der Box werden über diese Liste verschickt.
+     */
+    private final EventListenerList gameModeList;
+    private Farcry1GameEvent revertEvent;
+
+
+    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, long maxgametime, long capturetime) {
         super();
+        this.maxgametime = maxgametime;
+        this.capturetime = capturetime;
         thread = new Thread(this);
         logger.setLevel(MissionBox.getLogLevel());
 
@@ -71,29 +93,9 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
         previousGameState = GAME_NON_EXISTENT;
 
-        maxgametime = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_GAMETIME)) * 60000l;
-        capturetime = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_TIME2CAPTURE)) * 1000l;
-
-
-        restartGame();
+        prepareGame();
     }
 
-
-    public boolean isPaused() {
-        return pause > 0;
-    }
-
-
-    public void pause() {
-        MissionBox.getPinHandler().pause();
-        pause = System.currentTimeMillis();
-    }
-
-    public void resume() {
-        MissionBox.getPinHandler().resume();
-        starttime = starttime + pause; // ursprüngliche Startzeit anpassen
-        pause = 0l;
-    }
 
     public void setFlagHot(boolean hot) {
         if (hot) {
@@ -107,11 +109,28 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         }
     }
 
+    /**
+     * wird gebraucht, wenn während eines PREGAMES die Zeiten geändert werden
+     *
+     * @param maxgametime
+     */
+    public void setMaxgametime(long maxgametime) {
+        this.maxgametime = maxgametime;
+    }
 
     /**
-     * Hier ist die eigentliche Spielmechanik drin. Also was kommt nach was.
-     * Durch die Game Event Messages wird das übergeordnete Farcry1Assault verständigt. DORT werden
-     * dann die Sirenen und die Leucht-Signale gesetzt.
+     * wird gebraucht, wenn während eines PREGAMES die Zeiten geändert werden
+     *
+     * @param capturetime
+     */
+    public void setCapturetime(long capturetime) {
+        this.capturetime = capturetime;
+    }
+
+    /**
+     * setGameState wird (indirekt) von außen aufgerufen, wenn z.B. ein Knopf gedrückt wird.
+     * Es wird aber auch von innerhalb dieser Klasse aufgerufen (das ist sogar der Regelfall),
+     * wenn bestimmte Zeiten abgelaufen sind.
      *
      * @param state
      */
@@ -125,6 +144,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
             switch (gameState) {
                 case GAME_PRE_GAME: {
+                    starttime = -1l;
                     MissionBox.shutdownEverything();
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
                     MissionBox.getFrmTest().clearEvents();
@@ -138,22 +158,71 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
+                    if (resumeToState == -1) {
+                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
+                    }
+                    resumeToState = -1;
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
+                    if (resumeToState == -1) {
+                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
+                    }
+                    resumeToState = -1;
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
+                    if (resumeToState == -1) {
+                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
+                    }
+                    resumeToState = -1;
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.taken"));
                     break;
                 }
+                case GAME_GOING_TO_PAUSE: {
+                    resumeToState = previousGameState; // merken für später, falls kein REVERT gemacht wird.
+                    pausingSince = System.currentTimeMillis();
+                    MissionBox.getPinHandler().pause();
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.going.to.pause"));
+                    setGameState(GAME_PAUSING);
+                    break;
+                }
+                case GAME_PAUSING: {
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.paused"));
+                    break;
+                }
+                case GAME_GOING_TO_RESUME: {
+                    MissionBox.getPinHandler().resume();
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.going.to.resume"));
+                    setGameState(GAME_RESUMED);
+                    break;
+                }
+                case GAME_RESUMED: {
+                    // die Startzeit muss um den Zeitraum für die Pause verschoben werden.
+                    long pause_period = System.currentTimeMillis() - pausingSince;
+
+                    // wenn es einen Event gibt, zu dem Zurückgesprungen werden soll, dann
+                    // muss er jetzt berücksichtigt werden.
+                    if (revertEvent != null) {
+                        resumeToState = revertEvent.getGameState();
+                        gametimer = revertEvent.getEndOfThisEvent();
+                    }
+
+                    starttime = starttime + pause_period;
+                    pausingSince = -1l;
+
+                    fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.resumed"));
+                    setGameState(resumeToState);
+                    //TODO: resume to state läuft falsch. war auf 6.
+                    break;
+                }
                 case GAME_OUTCOME_FLAG_DEFENDED: {
-                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
+                    if (resumeToState == -1) {
+                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
+                    }
+                    resumeToState = -1;
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
                     break;
                 }
@@ -166,7 +235,7 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
 
     @Override
-    public void restartGame() {
+    public void prepareGame() {
         setGameState(GAME_PRE_GAME);
     }
 
@@ -180,6 +249,17 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         thread.interrupt();
     }
 
+    @Override
+    public void togglePause() {
+
+        if (pausingSince == -1l) {
+            if (isGameRunning())
+                setGameState(GAME_GOING_TO_PAUSE);
+        } else {
+            setGameState(GAME_GOING_TO_RESUME);
+        }
+    }
+
     public int getGameState() {
         return gameState;
     }
@@ -191,12 +271,11 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
         }
     }
 
-    public boolean timeIsUp() {
+    private boolean timeIsUp() {
         long endtime = maxgametime;
 
         if (gameState == GAME_FLAG_HOT) {
-            Farcry1GameEvent lastEvent = MissionBox.getFrmTest().getLastEvent();
-            endtime = lastEvent.getGametimer() + capturetime;
+            endtime = MissionBox.getFrmTest().getLastEvent().getStartOfThisEvent() + capturetime;
         }
 
         return gametimer >= endtime;
@@ -210,12 +289,11 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
     // Die bewertung der Spielsituation erfolgt in Zyklen.
     public void run() {
 
-        while (!thread.isInterrupted() && pause == 0l) {
+        while (!thread.isInterrupted()) {
 
             if (isGameRunning()) {
 
                 gametimer = System.currentTimeMillis() - starttime;
-//                logger.debug(gametimer);
 
                 threadcycles++;
 
@@ -228,8 +306,6 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
 
 
             try {
-
-                // bei Pause wird keiner der einzelnen Bedingungen erfüllt.
 
                 if (gameState == GAME_FLAG_COLD) {
                     if (timeIsUp()) {
@@ -244,25 +320,23 @@ public class Farcry1AssaultThread implements Runnable, GameThreads {
                     }
 
                     Farcry1GameEvent lastEvent = MissionBox.getFrmTest().getLastEvent();
-                    long flagactivation = lastEvent.getGametimer();
+                    long flagactivation = lastEvent.getStartOfThisEvent();
                     long rocketWillLaunch = flagactivation + capturetime;
 
-
                     BigDecimal progress = new BigDecimal(gametimer - flagactivation).divide(new BigDecimal(rocketWillLaunch - flagactivation), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-
-
 
                     fireMessage(percentageList, new MessageEvent(this, gameState, progress));
                 }
 
-//                if (gameState == GAME_OUTCOME_FLAG_TAKEN || gameState == GAME_OUTCOME_FLAG_DEFENDED) {
-//                    setGameState(GAME_OVER);
-//                }
 
                 Thread.sleep(millispercycle);
             } catch (InterruptedException ie) {
                 logger.debug(this + " interrupted!");
             }
         }
+    }
+
+    public void setRevertEvent(Farcry1GameEvent revertEvent) {
+        this.revertEvent = revertEvent;
     }
 }

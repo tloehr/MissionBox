@@ -5,7 +5,6 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import interfaces.MessageListener;
 import main.MissionBox;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -14,25 +13,42 @@ import java.util.HashSet;
 /**
  * Created by tloehr on 31.05.15.
  */
-public class Farcry1Assault implements GameModes {
+public class Farcry1Assault implements GameMode {
     private final Logger logger = Logger.getLogger(getClass());
-    private boolean gameWon = false;
+
     private Farcry1AssaultThread farcryAssaultThread;
-//    private int prev_countdown_index;
-    private String lastAnnoucement = "";
-    private DateTime lastRespawn = new DateTime();
-    private int RESPAWNINSECONDS = 55;
-    private boolean firstStart = true;
+
 
     private String FOREVER = Integer.toString(Integer.MAX_VALUE);
 
     HashSet<String> timeAnnouncements = new HashSet<>();
+    private Farcry1GameEvent revertEvent;
+
+    /**
+     * wird gebraucht, wenn während eines PREGAMES die Zeiten geändert werden
+     *
+     * @param maxgametime
+     */
+    public void setMaxgametime(long maxgametime) {
+        farcryAssaultThread.setMaxgametime(maxgametime);
+    }
+
+    /**
+     * wird gebraucht, wenn während eines PREGAMES die Zeiten geändert werden
+     *
+     * @param capturetime
+     */
+    public void setCapturetime(long capturetime) {
+        farcryAssaultThread.setCapturetime(capturetime);
+    }
+
 
     /**
      * Diese ganze Klasse besteht eigentlich nur auf einem riesigen Konstruktor,
      * der alle Listener für den eigentlichen Thread erstellt.
      * Diese Listener sind es dann, die die Reaktionen der Box auf die Ereignisse innerhalb
      * des Threads steuern.
+     *
      * @throws IOException
      */
     public Farcry1Assault() throws IOException {
@@ -104,7 +120,6 @@ public class Farcry1Assault implements GameModes {
 
         MessageListener gameModeListener = messageEvent -> {
             MissionBox.setMessage(Farcry1AssaultThread.GAME_MODES[messageEvent.getMode()]);
-            MissionBox.setGamemode(messageEvent.getMode());
 
             if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 /***
@@ -155,7 +170,7 @@ public class Farcry1Assault implements GameModes {
                  *
                  */
                 logger.debug("GAME_PRE_GAME");
-                gameWon = false;
+
 //                prev_countdown_index = -1;
 
                 MissionBox.enableSettings(true);
@@ -229,8 +244,7 @@ public class Farcry1Assault implements GameModes {
                  */
                 logger.debug("GAME_FLAG_ACTIVE");
                 MissionBox.enableSettings(false);
-                RESPAWNINSECONDS = Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.FCY_RESPAWN_TIME));
-                lastAnnoucement = "";
+//                RESPAWNINSECONDS = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_TIME));
 
 
                 MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
@@ -240,16 +254,14 @@ public class Farcry1Assault implements GameModes {
                 MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
                 MissionBox.off(MissionBox.MBX_LED_RGB_RED);
 
-                lastRespawn = new DateTime();
-
-                //MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;2000,0");
-
                 // the starting siren
                 MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;5000,0");
             }
         };
 
-        farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {}, gameTimeListener, percentageListener, gameModeListener);
+
+        farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {
+        }, gameTimeListener, percentageListener, gameModeListener, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME)) * 60000l, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE)) * 60000l);
 
         MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
             logger.debug(event);
@@ -292,7 +304,7 @@ public class Farcry1Assault implements GameModes {
                 if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                     farcryAssaultThread.startGame();
                 } else {
-                    farcryAssaultThread.restartGame();
+                    farcryAssaultThread.prepareGame();
                 }
             }
         });
@@ -303,19 +315,15 @@ public class Farcry1Assault implements GameModes {
             if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 farcryAssaultThread.startGame();
             } else {
-                farcryAssaultThread.restartGame();
+                farcryAssaultThread.prepareGame();
             }
         });
 
         MissionBox.getBtnPAUSE().addListener(e -> {
             logger.debug("btnPause - on Screen");
 
-            if (farcryAssaultThread.isPaused()) {
-                farcryAssaultThread.resume();
-            } else if (farcryAssaultThread.isGameRunning()) {
-                farcryAssaultThread.pause();
+            farcryAssaultThread.togglePause();
 
-            }
 
         });
 
@@ -323,12 +331,7 @@ public class Farcry1Assault implements GameModes {
             MissionBox.getFrmTest().setButtonTestLabel("undo", event.getState() == PinState.HIGH); // for debugging
             if (event.getState() == PinState.HIGH) {
                 logger.debug("btnPause - GPIO");
-                if (farcryAssaultThread.isPaused()) {
-                    farcryAssaultThread.resume();
-                } else if (farcryAssaultThread.isGameRunning()) {
-                    farcryAssaultThread.pause();
-
-                }
+                farcryAssaultThread.togglePause();
             }
             //quitGame();
         });
@@ -344,4 +347,7 @@ public class Farcry1Assault implements GameModes {
         System.exit(0);
     }
 
+    public void setRevertEvent(Farcry1GameEvent revertEvent) {
+        farcryAssaultThread.setRevertEvent(revertEvent);
+    }
 }

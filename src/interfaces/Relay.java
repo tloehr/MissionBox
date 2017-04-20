@@ -17,7 +17,7 @@ public class Relay implements OnOffInterface {
     private final GpioPinDigitalOutput pin;
     private final String name;
     private MyLED debugLED; // for on screen debugging
-    private boolean siren = false;
+    private boolean siren = false; // gehört dieser Pin zu einer Sirene oder nicht. Wird im Moment nicht benutzt.
 
     private Relay(GpioPinDigitalOutput pin, String name, boolean thisIsASiren) {
         if (MissionBox.getGPIO() != null && pin == null) {
@@ -51,7 +51,7 @@ public class Relay implements OnOffInterface {
     }
 
     public Relay(String configKey, Color color, JPanel addYourself2this, boolean thisIsASiren) {
-        this(MissionBox.getOutputMap().get(MissionBox.getConfig().getProperty(configKey)), configKey, thisIsASiren);
+        this(MissionBox.getOutputMap().get(MissionBox.getConfig(configKey)), configKey, thisIsASiren);
 
         if (addYourself2this != null) {
             debugLED = new MyLED(configKey, color);
@@ -78,8 +78,7 @@ public class Relay implements OnOffInterface {
 
     @Override
     public void setOn(boolean on) {
-        // only activate this pin, when its generally allowed to play sirens or when this pin is NOT a siren
-        if (pin != null && (MissionBox.isSIREN() || !isSiren())) pin.setState(on ? PinState.HIGH : PinState.LOW);
+        if (pin != null) pin.setState(on ? PinState.HIGH : PinState.LOW);
         if (debugLED != null && MissionBox.getFrmTest().getTbDebug().isSelected()) debugLED.setOn(on);
     }
 }

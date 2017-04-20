@@ -5,10 +5,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.EventListener;
-import java.util.EventObject;
 
 /**
  * Created by Torsten on 05.07.2016.
@@ -16,19 +12,21 @@ import java.util.EventObject;
 public class Farcry1GameEvent {
 
     // diese Zeit wird als Echtzeit dargestellt.
-    private long eventStartTime;
+//    private long eventStartTime;
 
     // diese Zeiten sind relativ zum Spiel Startzeitpunkt.
     // sie werden also von 0 aus gerechnet und erst später in
     // Echtzeit umgerechnet.
     // Dadurch wird die Verzögerung während der Pausen eingerechnet.
-    private long eventDuration; // wie lange hat dieses Ereignis gedauert, bevor es vom nächsten abgelöst wurde.
 
     // in welchem Zustand befindet sich das Spiel ?
     private int gameState;
 
     // wie stand der Gametimer zum Zeitpunkt des Events. gametimer fangen bei 0 an.
-    private long gametimer;
+    private long startOfThisEvent;
+
+    //wann war dieser Event zu Ende. Geht erst nach FINALIZE()
+    private long endOfThisEvent = -1;
 
     private Logger logger;
 
@@ -54,9 +52,8 @@ public class Farcry1GameEvent {
         lbl = new JLabel(toString());
 
         this.gameState = gameState;
-        this.eventStartTime = System.currentTimeMillis();
-        this.eventDuration = -1l; // not yet
-        this.gametimer = gametimer;
+        this.startOfThisEvent = gametimer;
+        this.endOfThisEvent = -1;
         refreshTextLine();
     }
 
@@ -64,9 +61,8 @@ public class Farcry1GameEvent {
      * Bevor das nächste Ereignis eintritt, muss dieses erst abgeschlossen werden.
      * Erst in diesem Moment kann entschieden werden, wie lange dieses Ereignis angehalten hat.
      */
-    public void finalizeEvent() {
-        long now = System.currentTimeMillis();
-        this.eventDuration = now - eventStartTime - 1;
+    public void finalizeEvent(long gametimer) {
+        this.endOfThisEvent = gametimer-1;
         refreshTextLine();
     }
 
@@ -75,12 +71,12 @@ public class Farcry1GameEvent {
      * somit läuft dieses Ereignis jetzt weiter und es nicht mehr FINALIZED.
      */
     public void unfinalizeEvent() {
-        this.eventDuration = -1;
+        this.endOfThisEvent = -1;
         refreshTextLine();
     }
 
-    public long getEventDuration() {
-        return eventDuration;
+    public long getEndOfThisEvent() {
+        return endOfThisEvent;
     }
 
     private void refreshTextLine() {
@@ -96,22 +92,19 @@ public class Farcry1GameEvent {
         return gameState;
     }
 
-    public long getEventStartTime() {
-        return eventStartTime;
-    }
-
 //    public long getGametimer() {
 //        return eventDuration == -1l ? -1l : (endOfEvent ? gametimer + eventDuration : gametimer);
 //    }
 
-        public long getGametimer() {
-            return gametimer;
-        }
+
+    public long getStartOfThisEvent() {
+        return startOfThisEvent;
+    }
 
     public long getEndtime(long maxgametime, long capturetime) {
         long endtime = maxgametime;
         if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            endtime = gametimer + capturetime;
+            endtime = startOfThisEvent + capturetime;
         }
         return endtime;
     }
@@ -153,14 +146,14 @@ public class Farcry1GameEvent {
         return pnl;
     }
 
-    public void setGameEventListener(GameEventListener al){
-       gameEventListener = al;
+    public void setGameEventListener(GameEventListener al) {
+        gameEventListener = al;
     }
 
     @Override
     public String toString() {
-        String html = "<b>" + new DateTime(eventStartTime).toString(DateTimeFormat.mediumTime()) + "</b>&nbsp;";
-        html += eventDuration == -1 ? "--&nbsp;" : eventDuration + "ms&nbsp;";
+        String html = "<b>" + new DateTime(startOfThisEvent).toString(DateTimeFormat.mediumTime()) + "</b>&nbsp;";
+        html += endOfThisEvent == -1 ? "--&nbsp;" : endOfThisEvent - startOfThisEvent + "ms&nbsp;";
         html += Farcry1AssaultThread.GAME_MODES[gameState];
 
         return "<html>" + html + "</html>";
