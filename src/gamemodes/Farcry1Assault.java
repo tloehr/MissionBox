@@ -299,6 +299,7 @@ public class Farcry1Assault implements GameMode {
         MissionBox.getBtnGameStartStop().addListener((GpioPinListenerDigital) event -> {
             MissionBox.getFrmTest().setButtonTestLabel("start", event.getState() == PinState.HIGH); // for debugging
             if (!MissionBox.isGameStartable()) return;
+            if (farcryAssaultThread.isPausing()) return;
             if (event.getState() == PinState.HIGH) {
                 logger.debug("btnGameStartStop");
                 if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
@@ -311,6 +312,7 @@ public class Farcry1Assault implements GameMode {
 
         MissionBox.getBtnGameStartStop().addListener(e -> {
             if (!MissionBox.isGameStartable()) return;
+            if (farcryAssaultThread.isPausing()) return;
             logger.debug("btnGameStartStop");
             if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 farcryAssaultThread.startGame();
@@ -336,15 +338,17 @@ public class Farcry1Assault implements GameMode {
             //quitGame();
         });
 
-        MissionBox.getBtnMisc().addListener(e -> quitGame());
-        farcryAssaultThread.run();
-    }
+    } // constructor
 
 
     @Override
-    public void quitGame() {
-        MissionBox.shutdownEverything();
-        System.exit(0);
+    public void stopGame() {
+
+    }
+
+    @Override
+    public void runGame() {
+        farcryAssaultThread.run();
     }
 
     public void setRevertEvent(Farcry1GameEvent revertEvent) {

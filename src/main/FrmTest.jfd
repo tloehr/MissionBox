@@ -50,6 +50,8 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "lblRevertEvent"
 							"text": "text"
+							"alignmentX": 0.5f
+							"font": new java.awt.Font( "Dialog", 1, 16 )
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 5

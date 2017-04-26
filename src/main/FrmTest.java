@@ -51,7 +51,7 @@ public class FrmTest extends JFrame implements GameEventListener {
             getLastEvent().finalizeEvent(event.getStartOfThisEvent());
         }
         eventModel.add(event);
-        listEvents.add(event.getGUI());
+        listEvents.add(event);
 
         SwingUtilities.invokeLater(() -> {
             JScrollBar vertical = panel7.getVerticalScrollBar();
@@ -72,8 +72,8 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     // setzt einen Revert Event fest, zu dem zurückgesprungen werden soll.
     public void setRevertEvent(Farcry1GameEvent revertEvent) {
-        MissionBox.setRevertEvent(revertEvent);
         lblRevertEvent.setText(revertEvent.toString());
+        MissionBox.setRevertEvent(revertEvent);
     }
 
 //    public void revert() {
@@ -344,6 +344,10 @@ public class FrmTest extends JFrame implements GameEventListener {
         tabbedPane1.setEnabledAt(2, yes);
     }
 
+    public void setToPauseMode(boolean yes){
+        Tools.setXEnabled(listEvents, yes);
+    }
+
 
     public boolean isGameStartable() {
         return tabbedPane1.getSelectedIndex() == 0;
@@ -565,8 +569,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
+                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
@@ -604,6 +608,8 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                     //---- lblRevertEvent ----
                     lblRevertEvent.setText("text");
+                    lblRevertEvent.setAlignmentX(0.5F);
+                    lblRevertEvent.setFont(new Font("Dialog", Font.BOLD, 16));
                     panel8.add(lblRevertEvent);
                 }
                 contentPanel.add(panel8, CC.xywh(5, 1, 1, 3));
@@ -611,8 +617,8 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                            "default:grow",
-                            "fill:default:grow, $lgap, fill:default:grow"));
+                        "default:grow",
+                        "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
@@ -670,8 +676,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                        "2*(pref:grow, $rgap), pref",
-                        "3*(default, $lgap), fill:default:grow"));
+                    "2*(pref:grow, $rgap), pref",
+                    "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -876,8 +882,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                        "default, 3*($ugap, default:grow), $lcgap, default:grow",
-                        "8*(default:grow, $lgap), default"));
+                    "default, 3*($ugap, default:grow), $lcgap, default:grow",
+                    "8*(default:grow, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");

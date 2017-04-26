@@ -20,6 +20,8 @@ import threads.PinHandler;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -175,11 +177,23 @@ public class MissionBox {
         btnMisc = new MyAbstractButton(ioMisc, getGUIBtn2());
         btnPAUSE = new MyAbstractButton(ioPAUSE, getGUIBtnPause());
 
+        btnMisc.addListener(e -> {
+            MissionBox.shutdownEverything();
+            System.exit(0);
+        });
+
+
         startup_progress = 100;
         Tools.printProgBar(startup_progress);
         frmTest.setProgress(startup_progress);
 
         gameMode = new Farcry1Assault();
+
+        logger.debug(gameMode);
+
+        gameMode.runGame();
+
+
     }
 
     private static void initProgressSystem() {

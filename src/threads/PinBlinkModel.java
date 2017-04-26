@@ -35,7 +35,6 @@ public class PinBlinkModel implements Callable<String> {
                 while (hasNext()) {
                     long time = 0;
                     if (!paused) {
-//                        logger.debug("running:"+pin.getName());
                         if (Thread.currentThread().isInterrupted()) {
                             pin.setOn(false);
                             return null;
@@ -51,9 +50,7 @@ public class PinBlinkModel implements Callable<String> {
                             pin.setOn(false);
                             return null;
                         }
-                    } else {
-                        logger.debug("pausing:" + pin.getName());
-                    }
+                    } // else would be pausing
                 }
             }
         }

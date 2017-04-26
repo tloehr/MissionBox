@@ -5,11 +5,12 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by Torsten on 05.07.2016.
  */
-public class Farcry1GameEvent {
+public class Farcry1GameEvent extends JPanel {
 
     // diese Zeit wird als Echtzeit dargestellt.
 //    private long eventStartTime;
@@ -30,26 +31,23 @@ public class Farcry1GameEvent {
 
     private Logger logger;
 
-    // wie soll bei der Zeitabfrage gerechnet werden ? Zu Beginn des Events oder zum Ende.
-    private boolean endOfEvent = true;
-
-    private JButton btnStartOfEvent, btnEndOfEvent;
+    private JButton btnRevert;
     private JLabel lbl;
     private GameEventListener gameEventListener;
 
     public Farcry1GameEvent(int gameState, long gametimer) {
-        btnStartOfEvent = new JButton(new ImageIcon((Farcry1GameEvent.class.getResource("/artwork/22x22/3leftarrow.png"))));
-        btnEndOfEvent = new JButton(new ImageIcon((Farcry1GameEvent.class.getResource("/artwork/22x22/3rightarrow.png"))));
+        super();
+        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+        btnRevert = new JButton(new ImageIcon((Farcry1GameEvent.class.getResource("/artwork/agt_reload32.png"))));
+        btnRevert.setEnabled(false);
 
-        btnStartOfEvent.addActionListener(e -> {
-            endOfEvent = false;
-            gameEventListener.eventSent(this);
-        });
-        btnEndOfEvent.addActionListener(e -> {
-            endOfEvent = true;
+        btnRevert.addActionListener(e -> {
             gameEventListener.eventSent(this);
         });
         lbl = new JLabel(toString());
+        lbl.setFont(new Font("Dialog", Font.BOLD, 16));
+        
+        add(lbl);
 
         this.gameState = gameState;
         this.startOfThisEvent = gametimer;
@@ -57,12 +55,15 @@ public class Farcry1GameEvent {
         refreshTextLine();
     }
 
+    //todo: die events müssen besser dargestellt werden. Die Zeiten klarer. Da muss auch was von der Restzeit stehen.
+
     /**
      * Bevor das nächste Ereignis eintritt, muss dieses erst abgeschlossen werden.
      * Erst in diesem Moment kann entschieden werden, wie lange dieses Ereignis angehalten hat.
      */
     public void finalizeEvent(long gametimer) {
-        this.endOfThisEvent = gametimer-1;
+        this.endOfThisEvent = gametimer - 1;
+        add(btnRevert); // Der Knopf soll nur sichtbar sein, wenn das Ereignis vollständig ist.
         refreshTextLine();
     }
 
@@ -72,6 +73,7 @@ public class Farcry1GameEvent {
      */
     public void unfinalizeEvent() {
         this.endOfThisEvent = -1;
+        remove(btnRevert);
         refreshTextLine();
     }
 
@@ -134,17 +136,6 @@ public class Farcry1GameEvent {
 //        return starttime.plus(difference);
 //    }
 
-
-    public JPanel getGUI() {
-        JPanel pnl = new JPanel();
-        pnl.setLayout(new BoxLayout(pnl, BoxLayout.LINE_AXIS));
-
-        pnl.add(lbl);
-        pnl.add(btnStartOfEvent);
-        pnl.add(btnEndOfEvent);
-
-        return pnl;
-    }
 
     public void setGameEventListener(GameEventListener al) {
         gameEventListener = al;

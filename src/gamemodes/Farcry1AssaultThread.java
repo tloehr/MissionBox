@@ -31,7 +31,11 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
     private final long millispercycle = 50;
 
-    private long starttime = -1l; // systemzeit des starts. wird nur gebraucht um den gametimer zu setzen. das er bei 0 anfängt muss er relativ zur Startzeit berechnet werden.
+    /**
+     * systemzeit des starts. wird nur gebraucht um den gametimer zu setzen. das er bei 0 anfängt muss er relativ zur Startzeit berechnet werden.
+     */
+    private long starttime = -1l;
+
     private long gametimer = 0l; //how long is the game running ? starting at 0.
     private long maxgametime = 0l; // wie lange kann dieses Spiel maximal laufen
     private long capturetime = 0l; // wie lange muss die Flagge gehalten werden bis sie erobert wurde ?
@@ -71,7 +75,12 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
      * Veränderungen im Spielzustand der Box werden über diese Liste verschickt.
      */
     private final EventListenerList gameModeList;
-    private Farcry1GameEvent revertEvent;
+    /**
+     * Wenn in der Pause ein Rücksprungsziel ausgewählt wurde, dann steht das hier drin.
+     * Wenn nicht, ist das immer NULL.
+     * Auch nach einem revert wird dieser Event wieder auf NULL gesetzt.
+     */
+    private Farcry1GameEvent revertEvent = null;
 
 
     public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, long maxgametime, long capturetime) {
@@ -96,8 +105,13 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         prepareGame();
     }
 
+    public boolean isPausing() {
+        return pausingSince > -1l;
+    }
 
     public void setFlagHot(boolean hot) {
+        if (isPausing()) return; // eigentlich brauche ich diese Abfrage nicht, weil dass durch die Konstruktion schon
+        // bewältigt wird. Aber so ist es schön einheitlich.
         if (hot) {
             if (gameState == GAME_FLAG_COLD) {
                 setGameState(GAME_FLAG_HOT);
@@ -139,7 +153,10 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         logger.debug(GAME_MODES[gameState]);
 
         if (gameState != previousGameState) {
-            previousGameState = gameState;
+
+            previousGameState = gameState;  // das dient nur dazu, damit ich merken kann, wenn sich wirklich ein Zustand geändert hat.
+            // welcher genau das vorher war kümmert mich nicht. Auch bei einem REVERT setze ich diese Variable einfach auf IRGENDWAS, dass
+            // garantiert anders ist als gameState. z.B. -1l
             fireMessage(gameModeList, new MessageEvent(this, gameState));
 
             switch (gameState) {
@@ -158,7 +175,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    if (resumeToState == -1) {
+                    if (resumeToState == -1) { // das hier brauche ich, damit bei einem RESUME nicht der Event neu hinzu gefügt wird.
+                        // der befindet sich ja schon in der Liste.
                         MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
                     }
                     resumeToState = -1;
@@ -166,7 +184,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    if (resumeToState == -1) {
+                    if (resumeToState == -1) { // das hier brauche ich, damit bei einem RESUME nicht der Event neu hinzu gefügt wird.
+                        // der befindet sich ja schon in der Liste.
                         MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
                     }
                     resumeToState = -1;
@@ -174,7 +193,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
-                    if (resumeToState == -1) {
+                    if (resumeToState == -1) { // das hier brauche ich, damit bei einem RESUME nicht der Event neu hinzu gefügt wird.
+                        // der befindet sich ja schon in der Liste.
                         MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer));
                     }
                     resumeToState = -1;
@@ -182,7 +202,6 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     break;
                 }
                 case GAME_GOING_TO_PAUSE: {
-                    resumeToState = previousGameState; // merken für später, falls kein REVERT gemacht wird.
                     pausingSince = System.currentTimeMillis();
                     MissionBox.getPinHandler().pause();
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.going.to.pause"));
@@ -210,12 +229,11 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         gametimer = revertEvent.getEndOfThisEvent();
                     }
 
-                    starttime = starttime + pause_period;
+                    starttime = starttime + pause_period; // die Startzeit ist in Echtzeit, somit muss sie um das Pause Intervall verlängert werden.
                     pausingSince = -1l;
 
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.resumed"));
                     setGameState(resumeToState);
-                    //TODO: resume to state läuft falsch. war auf 6.
                     break;
                 }
                 case GAME_OUTCOME_FLAG_DEFENDED: {
@@ -251,11 +269,14 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
     @Override
     public void togglePause() {
-
-        if (pausingSince == -1l) {
-            if (isGameRunning())
+        if (!isPausing()) {
+            if (isGameRunning()) {
+                MissionBox.getFrmTest().setToPauseMode(true);
+                resumeToState = previousGameState; // merken für später, falls doch kein REVERT gemacht wird.
                 setGameState(GAME_GOING_TO_PAUSE);
+            }
         } else {
+            MissionBox.getFrmTest().setToPauseMode(false);
             setGameState(GAME_GOING_TO_RESUME);
         }
     }
