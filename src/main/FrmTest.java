@@ -12,6 +12,7 @@ import gamemodes.GameEventListener;
 import interfaces.PercentageInterface;
 import misc.Tools;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.*;
 import progresshandlers.EscalatingSirens;
 import progresshandlers.EscalatingSirensTime;
 import progresshandlers.EscalatingTime;
@@ -53,13 +54,12 @@ public class FrmTest extends JFrame implements GameEventListener {
         eventModel.add(event);
         listEvents.add(event);
 
+        // scrolle die Liste immer ganz nach unten
         SwingUtilities.invokeLater(() -> {
             JScrollBar vertical = panel7.getVerticalScrollBar();
             vertical.setValue(vertical.getMaximum());
         });
-
     }
-
 
     public void clearEvents() {
         eventModel.clear();
@@ -71,8 +71,8 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     // setzt einen Revert Event fest, zu dem zurückgesprungen werden soll.
-    public void setRevertEvent(Farcry1GameEvent revertEvent) {
-        lblRevertEvent.setText(revertEvent.toString());
+    private void setRevertEvent(Farcry1GameEvent revertEvent) {
+        lblRevertEvent.setText(revertEvent == null ? "--" : revertEvent.toString());
         MissionBox.setRevertEvent(revertEvent);
     }
 
@@ -320,7 +320,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void tabbedPane1StateChanged(ChangeEvent e) {
         if (tabbedPane1.getSelectedIndex() == 0) {
-            MissionBox.saveLocalProps();
+//            MissionBox.saveLocalProps();
         } else if (tabbedPane1.getSelectedIndex() == 1) {
             lblFCYCapture.setText(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE));
             lblFCYGametime.setText(MissionBox.getConfig(MissionBox.FCY_GAMETIME));
@@ -344,7 +344,7 @@ public class FrmTest extends JFrame implements GameEventListener {
         tabbedPane1.setEnabledAt(2, yes);
     }
 
-    public void setToPauseMode(boolean yes){
+    public void setToPauseMode(boolean yes) {
         Tools.setXEnabled(listEvents, yes);
     }
 
@@ -361,7 +361,7 @@ public class FrmTest extends JFrame implements GameEventListener {
         JTextField txt = ((JTextField) e.getSource());
         int capture = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE));
         int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
-        MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE, Integer.toString(value));
+        MissionBox.setConfig(MissionBox.FCY_TIME2CAPTURE, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
 
@@ -373,7 +373,7 @@ public class FrmTest extends JFrame implements GameEventListener {
         JTextField txt = ((JTextField) e.getSource());
         int capture = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME));
         int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
-        MissionBox.getConfig(MissionBox.FCY_GAMETIME, Integer.toString(value));
+        MissionBox.setConfig(MissionBox.FCY_GAMETIME, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
 
@@ -385,7 +385,7 @@ public class FrmTest extends JFrame implements GameEventListener {
         JTextField txt = ((JTextField) e.getSource());
         int capture = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_TIME));
         int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
-        MissionBox.getConfig(MissionBox.FCY_RESPAWN_TIME, Integer.toString(value));
+        MissionBox.setConfig(MissionBox.FCY_RESPAWN_TIME, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
 
@@ -474,6 +474,10 @@ public class FrmTest extends JFrame implements GameEventListener {
         MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;1000,1000");
     }
 
+    private void btnClearEventActionPerformed(ActionEvent e) {
+        setRevertEvent(null);
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -485,6 +489,8 @@ public class FrmTest extends JFrame implements GameEventListener {
         panel8 = new JPanel();
         panel7 = new JScrollPane();
         listEvents = new JPanel();
+        panel9 = new JPanel();
+        btnClearEvent = new JButton();
         lblRevertEvent = new JLabel();
         panel2 = new JPanel();
         btnRed = new JButton();
@@ -606,11 +612,23 @@ public class FrmTest extends JFrame implements GameEventListener {
                     }
                     panel8.add(panel7);
 
-                    //---- lblRevertEvent ----
-                    lblRevertEvent.setText("text");
-                    lblRevertEvent.setAlignmentX(0.5F);
-                    lblRevertEvent.setFont(new Font("Dialog", Font.BOLD, 16));
-                    panel8.add(lblRevertEvent);
+                    //======== panel9 ========
+                    {
+                        panel9.setAlignmentX(0.0F);
+                        panel9.setLayout(new BoxLayout(panel9, BoxLayout.LINE_AXIS));
+
+                        //---- btnClearEvent ----
+                        btnClearEvent.setText("text");
+                        btnClearEvent.addActionListener(e -> btnClearEventActionPerformed(e));
+                        panel9.add(btnClearEvent);
+
+                        //---- lblRevertEvent ----
+                        lblRevertEvent.setText("text");
+                        lblRevertEvent.setAlignmentX(0.5F);
+                        lblRevertEvent.setFont(new Font("Dialog", Font.BOLD, 16));
+                        panel9.add(lblRevertEvent);
+                    }
+                    panel8.add(panel9);
                 }
                 contentPanel.add(panel8, CC.xywh(5, 1, 1, 3));
 
@@ -1082,6 +1100,8 @@ public class FrmTest extends JFrame implements GameEventListener {
     private JPanel panel8;
     private JScrollPane panel7;
     private JPanel listEvents;
+    private JPanel panel9;
+    private JButton btnClearEvent;
     private JLabel lblRevertEvent;
     private JPanel panel2;
     private JButton btnRed;

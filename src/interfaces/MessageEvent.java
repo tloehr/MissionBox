@@ -4,6 +4,7 @@ import main.MissionBox;
 import misc.Tools;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.math.BigDecimal;
 import java.util.EventObject;
@@ -76,7 +77,7 @@ public class MessageEvent extends EventObject {
     }
 
     public DateTime getTime() {
-        return new DateTime(message);
+        return new DateTime(message, DateTimeZone.UTC);
     }
 
     public String getDateTimeFormatted() {

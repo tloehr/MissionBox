@@ -261,7 +261,7 @@ public class Farcry1Assault implements GameMode {
 
 
         farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {
-        }, gameTimeListener, percentageListener, gameModeListener, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME)) * 60000l, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE)) * 60000l);
+        }, gameTimeListener, percentageListener, gameModeListener, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE)));
 
         MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
             logger.debug(event);
