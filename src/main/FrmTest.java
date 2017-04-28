@@ -49,7 +49,8 @@ public class FrmTest extends JFrame implements GameEventListener {
     public void addGameEvent(Farcry1GameEvent event) {
         event.setGameEventListener(this);
         if (!eventModel.isEmpty()) {
-            getLastEvent().finalizeEvent(event.getStartOfThisEvent());
+//            logger.debug("gametime: "+event.getGametimerAtStart()+1);
+            getLastEvent().finalizeEvent(event.getGametimerAtStart()+1);
         }
         eventModel.add(event);
         listEvents.add(event);
@@ -71,8 +72,9 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     // setzt einen Revert Event fest, zu dem zurückgesprungen werden soll.
-    private void setRevertEvent(Farcry1GameEvent revertEvent) {
+    public void setRevertEvent(Farcry1GameEvent revertEvent) {
         lblRevertEvent.setText(revertEvent == null ? "--" : revertEvent.toString());
+        lblRevertEvent.setIcon(revertEvent == null ? null : revertEvent.getIcon());
         MissionBox.setRevertEvent(revertEvent);
     }
 
@@ -346,6 +348,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     public void setToPauseMode(boolean yes) {
         Tools.setXEnabled(listEvents, yes);
+        btnClearEvent.setEnabled(yes);
     }
 
 
@@ -599,7 +602,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //======== panel8 ========
                 {
-                    panel8.setLayout(new BoxLayout(panel8, BoxLayout.PAGE_AXIS));
+                    panel8.setLayout(new BorderLayout());
 
                     //======== panel7 ========
                     {
@@ -610,25 +613,27 @@ public class FrmTest extends JFrame implements GameEventListener {
                         }
                         panel7.setViewportView(listEvents);
                     }
-                    panel8.add(panel7);
+                    panel8.add(panel7, BorderLayout.CENTER);
 
                     //======== panel9 ========
                     {
                         panel9.setAlignmentX(0.0F);
-                        panel9.setLayout(new BoxLayout(panel9, BoxLayout.LINE_AXIS));
+                        panel9.setLayout(new BorderLayout());
 
                         //---- btnClearEvent ----
-                        btnClearEvent.setText("text");
+                        btnClearEvent.setText(null);
+                        btnClearEvent.setIcon(new ImageIcon(getClass().getResource("/artwork/editdelete.png")));
                         btnClearEvent.addActionListener(e -> btnClearEventActionPerformed(e));
-                        panel9.add(btnClearEvent);
+                        panel9.add(btnClearEvent, BorderLayout.LINE_START);
 
                         //---- lblRevertEvent ----
-                        lblRevertEvent.setText("text");
+                        lblRevertEvent.setText("--");
                         lblRevertEvent.setAlignmentX(0.5F);
                         lblRevertEvent.setFont(new Font("Dialog", Font.BOLD, 16));
-                        panel9.add(lblRevertEvent);
+                        lblRevertEvent.setHorizontalAlignment(SwingConstants.CENTER);
+                        panel9.add(lblRevertEvent, BorderLayout.CENTER);
                     }
-                    panel8.add(panel9);
+                    panel8.add(panel9, BorderLayout.SOUTH);
                 }
                 contentPanel.add(panel8, CC.xywh(5, 1, 1, 3));
 

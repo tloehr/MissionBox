@@ -486,7 +486,7 @@ public class MissionBox {
 
     public static void setTimerMessage(String message) {
         frmTest.setTimer(message);
-        logger.debug(message);
+//        logger.debug(message);
     }
 
     public static void minuteSignal(int minutes) {

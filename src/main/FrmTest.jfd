@@ -35,9 +35,7 @@ new FormModel {
 						"gridX": 3
 						"gridHeight": 7
 					} )
-					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
-						"axis": 3
-					} ) {
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 						name: "panel8"
 						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 							name: "panel7"
@@ -46,23 +44,31 @@ new FormModel {
 							} ) {
 								name: "listEvents"
 							} )
+						}, new FormLayoutConstraints( class java.lang.String ) {
+							"value": "Center"
 						} )
-						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
-							"axis": 2
-						} ) {
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 							name: "panel9"
 							"alignmentX": 0.0f
 							add( new FormComponent( "javax.swing.JButton" ) {
 								name: "btnClearEvent"
-								"text": "text"
+								"text": sfield com.jformdesigner.model.FormObject NULL_VALUE
+								"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/editdelete.png" )
 								addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnClearEventActionPerformed", true ) )
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Before"
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "lblRevertEvent"
-								"text": "text"
+								"text": "--"
 								"alignmentX": 0.5f
 								"font": new java.awt.Font( "Dialog", 1, 16 )
+								"horizontalAlignment": 0
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
 							} )
+						}, new FormLayoutConstraints( class java.lang.String ) {
+							"value": "South"
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 5

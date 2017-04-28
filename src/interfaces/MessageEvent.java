@@ -18,6 +18,7 @@ public class MessageEvent extends EventObject {
     final Logger LOGGER = Logger.getLogger(this.getClass());
 
     private final Object message;
+    private final Object message2;
     private final int mode;
 
     public MessageEvent(Object source, int mode, String message) {
@@ -25,13 +26,15 @@ public class MessageEvent extends EventObject {
         LOGGER.setLevel(MissionBox.getLogLevel());
         this.mode = mode;
         this.message = Tools.xx(message);
+        message2 = null;
     }
 
-    public MessageEvent(Object source, int mode, Long message) { //
+    public MessageEvent(Object source, int mode, Long message, Long message2) { //
         super(source);
         LOGGER.setLevel(MissionBox.getLogLevel());
         this.mode = mode;
         this.message = message;
+        this.message2 = message2;
     }
 
     public MessageEvent(Object source, int mode, BigDecimal percentage) {
@@ -39,6 +42,7 @@ public class MessageEvent extends EventObject {
         LOGGER.setLevel(MissionBox.getLogLevel());
         this.mode = mode;
         this.message = percentage;
+        message2 = null;
     }
 
     public MessageEvent(Object source, int mode) {
@@ -46,6 +50,7 @@ public class MessageEvent extends EventObject {
         LOGGER.setLevel(MissionBox.getLogLevel());
         this.mode = mode;
         this.message = new Integer(mode);
+        message2 = null;
     }
 
     public MessageEvent(Object source, int mode, Boolean on) {
@@ -53,6 +58,7 @@ public class MessageEvent extends EventObject {
         LOGGER.setLevel(MissionBox.getLogLevel());
         this.mode = mode;
         this.message = on;
+        message2 = null;
     }
 
     public boolean isPercentage() {
@@ -81,7 +87,12 @@ public class MessageEvent extends EventObject {
     }
 
     public String getDateTimeFormatted() {
-        return getTime().toString("mm:ss");
+        String result = getTime().toString("mm:ss");
+        if (message2 != null) {
+            result += " (" + new DateTime(message2, DateTimeZone.UTC).toString("mm:ss") + ")";
+        }
+
+        return result;
     }
 
     public BigDecimal getPercentage() {

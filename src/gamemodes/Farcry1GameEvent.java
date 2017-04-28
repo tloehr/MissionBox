@@ -28,12 +28,12 @@ public class Farcry1GameEvent extends JPanel {
     private int gameState;
 
     // wie stand der Gametimer zum Zeitpunkt des Events. gametimer fangen bei 0 an.
-    private long startOfThisEvent;
+    private long gametimerAtStart;
 
     //wann war dieser Event zu Ende. Geht erst nach FINALIZE()
-    private long endOfThisEvent = -1;
+    private long gametimerAtEnd = -1;
 
-    private Logger logger;
+    private Logger logger = Logger.getLogger(getClass());
 
     private JButton btnRevert;
     private JLabel lbl;
@@ -59,8 +59,8 @@ public class Farcry1GameEvent extends JPanel {
         add(lbl);
 
         this.gameState = gameState;
-        this.startOfThisEvent = gametimer;
-        this.endOfThisEvent = -1;
+        this.gametimerAtStart = gametimer;
+        this.gametimerAtEnd = -1;
         refreshTextLine();
     }
 
@@ -70,23 +70,24 @@ public class Farcry1GameEvent extends JPanel {
      * Erst in diesem Moment kann entschieden werden, wie lange dieses Ereignis angehalten hat.
      */
     public void finalizeEvent(long gametimer) {
-        this.endOfThisEvent = gametimer - 1;
+        gametimerAtEnd = gametimer;
+//        logger.debug("calculated: " + gametimerAtEnd);
         btnRevert.setVisible(true);
         refreshTextLine();
     }
 
-    /**
-     * wenn der Spielzustand auf dieses Ereignis zurückgesetzt wird, dann ist es auch wieder aktiv.
-     * somit läuft dieses Ereignis jetzt weiter und es nicht mehr FINALIZED.
-     */
-    public void unfinalizeEvent() {
-        this.endOfThisEvent = -1;
-        btnRevert.setVisible(false);
-        refreshTextLine();
-    }
+//    /**
+//     * wenn der Spielzustand auf dieses Ereignis zurückgesetzt wird, dann ist es auch wieder aktiv.
+//     * somit läuft dieses Ereignis jetzt weiter und es nicht mehr FINALIZED.
+//     */
+//    public void unfinalizeEvent() {
+//        this.gametimerAtEnd = -1;
+//        btnRevert.setVisible(false);
+//        refreshTextLine();
+//    }
 
-    public long getEndOfThisEvent() {
-        return endOfThisEvent;
+    public long getGametimerAtEnd() {
+        return gametimerAtEnd;
     }
 
     private void refreshTextLine() {
@@ -107,14 +108,14 @@ public class Farcry1GameEvent extends JPanel {
 //    }
 
 
-    public long getStartOfThisEvent() {
-        return startOfThisEvent;
+    public long getGametimerAtStart() {
+        return gametimerAtStart;
     }
 
-    public long getEndtime() {
+    public long getMaxGametime() {
         long endtime = maxgametime;
         if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            endtime = startOfThisEvent + capturetime;
+            endtime = gametimerAtStart + capturetime;
         }
         return endtime;
     }
@@ -130,7 +131,7 @@ public class Farcry1GameEvent extends JPanel {
 //    }
 //
 //
-//    public DateTime getEndtime() {
+//    public DateTime getMaxGametime() {
 //        Duration difference = new Duration(eventStartTime, new DateTime());
 //        return endtime.plus(difference);
 //    }
@@ -144,6 +145,9 @@ public class Farcry1GameEvent extends JPanel {
 //        return starttime.plus(difference);
 //    }
 
+    public Icon getIcon() {
+        return lbl.getIcon();
+    }
 
     public void setGameEventListener(GameEventListener al) {
         gameEventListener = al;
@@ -151,9 +155,17 @@ public class Farcry1GameEvent extends JPanel {
 
     @Override
     public String toString() {
-        String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b>&nbsp;";
-        html += (endOfThisEvent == -1 ? "" : "Restzeit: " + new DateTime(getEndtime() - endOfThisEvent + 1, DateTimeZone.UTC).toString("mm:ss"));
-        html += endOfThisEvent == -1 ? "--&nbsp;" : " Dauer: " + (endOfThisEvent - startOfThisEvent) + "ms&nbsp;";
+        String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> ";
+
+
+        html += (gametimerAtEnd == -1 ? "" : "(" + new DateTime(maxgametime - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + ")");
+
+
+        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
+            html += " " + (gametimerAtEnd == -1 ? "" : "{" + new DateTime(getMaxGametime() - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + "}");
+        }
+
+        html += gametimerAtEnd == -1 ? "-- " : " [" + (gametimerAtEnd - gametimerAtStart) + "ms] ";
         html += Farcry1AssaultThread.GAME_MODES[gameState];
 
         return "<html>" + html + "</html>";
