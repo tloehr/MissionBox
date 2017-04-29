@@ -37,7 +37,9 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
      */
     private long starttime = -1l;
 
-    private long gametimer = 0l; //how long is the game running ? starting at 0.
+
+    private long gametimer = 0l; // wie lange läuft das Spiel schon ?
+    private long timeWhenTheFlagWasActivated = -1l; // wann wurde die Flagge zuletzt aktiviert. -1l heisst, nicht aktiv.
     private long maxgametime = 0l; // wie lange kann dieses Spiel maximal laufen
     private long capturetime = 0l; // wie lange muss die Flagge gehalten werden bis sie erobert wurde ?
 
@@ -186,25 +188,21 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     break;
                 }
                 case GAME_FLAG_HOT: {
-                    if (resumeToState == -1l || revertEvent != null) {
-                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime, new ImageIcon((getClass().getResource("/artwork/ledred32.png")))));
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime, new ImageIcon((getClass().getResource("/artwork/ledred32.png")))));
+                    if (timeWhenTheFlagWasActivated == -1l) { // dadurch verhindere ich, dass bei einem revert dieser Wert falsch gesetzt wird.
+                        timeWhenTheFlagWasActivated = gametimer; // also jetzt.
                     }
-                    revertEvent = null;
-                    resumeToState = -1;
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                     break;
                 }
                 case GAME_FLAG_COLD: {
-                    if (resumeToState == -1l)
-                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime, new ImageIcon((getClass().getResource("/artwork/ledgreen32.png")))));
-                    resumeToState = -1;
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime, new ImageIcon((getClass().getResource("/artwork/ledgreen32.png")))));
+                    timeWhenTheFlagWasActivated = -1l;
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                     break;
                 }
                 case GAME_OUTCOME_FLAG_TAKEN: {
-                    if (resumeToState == -1l)
-                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime, new ImageIcon((getClass().getResource("/artwork/rocket32.png")))));
-                    resumeToState = -1;
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime, new ImageIcon((getClass().getResource("/artwork/rocket32.png")))));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.taken"));
                     break;
                 }
@@ -237,8 +235,15 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     // muss er jetzt berücksichtigt werden.
                     if (revertEvent != null) {
                         resumeToState = revertEvent.getGameState();
-
                         starttime = starttime + revertEvent.getGametimerAtEnd() + 1; // Verschiebt die Startzeit um die Dauer dieses Events.
+
+                        if (resumeToState == GAME_FLAG_HOT) {
+                            timeWhenTheFlagWasActivated = revertEvent.getGametimerAtStart();
+                        } else {
+                            timeWhenTheFlagWasActivated = -1l;
+                        }
+
+                        revertEvent = null;
                         MissionBox.getPinHandler().clear(); // werden gleich neu gesetzt. daher alles löschen.
                         MissionBox.getFrmTest().setRevertEvent(null);
                         MissionBox.getFrmTest().clearEvents(); // jedes revert geht nur einmal, danach ist die Liste leer.
@@ -256,9 +261,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     break;
                 }
                 case GAME_OUTCOME_FLAG_DEFENDED: {
-                    if (resumeToState == -1l)
-                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime, new ImageIcon((getClass().getResource("/artwork/shield32.png")))));
-                    resumeToState = -1;
+                    MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(gameState, gametimer, maxgametime, capturetime, new ImageIcon((getClass().getResource("/artwork/shield32.png")))));
                     fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
                     break;
                 }
@@ -288,7 +291,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     @Override
     public void togglePause() {
         if (!isPausing()) {
-            if (isGameRunning()) {
+            if (isGameRunning() || isGameJustEnded()) {
                 MissionBox.getFrmTest().setToPauseMode(true);
                 resumeToState = previousGameState; // merken für später, falls doch kein REVERT gemacht wird.
                 setGameState(GAME_GOING_TO_PAUSE);
@@ -309,18 +312,25 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         }
     }
 
-    private boolean timeIsUp() {
-        long endtime = maxgametime;
-           //todo: get rid of the getLastEvents(). this sucks
-        if (gameState == GAME_FLAG_HOT) {
-            endtime = MissionBox.getFrmTest().getLastEvent().getGametimerAtStart() + capturetime;
-        }
 
-        return gametimer >= endtime;
+    private long getEstimatedEndOfGame() {
+        long endtime = maxgametime;
+        if (gameState == GAME_FLAG_HOT) {
+            endtime = timeWhenTheFlagWasActivated + capturetime;
+        }
+        return endtime;
+    }
+
+    private boolean timeIsUp() {
+        return gametimer >= getEstimatedEndOfGame();
     }
 
     public boolean isGameRunning() {
         return gameState == Farcry1AssaultThread.GAME_FLAG_ACTIVE || gameState == Farcry1AssaultThread.GAME_FLAG_HOT || gameState == Farcry1AssaultThread.GAME_FLAG_COLD;
+    }
+
+    public boolean isGameJustEnded() {
+        return gameState == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN || gameState == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED;
     }
 
 
@@ -336,11 +346,20 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                 threadcycles++;
 
                 if (threadcycles % 15 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
-                    Farcry1GameEvent lastEvent = MissionBox.getFrmTest().getLastEvent();
-                    fireMessage(gameTimerList, new MessageEvent(this, gameState, lastEvent.getMaxGametime() - gametimer, gameState == GAME_FLAG_HOT ? maxgametime - gametimer : null)); // verbleibende Zeit
+                    fireMessage(gameTimerList, new MessageEvent(this, gameState, getEstimatedEndOfGame() - gametimer, gameState == GAME_FLAG_HOT ? maxgametime - gametimer : null)); // verbleibende Zeit
+                }
+            }
+
+            if (pausingSince >= 0) {
+
+                threadcycles++;
+
+                if (threadcycles % 15 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
+                    fireMessage(gameTimerList, new MessageEvent(this, gameState, System.currentTimeMillis() - pausingSince, null)); // verbleibende Zeit
                 }
 
             }
+
 
             try {
 
@@ -356,11 +375,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         setGameState(GAME_OUTCOME_FLAG_TAKEN);
                     }
 
-                    Farcry1GameEvent lastEvent = MissionBox.getFrmTest().getLastEvent();
-                    long flagactivation = lastEvent.getGametimerAtStart();
-                    long flagwillbetaken = flagactivation + capturetime;
-
-                    BigDecimal progress = new BigDecimal(gametimer - flagactivation).divide(new BigDecimal(flagwillbetaken - flagactivation), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+                    long flagwillbetaken = timeWhenTheFlagWasActivated + capturetime;
+                    BigDecimal progress = new BigDecimal(gametimer - timeWhenTheFlagWasActivated).divide(new BigDecimal(flagwillbetaken - timeWhenTheFlagWasActivated), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
 
                     fireMessage(percentageList, new MessageEvent(this, gameState, progress));
                 }

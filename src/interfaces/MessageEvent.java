@@ -20,6 +20,7 @@ public class MessageEvent extends EventObject {
     private final Object message;
     private final Object message2;
     private final int mode;
+    private final Logger logger = Logger.getLogger(getClass());
 
     public MessageEvent(Object source, int mode, String message) {
         super(source);
@@ -89,7 +90,9 @@ public class MessageEvent extends EventObject {
     public String getDateTimeFormatted() {
         String result = getTime().toString("mm:ss");
         if (message2 != null) {
-            result += " (" + new DateTime(message2, DateTimeZone.UTC).toString("mm:ss") + ")";
+            long m2 = (long) message2;
+
+            result += " (" + new DateTime(Math.abs(m2), DateTimeZone.UTC).toString("mm:ss") + (m2 < 0 ? " overtime)" : ")");
         }
 
         return result;

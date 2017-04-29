@@ -57,7 +57,7 @@ public class Farcry1Assault implements GameMode {
 
 
         MessageListener gameTimeListener = messageEvent -> {
-            String thisAnnoucement = messageEvent.getDateTimeFormatted();
+//            String thisAnnoucement = messageEvent.getDateTimeFormatted();
 
 //            // Time announcer
 //            if (isGameRunning(messageEvent.getMode())) {
@@ -101,8 +101,13 @@ public class Farcry1Assault implements GameMode {
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
                 MissionBox.setTimerMessage("Flag defended");
                 MissionBox.setRespawnTimer("--");
+            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
+                MissionBox.setTimerMessage(messageEvent.getDateTimeFormatted());
+            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PAUSING) {
+                MissionBox.setTimerMessage("pausing: " + messageEvent.getDateTimeFormatted());
             } else {
-                MissionBox.setTimerMessage(thisAnnoucement);
+                MissionBox.setTimerMessage("Flag defended");
+                MissionBox.setRespawnTimer("--");
             }
 
         };
@@ -174,6 +179,7 @@ public class Farcry1Assault implements GameMode {
 //                prev_countdown_index = -1;
 
                 MissionBox.enableSettings(true);
+                MissionBox.getFrmTest().getBtnClearEvent().setEnabled(false);
 
                 MissionBox.off(MissionBox.MBX_LED_RED);
                 MissionBox.off(MissionBox.MBX_LED_GREEN);

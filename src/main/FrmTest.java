@@ -341,6 +341,10 @@ public class FrmTest extends JFrame implements GameEventListener {
         }
     }
 
+    public JButton getBtnClearEvent() {
+        return btnClearEvent;
+    }
+
     public void enableSettings(boolean yes) {
         tabbedPane1.setEnabledAt(1, yes);
         tabbedPane1.setEnabledAt(2, yes);

@@ -158,14 +158,14 @@ public class Farcry1GameEvent extends JPanel {
         String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> ";
 
 
-        html += (gametimerAtEnd == -1 ? "" : "(" + new DateTime(maxgametime - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + ")");
+        html += (gametimerAtEnd == -1 ? "" : "(" + new DateTime(maxgametime - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + ") ");
 
 
         if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            html += " " + (gametimerAtEnd == -1 ? "" : "{" + new DateTime(getMaxGametime() - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + "}");
+            html += " " + (gametimerAtEnd == -1 ? "" : "{" + new DateTime(getMaxGametime() - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + "} ");
         }
 
-        html += gametimerAtEnd == -1 ? "-- " : " [" + (gametimerAtEnd - gametimerAtStart) + "ms] ";
+        html += gametimerAtEnd == -1 ? "-- " : "[" + new DateTime(gametimerAtEnd - gametimerAtStart, DateTimeZone.UTC).toString("mm:ss:SSS] ");
         html += Farcry1AssaultThread.GAME_MODES[gameState];
 
         return "<html>" + html + "</html>";
