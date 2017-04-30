@@ -96,17 +96,22 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setTimerMessage("--");
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
-                MissionBox.setTimerMessage("Flag taken");
+                MissionBox.setTimerMessage("Flagen taken");
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
                 MissionBox.setTimerMessage("Flag defended");
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
-                MissionBox.setTimerMessage(messageEvent.getDateTimeFormatted());
+                //MissionBox.setTimerMessage(messageEvent.getDateTimeFormatted());
+                MissionBox.setTimerMessage(messageEvent.toString());
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PAUSING) {
-                MissionBox.setTimerMessage("pausing: " + messageEvent.getDateTimeFormatted());
+                //MissionBox.setTimerMessage("pause since:<br>" + messageEvent.getDateTimeFormatted());
+                MissionBox.setTimerMessage(messageEvent.toString());
+            } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_GOING_TO_RESUME) {
+                //MissionBox.setTimerMessage("resume in:<br>" + messageEvent.getDateTimeFormatted());
+                MissionBox.setTimerMessage(messageEvent.toString());
             } else {
-                MissionBox.setTimerMessage("Flag defended");
+                MissionBox.setTimerMessage("Don't know");
                 MissionBox.setRespawnTimer("--");
             }
 

@@ -12,7 +12,7 @@ import gamemodes.GameEventListener;
 import interfaces.PercentageInterface;
 import misc.Tools;
 import org.apache.log4j.Logger;
-import org.jdesktop.swingx.*;
+
 import progresshandlers.EscalatingSirens;
 import progresshandlers.EscalatingSirensTime;
 import progresshandlers.EscalatingTime;
@@ -674,7 +674,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- lblTimer ----
                 lblTimer.setText("--");
-                lblTimer.setFont(new Font("Dialog", Font.BOLD, 64));
+                lblTimer.setFont(new Font("Dialog", Font.PLAIN, 12));
                 lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
                 contentPanel.add(lblTimer, CC.xy(5, 5, CC.FILL, CC.DEFAULT));
 
@@ -1077,7 +1077,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     public void setTimer(String time) {
         SwingUtilities.invokeLater(() -> {
-            lblTimer.setText(time);
+            lblTimer.setText("<html>"+time+"</html>");
             revalidate();
             repaint();
         });

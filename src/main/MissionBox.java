@@ -20,8 +20,6 @@ import threads.PinHandler;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -60,18 +58,18 @@ public class MissionBox {
 
     public static SortedProperties appinfo = new SortedProperties();
 
+    /**
+     * Diese Zuordnung bezieht sich auf die Schlüssel aus der missionbox.cfg Datei.
+     */
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
-
     public static final String FCY_SIREN = "fcy.siren";
     public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
-    //    public static final String MBX_GUI = "mbx.gui";
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
     public static final String FCY_RESPAWN_TIME = "fcy.respawn.time";
     public static final String FCY_RESPAWN_SIGNAL = "fcy.respawn.signal";
     public static final String MBX_DEBUG = "mbx.debug";
-
     public static final String MBX_SIREN1 = "mbx.siren1";
     public static final String MBX_SIREN2 = "mbx.siren2";
     public static final String MBX_SIREN3 = "mbx.siren3";
@@ -93,7 +91,7 @@ public class MissionBox {
     public static final String MBX_BTN_RED = "mbx.button.red";
     public static final String MBX_BTN_START_STOP = "mbx.button.startstop";
     public static final String MBX_BTN_QUIT = "mbx.button.quit";
-    public static final String MBX_BTN_UNDO = "mbx.button.pause";
+    public static final String MBX_BTN_PAUSE = "mbx.button.pause";
 
 
     public static void setRESPAWN(boolean RESPAWN) {
@@ -189,7 +187,7 @@ public class MissionBox {
 
         gameMode = new Farcry1Assault();
 
-        logger.debug(gameMode);
+//        logger.debug(gameMode);
 
         gameMode.runGame();
 
@@ -355,12 +353,9 @@ public class MissionBox {
 
     private static void loadLocalProperties() throws IOException {
         config = new SortedProperties();
-        // some defaults
-
-
+        // Hier stehen die Standardwerte, falls keine missionbox.cfg existiert.
         config.put(FCY_TIME2CAPTURE, "20");
         config.put(FCY_GAMETIME, "5");
-
         config.put(FCY_RESPAWN_SIGNAL, "true");
         config.put(FCY_SIREN, "true");
         config.put(MBX_SIREN_TIME, "750");
@@ -369,9 +364,20 @@ public class MissionBox {
         config.put(MBX_I2C_1, "0x20");
         config.put(MBX_I2C_2, "0x24");
 
+        // hier werden die üblichen Zuordnungen der einzelnen GPIOs
+        // zu den jeweiligen Signalleitungen vorgenommen.
+        // Falls man mal was umstecken muss, kann man das einfach
+        // später in der missionbox.cfg ändern.
+        // diese Werte werden hier so gesetzt, wie es in der
+        // Bauanleitung der Box steht.
+
+        // die hier brauchen wir immer
         config.put(MBX_SIREN1, "mcp23017-01-B7");
+
+        // falls wir noch mehr als eine Signalsirene haben.
         config.put(MBX_SIREN2, "mcp23017-01-B6");
         config.put(MBX_SIREN3, "mcp23017-01-B5");
+
         config.put(MBX_AIRSIREN, "mcp23017-01-B0");
         config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B4");
         config.put(MBX_TIME_SIREN, "mcp23017-01-B3");
@@ -389,7 +395,7 @@ public class MissionBox {
         config.put(MBX_BTN_RED, "mcp23017-02-B0");
         config.put(MBX_BTN_GREEN, "mcp23017-02-B1");
         config.put(MBX_BTN_START_STOP, "mcp23017-02-B2");
-        config.put(MBX_BTN_QUIT, "mcp23017-02-B3");
+        config.put(MBX_BTN_PAUSE, "mcp23017-02-B3");
         config.put(MBX_DEBUG, "true");
 
         File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
@@ -578,7 +584,7 @@ public class MissionBox {
             ioGreen = inputMap.get(config.getProperty(MBX_BTN_GREEN));
             ioGameStartStop = inputMap.get((config.getProperty(MBX_BTN_START_STOP)));
             ioMisc = inputMap.get((config.getProperty(MBX_BTN_QUIT)));
-            ioPAUSE = inputMap.get((config.getProperty(MBX_BTN_UNDO)));
+            ioPAUSE = inputMap.get((config.getProperty(MBX_BTN_PAUSE)));
         }
 
     }

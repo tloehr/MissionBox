@@ -17,7 +17,6 @@ public class PinBlinkModel implements Callable<String> {
     private ArrayList<Long> onOffScheme;
     int repeat;
     boolean currentlyOn;
-    boolean paused = false;
     int positionInScheme;
     private final Logger logger = Logger.getLogger(getClass().getName());
     String infinity = "\u221E";
@@ -34,23 +33,23 @@ public class PinBlinkModel implements Callable<String> {
 
                 while (hasNext()) {
                     long time = 0;
-                    if (!paused) {
-                        if (Thread.currentThread().isInterrupted()) {
-                            pin.setOn(false);
-                            return null;
-                        }
+
+                    if (Thread.currentThread().isInterrupted()) {
+                        pin.setOn(false);
+                        return null;
+                    }
 
 
-                        time = next();
-                        pin.setOn(currentlyOn);
+                    time = next();
+                    pin.setOn(currentlyOn);
 
-                        try {
-                            if (time > 0) Thread.sleep(time);
-                        } catch (InterruptedException exc) {
-                            pin.setOn(false);
-                            return null;
-                        }
-                    } // else would be pausing
+                    try {
+                        if (time > 0) Thread.sleep(time);
+                    } catch (InterruptedException exc) {
+                        pin.setOn(false);
+                        return null;
+                    }
+
                 }
             }
         }
@@ -58,18 +57,9 @@ public class PinBlinkModel implements Callable<String> {
         return null;
     }
 
-    public void pause() {
-        paused = true;
-        pin.setOn(false);
-    }
-
     public void clear() {
         onOffScheme.clear();
         restart();
-    }
-
-    public void resume() {
-        paused = false;
     }
 
     public PinBlinkModel(Relay pin) {
@@ -87,7 +77,7 @@ public class PinBlinkModel implements Callable<String> {
      *
      * @param scheme
      */
-    public void setScheme(String scheme) throws Exception {
+    public void setScheme(String scheme) {
         onOffScheme.clear();
 
 //        logger.debug("new scheme for pin: " + pin.getName() + " : " + scheme);

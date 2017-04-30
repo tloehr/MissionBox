@@ -22,6 +22,8 @@ public class MessageEvent extends EventObject {
     private final int mode;
     private final Logger logger = Logger.getLogger(getClass());
 
+
+
     public MessageEvent(Object source, int mode, String message) {
         super(source);
         LOGGER.setLevel(MissionBox.getLogLevel());

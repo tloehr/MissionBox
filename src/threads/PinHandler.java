@@ -22,7 +22,8 @@ public class PinHandler {
     final ReentrantLock lock;
     final HashMap<String, PinBlinkModel> pinMap;
     final HashMap<String, Future<String>> futures;
-    final ExecutorService executor;
+    final HashMap<String, String> schemes;
+    private ExecutorService executor;
     boolean paused = false;
 
     /**
@@ -41,62 +42,56 @@ public class PinHandler {
         lock = new ReentrantLock();
         pinMap = new HashMap<>();
         futures = new HashMap<>();
-        executor = Executors.newFixedThreadPool(12);
+        schemes = new HashMap<>();
         collisionDomain = new HashMap<>();
         collisionDomainReverse = new HashMap<>();
         logger = Logger.getLogger(getClass());
+        resume();
     }
 
+    /**
+     * Pause bedeutet, dass alle noch Pins die nicht mehr laufen
+     * aus der schemes Map gelöscht werden. Die brauchen wir nicht mehr.
+     * Danach wird der Executor umgehend beendet und alle Einträge gelöscht.
+     */
     public void pause() {
-        if (paused) return;
-        paused = true;
-
         lock.lock();
         try {
-            for (PinBlinkModel pbm : pinMap.values()) {
-                pbm.pause();
+            // save pause state
+            for (String name : futures.keySet()) {
+                if (!futures.get(name).isDone()) { // but only if it runs
+                    futures.get(name).cancel(true);
+                } else {
+                    schemes.remove(name);
+                }
             }
-        } catch (Exception e) {
-            logger.fatal(e);
+            // es gibt kein Pause bei einem Executor
+            executor.shutdownNow();
         } finally {
             lock.unlock();
         }
-
-
     }
 
+    /**
+     * Resume erstellt einen NEUEN, LEEREN Executor und füllt diesen mit
+     * allen Pins, die in der scheme Map stehen. Zu Beginn ist diese Map sowieso
+     * leer. Ansonsten werden alle Pins "wiederbelebt", die zum Zeitpunkt der Pause noch
+     * aktiv waren. Das Blink-Muster beginnt zwar von vorne, aber damit müssen wir jetzt leben.
+     */
     public void resume() {
-        if (!paused) return;
-        paused = false;
-
+        // und auch kein Resume.
         lock.lock();
         try {
-            for (PinBlinkModel pbm : pinMap.values()) {
-                pbm.resume();
+            executor = Executors.newFixedThreadPool(12);
+            for (String name : schemes.keySet()) {
+                PinBlinkModel pinBlinkModel = pinMap.get(name);
+                pinBlinkModel.setScheme(schemes.get(name));
+                futures.put(name, executor.submit(pinBlinkModel));
             }
-        } catch (Exception e) {
-            logger.fatal(e);
-        } finally {
-            lock.unlock();
-        }
-
-    }
-
-    public void clear() {
-        paused = false;
-
-        lock.lock();
-        try {
-            for (PinBlinkModel pbm : pinMap.values()) {
-                pbm.clear();
-            }
-        } catch (Exception e) {
-            logger.fatal(e);
         } finally {
             lock.unlock();
         }
     }
-
 
     /**
      * add the relay but don't care about collision domains.
@@ -110,9 +105,9 @@ public class PinHandler {
     /**
      * adds a a relay to the handler.
      *
-     * @param cd    (collisionDomain) this is the collision domain to which this relay is to be assigned. a cd < 1 means, that that no cd is used for the relay, and that
-     *              it can be safely used at any given time.
-     * @param relay the relay to be handled
+     * @param cd    (collisionDomain) das gibt es nur, wenn bestimmte Pins nicht zusammen verwendet werden dürfen. Hab ich im
+     *              Moment nicht. cd == 0 bedeutet, dass dieser Pin machen kann was er will.
+     * @param relay das betreffende Relais oder Pin.
      */
     public void add(int cd, Relay relay) {
         lock.lock();
@@ -127,14 +122,33 @@ public class PinHandler {
         }
     }
 
+    /**
+     * Das Relais wird abgeschaltet.
+     *
+     * @param name
+     */
     public void off(String name) {
         setScheme(name, "0;");
     }
 
+    /**
+     * schaltet das Relais ein und lässt es an.
+     *
+     * @param name
+     */
     public void on(String name) {
         setScheme(name, "1;" + Long.MAX_VALUE + ",0");
     }
 
+    /**
+     * Setzt ein Blink Schema für dieses Relais. Die Syntax ist wie folgt:
+     * "<anzahl_wiederholung/>;(millis-on;millis-off)*", wobei ()* bedeutet, dass diese Sequenz so oft wie
+     * gewünscht wiederholt werden kann. Danach wird die Gesamtheit <anzahl_wiederholungen/> mal wiederholt
+     * wird. Unendliche Wiederholungen werden einfach durch Long.MAX_VALUE
+     *
+     * @param name
+     * @param scheme
+     */
     public void setScheme(String name, String scheme) {
         lock.lock();
         try {
@@ -151,10 +165,10 @@ public class PinHandler {
                     }
                 } else {
                     if (futures.containsKey(name) && !futures.get(name).isDone()) { // but only if it runs
-//                        logger.debug("terminating: " + name + ": was already running");
                         futures.get(name).cancel(true);
                     }
                 }
+                schemes.put(name, scheme); // aufbewahren für die Wiederherstellung nach der Pause
             }
 
             pinBlinkModel.setScheme(scheme);
@@ -165,11 +179,6 @@ public class PinHandler {
             lock.unlock();
         }
     }
-
-    public boolean isShutdown() {
-        return executor.isShutdown();
-    }
-
 
     /**
      * adds the cd entry to the reverse map. initializes the subset if necessary
