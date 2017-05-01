@@ -96,8 +96,6 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void initPanel() {
 
-        btnRespawnSignal.addActionListener(e -> MissionBox.setRESPAWN(btnRespawnSignal.isSelected()));
-
         tbDebug.setSelected(MissionBox.getConfig(MissionBox.MBX_DEBUG).equals("true"));
         tbDebug.addItemListener(i -> {
             MissionBox.setConfig(MissionBox.MBX_DEBUG, i.getStateChange() == ItemEvent.SELECTED ? "true" : "false");
@@ -278,13 +276,13 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     void fcyRespawnChange(int seconds) {
-        int respawn = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_TIME));
+        long respawn = Long.parseLong(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
 
         if (respawn + seconds < 1) respawn = 1;
         else respawn += seconds;
 
-        final String text = Integer.toString(respawn);
-        MissionBox.setConfig(MissionBox.FCY_RESPAWN_TIME, text);
+        final String text = Long.toString(respawn);
+        MissionBox.setConfig(MissionBox.FCY_RESPAWN_INTERVAL, text);
         SwingUtilities.invokeLater(() -> {
             lblFCYRespawn.setText(text);
             revalidate();
@@ -326,9 +324,8 @@ public class FrmTest extends JFrame implements GameEventListener {
         } else if (tabbedPane1.getSelectedIndex() == 1) {
             lblFCYCapture.setText(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE));
             lblFCYGametime.setText(MissionBox.getConfig(MissionBox.FCY_GAMETIME));
-            lblFCYRespawn.setText(MissionBox.getConfig(MissionBox.FCY_RESPAWN_TIME));
-            btnSiren.setSelected(MissionBox.getConfig(MissionBox.FCY_SIREN).equals("true"));
-            btnRespawnSignal.setSelected(MissionBox.getConfig(MissionBox.FCY_RESPAWN_SIGNAL).equals("true"));
+            lblFCYRespawn.setText(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
+
         } else {
             MissionBox.getPinHandler().off();
         }
@@ -367,7 +364,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     private void lblFCYCaptureActionPerformed(ActionEvent e) {
         JTextField txt = ((JTextField) e.getSource());
         int capture = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE));
-        int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
+        int value = Tools.parseInt(txt.getText(), 0, Integer.MAX_VALUE, capture);
         MissionBox.setConfig(MissionBox.FCY_TIME2CAPTURE, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
@@ -390,9 +387,9 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void lblFCYRespawnActionPerformed(ActionEvent e) {
         JTextField txt = ((JTextField) e.getSource());
-        int capture = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_TIME));
-        int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
-        MissionBox.setConfig(MissionBox.FCY_RESPAWN_TIME, Integer.toString(value));
+        int respawn = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
+        int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, respawn);
+        MissionBox.setConfig(MissionBox.FCY_RESPAWN_INTERVAL, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
 
@@ -401,7 +398,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     private void btnRespawnActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;1000,1000");
+        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;1000,1000");
     }
 
     private void btnTimeSignalActionPerformed(ActionEvent e) {
@@ -485,6 +482,10 @@ public class FrmTest extends JFrame implements GameEventListener {
         setRevertEvent(null);
     }
 
+    private void btnNoRespawnActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -536,8 +537,6 @@ public class FrmTest extends JFrame implements GameEventListener {
         btnFcyRpwnMinus10 = new JButton();
         btnFcyRpwnMinus60 = new JButton();
         panel5 = new JPanel();
-        btnSiren = new JToggleButton();
-        btnRespawnSignal = new JToggleButton();
         cmbSirenHandler = new JComboBox();
         panel1 = new JPanel();
         lblButtonGreen = new JLabel();
@@ -884,20 +883,6 @@ public class FrmTest extends JFrame implements GameEventListener {
                 {
                     panel5.setLayout(new GridLayout(3, 2));
 
-                    //---- btnSiren ----
-                    btnSiren.setText("Sirens");
-                    btnSiren.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
-                    btnSiren.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen32.png")));
-                    btnSiren.setFont(new Font("Dialog", Font.BOLD, 16));
-                    panel5.add(btnSiren);
-
-                    //---- btnRespawnSignal ----
-                    btnRespawnSignal.setText("Respawn Signal");
-                    btnRespawnSignal.setIcon(new ImageIcon(getClass().getResource("/artwork/leddarkgreen32.png")));
-                    btnRespawnSignal.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/ledgreen32.png")));
-                    btnRespawnSignal.setFont(new Font("Dialog", Font.BOLD, 16));
-                    panel5.add(btnRespawnSignal);
-
                     //---- cmbSirenHandler ----
                     cmbSirenHandler.setFont(new Font("Dialog", Font.BOLD, 16));
                     panel5.add(cmbSirenHandler);
@@ -1149,8 +1134,6 @@ public class FrmTest extends JFrame implements GameEventListener {
     private JButton btnFcyRpwnMinus10;
     private JButton btnFcyRpwnMinus60;
     private JPanel panel5;
-    private JToggleButton btnSiren;
-    private JToggleButton btnRespawnSignal;
     private JComboBox cmbSirenHandler;
     private JPanel panel1;
     private JLabel lblButtonGreen;

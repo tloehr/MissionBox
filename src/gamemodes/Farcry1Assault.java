@@ -33,6 +33,10 @@ public class Farcry1Assault implements GameMode {
         farcryAssaultThread.setMaxgametime(maxgametime);
     }
 
+    public void setRespawninterval(long respawninterval) {
+        farcryAssaultThread.setRespawninterval(respawninterval);
+    }
+
     /**
      * wird gebraucht, wenn während eines PREGAMES die Zeiten geändert werden
      *
@@ -104,6 +108,7 @@ public class Farcry1Assault implements GameMode {
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getMode() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 //MissionBox.setTimerMessage(messageEvent.getDateTimeFormatted());
                 MissionBox.setTimerMessage(messageEvent.toString());
+
             } else if (messageEvent.getMode() == Farcry1AssaultThread.GAME_PAUSING) {
                 //MissionBox.setTimerMessage("pause since:<br>" + messageEvent.getDateTimeFormatted());
                 MissionBox.setTimerMessage(messageEvent.toString());
@@ -189,7 +194,6 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.off(MissionBox.MBX_LED_RED);
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
-                MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
                 MissionBox.off(MissionBox.MBX_AIRSIREN);
 
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";1000,2000");
@@ -229,7 +233,6 @@ public class Farcry1Assault implements GameMode {
                 logger.debug("GAME_OUTCOME_FLAG_TAKEN");
 
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
-                MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
 
                 MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
                 MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
@@ -272,7 +275,7 @@ public class Farcry1Assault implements GameMode {
 
 
         farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {
-        }, gameTimeListener, percentageListener, gameModeListener, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE)));
+        }, gameTimeListener, percentageListener, gameModeListener, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL)));
 
         MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
             logger.debug(event);

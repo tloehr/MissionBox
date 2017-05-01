@@ -2,6 +2,8 @@ package misc;
 
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.Pin;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.swing.*;
 import java.awt.*;
@@ -175,6 +177,11 @@ public class Tools {
         }
 
         return result;
+    }
+
+    public static String formatLongTime(long time){
+
+        return time < 0l ? "--" : new DateTime(time, DateTimeZone.UTC).toString("mm:ss");
     }
 
     public static String getSoundPath() {

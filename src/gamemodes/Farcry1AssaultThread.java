@@ -44,9 +44,12 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     private long timeWhenTheFlagWasActivated = -1l; // wann wurde die Flagge zuletzt aktiviert. -1l heisst, nicht aktiv.
     private long maxgametime = 0l; // wie lange kann dieses Spiel maximal laufen
     private long capturetime = 0l; // wie lange muss die Flagge gehalten werden bis sie erobert wurde ?
+    private long respawninterval = 0l; // wie lange zwischen zwei Respawns. 0l, wenn keine Respawns erwünscht.
+
 
     private long pausingSince = -1l;
     private long resumingSince = -1l;
+    private long lastrespawn = -1; // wann war das letzte Respawn Signal
 
     public static final int GAME_NON_EXISTENT = -1;
     public static final int GAME_PRE_GAME = 0;
@@ -99,9 +102,11 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
      * @param capturetime        - in Sekunden
      */
 
-    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, long maxgametime, long capturetime) {
+    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, long maxgametime, long capturetime, long respawninterval) {
         super();
+
         lock = new ReentrantLock();
+        setRespawninterval(respawninterval);
         setMaxgametime(maxgametime);
         setCapturetime(capturetime);
         thread = new Thread(this);
@@ -149,6 +154,10 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
      */
     public void setMaxgametime(long maxgametime) {
         this.maxgametime = maxgametime * 60000l;
+    }
+
+    public void setRespawninterval(long respawninterval) {
+        this.maxgametime = maxgametime * 1000l;
     }
 
     /**
@@ -353,14 +362,19 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 //                '}';
 //    }
 
-    private long getEstimatedEndOfGame() {
 
-        long endtime = maxgametime;
-        if (gameState == GAME_FLAG_HOT) {
-            endtime = timeWhenTheFlagWasActivated + capturetime;
+    public static long getEstimatedEndOfGame(int gs, long maxgt, long flagactivation, long ct) {
+        long endtime = maxgt;
+        if (gs == GAME_FLAG_HOT) {
+            endtime = flagactivation + ct;
         }
 
         return endtime;
+    }
+
+    private long getEstimatedEndOfGame() {
+
+        return getEstimatedEndOfGame(gameState, maxgametime, timeWhenTheFlagWasActivated, capturetime);
     }
 
     private boolean timeIsUp() {
@@ -389,13 +403,13 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
                 if (threadcycles % 15 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
 //                    fireMessage(gameTimerList, new MessageEvent(this, gameState, getEstimatedEndOfGame() - gametimer, gameState == GAME_FLAG_HOT ? maxgametime - gametimer : null)); // verbleibende Zeit
-                    fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince));
+                    fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval));
                 }
             } else if (pausingSince >= 0) {
 
                 if (threadcycles % 15 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
                     // fireMessage(gameTimerList, new MessageEvent(this, gameState, System.currentTimeMillis() - pausingSince, null)); // verbleibende Zeit
-                    fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince));
+                    fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval));
                 }
 
             }
@@ -427,7 +441,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     if (System.currentTimeMillis() - resumingSince >= millisBeforeResuming) {
                         setGameState(GAME_RESUMED);
                     } else {
-                        fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince));
+                        fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval));
                         // fireMessage(gameTimerList, new MessageEvent(this, gameState, millisBeforeResuming - System.currentTimeMillis() + resumingSince, maxgametime)); // verbleibende Zeit
                     }
                 }

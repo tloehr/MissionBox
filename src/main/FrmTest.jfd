@@ -360,20 +360,6 @@ new FormModel {
 						"rows": 3
 					} ) {
 						name: "panel5"
-						add( new FormComponent( "javax.swing.JToggleButton" ) {
-							name: "btnSiren"
-							"text": "Sirens"
-							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkgreen32.png" )
-							"selectedIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledgreen32.png" )
-							"font": &Font5 new java.awt.Font( "Dialog", 1, 16 )
-						} )
-						add( new FormComponent( "javax.swing.JToggleButton" ) {
-							name: "btnRespawnSignal"
-							"text": "Respawn Signal"
-							"icon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/leddarkgreen32.png" )
-							"selectedIcon": new com.jformdesigner.model.SwingIcon( 0, "/artwork/ledgreen32.png" )
-							"font": #Font5
-						} )
 						add( new FormComponent( "javax.swing.JComboBox" ) {
 							name: "cmbSirenHandler"
 							"font": new java.awt.Font( "Dialog", 1, 16 )

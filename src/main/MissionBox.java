@@ -67,8 +67,7 @@ public class MissionBox {
     public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
-    public static final String FCY_RESPAWN_TIME = "fcy.respawn.time";
-    public static final String FCY_RESPAWN_SIGNAL = "fcy.respawn.signal";
+    public static final String FCY_RESPAWN_INTERVAL = "fcy.respawn.interval";
     public static final String MBX_DEBUG = "mbx.debug";
     public static final String MBX_SIREN1 = "mbx.siren1";
     public static final String MBX_SIREN2 = "mbx.siren2";
@@ -76,7 +75,6 @@ public class MissionBox {
     public static final String MBX_AIRSIREN = "mbx.airsiren";
     public static final String MBX_SHUTDOWN_SIREN = "mbx.shutdown.siren";
     public static final String MBX_TIME_SIREN = "mbx.time.siren";
-    public static final String MBX_RESPAWN_SIREN = "mbx.respawn.siren";
     public static final String MBX_LED_GREEN = "mbx.led.green";
     public static final String MBX_LED_RED = "mbx.led.red";
     public static final String MBX_LED_PB_GREEN = "mbx.led.progress.green";
@@ -94,11 +92,7 @@ public class MissionBox {
     public static final String MBX_BTN_PAUSE = "mbx.button.pause";
 
 
-    public static void setRESPAWN(boolean RESPAWN) {
-//        MissionBox.RESPAWN = RESPAWN;
-        config.setProperty(MissionBox.FCY_RESPAWN_SIGNAL, RESPAWN ? "true" : "false");
-    }
-
+  
 //    private static boolean RESPAWN = false, SIREN = false;
 
 
@@ -226,7 +220,7 @@ public class MissionBox {
         pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 2
 
         // Siren 3
-        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
+//        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
 
         // The Airsiren
         pinHandler.add(new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, true)); // Motor Siren
@@ -356,10 +350,9 @@ public class MissionBox {
         // Hier stehen die Standardwerte, falls keine missionbox.cfg existiert.
         config.put(FCY_TIME2CAPTURE, "20");
         config.put(FCY_GAMETIME, "5");
-        config.put(FCY_RESPAWN_SIGNAL, "true");
         config.put(FCY_SIREN, "true");
         config.put(MBX_SIREN_TIME, "750");
-        config.put(FCY_RESPAWN_TIME, "40");
+        config.put(FCY_RESPAWN_INTERVAL, "40");
         config.put(MBX_LOGLEVEL, "debug");
         config.put(MBX_I2C_1, "0x20");
         config.put(MBX_I2C_2, "0x24");
@@ -381,7 +374,7 @@ public class MissionBox {
         config.put(MBX_AIRSIREN, "mcp23017-01-B0");
         config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B4");
         config.put(MBX_TIME_SIREN, "mcp23017-01-B3");
-        config.put(MBX_RESPAWN_SIREN, "mcp23017-01-B2");
+//        config.put(MBX_RESPAWN_SIREN, "mcp23017-01-B2");
 
         config.put(MBX_LED_GREEN, "mcp23017-01-A7");
         config.put(MBX_LED_RED, "mcp23017-01-A6");
@@ -443,6 +436,9 @@ public class MissionBox {
         }
         if (key.equalsIgnoreCase(FCY_GAMETIME)) {
             ((Farcry1Assault) gameMode).setMaxgametime(Long.parseLong(value));
+        }
+        if (key.equalsIgnoreCase(FCY_RESPAWN_INTERVAL)) {
+            ((Farcry1Assault) gameMode).setRespawninterval(Long.parseLong(value));
         }
 
         saveLocalProps();

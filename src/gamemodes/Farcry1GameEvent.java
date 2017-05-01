@@ -112,13 +112,13 @@ public class Farcry1GameEvent extends JPanel {
         return gametimerAtStart;
     }
 
-    public long getMaxGametime() {
-        long endtime = maxgametime;
-        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            endtime = gametimerAtStart + capturetime;
-        }
-        return endtime;
-    }
+//    public long getMaxGametime() {
+//        long endtime = maxgametime;
+//        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
+//            endtime = gametimerAtStart + capturetime;
+//        }
+//        return endtime;
+//    }
 
     //    public DateTime getNewFlagactivation(DateTime) {
 //        Duration difference = new Duration(eventStartTime, new DateTime());
@@ -162,7 +162,7 @@ public class Farcry1GameEvent extends JPanel {
 
 
         if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            html += " " + (gametimerAtEnd == -1 ? "" : "{" + new DateTime(getMaxGametime() - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + "} ");
+            html += " " + (gametimerAtEnd == -1 ? "" : "{" + new DateTime(Farcry1AssaultThread.getEstimatedEndOfGame(gameState, maxgametime, gametimerAtStart, capturetime) - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + "} ");
         }
 
         html += gametimerAtEnd == -1 ? "-- " : "[" + new DateTime(gametimerAtEnd - gametimerAtStart, DateTimeZone.UTC).toString("mm:ss:SSS] ");

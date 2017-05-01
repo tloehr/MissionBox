@@ -17,10 +17,10 @@ public class MessageEvent extends EventObject {
 
     final Logger LOGGER = Logger.getLogger(this.getClass());
 
-    private final Object message;
-    private final Object message2;
-    private final int mode;
-    private final Logger logger = Logger.getLogger(getClass());
+    protected final Object message;
+    protected final Object message2;
+    protected final int mode;
+    protected final Logger logger = Logger.getLogger(getClass());
 
 
 
