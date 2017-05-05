@@ -33,7 +33,7 @@ new FormModel {
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
-						"gridHeight": 7
+						"gridHeight": 3
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 						name: "panel8"
@@ -124,8 +124,9 @@ new FormModel {
 						"horizontalAlignment": 0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
-						"gridX": 5
+						"gridX": 3
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridWidth": 3
 					} )
 					add( new FormComponent( "javax.swing.JToggleButton" ) {
 						name: "tbDebug"
@@ -144,7 +145,8 @@ new FormModel {
 						"horizontalAlignment": 0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
-						"gridX": 5
+						"gridX": 3
+						"gridWidth": 3
 					} )
 					add( new FormComponent( "javax.swing.JProgressBar" ) {
 						name: "pb1"

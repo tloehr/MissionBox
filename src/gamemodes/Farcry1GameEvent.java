@@ -1,5 +1,7 @@
 package gamemodes;
 
+import interfaces.FC1DetailsMessageEvent;
+import misc.Tools;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -11,8 +13,8 @@ import java.awt.*;
  * Created by Torsten on 05.07.2016.
  */
 public class Farcry1GameEvent extends JPanel {
-    private final long maxgametime;
-    private final long capturetime;
+//    private final long maxgametime;
+//    private final long capturetime;
 
     // diese Zeit wird als Echtzeit dargestellt.
 //    private long eventStartTime;
@@ -25,13 +27,13 @@ public class Farcry1GameEvent extends JPanel {
     private long pit;
 
     // in welchem Zustand befindet sich das Spiel ?
-    private int gameState;
+//    private int gameState;
 
     // wie stand der Gametimer zum Zeitpunkt des Events. gametimer fangen bei 0 an.
-    private long gametimerAtStart;
+//    private long gametimerAtStart;
 
-    //wann war dieser Event zu Ende. Geht erst nach FINALIZE()
-    private long gametimerAtEnd = -1;
+    // wie lange hat dieser Event gedauert.
+    private long evenDuration = -1;
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -39,10 +41,12 @@ public class Farcry1GameEvent extends JPanel {
     private JLabel lbl;
     private GameEventListener gameEventListener;
 
-    public Farcry1GameEvent(int gameState, long gametimer, long maxgametime, long capturetime, Icon icon) {
+    private final FC1DetailsMessageEvent messageEvent;
+
+
+    public Farcry1GameEvent(FC1DetailsMessageEvent messageEvent, Icon icon) {
         super();
-        this.maxgametime = maxgametime;
-        this.capturetime = capturetime;
+        this.messageEvent = messageEvent;
         pit = System.currentTimeMillis();
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         btnRevert = new JButton(new ImageIcon((Farcry1GameEvent.class.getResource("/artwork/agt_reload32.png"))));
@@ -58,9 +62,6 @@ public class Farcry1GameEvent extends JPanel {
         btnRevert.setVisible(false);
         add(lbl);
 
-        this.gameState = gameState;
-        this.gametimerAtStart = gametimer;
-        this.gametimerAtEnd = -1;
         refreshTextLine();
     }
 
@@ -70,24 +71,13 @@ public class Farcry1GameEvent extends JPanel {
      * Erst in diesem Moment kann entschieden werden, wie lange dieses Ereignis angehalten hat.
      */
     public void finalizeEvent(long gametimer) {
-        gametimerAtEnd = gametimer;
-//        logger.debug("calculated: " + gametimerAtEnd);
+        evenDuration = gametimer - messageEvent.getGametimer();
         btnRevert.setVisible(true);
         refreshTextLine();
     }
 
-//    /**
-//     * wenn der Spielzustand auf dieses Ereignis zurückgesetzt wird, dann ist es auch wieder aktiv.
-//     * somit läuft dieses Ereignis jetzt weiter und es nicht mehr FINALIZED.
-//     */
-//    public void unfinalizeEvent() {
-//        this.gametimerAtEnd = -1;
-//        btnRevert.setVisible(false);
-//        refreshTextLine();
-//    }
-
-    public long getGametimerAtEnd() {
-        return gametimerAtEnd;
+    public long getEvenDuration() {
+        return evenDuration;
     }
 
     private void refreshTextLine() {
@@ -99,18 +89,14 @@ public class Farcry1GameEvent extends JPanel {
         });
     }
 
-    public int getGameState() {
-        return gameState;
+    public FC1DetailsMessageEvent getMessageEvent() {
+        return messageEvent;
     }
 
-//    public long getGametimer() {
+    //    public long getGametimer() {
 //        return eventDuration == -1l ? -1l : (endOfEvent ? gametimer + eventDuration : gametimer);
 //    }
 
-
-    public long getGametimerAtStart() {
-        return gametimerAtStart;
-    }
 
 //    public long getMaxGametime() {
 //        long endtime = maxgametime;
@@ -158,15 +144,17 @@ public class Farcry1GameEvent extends JPanel {
         String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> ";
 
 
-        html += (gametimerAtEnd == -1 ? "" : "(" + new DateTime(maxgametime - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + ") ");
+        // Restliche Spielzeit (rmn - remaining)
+        html += (evenDuration == -1 ? "" : "gmrmn:" + Tools.formatLongTime(messageEvent.getMaxgametime() - messageEvent.getGametimer() - evenDuration - 1) + " ");
 
-
-        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            html += " " + (gametimerAtEnd == -1 ? "" : "{" + new DateTime(Farcry1AssaultThread.getEstimatedEndOfGame(gameState, maxgametime, gametimerAtStart, capturetime) - gametimerAtEnd + 1, DateTimeZone.UTC).toString("mm:ss") + "} ");
+        // Wie weit war die Flag (flg - flagtime)
+        if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
+            long endtime = messageEvent.getGametimer() + messageEvent.getCapturetime();
+            html += " " + (evenDuration == -1 ? "" : "<br/>flgrmn:" + Tools.formatLongTime(endtime - messageEvent.getGametimer() - evenDuration - 1) + " ");
         }
 
-        html += gametimerAtEnd == -1 ? "-- " : "[" + new DateTime(gametimerAtEnd - gametimerAtStart, DateTimeZone.UTC).toString("mm:ss:SSS] ");
-        html += Farcry1AssaultThread.GAME_MODES[gameState];
+        html += evenDuration == -1 ? "-- " : "evtdur:" + new DateTime(evenDuration, DateTimeZone.UTC).toString("mm:ss:SSS] ");
+//        html += Farcry1AssaultThread.GAME_MODES[messageEvent.getGameState()];
 
         return "<html>" + html + "</html>";
 

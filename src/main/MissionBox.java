@@ -481,10 +481,7 @@ public class MissionBox {
 //    public static boolean isRESPAWN() {
 //        return RESPAWN;
 //    }
-//
-//    public static boolean isSIREN() {
-//        return SIREN;
-//    }
+
 
     public static void setTimerMessage(String message) {
         frmTest.setTimer(message);

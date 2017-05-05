@@ -17,9 +17,46 @@ public class FC1DetailsMessageEvent extends MessageEvent {
     private long pausingSince = -1l;
     private long resumingSince = -1l;
     private long lastrespawn;
-    private long respawntimer;
+    private long respawninterval;
+    private long resumeinterval;
 
-    public FC1DetailsMessageEvent(Object source, int mode, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawntimer) {
+    public long getStarttime() {
+        return starttime;
+    }
+
+    public long getGametimer() {
+        return gametimer;
+    }
+
+    public long getTimeWhenTheFlagWasActivated() {
+        return timeWhenTheFlagWasActivated;
+    }
+
+    public long getMaxgametime() {
+        return maxgametime;
+    }
+
+    public long getCapturetime() {
+        return capturetime;
+    }
+
+    public long getPausingSince() {
+        return pausingSince;
+    }
+
+    public long getResumingSince() {
+        return resumingSince;
+    }
+
+    public long getLastrespawn() {
+        return lastrespawn;
+    }
+
+    public long getRespawninterval() {
+        return respawninterval;
+    }
+
+    public FC1DetailsMessageEvent(Object source, int mode, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval) {
         super(source, mode);
 
         this.starttime = starttime;
@@ -29,16 +66,17 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         this.capturetime = capturetime;
         this.pausingSince = pausingSince;
         this.resumingSince = resumingSince;
+        this.resumeinterval = resumeinterval;
         this.lastrespawn = lastrespawn;
-        this.respawntimer = respawntimer;
+        this.respawninterval = respawninterval;
     }
 
     public String getNextRespawn() {
-        return respawntimer > 0l ? Tools.formatLongTime(gametimer - lastrespawn - respawntimer) : "--";
+        return respawninterval > 0l ? Tools.formatLongTime(lastrespawn + respawninterval - gametimer) : "--";
     }
 
     public String getRemaining() {
-        long remaining = Farcry1AssaultThread.getEstimatedEndOfGame(super.mode, maxgametime, timeWhenTheFlagWasActivated, capturetime);
+        long remaining = Farcry1AssaultThread.getEstimatedEndOfGame(super.gameState, maxgametime, timeWhenTheFlagWasActivated, capturetime);
         return Tools.formatLongTime(remaining - gametimer);
     }
 
@@ -83,21 +121,13 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 "    <td class=\"tg-da58\">%s</td>\n" +
                 "  </tr>\n" +
                 "</table>";
+
         return String.format(result,
-                "remaining", "respawn", "gametimer", "flagact", "maxgt", "capturetime", "pause", "resume",
-                getRemaining(), getNextRespawn(), Tools.formatLongTime(gametimer), Tools.formatLongTime(timeWhenTheFlagWasActivated),
-                Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince),
-                Tools.formatLongTime(resumingSince)
+                "respawn", "gametmr", "remain", "flagact", "maxgmtmr", "capttmr", "pause", "resume",
+                getNextRespawn(), Tools.formatLongTime(gametimer), getRemaining(), Tools.formatLongTime(timeWhenTheFlagWasActivated),
+                Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
+                Tools.formatLongTime(resumingSince == -1l ? resumingSince : System.currentTimeMillis() - resumingSince)
         );
 
-        //        return "FC1DetailsMessageEvent{" +
-//                "starttime=" + starttime +
-//                ", gametimer=" + gametimer +
-//                ", timeWhenTheFlagWasActivated=" + timeWhenTheFlagWasActivated +
-//                ", maxgametime=" + maxgametime +
-//                ", capturetime=" + capturetime +
-//                ", pausingSince=" + pausingSince +
-//                ", resumingSince=" + resumingSince +
-//                "} " + super.toString();
     }
 }

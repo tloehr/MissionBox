@@ -18,50 +18,50 @@ public class MessageEvent extends EventObject {
     final Logger LOGGER = Logger.getLogger(this.getClass());
 
     protected final Object message;
-    protected final Object message2;
-    protected final int mode;
+//    protected final Object message2;
+    protected final int gameState;
     protected final Logger logger = Logger.getLogger(getClass());
 
 
 
-    public MessageEvent(Object source, int mode, String message) {
+    public MessageEvent(Object source, int gameState, String message) {
         super(source);
         LOGGER.setLevel(MissionBox.getLogLevel());
-        this.mode = mode;
+        this.gameState = gameState;
         this.message = Tools.xx(message);
-        message2 = null;
+
     }
 
-    public MessageEvent(Object source, int mode, Long message, Long message2) { //
+    public MessageEvent(Object source, int gameState, Long message) { //
         super(source);
         LOGGER.setLevel(MissionBox.getLogLevel());
-        this.mode = mode;
+        this.gameState = gameState;
         this.message = message;
-        this.message2 = message2;
+
     }
 
-    public MessageEvent(Object source, int mode, BigDecimal percentage) {
+    public MessageEvent(Object source, int gameState, BigDecimal percentage) {
         super(source);
         LOGGER.setLevel(MissionBox.getLogLevel());
-        this.mode = mode;
+        this.gameState = gameState;
         this.message = percentage;
-        message2 = null;
+
     }
 
-    public MessageEvent(Object source, int mode) {
+    public MessageEvent(Object source, int gameState) {
         super(source);
         LOGGER.setLevel(MissionBox.getLogLevel());
-        this.mode = mode;
-        this.message = new Integer(mode);
-        message2 = null;
+        this.gameState = gameState;
+        this.message = new Integer(gameState);
+
     }
 
-    public MessageEvent(Object source, int mode, Boolean on) {
+    public MessageEvent(Object source, int gameState, Boolean on) {
         super(source);
         LOGGER.setLevel(MissionBox.getLogLevel());
-        this.mode = mode;
+        this.gameState = gameState;
         this.message = on;
-        message2 = null;
+
     }
 
     public boolean isPercentage() {
@@ -70,10 +70,6 @@ public class MessageEvent extends EventObject {
 
     public boolean isBoolean() {
         return message instanceof Boolean;
-    }
-
-    public boolean isMode() {
-        return message instanceof Integer;
     }
 
 
@@ -89,23 +85,23 @@ public class MessageEvent extends EventObject {
         return new DateTime(message, DateTimeZone.UTC);
     }
 
-    public String getDateTimeFormatted() {
-        String result = getTime().toString("mm:ss");
-        if (message2 != null) {
-            long m2 = (long) message2;
-
-            result += " (" + new DateTime(Math.abs(m2), DateTimeZone.UTC).toString("mm:ss") + (m2 < 0 ? " overtime)" : ")");
-        }
-
-        return result;
-    }
+//    public String getDateTimeFormatted() {
+//        String result = getTime().toString("mm:ss");
+//        if (message2 != null) {
+//            long m2 = (long) message2;
+//
+//            result += " (" + new DateTime(Math.abs(m2), DateTimeZone.UTC).toString("mm:ss") + (m2 < 0 ? " overtime)" : ")");
+//        }
+//
+//        return result;
+//    }
 
     public BigDecimal getPercentage() {
         return isPercentage() ? (BigDecimal) message : null;
     }
 
-    public int getMode() {
-        return mode;
+    public int getGameState() {
+        return gameState;
     }
 
     public boolean isOn() {

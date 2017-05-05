@@ -50,7 +50,7 @@ public class FrmTest extends JFrame implements GameEventListener {
         event.setGameEventListener(this);
         if (!eventModel.isEmpty()) {
 //            logger.debug("gametime: "+event.getGametimerAtStart()+1);
-            getLastEvent().finalizeEvent(event.getGametimerAtStart()+1);
+            getLastEvent().finalizeEvent(event.getMessageEvent().getGametimer());
         }
         eventModel.add(event);
         listEvents.add(event);
@@ -175,7 +175,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     public void setButtonTestLabel(String name, boolean on) {
-        if (tabbedPane1.getSelectedIndex() != 2) return; // only react when in debug mode
+        if (tabbedPane1.getSelectedIndex() != 2) return; // only react when in debug gameState
 
         if (name.equalsIgnoreCase("red")) {
             lblButtonRed.setEnabled(on);
@@ -278,7 +278,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     void fcyRespawnChange(int seconds) {
         long respawn = Long.parseLong(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
 
-        if (respawn + seconds < 1) respawn = 1;
+        if (respawn + seconds < 0) respawn = 0;
         else respawn += seconds;
 
         final String text = Long.toString(respawn);
@@ -388,7 +388,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     private void lblFCYRespawnActionPerformed(ActionEvent e) {
         JTextField txt = ((JTextField) e.getSource());
         int respawn = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
-        int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, respawn);
+        int value = Tools.parseInt(txt.getText(), 0, Integer.MAX_VALUE, respawn);
         MissionBox.setConfig(MissionBox.FCY_RESPAWN_INTERVAL, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
@@ -601,7 +601,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                     }
                     scrollPane2.setViewportView(debugPanel4Pins);
                 }
-                contentPanel.add(scrollPane2, CC.xywh(3, 1, 1, 7));
+                contentPanel.add(scrollPane2, CC.xywh(3, 1, 1, 3));
 
                 //======== panel8 ========
                 {
@@ -675,7 +675,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 lblTimer.setText("--");
                 lblTimer.setFont(new Font("Dialog", Font.PLAIN, 12));
                 lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
-                contentPanel.add(lblTimer, CC.xy(5, 5, CC.FILL, CC.DEFAULT));
+                contentPanel.add(lblTimer, CC.xywh(3, 5, 3, 1, CC.FILL, CC.DEFAULT));
 
                 //---- tbDebug ----
                 tbDebug.setText("Debug");
@@ -688,7 +688,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 lblMessage.setText("text");
                 lblMessage.setFont(new Font("Dialog", Font.BOLD, 28));
                 lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
-                contentPanel.add(lblMessage, CC.xy(5, 7));
+                contentPanel.add(lblMessage, CC.xywh(3, 7, 3, 1));
                 contentPanel.add(pb1, CC.xywh(1, 8, 7, 1));
 
                 //---- lblRespawn ----
