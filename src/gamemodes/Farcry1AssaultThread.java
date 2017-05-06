@@ -98,8 +98,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
      * @param gameTimerListener
      * @param percentageListener
      * @param gameModeListener
-     * @param maxgametimeInMins        - in Minuten
-     * @param capturetimeInSecs        - in Sekunden
+     * @param maxgametimeInMins  - in Minuten
+     * @param capturetimeInSecs  - in Sekunden
      */
 
     public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, long maxgametimeInMins, long capturetimeInSecs, long respawnintervalInSecs) {
@@ -128,7 +128,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     }
 
     public boolean isPausing() {
-        return pausingSince > -1l;
+        return (gameState == GAME_PAUSING || gameState == GAME_GOING_TO_PAUSE);
     }
 
     public void setFlagHot(boolean hot) {
@@ -184,9 +184,6 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
             if (gameState != previousGameState) {
 
-                previousGameState = gameState;  // das dient nur dazu, damit ich merken kann, wenn sich wirklich ein Zustand geändert hat.
-                // welcher genau das vorher war kümmert mich nicht. Auch bei einem REVERT setze ich diese Variable einfach auf IRGENDWAS, dass
-                // garantiert anders ist als gameState. z.B. -1l
                 fireMessage(gameModeList, new MessageEvent(this, gameState));
 
                 switch (gameState) {
@@ -209,10 +206,14 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         // es gibt nur eine Situation, wenn kein neuer Event erzeugt werden soll,
                         // nämlich, wenn die Pause gerade vorbei ist, aber kein Revert ausgewählt wurde.
                         // dann soll alles normal weiter laufen, wie VOR der Pause.
-                        if (!justResumed || revertEvent != null) {
+                        // todo: klappt das so ? mehr debug ausgaben.
+                        // todo: warum zeigt ein neu gesetzter Event nichts an bis er finalized wird ?
+                        if (justResumed && resumeToState == -1) {
+
+                        } else {
                             MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval), new ImageIcon((getClass().getResource("/artwork/ledred32.png")))));
                         }
-                        revertEvent = null;
+                        resumeToState = -1;
                         justResumed = false;
 
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
@@ -223,7 +224,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                             MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval), new ImageIcon((getClass().getResource("/artwork/ledgreen32.png")))));
                         }
                         justResumed = false;
-                        revertEvent = null;
+                        resumeToState = -1;
 
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.cold"));
                         break;
@@ -233,7 +234,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                             MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval), new ImageIcon((getClass().getResource("/artwork/rocket32.png")))));
                         }
                         justResumed = false;
-                        revertEvent = null;
+                        resumeToState = -1;
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.taken"));
                         break;
                     }
@@ -242,13 +243,14 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                             MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval), new ImageIcon((getClass().getResource("/artwork/shield32.png")))));
                         }
                         justResumed = false;
-                        revertEvent = null;
+                        resumeToState = -1;
 
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
                         break;
                     }
                     case GAME_GOING_TO_PAUSE: {
                         pausingSince = System.currentTimeMillis();
+                        resumeToState = previousGameState; // falls doch kein revert gebraucht wird
                         MissionBox.getPinHandler().pause();
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.going.to.pause"));
                         setGameState(GAME_PAUSING);
@@ -282,6 +284,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                             }
 
                             MissionBox.getFrmTest().setRevertEvent(null);
+                            revertEvent = null;
                             MissionBox.getFrmTest().clearEvents(); // jedes revert geht nur einmal, danach ist die Liste leer.
                         }
 
@@ -298,6 +301,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "msg.error"));
                     }
                 }
+
+                previousGameState = gameState;
             }
         } finally {
             lock.unlock();
@@ -322,14 +327,14 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
     @Override
     public void togglePause() {
-        if (!isPausing()) {
+        if (isPausing()) {
+            setGameState(GAME_GOING_TO_RESUME);
+
+        } else {
             if (isGameRunning() || isGameJustEnded()) {
                 MissionBox.getFrmTest().setToPauseMode(true);
-                resumeToState = previousGameState; // merken für später, falls doch kein REVERT gemacht wird.
                 setGameState(GAME_GOING_TO_PAUSE);
             }
-        } else {
-            setGameState(GAME_GOING_TO_RESUME);
         }
     }
 

@@ -65,6 +65,9 @@ public class Farcry1GameEvent extends JPanel {
         refreshTextLine();
     }
 
+    public void setEnabled(boolean enabled){
+        btnRevert.setEnabled(enabled);
+    }
 
     /**
      * Bevor das nächste Ereignis eintritt, muss dieses erst abgeschlossen werden.
