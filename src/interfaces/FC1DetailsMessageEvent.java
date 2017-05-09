@@ -93,22 +93,19 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 "gmstate", "gametmr", "remain", "flagact", "respawn", "maxgmtmr", "capttmr", "pause", "resume",
                 Farcry1AssaultThread.GAME_STATES[gameState], Tools.formatLongTime(gametimer), Tools.formatLongTime(getRemaining()), Tools.formatLongTime(timeWhenTheFlagWasActivated),
                 Tools.formatLongTime(getNextRespawn()), Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
-                Tools.formatLongTime(resumingSince == -1l ? resumingSince : System.currentTimeMillis() - resumingSince)
+                Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis())
+
+                // todo: der remain eines FLAGHOT ist immer 00:20 wenn der Event abgeschlossen wird. Warum ?
+                // todo: sollte auch zwei angaben stehen. einmal die remaining zeit insgesamt (also wenn es COLD wäre). einmal bei FLAG die verkürzte zeit
         );
     }
 
 
-    public String toHTML() {
+    public String toHTML(String css) {
 
         logger.debug(toString());
 
-        String result = "<style type=\"text/css\">\n" +
-                ".tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}\n" +
-                ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}\n" +
-                ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}\n" +
-                ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
-                ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
-                "</style>\n" +
+        String result = css +
                 "<table class=\"tg\">\n" +
                 "  <tr>\n" +
                 "    <th class=\"tg-jbmi\">%s</th>\n" +
@@ -136,9 +133,19 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 "gametmr", "remain", "flagact", "respawn", "maxgmtmr", "capttmr", "pause", "resume",
                 Tools.formatLongTime(gametimer, "mm:ss"), Tools.formatLongTime(getRemaining(), "mm:ss"), Tools.formatLongTime(timeWhenTheFlagWasActivated, "mm:ss"),
                 Tools.formatLongTime(getNextRespawn(), "mm:ss"), Tools.formatLongTime(maxgametime, "mm:ss"), Tools.formatLongTime(capturetime, "mm:ss"), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince, "mm:ss"),
-                Tools.formatLongTime(resumingSince == -1l ? resumingSince : System.currentTimeMillis() - resumingSince, "mm:ss")
+                Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis(), "mm:ss")
         );
 
 
+    }
+
+    public String toHTML() {
+        return toHTML("<style type=\"text/css\">\n" +
+                ".tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}\n" +
+                ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}\n" +
+                ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}\n" +
+                ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
+                ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
+                "</style>\n");
     }
 }

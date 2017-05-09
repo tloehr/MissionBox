@@ -13,24 +13,7 @@ import java.awt.*;
  * Created by Torsten on 05.07.2016.
  */
 public class Farcry1GameEvent extends JPanel {
-//    private final long maxgametime;
-//    private final long capturetime;
-
-    // diese Zeit wird als Echtzeit dargestellt.
-//    private long eventStartTime;
-
-    // diese Zeiten sind relativ zum Spiel Startzeitpunkt.
-    // sie werden also von 0 aus gerechnet und erst später in
-    // Echtzeit umgerechnet.
-    // Dadurch wird die Verzögerung während der Pausen eingerechnet.
-
     private long pit;
-
-    // in welchem Zustand befindet sich das Spiel ?
-//    private int gameState;
-
-    // wie stand der Gametimer zum Zeitpunkt des Events. gametimer fangen bei 0 an.
-//    private long gametimerAtStart;
 
     // wie lange hat dieser Event gedauert.
     private long evenDuration = -1;
@@ -96,44 +79,6 @@ public class Farcry1GameEvent extends JPanel {
         return messageEvent;
     }
 
-    //    public long getGametimer() {
-//        return eventDuration == -1l ? -1l : (endOfEvent ? gametimer + eventDuration : gametimer);
-//    }
-
-
-//    public long getMaxGametime() {
-//        long endtime = maxgametime;
-//        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-//            endtime = gametimerAtStart + capturetime;
-//        }
-//        return endtime;
-//    }
-
-    //    public DateTime getNewFlagactivation(DateTime) {
-//        Duration difference = new Duration(eventStartTime, new DateTime());
-//        logger.debug("old flagactivation time " + flagactivation.toString());
-//        logger.debug("difference " + difference.toString());
-//        logger.debug("new flagactivation time " + flagactivation.plus(difference).toString());
-//
-//        return flagactivation.plus(difference);
-//
-//    }
-//
-//
-//    public DateTime getMaxGametime() {
-//        Duration difference = new Duration(eventStartTime, new DateTime());
-//        return endtime.plus(difference);
-//    }
-//
-//    public DateTime getStarttime() {
-//        Duration difference = new Duration(eventStartTime, new DateTime());
-//        logger.debug("old start time " + starttime.toString());
-//        logger.debug("difference " + difference.toString());
-//        logger.debug("new start time " + starttime.plus(difference).toString());
-//
-//        return starttime.plus(difference);
-//    }
-
     public Icon getIcon() {
         return lbl.getIcon();
     }
@@ -144,18 +89,18 @@ public class Farcry1GameEvent extends JPanel {
 
     @Override
     public String toString() {
-        String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> ";
+        String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> "+messageEvent.toHTML("");
 
-        // Restliche Spielzeit (rmn - remaining)
-        html += (evenDuration == -1 ? "" : "gmrmn:" + Tools.formatLongTime(messageEvent.getMaxgametime() - messageEvent.getGametimer() - evenDuration - 1) + " ");
-
-        // Wie weit war die Flag (flg - flagtime)
-        if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            long endtime = messageEvent.getGametimer() + messageEvent.getCapturetime();
-            html += " " + (evenDuration == -1 ? "" : "<br/>flgrmn:" + Tools.formatLongTime(endtime - messageEvent.getGametimer() - evenDuration - 1) + " ");
-        }
-
-        html += evenDuration == -1 ? "-- " : "evtdur:" + new DateTime(evenDuration, DateTimeZone.UTC).toString("mm:ss:SSS] ");
+//        // Restliche Spielzeit (rmn - remaining)
+//        html += (evenDuration == -1 ? "" : "gmrmn:" + Tools.formatLongTime(messageEvent.getMaxgametime() - messageEvent.getGametimer() - evenDuration - 1) + " ");
+//
+//        // Wie weit war die Flag (flg - flagtime)
+//        if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
+//            long endtime = messageEvent.getGametimer() + messageEvent.getCapturetime();
+//            html += " " + (evenDuration == -1 ? "" : "<br/>flgrmn:" + Tools.formatLongTime(endtime - messageEvent.getGametimer() - evenDuration - 1) + " ");
+//        }
+//
+//        html += evenDuration == -1 ? "-- " : "evtdur:" + new DateTime(evenDuration, DateTimeZone.UTC).toString("mm:ss:SSS] ");
 //        html += Farcry1AssaultThread.GAME_STATES[messageEvent.getGameState()];
 
         return "<html>" + html + "</html>";
