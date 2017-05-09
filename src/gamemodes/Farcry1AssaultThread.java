@@ -4,6 +4,7 @@ import interfaces.FC1DetailsMessageEvent;
 import interfaces.MessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
+import misc.Tools;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -63,7 +64,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     public static final int GAME_GOING_TO_RESUME = 8;
     public static final int GAME_RESUMED = 9; // unmittelbar vor der Spielwiederaufnahme
 
-    public static final String[] GAME_MODES = new String[]{"PREPARE_GAME", "FLAG_ACTIVE", "FLAG_COLD", "FLAG_HOT", "FLAG_TAKEN", "FLAG_DEFENDED", "GOING_TO_PAUSE", "PAUSING", "GOING_TO_RESUME", "GAME_RESUMED"};
+    public static final String[] GAME_STATES = new String[]{"PREPGAME", "FLAGACTV", "FLAGCOLD", "FLAG_HOT", "FLAGTAKN", "FLAGDFND", "GNGPAUSE", "PAUSING ", "GNGRESUM", "RESUMED "};
 
 
 //    DateFormat formatter = new SimpleDateFormat("mm:ss");
@@ -180,7 +181,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         lock.lock();
         try {
             this.gameState = state;
-            logger.debug(GAME_MODES[gameState]);
+            logger.debug(GAME_STATES[gameState] + " (" + Tools.formatLongTime(gametimer) + ")");
 
             if (gameState != previousGameState) {
 
@@ -207,7 +208,6 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         // nämlich, wenn die Pause gerade vorbei ist, aber kein Revert ausgewählt wurde.
                         // dann soll alles normal weiter laufen, wie VOR der Pause.
                         // todo: klappt das so ? mehr debug ausgaben.
-                        // todo: warum zeigt ein neu gesetzter Event nichts an bis er finalized wird ?
                         if (justResumed && resumeToState == -1) {
 
                         } else {
@@ -275,8 +275,19 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         // wenn es einen Event gibt, zu dem Zurückgesprungen werden soll, dann
                         // muss er jetzt berücksichtigt werden.
                         if (revertEvent != null) {
+
+                            logger.debug("\n" +
+                                    "  ____  _______     _______ ____ _____   _______     _______ _   _____\n" +
+                                    " |  _ \\| ____\\ \\   / / ____|  _ \\_   _| | ____\\ \\   / / ____| \\ | |_   _|\n" +
+                                    " | |_) |  _|  \\ \\ / /|  _| | |_) || |   |  _|  \\ \\ / /|  _| |  \\| | | |  \n" +
+                                    " |  _ <| |___  \\ V / | |___|  _ < | |   | |___  \\ V / | |___| |\\  | | |  \n" +
+                                    " |_| \\_\\_____|  \\_/  |_____|_| \\_\\|_|   |_____|  \\_/  |_____|_| \\_| |_|  \n" +
+                                    "                                                                         ");
+                            logger.debug(revertEvent.getMessageEvent().toString());
+
                             resumeToState = revertEvent.getMessageEvent().getGameState();
                             starttime = starttime + revertEvent.getEvenDuration(); // Verschiebt die Startzeit um die Dauer dieses Events.
+                            lastrespawn = revertEvent.getMessageEvent().getLastrespawn();
 
                             timeWhenTheFlagWasActivated = -1l;
                             if (resumeToState == GAME_FLAG_HOT) {
@@ -348,25 +359,6 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
             listener.messageReceived(textMessage);
         }
     }
-
-
-//    @Override
-//    public String toString() {
-//        return "Farcry1AssaultThread{" +
-//                "gameState=" + GAME_MODES[gameState] +
-//                ", previousGameState=" + GAME_MODES[previousGameState] +
-//                ", resumeToState=" + GAME_MODES[resumeToState] +
-//                ", resumeInterval=" + resumeInterval +
-//                ", starttime=" + starttime +
-//                ", gametimer=" + gametimer +
-//                ", timeWhenTheFlagWasActivated=" + timeWhenTheFlagWasActivated +
-//                ", maxgametime=" + maxgametime +
-//                ", capturetime=" + capturetime +
-//                ", pausingSince=" + pausingSince +
-//                ", resumingSince=" + resumingSince +
-//                ", justResumed=" + justResumed +
-//                '}';
-//    }
 
 
     public static long getEstimatedEndOfGame(int gs, long maxgt, long flagactivation, long ct) {

@@ -179,9 +179,13 @@ public class Tools {
         return result;
     }
 
-    public static String formatLongTime(long time){
+    public static String formatLongTime(long time, String pattern){
+        return time < 0l ? "--" : new DateTime(time, DateTimeZone.UTC).toString(pattern);
+    }
 
-        return time < 0l ? "--" : new DateTime(time, DateTimeZone.UTC).toString("mm:ss");
+
+    public static String formatLongTime(long time){
+        return formatLongTime(time, "mm:ss.SS");
     }
 
     public static String getSoundPath() {

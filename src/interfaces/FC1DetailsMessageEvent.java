@@ -1,7 +1,9 @@
 package interfaces;
 
+
 import gamemodes.Farcry1AssaultThread;
 import misc.Tools;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Dieses Event beinhaltet jedes Detail eines Farcry1 Zeit Ereignisses
@@ -71,26 +73,34 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         this.respawninterval = respawninterval;
     }
 
-    public String getNextRespawn() {
-        return respawninterval > 0l ? Tools.formatLongTime(lastrespawn + respawninterval - gametimer) : "--";
+    public long getNextRespawn() {
+        return lastrespawn + respawninterval - gametimer;
     }
 
-    public String getRemaining() {
+    public long getRemaining() {
         long remaining = Farcry1AssaultThread.getEstimatedEndOfGame(super.gameState, maxgametime, timeWhenTheFlagWasActivated, capturetime);
-        return Tools.formatLongTime(remaining - gametimer);
+        return remaining - gametimer;
     }
 
     @Override
     public String toString() {
-//        return "FC1DetailsMessageEvent{" +
-//                "starttime=" + starttime +
-//                ", gametimer=" + gametimer +
-//                ", timeWhenTheFlagWasActivated=" + timeWhenTheFlagWasActivated +
-//                ", maxgametime=" + maxgametime +
-//                ", capturetime=" + capturetime +
-//                ", pausingSince=" + pausingSince +
-//                ", resumingSince=" + resumingSince +
-//                "} " + super.toString();
+        String result = "\n" + StringUtils.repeat("-", 81) + "\n" +
+                "|%8s|%8s|%8s|%8s|%8s|%8s|%8s|%8s|%8s|\n" +
+                StringUtils.repeat("-", 81) + "\n" +
+                "|%8s|%8s|%8s|%8s|%8s|%8s|%8s|%8s|%8s|\n" +
+                StringUtils.repeat("-", 81) + "\n\n";
+        return String.format(result,
+                "gmstate", "gametmr", "remain", "flagact", "respawn", "maxgmtmr", "capttmr", "pause", "resume",
+                Farcry1AssaultThread.GAME_STATES[gameState], Tools.formatLongTime(gametimer), Tools.formatLongTime(getRemaining()), Tools.formatLongTime(timeWhenTheFlagWasActivated),
+                Tools.formatLongTime(getNextRespawn()), Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
+                Tools.formatLongTime(resumingSince == -1l ? resumingSince : System.currentTimeMillis() - resumingSince)
+        );
+    }
+
+
+    public String toHTML() {
+
+        logger.debug(toString());
 
         String result = "<style type=\"text/css\">\n" +
                 ".tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}\n" +
@@ -123,11 +133,12 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 "</table>";
 
         return String.format(result,
-                "respawn", "gametmr", "remain", "flagact", "maxgmtmr", "capttmr", "pause", "resume",
-                getNextRespawn(), Tools.formatLongTime(gametimer), getRemaining(), Tools.formatLongTime(timeWhenTheFlagWasActivated),
-                Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
-                Tools.formatLongTime(resumingSince == -1l ? resumingSince : System.currentTimeMillis() - resumingSince)
+                "gametmr", "remain", "flagact", "respawn", "maxgmtmr", "capttmr", "pause", "resume",
+                Tools.formatLongTime(gametimer, "mm:ss"), Tools.formatLongTime(getRemaining(), "mm:ss"), Tools.formatLongTime(timeWhenTheFlagWasActivated, "mm:ss"),
+                Tools.formatLongTime(getNextRespawn(), "mm:ss"), Tools.formatLongTime(maxgametime, "mm:ss"), Tools.formatLongTime(capturetime, "mm:ss"), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince, "mm:ss"),
+                Tools.formatLongTime(resumingSince == -1l ? resumingSince : System.currentTimeMillis() - resumingSince, "mm:ss")
         );
+
 
     }
 }

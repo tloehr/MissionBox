@@ -15,10 +15,7 @@ import java.util.EventObject;
  */
 public class MessageEvent extends EventObject {
 
-    final Logger LOGGER = Logger.getLogger(this.getClass());
-
     protected final Object message;
-//    protected final Object message2;
     protected final int gameState;
     protected final Logger logger = Logger.getLogger(getClass());
 
@@ -26,7 +23,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState, String message) {
         super(source);
-        LOGGER.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(MissionBox.getLogLevel());
         this.gameState = gameState;
         this.message = Tools.xx(message);
 
@@ -34,7 +31,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState, Long message) { //
         super(source);
-        LOGGER.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(MissionBox.getLogLevel());
         this.gameState = gameState;
         this.message = message;
 
@@ -42,7 +39,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState, BigDecimal percentage) {
         super(source);
-        LOGGER.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(MissionBox.getLogLevel());
         this.gameState = gameState;
         this.message = percentage;
 
@@ -50,7 +47,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState) {
         super(source);
-        LOGGER.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(MissionBox.getLogLevel());
         this.gameState = gameState;
         this.message = new Integer(gameState);
 
@@ -58,7 +55,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState, Boolean on) {
         super(source);
-        LOGGER.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(MissionBox.getLogLevel());
         this.gameState = gameState;
         this.message = on;
 

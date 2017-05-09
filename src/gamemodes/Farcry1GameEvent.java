@@ -146,7 +146,6 @@ public class Farcry1GameEvent extends JPanel {
     public String toString() {
         String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> ";
 
-
         // Restliche Spielzeit (rmn - remaining)
         html += (evenDuration == -1 ? "" : "gmrmn:" + Tools.formatLongTime(messageEvent.getMaxgametime() - messageEvent.getGametimer() - evenDuration - 1) + " ");
 
@@ -157,12 +156,12 @@ public class Farcry1GameEvent extends JPanel {
         }
 
         html += evenDuration == -1 ? "-- " : "evtdur:" + new DateTime(evenDuration, DateTimeZone.UTC).toString("mm:ss:SSS] ");
-//        html += Farcry1AssaultThread.GAME_MODES[messageEvent.getGameState()];
+//        html += Farcry1AssaultThread.GAME_STATES[messageEvent.getGameState()];
 
         return "<html>" + html + "</html>";
 
 //        return "Farcry1GameEvent{" +
-//                "gameState=" + Farcry1AssaultThread.GAME_MODES[gameState] +
+//                "gameState=" + Farcry1AssaultThread.GAME_STATES[gameState] +
 //                ", flagactivation=" + flagactivation +
 //                ", eventStartTime=" + eventStartTime +
 //                '}';

@@ -348,6 +348,9 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     public void setToPauseMode(boolean yes) {
+        for (Component comp : listEvents.getComponents()){
+            comp.setEnabled(yes);
+        }
         listEvents.setEnabled(yes);
         btnClearEvent.setEnabled(yes);
     }

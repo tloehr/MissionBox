@@ -34,7 +34,7 @@ import static com.sun.org.apache.xalan.internal.utils.SecuritySupport.getResourc
 public class MissionBox {
 
     private static int startup_progress = 0;
-    private static final Logger logger = Logger.getRootLogger();
+    private static Logger logger;
     private static Level logLevel = Level.DEBUG;
     private static GpioController GPIO;
     private static FrmTest frmTest;
@@ -109,9 +109,11 @@ public class MissionBox {
 
     public static final void main(String[] args) throws Exception {
 
-        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
-        logger.addAppender(new ConsoleAppender(layout));
-        logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
+        System.setProperty("logs",Tools.getMissionboxDirectory());
+        logger = Logger.getRootLogger();
+//        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
+//        logger.addAppender(new ConsoleAppender(layout));
+//        logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
 
         try {
             // Lade Build Informationen
