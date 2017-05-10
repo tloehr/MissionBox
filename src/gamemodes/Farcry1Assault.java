@@ -125,12 +125,10 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
-
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PAUSING) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_GOING_TO_RESUME) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
-
             } else {
                 MissionBox.setTimerMessage("Don't know");
                 MissionBox.setRespawnTimer("--");
@@ -150,7 +148,7 @@ public class Farcry1Assault implements GameMode {
         };
 
         MessageListener gameModeListener = messageEvent -> {
-            MissionBox.setMessage(Farcry1AssaultThread.GAME_STATES[messageEvent.getGameState()]);
+            MissionBox.setMessage(Tools.xx("fc1assault.gamestate."+Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]));
 
             if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 /***

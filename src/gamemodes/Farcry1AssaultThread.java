@@ -64,8 +64,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     public static final int GAME_GOING_TO_RESUME = 8;
     public static final int GAME_RESUMED = 9; // unmittelbar vor der Spielwiederaufnahme
 
-    public static final String[] GAME_STATES = new String[]{"PREPGAME", "FLAGACTV", "FLAGCOLD", "FLAG_HOT", "FLAGTAKN", "FLAGDFND", "GNGPAUSE", "PAUSING ", "GNGRESUM", "RESUMED "};
-
+    public static final String[] GAMSTATS = new String[]{"PREPGAME", "FLAGACTV", "FLAGCOLD", "FLAG_HOT", "FLAGTAKN", "FLAGDFND", "GNGPAUSE", "PAUSING", "GNGRESUM", "RESUMED "};
 
 //    DateFormat formatter = new SimpleDateFormat("mm:ss");
 
@@ -181,7 +180,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         lock.lock();
         try {
             this.gameState = state;
-            logger.debug(GAME_STATES[gameState] + " (" + Tools.formatLongTime(gametimer) + ")");
+            logger.debug(GAMSTATS[gameState] + " (" + Tools.formatLongTime(gametimer) + ")");
 
             if (gameState != previousGameState) {
 
@@ -208,7 +207,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         // es gibt nur eine Situation, wenn kein neuer Event erzeugt werden soll,
                         // nämlich, wenn die Pause gerade vorbei ist, aber kein Revert ausgewählt wurde.
                         // dann soll alles normal weiter laufen, wie VOR der Pause.
-                        if (addEventToList){
+                        if (addEventToList) {
                             MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval), new ImageIcon((getClass().getResource("/artwork/ledred32.png")))));
                         }
                         addEventToList = true;
@@ -219,7 +218,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     case GAME_FLAG_COLD: {
                         logger.debug(addEventToList);
                         logger.debug(respawninterval);
-                        if (addEventToList){
+                        if (addEventToList) {
                             MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval), new ImageIcon((getClass().getResource("/artwork/ledgreen32.png")))));
                         }
                         addEventToList = true;
@@ -280,11 +279,20 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                             resumeToState = revertEvent.getMessageEvent().getGameState();
                             starttime = starttime + revertEvent.getEvenDuration(); // Verschiebt die Startzeit um die Dauer dieses Events.
                             lastrespawn = revertEvent.getMessageEvent().getLastrespawn();
+                            logger.debug("gametime vorher: " + gametimer);
+
+                            gametimer = revertEvent.getMessageEvent().getGametimer() + revertEvent.getEvenDuration();
 
                             timeWhenTheFlagWasActivated = -1l;
                             if (resumeToState == GAME_FLAG_HOT) {
-                                timeWhenTheFlagWasActivated = revertEvent.getMessageEvent().getGametimer();
+                                timeWhenTheFlagWasActivated = revertEvent.getMessageEvent().getTimeWhenTheFlagWasActivated();
                             }
+
+                            // todo: der revert klappt aber immer noch nicht. Die remain zeit ist falsch. auch der gametimer.
+                            // mehr debug ausgaben
+
+
+                            logger.debug("gametime wird gesetzt auf: " + gametimer);
 
                             MissionBox.getFrmTest().setRevertEvent(null);
                             revertEvent = null;
@@ -366,7 +374,6 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     }
 
     private long getEstimatedEndOfGame() {
-
         return getEstimatedEndOfGame(gameState, maxgametime, timeWhenTheFlagWasActivated, capturetime);
     }
 

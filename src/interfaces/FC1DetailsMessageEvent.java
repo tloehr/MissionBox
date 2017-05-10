@@ -26,6 +26,10 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         return starttime;
     }
 
+    /**
+     * der gametimer zu Beginn des Events.
+     * @return
+     */
     public long getGametimer() {
         return gametimer;
     }
@@ -58,8 +62,8 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         return respawninterval;
     }
 
-    public FC1DetailsMessageEvent(Object source, int mode, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval) {
-        super(source, mode);
+    public FC1DetailsMessageEvent(Object source, int gameState, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval) {
+        super(source, gameState);
 
         this.starttime = starttime;
         this.gametimer = gametimer;
@@ -78,8 +82,11 @@ public class FC1DetailsMessageEvent extends MessageEvent {
     }
 
     public long getRemaining() {
-        long remaining = Farcry1AssaultThread.getEstimatedEndOfGame(super.gameState, maxgametime, timeWhenTheFlagWasActivated, capturetime);
-        return remaining - gametimer;
+        long endtime = maxgametime;
+        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
+            endtime = timeWhenTheFlagWasActivated + capturetime;
+        }
+        return endtime - gametimer;
     }
 
     @Override
@@ -91,12 +98,15 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 StringUtils.repeat("-", 81) + "\n\n";
         return String.format(result,
                 "gmstate", "gametmr", "remain", "flagact", "respawn", "maxgmtmr", "capttmr", "pause", "resume",
-                Farcry1AssaultThread.GAME_STATES[gameState], Tools.formatLongTime(gametimer), Tools.formatLongTime(getRemaining()), Tools.formatLongTime(timeWhenTheFlagWasActivated),
+                Farcry1AssaultThread.GAMSTATS[gameState],
+                Tools.formatLongTime(gametimer),
+                Tools.formatLongTime(getRemaining()),
+                Tools.formatLongTime(timeWhenTheFlagWasActivated),
                 Tools.formatLongTime(getNextRespawn()), Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
                 Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis())
 
-                // todo: der remain eines FLAGHOT ist immer 00:20 wenn der Event abgeschlossen wird. Warum ?
-                // todo: sollte auch zwei angaben stehen. einmal die remaining zeit insgesamt (also wenn es COLD wäre). einmal bei FLAG die verkürzte zeit
+
+
         );
     }
 
@@ -131,8 +141,13 @@ public class FC1DetailsMessageEvent extends MessageEvent {
 
         return String.format(result,
                 "gametmr", "remain", "flagact", "respawn", "maxgmtmr", "capttmr", "pause", "resume",
-                Tools.formatLongTime(gametimer, "mm:ss"), Tools.formatLongTime(getRemaining(), "mm:ss"), Tools.formatLongTime(timeWhenTheFlagWasActivated, "mm:ss"),
-                Tools.formatLongTime(getNextRespawn(), "mm:ss"), Tools.formatLongTime(maxgametime, "mm:ss"), Tools.formatLongTime(capturetime, "mm:ss"), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince, "mm:ss"),
+                Tools.formatLongTime(gametimer, "mm:ss"),
+                Tools.formatLongTime(getRemaining(), "mm:ss"),
+                Tools.formatLongTime(timeWhenTheFlagWasActivated, "mm:ss"),
+                Tools.formatLongTime(getNextRespawn(), "mm:ss"),
+                Tools.formatLongTime(maxgametime, "mm:ss"),
+                Tools.formatLongTime(capturetime, "mm:ss"),
+                Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince, "mm:ss"),
                 Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis(), "mm:ss")
         );
 

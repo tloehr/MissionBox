@@ -1,10 +1,8 @@
 package gamemodes;
 
 import interfaces.FC1DetailsMessageEvent;
-import misc.Tools;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +46,7 @@ public class Farcry1GameEvent extends JPanel {
         refreshTextLine();
     }
 
-    public void setEnabled(boolean enabled){
+    public void setEnabled(boolean enabled) {
         btnRevert.setEnabled(enabled);
     }
 
@@ -58,6 +56,7 @@ public class Farcry1GameEvent extends JPanel {
      */
     public void finalizeEvent(long gametimer) {
         evenDuration = gametimer - messageEvent.getGametimer();
+        logger.debug("finalizing gametime: " + (gametimer - 1));
         btnRevert.setVisible(true);
         refreshTextLine();
     }
@@ -66,7 +65,7 @@ public class Farcry1GameEvent extends JPanel {
         return evenDuration;
     }
 
-    private void refreshTextLine() {
+    public void refreshTextLine() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -89,7 +88,7 @@ public class Farcry1GameEvent extends JPanel {
 
     @Override
     public String toString() {
-        String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> "+messageEvent.toHTML("");
+        String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> " + (evenDuration == -1 ? "" : messageEvent.toHTML(""));
 
 //        // Restliche Spielzeit (rmn - remaining)
 //        html += (evenDuration == -1 ? "" : "gmrmn:" + Tools.formatLongTime(messageEvent.getMaxgametime() - messageEvent.getGametimer() - evenDuration - 1) + " ");
@@ -101,12 +100,12 @@ public class Farcry1GameEvent extends JPanel {
 //        }
 //
 //        html += evenDuration == -1 ? "-- " : "evtdur:" + new DateTime(evenDuration, DateTimeZone.UTC).toString("mm:ss:SSS] ");
-//        html += Farcry1AssaultThread.GAME_STATES[messageEvent.getGameState()];
+//        html += Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()];
 
         return "<html>" + html + "</html>";
 
 //        return "Farcry1GameEvent{" +
-//                "gameState=" + Farcry1AssaultThread.GAME_STATES[gameState] +
+//                "gameState=" + Farcry1AssaultThread.GAMSTATS[gameState] +
 //                ", flagactivation=" + flagactivation +
 //                ", eventStartTime=" + eventStartTime +
 //                '}';

@@ -12,7 +12,6 @@ import gamemodes.GameEventListener;
 import interfaces.PercentageInterface;
 import misc.Tools;
 import org.apache.log4j.Logger;
-
 import progresshandlers.EscalatingSirens;
 import progresshandlers.EscalatingSirensTime;
 import progresshandlers.EscalatingTime;
@@ -49,7 +48,6 @@ public class FrmTest extends JFrame implements GameEventListener {
     public void addGameEvent(Farcry1GameEvent event) {
         event.setGameEventListener(this);
         if (!eventModel.isEmpty()) {
-//            logger.debug("gametime: "+event.getGametimerAtStart()+1);
             getLastEvent().finalizeEvent(event.getMessageEvent().getGametimer());
         }
         eventModel.add(event);
@@ -348,7 +346,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     public void setToPauseMode(boolean yes) {
-        for (Component comp : listEvents.getComponents()){
+        for (Component comp : listEvents.getComponents()) {
             comp.setEnabled(yes);
         }
         listEvents.setEnabled(yes);
@@ -584,8 +582,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
+                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
@@ -646,8 +644,8 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                        "default:grow",
-                        "fill:default:grow, $lgap, fill:default:grow"));
+                            "default:grow",
+                            "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
@@ -705,8 +703,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                    "2*(pref:grow, $rgap), pref",
-                    "3*(default, $lgap), fill:default:grow"));
+                        "2*(pref:grow, $rgap), pref",
+                        "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -897,8 +895,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                    "default, 3*($ugap, default:grow), $lcgap, default:grow",
-                    "8*(default:grow, $lgap), default"));
+                        "default, 3*($ugap, default:grow), $lcgap, default:grow",
+                        "8*(default:grow, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
@@ -1065,7 +1063,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     public void setTimer(String time) {
         SwingUtilities.invokeLater(() -> {
-            lblTimer.setText("<html>"+time+"</html>");
+            lblTimer.setText("<html>" + time + "</html>");
             revalidate();
             repaint();
         });
