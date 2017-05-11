@@ -260,10 +260,6 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         long pause_period = System.currentTimeMillis() - pausingSince;      // damit ist auch die resume zeit inbegriffen.
                         logger.debug("diese Pause (inklusive dem resume) dauerte: " + Tools.formatLongTime(pause_period));
 
-
-//                        logger.debug("PAUSEN-ZEIT: die startuhrzeit wurde von: " + DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss,SSS").print(starttime));
-//                        logger.debug("auf: " + DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss,SSS").print(starttime) + " korrigiert.");
-
                         resumingSince = -1l;
                         pausingSince = -1l;
 
@@ -284,26 +280,22 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                             logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n");
 
                             resumeToState = revertEvent.getMessageEvent().getGameState();
-//                            logger.debug("EVENT-ZEIT: die startuhrzeit wurde von: " + DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss,SSS").print(starttime));
 
-                            // todo: die starttime ist das Problem
-                            starttime = revertEvent.get + revertEvent.getEventDuration() + pause_period; // Verschiebt die Startzeit um die Dauer dieses Events.
-//                            logger.debug("auf: " + DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss,SSS").print(starttime) + " korrigiert.");
+                            // todo: es fehlen noch rund 700ms
+
+                            starttime = System.currentTimeMillis() - revertEvent.getMessageEvent().getGametimer() - revertEvent.getEventDuration();
 
                             lastrespawn = revertEvent.getMessageEvent().getLastrespawn();
-                            gametimer = System.currentTimeMillis() - starttime;
 
-                            logger.debug("gametimer ist nun: " + Tools.formatLongTime(gametimer));
-                            logger.debug("nextrespawn in: " + Tools.formatLongTime(lastrespawn + respawninterval - gametimer));
-                            logger.debug("remaining: " + Tools.formatLongTime(getRemaining(resumeToState)));
+//                            logger.debug("gametimer ist nun: " + Tools.formatLongTime(gametimer));
+//                            logger.debug("nextrespawn in: " + Tools.formatLongTime(lastrespawn + respawninterval - gametimer));
+//                            logger.debug("remaining: " + Tools.formatLongTime(getRemaining(resumeToState)));
 
                             timeWhenTheFlagWasActivated = -1l;
                             if (resumeToState == GAME_FLAG_HOT) {
                                 timeWhenTheFlagWasActivated = revertEvent.getMessageEvent().getTimeWhenTheFlagWasActivated();
                                 logger.debug("flagactivate ist nun: " + Tools.formatLongTime(timeWhenTheFlagWasActivated));
                             }
-
-//                            logger.debug("gametime wird gesetzt auf: " + gametimer);
 
                             MissionBox.getFrmTest().setRevertEvent(null);
                             revertEvent = null;

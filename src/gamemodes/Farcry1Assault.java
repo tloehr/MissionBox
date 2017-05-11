@@ -105,7 +105,7 @@ public class Farcry1Assault implements GameMode {
 
                     FC1DetailsMessageEvent event = (FC1DetailsMessageEvent) messageEvent;
 //                    logger.debug(event.getLastrespawn() + event.getRespawninterval() - event.getGametimer());
-                    String respawnTimer = Tools.formatLongTime(event.getLastrespawn() + event.getRespawninterval() - event.getGametimer(),"mm:ss");
+                    String respawnTimer = Tools.formatLongTime(event.getLastrespawn() + event.getRespawninterval() - event.getGametimer(), "mm:ss");
                     MissionBox.setRespawnTimer(respawnTimer);
                     if (event.getLastrespawn() + event.getRespawninterval() <= event.getGametimer()) {
                         MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;2000,0");
@@ -152,9 +152,11 @@ public class Farcry1Assault implements GameMode {
             String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
             if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_GOING_TO_RESUME) {
                 long resumein = ((FC1DetailsMessageEvent) messageEvent).getResumingSince() + ((FC1DetailsMessageEvent) messageEvent).getResumeinterval() - System.currentTimeMillis();
-                message += " "+Tools.formatLongTime(resumein,"mm:ss");
-            } else {
-
+                message += " " + Tools.formatLongTime(resumein, "mm:ss");
+            } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
+                // todo: hier gehts weiter
+                long remain = ((FC1DetailsMessageEvent) messageEvent).getMaxgametime() - ((FC1DetailsMessageEvent) messageEvent).getGametimer();
+                message += " " + Tools.formatLongTime(remain, "mm:ss");
             }
 
             MissionBox.setMessage(message);

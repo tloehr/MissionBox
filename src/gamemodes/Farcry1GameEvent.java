@@ -50,6 +50,7 @@ public class Farcry1GameEvent extends JPanel {
         btnRevert.setVisible(false);
         add(lbl);
 
+        setToolTipText("<html>"+messageEvent.toHTML()+"</html>");
         refreshTextLine();
     }
 
@@ -63,7 +64,7 @@ public class Farcry1GameEvent extends JPanel {
      */
     public void finalizeEvent(long gametimer) {
         eventDuration = gametimer - messageEvent.getGametimer(); // also der aktuelle gametimer minus dem gametimer zum Start dieses Events.
-        
+        setToolTipText("<html>"+messageEvent.toHTML(FC1DetailsMessageEvent.css, eventDuration)+"</html>");
 //        if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT){
 //            messageEvent.setRemaining(messageEvent.getTimeWhenTheFlagWasActivated() + messageEvent.getCapturetime() - gametimer);
 //        } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD){
@@ -79,7 +80,6 @@ public class Farcry1GameEvent extends JPanel {
         logger.debug(pit + ">> finalizing eventduration: " + eventDuration);
         logger.debug(pit + ">> wenn du hier hin zurück kehrst landest du bei diesen Zeiten");
         logger.debug(messageEvent.toString(eventDuration));
-
         logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n");
 
         // ein Revert macht nur Sinn bei HOT oder COLD. Sonst nicht.

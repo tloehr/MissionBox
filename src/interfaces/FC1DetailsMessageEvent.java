@@ -21,6 +21,13 @@ public class FC1DetailsMessageEvent extends MessageEvent {
     private long lastrespawn;
     private long respawninterval;
     private long resumeinterval;
+    public static final String css = "<style type=\"text/css\">\n" +
+                    ".tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}\n" +
+                    ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}\n" +
+                    ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}\n" +
+                    ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
+                    ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
+                    "</style>\n";
 
     public long getResumeinterval() {
         return resumeinterval;
@@ -164,12 +171,6 @@ public class FC1DetailsMessageEvent extends MessageEvent {
     }
 
     public String toHTML() {
-        return toHTML("<style type=\"text/css\">\n" +
-                ".tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}\n" +
-                ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}\n" +
-                ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}\n" +
-                ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
-                ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
-                "</style>\n", -1l);
+        return toHTML(css, -1l);
     }
 }
