@@ -14,6 +14,7 @@ import interfaces.Relay;
 import misc.SortedProperties;
 import misc.Tools;
 import org.apache.log4j.*;
+import org.apache.log4j.spi.LoggerFactory;
 import progresshandlers.RelayProgressRGB;
 import progresshandlers.RelayProgressRedYellowGreen;
 import threads.PinHandler;
@@ -111,6 +112,7 @@ public class MissionBox {
 
         System.setProperty("logs",Tools.getMissionboxDirectory());
         logger = Logger.getRootLogger();
+
 //        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
 //        logger.addAppender(new ConsoleAppender(layout));
 //        logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));

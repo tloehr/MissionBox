@@ -22,12 +22,17 @@ public class FC1DetailsMessageEvent extends MessageEvent {
     private long respawninterval;
     private long resumeinterval;
 
+    public long getResumeinterval() {
+        return resumeinterval;
+    }
+
     public long getStarttime() {
         return starttime;
     }
 
     /**
      * der gametimer zu Beginn des Events.
+     *
      * @return
      */
     public long getGametimer() {
@@ -62,6 +67,14 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         return respawninterval;
     }
 
+    private long getRemaining(long eventDuration) {
+        long endtime = maxgametime;
+        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
+            endtime = timeWhenTheFlagWasActivated + capturetime;
+        }
+        return endtime - gametimer - Math.max(eventDuration, 0);
+    }
+
     public FC1DetailsMessageEvent(Object source, int gameState, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval) {
         super(source, gameState);
 
@@ -77,41 +90,37 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         this.respawninterval = respawninterval;
     }
 
-    public long getNextRespawn() {
-        return lastrespawn + respawninterval - gametimer;
-    }
+//    public long getNextRespawn() {
+//        return lastrespawn + respawninterval - gametimer;
+//    }
 
-    public long getRemaining() {
-        long endtime = maxgametime;
-        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            endtime = timeWhenTheFlagWasActivated + capturetime;
-        }
-        return endtime - gametimer;
-    }
 
     @Override
     public String toString() {
-        String result = "\n" + StringUtils.repeat("-", 81) + "\n" +
-                "|%8s|%8s|%8s|%8s|%8s|%8s|%8s|%8s|%8s|\n" +
-                StringUtils.repeat("-", 81) + "\n" +
-                "|%8s|%8s|%8s|%8s|%8s|%8s|%8s|%8s|%8s|\n" +
-                StringUtils.repeat("-", 81) + "\n\n";
-        return String.format(result,
-                "gmstate", "gametmr", "remain", "flagact", "respawn", "maxgmtmr", "capttmr", "pause", "resume",
-                Farcry1AssaultThread.GAMSTATS[gameState],
-                Tools.formatLongTime(gametimer),
-                Tools.formatLongTime(getRemaining()),
-                Tools.formatLongTime(timeWhenTheFlagWasActivated),
-                Tools.formatLongTime(getNextRespawn()), Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
-                Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis())
+        return toString(-1l);
+    }
 
+    public String toString(long finalizedEventDuration) {
+        String result = "\n" + StringUtils.repeat("-", 90) + "\n" +
+                "|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|\n" +
+                StringUtils.repeat("-", 90) + "\n" +
+                "|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|\n" +
+                StringUtils.repeat("-", 90) + "\n\n";
+        return String.format(result,
+                "gmstate", "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume",
+                Farcry1AssaultThread.GAMSTATS[gameState],
+                Tools.formatLongTime(gametimer + Math.max(finalizedEventDuration, 0)),
+                Tools.formatLongTime(getRemaining(finalizedEventDuration)),
+                Tools.formatLongTime(timeWhenTheFlagWasActivated),
+                Tools.formatLongTime(lastrespawn), Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
+                Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis())
 
 
         );
     }
 
 
-    public String toHTML(String css) {
+    public String toHTML(String css, long finalizedEventDuration) {
 
         logger.debug(toString());
 
@@ -140,11 +149,11 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 "</table>";
 
         return String.format(result,
-                "gametmr", "remain", "flagact", "respawn", "maxgmtmr", "capttmr", "pause", "resume",
-                Tools.formatLongTime(gametimer, "mm:ss"),
-                Tools.formatLongTime(getRemaining(), "mm:ss"),
+                "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume",
+                Tools.formatLongTime(gametimer + Math.max(finalizedEventDuration, 0), "mm:ss"),
+                Tools.formatLongTime(getRemaining(finalizedEventDuration), "mm:ss"),
                 Tools.formatLongTime(timeWhenTheFlagWasActivated, "mm:ss"),
-                Tools.formatLongTime(getNextRespawn(), "mm:ss"),
+                Tools.formatLongTime(lastrespawn, "mm:ss"),
                 Tools.formatLongTime(maxgametime, "mm:ss"),
                 Tools.formatLongTime(capturetime, "mm:ss"),
                 Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince, "mm:ss"),
@@ -161,6 +170,6 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}\n" +
                 ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
                 ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
-                "</style>\n");
+                "</style>\n", -1l);
     }
 }
