@@ -84,18 +84,6 @@ public class Farcry1Assault implements GameMode {
 //                        else if (seconds == 10) MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, seconds + ";500,500");
 //                    }
 //                }
-//
-//                // Respawn announcer
-//                if (MissionBox.isRESPAWN()) {
-//                    if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
-//                        MissionBox.setRespawnTimer(Integer.toString(RESPAWNINSECONDS - Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds()));
-//                        if (!messageEvent.getTime().equals(lastRespawn) && Seconds.secondsBetween(lastRespawn, new DateTime()).getSeconds() >= RESPAWNINSECONDS) {
-//                            lastRespawn = new DateTime();
-//                            MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;2000,0");
-//                            logger.info("Respawn...");
-//                        }
-//                    }
-//                }
 //            }
 
 
@@ -123,12 +111,26 @@ public class Farcry1Assault implements GameMode {
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
                 MissionBox.setTimerMessage("Flag defended");
                 MissionBox.setRespawnTimer("--");
-            } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
+            } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
+                long remain = ((FC1DetailsMessageEvent) messageEvent).getMaxgametime() - ((FC1DetailsMessageEvent) messageEvent).getGametimer();
+                String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss");
+                MissionBox.setMessage(message);
+            } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
+                MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
+                long remain = ((FC1DetailsMessageEvent) messageEvent).getMaxgametime() - ((FC1DetailsMessageEvent) messageEvent).getGametimer();
+                String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss");
+                MissionBox.setMessage(message);
+
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PAUSING) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
+                // todo: hier gehts weiter
+
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_GOING_TO_RESUME) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
+                long resumein = ((FC1DetailsMessageEvent) messageEvent).getResumingSince() + ((FC1DetailsMessageEvent) messageEvent).getResumeinterval() - System.currentTimeMillis();
+                String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(resumein, "mm:ss");
+                MissionBox.setMessage(message);
             } else {
                 MissionBox.setTimerMessage("Don't know");
                 MissionBox.setRespawnTimer("--");
@@ -149,17 +151,19 @@ public class Farcry1Assault implements GameMode {
 
         MessageListener gameModeListener = messageEvent -> {
 
-            String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
-            if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_GOING_TO_RESUME) {
-                long resumein = ((FC1DetailsMessageEvent) messageEvent).getResumingSince() + ((FC1DetailsMessageEvent) messageEvent).getResumeinterval() - System.currentTimeMillis();
-                message += " " + Tools.formatLongTime(resumein, "mm:ss");
-            } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
-                // todo: hier gehts weiter
-                long remain = ((FC1DetailsMessageEvent) messageEvent).getMaxgametime() - ((FC1DetailsMessageEvent) messageEvent).getGametimer();
-                message += " " + Tools.formatLongTime(remain, "mm:ss");
-            }
-
-            MissionBox.setMessage(message);
+//            String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
+//            if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_GOING_TO_RESUME) {
+//                long resumein = ((FC1DetailsMessageEvent) messageEvent).getResumingSince() + ((FC1DetailsMessageEvent) messageEvent).getResumeinterval() - System.currentTimeMillis();
+//                message += " " + Tools.formatLongTime(resumein, "mm:ss");
+//            } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
+//
+//
+//                long remain = ((FC1DetailsMessageEvent) messageEvent).getMaxgametime() - ((FC1DetailsMessageEvent) messageEvent).getGametimer();
+//                message += " " + Tools.formatLongTime(remain, "mm:ss");
+//                logger.debug("remain: "+remain);
+//            }
+//
+//            MissionBox.setMessage(message);
 
 
             if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {

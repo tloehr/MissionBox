@@ -408,6 +408,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
             if (isGameRunning()) {
 
+                // todo: gleichung nach starttime starttime = now - gametimer
                 gametimer = System.currentTimeMillis() - starttime;
 
                 if (threadcycles % 15 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
