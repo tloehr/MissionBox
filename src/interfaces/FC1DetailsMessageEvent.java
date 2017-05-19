@@ -129,7 +129,7 @@ public class FC1DetailsMessageEvent extends MessageEvent {
 
     public String toHTML(String css, long finalizedEventDuration) {
 
-        logger.debug(toString());
+//        logger.debug(toString());
 
         String result = css +
                 "<table class=\"tg\">\n" +

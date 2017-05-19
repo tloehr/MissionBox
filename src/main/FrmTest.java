@@ -45,10 +45,10 @@ public class FrmTest extends JFrame implements GameEventListener {
         setRevertEvent(event);
     }
 
-    public void addGameEvent(Farcry1GameEvent event) {
+    public void addGameEvent(Farcry1GameEvent event, long remaining) {
         event.setGameEventListener(this);
         if (!eventModel.isEmpty()) {
-            getLastEvent().finalizeEvent(event.getMessageEvent().getGametimer());
+            getLastEvent().finalizeEvent(event.getMessageEvent().getGametimer(), remaining);
         }
         eventModel.add(event);
         listEvents.add(event);
@@ -71,7 +71,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     // setzt einen Revert Event fest, zu dem zurückgesprungen werden soll.
     public void setRevertEvent(Farcry1GameEvent revertEvent) {
-        lblRevertEvent.setText(revertEvent == null ? "--" : revertEvent.toString());
+        lblRevertEvent.setText(revertEvent == null ? "--" : revertEvent.toHTML());
         lblRevertEvent.setIcon(revertEvent == null ? null : revertEvent.getIcon());
         MissionBox.setRevertEvent(revertEvent);
     }
