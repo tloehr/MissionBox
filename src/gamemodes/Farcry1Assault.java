@@ -102,33 +102,38 @@ public class Farcry1Assault implements GameMode {
                 }
             }
 
+
             if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 MissionBox.setTimerMessage("--");
+                MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
-                MissionBox.setTimerMessage("Flagen taken");
+                MissionBox.setRespawnTimer("--");
+                MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
-                MissionBox.setTimerMessage("Flag defended");
+                MissionBox.setRespawnTimer("--");
+                MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
-                long remain = ((FC1DetailsMessageEvent) messageEvent).getMaxgametime() - ((FC1DetailsMessageEvent) messageEvent).getGametimer();
+                long remain = farcryAssaultThread.getRemaining();
                 String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss");
                 MissionBox.setMessage(message);
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
-                long remain = ((FC1DetailsMessageEvent) messageEvent).getMaxgametime() - ((FC1DetailsMessageEvent) messageEvent).getGametimer();
+                long remain = farcryAssaultThread.getRemaining();
                 String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss");
                 MissionBox.setMessage(message);
 
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PAUSING) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
-                // todo: hier gehts weiter
-
+                long pausingsince = System.currentTimeMillis() - ((FC1DetailsMessageEvent) messageEvent).getPausingSince();
+                String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(pausingsince, "mm:ss");
+                MissionBox.setMessage(message);
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_GOING_TO_RESUME) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
-                long resumein = ((FC1DetailsMessageEvent) messageEvent).getResumingSince() + ((FC1DetailsMessageEvent) messageEvent).getResumeinterval() - System.currentTimeMillis();
+                long resumein = ((FC1DetailsMessageEvent) messageEvent).getResumingSince() + ((FC1DetailsMessageEvent) messageEvent).getResumeinterval() - System.currentTimeMillis() + 1000; // 1 sekunde drauf, weg der Anzeige
                 String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(resumein, "mm:ss");
                 MissionBox.setMessage(message);
             } else {
@@ -163,7 +168,7 @@ public class Farcry1Assault implements GameMode {
 //                logger.debug("remain: "+remain);
 //            }
 //
-//            MissionBox.setMessage(message);
+//            MissionBox.setMessage(message)MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
 
 
             if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
@@ -216,7 +221,12 @@ public class Farcry1Assault implements GameMode {
                  */
                 logger.debug("GAME_PRE_GAME");
 
-//                prev_countdown_index = -1;
+
+                // ein bisschen unschön. Aber geht im moment nicht anders
+                MissionBox.setTimerMessage("--");
+                MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
+                MissionBox.setRespawnTimer("--");
+                // ---
 
                 MissionBox.enableSettings(true);
                 MissionBox.getFrmTest().getBtnClearEvent().setEnabled(false);

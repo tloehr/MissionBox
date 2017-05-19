@@ -99,8 +99,12 @@ public class PinHandler {
      * @param relay
      */
     public void add(Relay relay) {
-        add(0, relay);
+        add(0, relay, 0, 0);
     }
+
+    public void add(int cd, Relay relay) {
+            add(cd, relay, 0, 0);
+        }
 
     /**
      * adds a a relay to the handler.
@@ -109,10 +113,10 @@ public class PinHandler {
      *              Moment nicht. cd == 0 bedeutet, dass dieser Pin machen kann was er will.
      * @param relay das betreffende Relais oder Pin.
      */
-    public void add(int cd, Relay relay) {
+    public void add(int cd, Relay relay, int ht, int msecs) {
         lock.lock();
         try {
-            pinMap.put(relay.getName(), new PinBlinkModel(relay));
+            pinMap.put(relay.getName(), new PinBlinkModel(relay, ht, msecs));
             if (cd > 0) {
                 collisionDomain.put(relay.getName(), cd);
                 add2ReverseMap(cd, relay.getName());

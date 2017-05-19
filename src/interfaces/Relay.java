@@ -17,41 +17,39 @@ public class Relay implements OnOffInterface {
     private final GpioPinDigitalOutput pin;
     private final String name;
     private MyLED debugLED; // for on screen debugging
-    private boolean siren = false; // gehört dieser Pin zu einer Sirene oder nicht. Wird im Moment nicht benutzt.
 
-    private Relay(GpioPinDigitalOutput pin, String name, boolean thisIsASiren) {
+
+    private Relay(GpioPinDigitalOutput pin, String name) {
         if (MissionBox.getGPIO() != null && pin == null) {
             logger.fatal("WRONG CONFIG FOR " + name);
             System.exit(1);
         }
-        this.siren = thisIsASiren;
+
         this.pin = pin;
         this.name = name;
         if (pin != null) pin.setState(PinState.LOW);
     }
 
-    public boolean isSiren() {
-        return siren;
-    }
+
+//
+//    public Relay(GpioPinDigitalOutput pin, String name, Color color, JPanel addYourself2this) {
+//        this(pin, name, color, addYourself2this);
+//
+//    }
 
     public Relay(GpioPinDigitalOutput pin, String name, Color color, JPanel addYourself2this) {
-        this(pin, name, color, addYourself2this, false);
-
-    }
-
-    public Relay(GpioPinDigitalOutput pin, String name, Color color, JPanel addYourself2this, boolean thisIsASiren) {
-        this(pin, name, thisIsASiren);
+        this(pin, name);
         debugLED = new MyLED(name, color);
         addYourself2this.add(debugLED);
     }
+//
+//    public Relay(String configKey, Color color, JPanel addYourself2this) {
+//        this(configKey, color, addYourself2this);
+//
+//    }
 
     public Relay(String configKey, Color color, JPanel addYourself2this) {
-        this(configKey, color, addYourself2this, false);
-
-    }
-
-    public Relay(String configKey, Color color, JPanel addYourself2this, boolean thisIsASiren) {
-        this(MissionBox.getOutputMap().get(MissionBox.getConfig(configKey)), configKey, thisIsASiren);
+        this(MissionBox.getOutputMap().get(MissionBox.getConfig(configKey)), configKey);
 
         if (addYourself2this != null) {
             debugLED = new MyLED(configKey, color);

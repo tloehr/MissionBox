@@ -215,19 +215,19 @@ public class MissionBox {
 
         // three sirens now.
         // Siren 1
-        pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, true)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, true)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins, true)); // Original Siren Button 5
-        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, true)); // Original Siren Button 1
+        pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins), 1000, 200); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins), 1000, 200); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins), 1000, 200); // Original Siren Button 5
+        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins)); // Original Siren Button 1
 
         // Siren 2
-        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 2
+        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins),  2000, 200); // Original Siren Button 2
 
         // Siren 3
 //        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
 
         // The Airsiren
-        pinHandler.add(new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, true)); // Motor Siren
+        pinHandler.add(0, new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins), 3000, 200); // Motor Siren
 
         pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));

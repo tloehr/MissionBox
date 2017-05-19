@@ -1,8 +1,10 @@
 package threads;
 
 import interfaces.Relay;
+import misc.SoundUtils;
 import org.apache.log4j.Logger;
 
+import javax.sound.sampled.LineUnavailableException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
@@ -13,6 +15,9 @@ import java.util.concurrent.Callable;
  */
 public class PinBlinkModel implements Callable<String> {
 
+    private final int msecs;
+    private final int hz;
+
     Relay pin;
     private ArrayList<Long> onOffScheme;
     int repeat;
@@ -20,6 +25,7 @@ public class PinBlinkModel implements Callable<String> {
     int positionInScheme;
     private final Logger logger = Logger.getLogger(getClass().getName());
     String infinity = "\u221E";
+
 
     @Override
     public String call() throws Exception {
@@ -43,6 +49,17 @@ public class PinBlinkModel implements Callable<String> {
                     time = next();
                     pin.setOn(currentlyOn);
 
+
+//                    // debug sound output
+//                    if (hz > 0) {
+//                        try {
+//                            SoundUtils.tone(hz, msecs);
+//                        } catch (LineUnavailableException e) {
+//                            // dont care
+//                        }
+//                    }
+
+
                     try {
                         if (time > 0) Thread.sleep(time);
                     } catch (InterruptedException exc) {
@@ -63,6 +80,13 @@ public class PinBlinkModel implements Callable<String> {
     }
 
     public PinBlinkModel(Relay pin) {
+        this(pin, 0, 0);
+    }
+
+    public PinBlinkModel(Relay pin, int hz, int msecs) {
+        this.hz = hz;
+        this.msecs = msecs;
+
         this.onOffScheme = new ArrayList<>();
         this.positionInScheme = -1;
         this.pin = pin;
