@@ -123,11 +123,11 @@ public class Farcry1GameEvent extends JPanel {
 
     @Override
     public String toString() {
-        String result = uuid + "\n" + StringUtils.repeat("-", 90+38) + "\n" +
+        String result = "\n" + StringUtils.repeat("-", 90+39) + "\n" +
                 "|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%37s|\n" +
-                StringUtils.repeat("-", 90+38) + "\n" +
+                StringUtils.repeat("-", 90+39) + "\n" +
                 "|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%37s|\n" +
-                StringUtils.repeat("-", 90+38) + "\n\n";
+                StringUtils.repeat("-", 90+39) + "\n\n";
         return String.format(result,
                 "gmstate", "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume","uuid",
                 Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()],

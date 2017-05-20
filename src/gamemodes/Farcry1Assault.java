@@ -202,6 +202,8 @@ public class Farcry1Assault implements GameMode {
 //                    MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;1000,0");
 //                }
 
+                // Statt dessen GAME_MODE_Defused ??
+
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";350,3000");
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";350,3000");
@@ -220,13 +222,6 @@ public class Farcry1Assault implements GameMode {
                  *
                  */
                 logger.debug("GAME_PRE_GAME");
-
-
-                // ein bisschen unschön. Aber geht im moment nicht anders
-                MissionBox.setTimerMessage("--");
-                MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
-                MissionBox.setRespawnTimer("--");
-                // ---
 
                 MissionBox.enableSettings(true);
                 MissionBox.getFrmTest().getBtnClearEvent().setEnabled(false);

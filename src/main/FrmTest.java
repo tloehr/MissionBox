@@ -94,9 +94,9 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void initPanel() {
 
-        tbDebug.setSelected(MissionBox.getConfig(MissionBox.MBX_DEBUG).equals("true"));
+//        tbDebug.setSelected(MissionBox.getConfig(MissionBox.MBX_DEBUG).equals("true"));
         tbDebug.addItemListener(i -> {
-            MissionBox.setConfig(MissionBox.MBX_DEBUG, i.getStateChange() == ItemEvent.SELECTED ? "true" : "false");
+//            MissionBox.setConfig(MissionBox.MBX_DEBUG, i.getStateChange() == ItemEvent.SELECTED ? "true" : "false");
 
             SwingUtilities.invokeLater(() -> {
                 if (i.getStateChange() == ItemEvent.SELECTED) {

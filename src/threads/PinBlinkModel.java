@@ -1,10 +1,12 @@
 package threads;
 
 import interfaces.Relay;
-import misc.SoundUtils;
 import org.apache.log4j.Logger;
 
-import javax.sound.sampled.LineUnavailableException;
+import javax.sound.midi.Instrument;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Synthesizer;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
@@ -15,9 +17,6 @@ import java.util.concurrent.Callable;
  */
 public class PinBlinkModel implements Callable<String> {
 
-    private final int msecs;
-    private final int hz;
-
     Relay pin;
     private ArrayList<Long> onOffScheme;
     int repeat;
@@ -25,6 +24,7 @@ public class PinBlinkModel implements Callable<String> {
     int positionInScheme;
     private final Logger logger = Logger.getLogger(getClass().getName());
     String infinity = "\u221E";
+
 
 
     @Override
@@ -42,23 +42,12 @@ public class PinBlinkModel implements Callable<String> {
 
                     if (Thread.currentThread().isInterrupted()) {
                         pin.setOn(false);
+
                         return null;
                     }
 
-
                     time = next();
                     pin.setOn(currentlyOn);
-
-
-//                    // debug sound output
-//                    if (hz > 0) {
-//                        try {
-//                            SoundUtils.tone(hz, msecs);
-//                        } catch (LineUnavailableException e) {
-//                            // dont care
-//                        }
-//                    }
-
 
                     try {
                         if (time > 0) Thread.sleep(time);
@@ -79,13 +68,11 @@ public class PinBlinkModel implements Callable<String> {
         restart();
     }
 
-    public PinBlinkModel(Relay pin) {
-        this(pin, 0, 0);
-    }
+//    public PinBlinkModel(Relay pin) {
+//        this(pin, -1, -1);
+//    }
 
-    public PinBlinkModel(Relay pin, int hz, int msecs) {
-        this.hz = hz;
-        this.msecs = msecs;
+    public PinBlinkModel(Relay pin) {
 
         this.onOffScheme = new ArrayList<>();
         this.positionInScheme = -1;

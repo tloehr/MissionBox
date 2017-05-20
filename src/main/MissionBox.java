@@ -14,6 +14,7 @@ import interfaces.Relay;
 import misc.SortedProperties;
 import misc.Tools;
 import org.apache.log4j.*;
+import org.apache.log4j.lf5.LogLevel;
 import org.apache.log4j.spi.LoggerFactory;
 import progresshandlers.RelayProgressRGB;
 import progresshandlers.RelayProgressRedYellowGreen;
@@ -69,7 +70,7 @@ public class MissionBox {
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
     public static final String FCY_RESPAWN_INTERVAL = "fcy.respawn.interval";
-    public static final String MBX_DEBUG = "mbx.debug";
+//    public static final String MBX_DEBUG = "mbx.debug";
     public static final String MBX_SIREN1 = "mbx.siren1";
     public static final String MBX_SIREN2 = "mbx.siren2";
     public static final String MBX_SIREN3 = "mbx.siren3";
@@ -215,19 +216,19 @@ public class MissionBox {
 
         // three sirens now.
         // Siren 1
-        pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins), 1000, 200); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins), 1000, 200); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins), 1000, 200); // Original Siren Button 5
-        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins)); // Original Siren Button 1
+        pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 5
+        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 10, 45)); 
 
         // Siren 2
-        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins),  2000, 200); // Original Siren Button 2
+        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins,  20, 60)); // Original Siren Button 2
 
         // Siren 3
 //        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
 
         // The Airsiren
-        pinHandler.add(0, new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins), 3000, 200); // Motor Siren
+        pinHandler.add(0, new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins,50, 90)); // Motor Siren
 
         pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));
@@ -393,7 +394,7 @@ public class MissionBox {
         config.put(MBX_BTN_GREEN, "mcp23017-02-B1");
         config.put(MBX_BTN_START_STOP, "mcp23017-02-B2");
         config.put(MBX_BTN_PAUSE, "mcp23017-02-B3");
-        config.put(MBX_DEBUG, "true");
+//        config.put(MBX_DEBUG, "true");
 
         File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
 
@@ -407,8 +408,6 @@ public class MissionBox {
         config.putAll(p);
         p.clear();
         in.close();
-
-//        RESPAWN = Boolean.parseBoolean(config.getProperty(MissionBox.FCY_RESPAWN_SIGNAL));
 
         logLevel = Level.toLevel(config.getProperty(MissionBox.MBX_LOGLEVEL), Level.DEBUG);
 
