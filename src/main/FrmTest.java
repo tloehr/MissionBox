@@ -487,6 +487,12 @@ public class FrmTest extends JFrame implements GameEventListener {
         // TODO add your code here
     }
 
+    private void txtHandlerPatternActionPerformed(ActionEvent e) {
+
+        MissionBox.getPinHandler().setScheme(MissionBox.MBX_SIREN1, txtHandlerPattern.getText().trim());
+
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -560,6 +566,9 @@ public class FrmTest extends JFrame implements GameEventListener {
         btnRelayTest5 = new JButton();
         btnGreenProgress = new JButton();
         btnRespawn = new JButton();
+        panel10 = new JPanel();
+        label4 = new JLabel();
+        txtHandlerPattern = new JTextField();
         btnRelayTest6 = new JButton();
         btnRGBred = new JButton();
         btnTimeSignal = new JButton();
@@ -582,8 +591,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
+                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
@@ -644,8 +653,8 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                            "default:grow",
-                            "fill:default:grow, $lgap, fill:default:grow"));
+                        "default:grow",
+                        "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
@@ -703,8 +712,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                        "2*(pref:grow, $rgap), pref",
-                        "3*(default, $lgap), fill:default:grow"));
+                    "2*(pref:grow, $rgap), pref",
+                    "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -895,8 +904,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                        "default, 3*($ugap, default:grow), $lcgap, default:grow",
-                        "8*(default:grow, $lgap), default"));
+                    "default, 3*($ugap, default:grow), $lcgap, default:grow",
+                    "8*(default:grow, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
@@ -998,6 +1007,20 @@ public class FrmTest extends JFrame implements GameEventListener {
                 btnRespawn.setText("Respawn Signal");
                 btnRespawn.addActionListener(e -> btnRespawnActionPerformed(e));
                 panel1.add(btnRespawn, CC.xy(7, 9, CC.FILL, CC.FILL));
+
+                //======== panel10 ========
+                {
+                    panel10.setLayout(new BoxLayout(panel10, BoxLayout.PAGE_AXIS));
+
+                    //---- label4 ----
+                    label4.setText("Siren 1 - Handler Test");
+                    panel10.add(label4);
+
+                    //---- txtHandlerPattern ----
+                    txtHandlerPattern.addActionListener(e -> txtHandlerPatternActionPerformed(e));
+                    panel10.add(txtHandlerPattern);
+                }
+                panel1.add(panel10, CC.xy(1, 11));
 
                 //---- btnRelayTest6 ----
                 btnRelayTest6.setText("Relay6");
@@ -1157,6 +1180,9 @@ public class FrmTest extends JFrame implements GameEventListener {
     private JButton btnRelayTest5;
     private JButton btnGreenProgress;
     private JButton btnRespawn;
+    private JPanel panel10;
+    private JLabel label4;
+    private JTextField txtHandlerPattern;
     private JButton btnRelayTest6;
     private JButton btnRGBred;
     private JButton btnTimeSignal;

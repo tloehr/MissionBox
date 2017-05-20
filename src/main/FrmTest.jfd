@@ -561,6 +561,22 @@ new FormModel {
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 3
+					} ) {
+						name: "panel10"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label4"
+							"text": "Siren 1 - Handler Test"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtHandlerPattern"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "txtHandlerPatternActionPerformed", true ) )
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 11
+					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRelayTest6"
 						"text": "Relay6"

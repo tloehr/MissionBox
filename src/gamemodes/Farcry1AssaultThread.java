@@ -216,6 +216,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.flag.is.hot"));
                         break;
                     }
+
                     case GAME_FLAG_COLD: {
                         if (addEventToList) {
                             MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval), new ImageIcon((getClass().getResource("/artwork/ledgreen32.png")))), getRemaining(GAME_FLAG_HOT));

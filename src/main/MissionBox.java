@@ -65,7 +65,7 @@ public class MissionBox {
      */
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
-    public static final String FCY_SIREN = "fcy.siren";
+//    public static final String FCY_SIREN = "fcy.siren";
     public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
@@ -93,13 +93,6 @@ public class MissionBox {
     public static final String MBX_BTN_QUIT = "mbx.button.quit";
     public static final String MBX_BTN_PAUSE = "mbx.button.pause";
 
-
-  
-//    private static boolean RESPAWN = false, SIREN = false;
-
-
-    //    private static HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
-//    private static HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
     private static HashMap<String, Relay> relayMap = new HashMap<>();
 
     private static PinHandler pinHandler = null;
@@ -113,10 +106,6 @@ public class MissionBox {
 
         System.setProperty("logs",Tools.getMissionboxDirectory());
         logger = Logger.getRootLogger();
-
-//        PatternLayout layout = new PatternLayout("%d{ISO8601} %-5p [%t] %c: %m%n");
-//        logger.addAppender(new ConsoleAppender(layout));
-//        logger.addAppender(new FileAppender(layout, Tools.getMissionboxDirectory() + File.separator + "missionbox.log"));
 
         try {
             // Lade Build Informationen
@@ -217,9 +206,9 @@ public class MissionBox {
         // three sirens now.
         // Siren 1
         pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 3
+        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, 70, 80)); // Original Siren Button 3
         pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 5
-        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 10, 45)); 
+        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 20, 40));
 
         // Siren 2
         pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins,  20, 60)); // Original Siren Button 2
@@ -355,7 +344,7 @@ public class MissionBox {
         // Hier stehen die Standardwerte, falls keine missionbox.cfg existiert.
         config.put(FCY_TIME2CAPTURE, "20");
         config.put(FCY_GAMETIME, "5");
-        config.put(FCY_SIREN, "true");
+//        config.put(FCY_SIREN, "true");
         config.put(MBX_SIREN_TIME, "750");
         config.put(FCY_RESPAWN_INTERVAL, "40");
         config.put(MBX_LOGLEVEL, "debug");
