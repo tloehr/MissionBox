@@ -1,6 +1,7 @@
 package threads;
 
 import interfaces.Relay;
+import main.MissionBox;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -46,6 +47,7 @@ public class PinHandler {
         collisionDomain = new HashMap<>();
         collisionDomainReverse = new HashMap<>();
         logger = Logger.getLogger(getClass());
+        logger.setLevel(MissionBox.getLogLevel());
         resume();
     }
 
@@ -154,6 +156,7 @@ public class PinHandler {
      * @param scheme
      */
     public void setScheme(String name, String scheme) {
+        logger.debug(name + "-" + scheme);
         lock.lock();
         try {
             PinBlinkModel pinBlinkModel = pinMap.get(name);

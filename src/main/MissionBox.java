@@ -13,9 +13,8 @@ import interfaces.PercentageInterface;
 import interfaces.Relay;
 import misc.SortedProperties;
 import misc.Tools;
-import org.apache.log4j.*;
-import org.apache.log4j.lf5.LogLevel;
-import org.apache.log4j.spi.LoggerFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import progresshandlers.RelayProgressRGB;
 import progresshandlers.RelayProgressRedYellowGreen;
 import threads.PinHandler;
@@ -50,8 +49,9 @@ public class MissionBox {
 
     private static GameMode gameMode;
 
-    private static GpioPinDigitalInput ioRed, ioGreen, ioGameStartStop, ioMisc, ioPAUSE;
-    private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnMisc, btnPAUSE;
+    private static GpioPinDigitalInput ioRed, ioGreen, ioGameStartStop, ioPAUSE;
+    private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnPAUSE;
+    private static JButton btnQuit;
 
     private static final HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
     private static final HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
@@ -65,18 +65,19 @@ public class MissionBox {
      */
     public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
     public static final String FCY_GAMETIME = "fcy.gametime";
-//    public static final String FCY_SIREN = "fcy.siren";
-    public static final String MBX_SIREN_TIME = "mbx.siren.time"; // in ms
+    //    public static final String FCY_SIREN = "fcy.siren";
+//    public static final String MBX_SIREN_TIME = "mbx.siren.time";
+    public static final String MBX_RESUME_TIME = "mbx.resume.time"; // in ms
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
     public static final String FCY_RESPAWN_INTERVAL = "fcy.respawn.interval";
-//    public static final String MBX_DEBUG = "mbx.debug";
+    //    public static final String MBX_DEBUG = "mbx.debug";
     public static final String MBX_SIREN1 = "mbx.siren1";
     public static final String MBX_SIREN2 = "mbx.siren2";
-    public static final String MBX_SIREN3 = "mbx.siren3";
+//    public static final String MBX_SIREN3 = "mbx.siren3";
     public static final String MBX_AIRSIREN = "mbx.airsiren";
     public static final String MBX_SHUTDOWN_SIREN = "mbx.shutdown.siren";
-    public static final String MBX_TIME_SIREN = "mbx.time.siren";
+//    public static final String MBX_TIME_SIREN = "mbx.time.siren";
     public static final String MBX_LED_GREEN = "mbx.led.green";
     public static final String MBX_LED_RED = "mbx.led.red";
     public static final String MBX_LED_PB_GREEN = "mbx.led.progress.green";
@@ -90,7 +91,6 @@ public class MissionBox {
     public static final String MBX_BTN_GREEN = "mbx.button.green";
     public static final String MBX_BTN_RED = "mbx.button.red";
     public static final String MBX_BTN_START_STOP = "mbx.button.startstop";
-    public static final String MBX_BTN_QUIT = "mbx.button.quit";
     public static final String MBX_BTN_PAUSE = "mbx.button.pause";
 
     private static HashMap<String, Relay> relayMap = new HashMap<>();
@@ -104,7 +104,7 @@ public class MissionBox {
 
     public static final void main(String[] args) throws Exception {
 
-        System.setProperty("logs",Tools.getMissionboxDirectory());
+        System.setProperty("logs", Tools.getMissionboxDirectory());
         logger = Logger.getRootLogger();
 
         try {
@@ -117,6 +117,14 @@ public class MissionBox {
         } catch (IOException iOException) {
             iOException.printStackTrace();
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                saveLocalProps();
+                pinHandler.off();
+
+            }
+        }));
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             StringWriter sw = new StringWriter();
@@ -160,10 +168,10 @@ public class MissionBox {
         btnRed = new MyAbstractButton(ioRed, getGUIBtnRed());
         btnGreen = new MyAbstractButton(ioGreen, getGUIBtnGreen());
         btnGameStartStop = new MyAbstractButton(ioGameStartStop, getGUIBtn1());
-        btnMisc = new MyAbstractButton(ioMisc, getGUIBtn2());
+        btnQuit = frmTest.getBtn2();
         btnPAUSE = new MyAbstractButton(ioPAUSE, getGUIBtnPause());
 
-        btnMisc.addListener(e -> {
+        btnQuit.addActionListener(e -> {
             MissionBox.shutdownEverything();
             System.exit(0);
         });
@@ -207,17 +215,17 @@ public class MissionBox {
         // Siren 1
         pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 3
         pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, 70, 80)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 5
+//        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 5
         pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 20, 40));
 
         // Siren 2
-        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins,  20, 60)); // Original Siren Button 2
+//        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins, 20, 60)); // Original Siren Button 2
 
         // Siren 3
 //        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
 
         // The Airsiren
-        pinHandler.add(0, new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins,50, 90)); // Motor Siren
+        pinHandler.add(0, new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, 50, 90)); // Motor Siren
 
         pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));
@@ -291,10 +299,6 @@ public class MissionBox {
         return btnGameStartStop;
     }
 
-    public static MyAbstractButton getBtnMisc() {
-        return btnMisc;
-    }
-
     public static JButton getGUIBtnRed() {
         return frmTest.getBtnRed();
     }
@@ -313,10 +317,6 @@ public class MissionBox {
 
     public static JButton getGUIBtn1() {
         return frmTest.getBtn1();
-    }
-
-    public static JButton getGUIBtn2() {
-        return frmTest.getBtn2();
     }
 
 
@@ -341,12 +341,14 @@ public class MissionBox {
 
     private static void loadLocalProperties() throws IOException {
         config = new SortedProperties();
+
         // Hier stehen die Standardwerte, falls keine missionbox.cfg existiert.
-        config.put(FCY_TIME2CAPTURE, "20");
-        config.put(FCY_GAMETIME, "5");
-//        config.put(FCY_SIREN, "true");
-        config.put(MBX_SIREN_TIME, "750");
-        config.put(FCY_RESPAWN_INTERVAL, "40");
+        config.put(FCY_TIME2CAPTURE, "180");
+        config.put(FCY_GAMETIME, "6");
+        config.put(FCY_RESPAWN_INTERVAL, "60");
+        config.put(MBX_RESUME_TIME, "10000"); // Zeit in ms, bevor es nach eine Pause weiter geht
+//        config.put(MBX_SIREN_TIME, "750");
+
         config.put(MBX_LOGLEVEL, "debug");
         config.put(MBX_I2C_1, "0x20");
         config.put(MBX_I2C_2, "0x24");
@@ -359,16 +361,11 @@ public class MissionBox {
         // Bauanleitung der Box steht.
 
         // die hier brauchen wir immer
-        config.put(MBX_SIREN1, "mcp23017-01-B7");
-
-        // falls wir noch mehr als eine Signalsirene haben.
-        config.put(MBX_SIREN2, "mcp23017-01-B6");
-        config.put(MBX_SIREN3, "mcp23017-01-B5");
+        config.put(MBX_SIREN1, "mcp23017-01-B1"); // die große
+        config.put(MBX_SIREN2, "mcp23017-01-B3"); // die kleine
 
         config.put(MBX_AIRSIREN, "mcp23017-01-B0");
-        config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B4");
-        config.put(MBX_TIME_SIREN, "mcp23017-01-B3");
-//        config.put(MBX_RESPAWN_SIREN, "mcp23017-01-B2");
+        config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B2");
 
         config.put(MBX_LED_GREEN, "mcp23017-01-A7");
         config.put(MBX_LED_RED, "mcp23017-01-A6");
@@ -383,7 +380,6 @@ public class MissionBox {
         config.put(MBX_BTN_GREEN, "mcp23017-02-B1");
         config.put(MBX_BTN_START_STOP, "mcp23017-02-B2");
         config.put(MBX_BTN_PAUSE, "mcp23017-02-B3");
-//        config.put(MBX_DEBUG, "true");
 
         File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
 
@@ -403,13 +399,14 @@ public class MissionBox {
     }
 
     public static void saveLocalProps() {
-
+        logger.debug("saving local props");
         try {
             File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
             FileOutputStream out = new FileOutputStream(configFile);
             config.store(out, "Settings MissionBox");
             out.close();
         } catch (Exception ex) {
+            logger.fatal(ex);
             System.exit(1);
         }
     }
@@ -480,9 +477,9 @@ public class MissionBox {
 //        logger.debug(message);
     }
 
-    public static void minuteSignal(int minutes) {
-        setScheme(MBX_TIME_SIREN, minutes + ";1000,1000");
-    }
+//    public static void minuteSignal(int minutes) {
+//        setScheme(MBX_TIME_SIREN, minutes + ";1000,1000");
+//    }
 
 
     public static void setRespawnTimer(String message) {
@@ -568,7 +565,7 @@ public class MissionBox {
             ioRed = inputMap.get(config.getProperty(MBX_BTN_RED));
             ioGreen = inputMap.get(config.getProperty(MBX_BTN_GREEN));
             ioGameStartStop = inputMap.get((config.getProperty(MBX_BTN_START_STOP)));
-            ioMisc = inputMap.get((config.getProperty(MBX_BTN_QUIT)));
+//            ioMisc = inputMap.get((config.getProperty(MBX_BTN_QUIT)));
             ioPAUSE = inputMap.get((config.getProperty(MBX_BTN_PAUSE)));
         }
 
@@ -576,6 +573,9 @@ public class MissionBox {
 
 
     public static void shutdownEverything() {
+//        pinHandler.off();
+
+
 //        synchronized (mapWorker) {
 //            Set<String> keys = mapWorker.keySet();
 //            for (String key : keys) {

@@ -28,6 +28,7 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                     ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
                     ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
                     "</style>\n";
+    private long remaining;
 
     public long getResumeinterval() {
         return resumeinterval;
@@ -74,15 +75,15 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         return respawninterval;
     }
 
-    private long getRemaining(long eventDuration) {
-        long endtime = maxgametime;
-        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
-            endtime = timeWhenTheFlagWasActivated + capturetime;
-        }
-        return endtime - gametimer - Math.max(eventDuration, 0);
-    }
+//    private long getRemaining(long eventDuration) {
+//        long endtime = maxgametime;
+//        if (gameState == Farcry1AssaultThread.GAME_FLAG_HOT) {
+//            endtime = timeWhenTheFlagWasActivated + capturetime;
+//        }
+//        return endtime - gametimer - Math.max(eventDuration, 0);
+//    }
 
-    public FC1DetailsMessageEvent(Object source, int gameState, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval) {
+    public FC1DetailsMessageEvent(Object source, int gameState, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval, long remaining) {
         super(source, gameState);
 
         this.starttime = starttime;
@@ -95,6 +96,8 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         this.resumeinterval = resumeinterval;
         this.lastrespawn = lastrespawn;
         this.respawninterval = respawninterval;
+        this.remaining = remaining;
+
     }
 
 //    public long getNextRespawn() {
@@ -117,7 +120,7 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 "gmstate", "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume",
                 Farcry1AssaultThread.GAMSTATS[gameState],
                 Tools.formatLongTime(gametimer + Math.max(finalizedEventDuration, 0)),
-                Tools.formatLongTime(getRemaining(finalizedEventDuration)),
+                Tools.formatLongTime(remaining),
                 Tools.formatLongTime(timeWhenTheFlagWasActivated),
                 Tools.formatLongTime(lastrespawn), Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
                 Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis())
@@ -158,7 +161,7 @@ public class FC1DetailsMessageEvent extends MessageEvent {
         return String.format(result,
                 "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume",
                 Tools.formatLongTime(gametimer + Math.max(finalizedEventDuration, 0), "mm:ss"),
-                Tools.formatLongTime(getRemaining(finalizedEventDuration), "mm:ss"),
+                Tools.formatLongTime(remaining, "mm:ss"),
                 Tools.formatLongTime(timeWhenTheFlagWasActivated, "mm:ss"),
                 Tools.formatLongTime(lastrespawn, "mm:ss"),
                 Tools.formatLongTime(maxgametime, "mm:ss"),

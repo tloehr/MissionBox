@@ -12,9 +12,7 @@ import gamemodes.GameEventListener;
 import interfaces.PercentageInterface;
 import misc.Tools;
 import org.apache.log4j.Logger;
-import progresshandlers.EscalatingSirens;
-import progresshandlers.EscalatingSirensTime;
-import progresshandlers.EscalatingTime;
+import progresshandlers.EscalatingSiren1Only;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -28,9 +26,10 @@ import java.util.ArrayList;
  */
 public class FrmTest extends JFrame implements GameEventListener {
     PercentageInterface[] progressHandlers = new PercentageInterface[]{
-            new EscalatingTime(MissionBox.MBX_SIREN1),
-            new EscalatingSirens(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3),
-            new EscalatingSirensTime(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3)};
+            new EscalatingSiren1Only(MissionBox.MBX_SIREN1)
+//            new EscalatingSirens(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3),
+//            new EscalatingSirensTime(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2, MissionBox.MBX_SIREN3)
+    };
     Logger logger = Logger.getLogger(getClass());
 
     ArrayList<Farcry1GameEvent> eventModel = new ArrayList<>();
@@ -93,7 +92,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 //    }
 
     private void initPanel() {
-
+        logger.setLevel(MissionBox.getLogLevel());
 //        tbDebug.setSelected(MissionBox.getConfig(MissionBox.MBX_DEBUG).equals("true"));
         tbDebug.addItemListener(i -> {
 //            MissionBox.setConfig(MissionBox.MBX_DEBUG, i.getStateChange() == ItemEvent.SELECTED ? "true" : "false");
@@ -160,14 +159,14 @@ public class FrmTest extends JFrame implements GameEventListener {
         btnRGBgreen.addActionListener(e -> relayAction(e));
         btnRGBblue.addActionListener(e -> relayAction(e));
 
-        btnRelayTest1.setToolTipText("mcp23017-01-B0");
-        btnRelayTest2.setToolTipText("mcp23017-01-B1");
-        btnRelayTest3.setToolTipText("mcp23017-01-B2");
-        btnRelayTest4.setToolTipText("mcp23017-01-B3");
-        btnRelayTest5.setToolTipText("mcp23017-01-B4");
-        btnRelayTest6.setToolTipText("mcp23017-01-B5");
-        btnRelayTest7.setToolTipText("mcp23017-01-B6");
-        btnRelayTest8.setToolTipText("mcp23017-01-B7");
+        btnRelayTest1.setToolTipText("mcp23017-01-B7");
+        btnRelayTest2.setToolTipText("mcp23017-01-B6");
+        btnRelayTest3.setToolTipText("mcp23017-01-B5");
+        btnRelayTest4.setToolTipText("mcp23017-01-B4");
+        btnRelayTest5.setToolTipText("mcp23017-01-B3");
+        btnRelayTest6.setToolTipText("mcp23017-01-B2");
+        btnRelayTest7.setToolTipText("mcp23017-01-B1");
+        btnRelayTest8.setToolTipText("mcp23017-01-B0");
 
 
     }
@@ -199,39 +198,42 @@ public class FrmTest extends JFrame implements GameEventListener {
      */
     private void relayAction(ActionEvent e) {
         String text = ((JButton) e.getSource()).getText();
+
+        logger.debug(text);
+
         if (text.equalsIgnoreCase("relay1")) {
-            MissionBox.setScheme("mcp23017-01-B7", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-B7", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("relay2")) {
-            MissionBox.setScheme("mcp23017-01-B6", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-B6", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("relay3")) {
-            MissionBox.setScheme("mcp23017-01-B5", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-B5", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("relay4")) {
-            MissionBox.setScheme("mcp23017-01-B4", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-B4", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("relay5")) {
-            MissionBox.setScheme("mcp23017-01-B3", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-B3", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("relay6")) {
-            MissionBox.setScheme("mcp23017-01-B2", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-B2", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("relay7")) {
-            MissionBox.setScheme("mcp23017-01-B1", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-B1", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("relay8")) {
             // airsiren
-            MissionBox.setScheme("mcp23017-01-B0", "5;750,1000");
+            MissionBox.setScheme("mcp23017-01-B0", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("LEDred")) {
-            MissionBox.setScheme("mcp23017-01-A7", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-A7", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("LEDgreen")) {
-            MissionBox.setScheme("mcp23017-01-A6", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-A6", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("PBred")) {
-            MissionBox.setScheme("mcp23017-01-A5", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-A5", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("PByellow")) {
-            MissionBox.setScheme("mcp23017-01-A4", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-A4", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("PBgreen")) {
-            MissionBox.setScheme("mcp23017-01-A3", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-01-A3", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("RGBred")) {
-            MissionBox.setScheme("mcp23017-02-A7", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-02-A7", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("RGBgreen")) {
-            MissionBox.setScheme("mcp23017-02-A6", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-02-A6", txtHandlerPattern.getText().trim());
         } else if (text.equalsIgnoreCase("RGBblue")) {
-            MissionBox.setScheme("mcp23017-02-A5", "1;2000,1000");
+            MissionBox.setScheme("mcp23017-02-A5", txtHandlerPattern.getText().trim());
         }
 
 
@@ -359,7 +361,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     private void btnRedLedBarActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, "3;500,500");
+//        MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, "3;500,500");
     }
 
     private void lblFCYCaptureActionPerformed(ActionEvent e) {
@@ -403,7 +405,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     private void btnTimeSignalActionPerformed(ActionEvent e) {
-        MissionBox.minuteSignal(2);
+//        MissionBox.minuteSignal(2);
     }
 
     private void btnFcyMinus60ActionPerformed(ActionEvent e) {
@@ -464,19 +466,19 @@ public class FrmTest extends JFrame implements GameEventListener {
 
 
     private void btnSiren1ActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;1000,1000");
+        MissionBox.setScheme(MissionBox.MBX_SIREN1, txtHandlerPattern.getText().trim());
     }
 
     private void btnSiren2ActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_SIREN2, "1;1000,1000");
+        MissionBox.setScheme(MissionBox.MBX_SIREN2, txtHandlerPattern.getText().trim());
     }
 
     private void btnSiren3ActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_SIREN3, "1;1000,1000");
+        //MissionBox.setScheme(MissionBox.MBX_SIREN3, "1;1000,1000");
     }
 
     private void btnAirSirenActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;1000,1000");
+        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, txtHandlerPattern.getText().trim());
     }
 
     private void btnClearEventActionPerformed(ActionEvent e) {
@@ -489,7 +491,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void txtHandlerPatternActionPerformed(ActionEvent e) {
 
-        MissionBox.getPinHandler().setScheme(MissionBox.MBX_SIREN1, txtHandlerPattern.getText().trim());
+        //MissionBox.getPinHandler().setScheme(MissionBox.MBX_SIREN1, txtHandlerPattern.getText().trim());
 
     }
 
@@ -591,8 +593,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
-                    "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
+                        "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                        "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
                 btn1.setText("Start / Stop");
@@ -653,8 +655,8 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //======== panel2 ========
                 {
                     panel2.setLayout(new FormLayout(
-                        "default:grow",
-                        "fill:default:grow, $lgap, fill:default:grow"));
+                            "default:grow",
+                            "fill:default:grow, $lgap, fill:default:grow"));
 
                     //---- btnRed ----
                     btnRed.setText(null);
@@ -695,7 +697,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 contentPanel.add(tbDebug, CC.xy(1, 7, CC.FILL, CC.DEFAULT));
 
                 //---- lblMessage ----
-                lblMessage.setText("text");
+                lblMessage.setText("Initializing...");
                 lblMessage.setFont(new Font("Dialog", Font.BOLD, 28));
                 lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
                 contentPanel.add(lblMessage, CC.xywh(3, 7, 3, 1));
@@ -712,8 +714,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== settingsPanel ========
             {
                 settingsPanel.setLayout(new FormLayout(
-                    "2*(pref:grow, $rgap), pref",
-                    "3*(default, $lgap), fill:default:grow"));
+                        "2*(pref:grow, $rgap), pref",
+                        "3*(default, $lgap), fill:default:grow"));
 
                 //---- label1 ----
                 label1.setText("Flaggenzeit (sec)");
@@ -904,8 +906,8 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== panel1 ========
             {
                 panel1.setLayout(new FormLayout(
-                    "default, 3*($ugap, default:grow), $lcgap, default:grow",
-                    "8*(default:grow, $lgap), default"));
+                        "left:82dlu, 3*($ugap, default:grow), $lcgap, default:grow",
+                        "8*(default:grow, $lgap), default"));
 
                 //---- lblButtonGreen ----
                 lblButtonGreen.setText("Button Green");
@@ -1013,10 +1015,11 @@ public class FrmTest extends JFrame implements GameEventListener {
                     panel10.setLayout(new BoxLayout(panel10, BoxLayout.PAGE_AXIS));
 
                     //---- label4 ----
-                    label4.setText("Siren 1 - Handler Test");
+                    label4.setText("Relay Test Scheme");
                     panel10.add(label4);
 
                     //---- txtHandlerPattern ----
+                    txtHandlerPattern.setText("1;1000,1000");
                     txtHandlerPattern.addActionListener(e -> txtHandlerPatternActionPerformed(e));
                     panel10.add(txtHandlerPattern);
                 }

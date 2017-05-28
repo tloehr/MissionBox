@@ -6,6 +6,7 @@ import interfaces.FC1DetailsMessageEvent;
 import interfaces.MessageListener;
 import main.MissionBox;
 import misc.Tools;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -317,45 +318,79 @@ public class Farcry1Assault implements GameMode {
         farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {
         }, gameTimeListener, percentageListener, gameModeListener, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL)));
 
+
+        /***
+         *      ____  _         ____          _    ____ ____ ___ ___
+         *     | __ )| |_ _ __ |  _ \ ___  __| |  / ___|  _ \_ _/ _ \
+         *     |  _ \| __| '_ \| |_) / _ \/ _` | | |  _| |_) | | | | |
+         *     | |_) | |_| | | |  _ <  __/ (_| | | |_| |  __/| | |_| |
+         *     |____/ \__|_| |_|_| \_\___|\__,_|  \____|_|  |___\___/
+         *
+         */
         MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
             logger.debug(event);
-            MissionBox.getFrmTest().setButtonTestLabel("red", event.getState() == PinState.HIGH); // for debugging
-            if (event.getState() == PinState.HIGH) {
-                logger.debug("RedButton pressed");
-
+            MissionBox.getFrmTest().setButtonTestLabel("red", event.getState() == PinState.LOW); // for debugging
+            if (event.getState() == PinState.LOW) {
+                logger.debug("GPIO RedButton down");
                 farcryAssaultThread.setFlagHot(true);
             }
         });
 
+        /***
+         *      ____  _         ____          _   ____          _
+         *     | __ )| |_ _ __ |  _ \ ___  __| | / ___|_      _(_)_ __   __ _
+         *     |  _ \| __| '_ \| |_) / _ \/ _` | \___ \ \ /\ / / | '_ \ / _` |
+         *     | |_) | |_| | | |  _ <  __/ (_| |  ___) \ V  V /| | | | | (_| |
+         *     |____/ \__|_| |_|_| \_\___|\__,_| |____/ \_/\_/ |_|_| |_|\__, |
+         *                                                              |___/
+         */
         MissionBox.getBtnRed().addListener(e -> {
             farcryAssaultThread.setFlagHot(true);
         });
 
+        /***
+         *      ____  _          ____                        ____ ____ ___ ___
+         *     | __ )| |_ _ __  / ___|_ __ ___  ___ _ __    / ___|  _ \_ _/ _ \
+         *     |  _ \| __| '_ \| |  _| '__/ _ \/ _ \ '_ \  | |  _| |_) | | | | |
+         *     | |_) | |_| | | | |_| | | |  __/  __/ | | | | |_| |  __/| | |_| |
+         *     |____/ \__|_| |_|\____|_|  \___|\___|_| |_|  \____|_|  |___\___/
+         *
+         */
         MissionBox.getBtnGreen().addListener((GpioPinListenerDigital) event -> {
-            logger.debug(event);
-            MissionBox.getFrmTest().setButtonTestLabel("green", event.getState() == PinState.HIGH); // for debugging
-            if (event.getState() == PinState.HIGH) {
+            // wenn die taste heruntergedrückt wird, ist der PinState LOW
+            logger.debug(ToStringBuilder.reflectionToString(event.getState()));
+            MissionBox.getFrmTest().setButtonTestLabel("green", event.getState() == PinState.LOW); // for debugging
+            if (event.getState() == PinState.LOW) {
                 logger.debug("GPIO GreenButton down");
 
                 // If both buttons are pressed, the red one wins.
-                if (MissionBox.getBtnRed().isHigh())
+                if (MissionBox.getBtnRed().isLow())
                     return;
 
                 farcryAssaultThread.setFlagHot(false);
             }
         });
 
+        /***
+         *      ____  _          ____                       ____          _
+         *     | __ )| |_ _ __  / ___|_ __ ___  ___ _ __   / ___|_      _(_)_ __   __ _
+         *     |  _ \| __| '_ \| |  _| '__/ _ \/ _ \ '_ \  \___ \ \ /\ / / | '_ \ / _` |
+         *     | |_) | |_| | | | |_| | | |  __/  __/ | | |  ___) \ V  V /| | | | | (_| |
+         *     |____/ \__|_| |_|\____|_|  \___|\___|_| |_| |____/ \_/\_/ |_|_| |_|\__, |
+         *                                                                        |___/
+         */
         MissionBox.getBtnGreen().addListener(e -> {
             logger.debug("GreenButton clicked");
             farcryAssaultThread.setFlagHot(false);
         });
 
         MissionBox.getBtnGameStartStop().addListener((GpioPinListenerDigital) event -> {
-            MissionBox.getFrmTest().setButtonTestLabel("start", event.getState() == PinState.HIGH); // for debugging
+            logger.debug(ToStringBuilder.reflectionToString(event.getState()));
+            MissionBox.getFrmTest().setButtonTestLabel("start", event.getState() == PinState.LOW); // for debugging
             if (!MissionBox.isGameStartable()) return;
             if (farcryAssaultThread.isPausing()) return;
-            if (event.getState() == PinState.HIGH) {
-                logger.debug("btnGameStartStop");
+            if (event.getState() == PinState.LOW) {
+                logger.debug("GPIO Start/Stop down");
                 if (farcryAssaultThread.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                     farcryAssaultThread.startGame();
                 } else {
@@ -377,16 +412,14 @@ public class Farcry1Assault implements GameMode {
 
         MissionBox.getBtnPAUSE().addListener(e -> {
             logger.debug("btnPause - on Screen");
-
             farcryAssaultThread.togglePause();
-
-
         });
 
         MissionBox.getBtnPAUSE().addListener((GpioPinListenerDigital) event -> {
-            MissionBox.getFrmTest().setButtonTestLabel("undo", event.getState() == PinState.HIGH); // for debugging
-            if (event.getState() == PinState.HIGH) {
-                logger.debug("btnPause - GPIO");
+            logger.debug(ToStringBuilder.reflectionToString(event.getState()));
+            MissionBox.getFrmTest().setButtonTestLabel("pause", event.getState() == PinState.LOW); // for debugging
+            if (event.getState() == PinState.LOW) {
+                logger.debug("GPIO BtnPause down");
                 farcryAssaultThread.togglePause();
             }
             //quitGame();

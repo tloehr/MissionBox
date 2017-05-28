@@ -69,8 +69,6 @@ public class Farcry1GameEvent extends JPanel {
      */
     public void finalizeEvent(long gametimer, long remaining) {
 
-
-
         eventDuration = gametimer - messageEvent.getGametimer(); // also der aktuelle gametimer minus dem gametimer zum Start dieses Events.
         this.remaining = remaining;
         setToolTipText("<html>" + messageEvent.toHTML(FC1DetailsMessageEvent.css, eventDuration) + "</html>");

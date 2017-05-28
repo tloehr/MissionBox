@@ -1,7 +1,10 @@
 Manifest-Version: 1.0
-Class-Path: pi4j-core-1.1.jar joda-time-2.9.9.jar log4j-1.2.17.jar jav
- aee-api-5.0-2.jar jgoodies-common-1.9.0.jar commons-collections4-4.1.
- jar pi4j-device-1.1.jar pi4j-core-1.1.jar pi4j-gpio-extension-1.1.jar
-  jgoodies-forms-1.10.jar
+Class-Path: log4j-1.2.17.jar javaee-api-5.0-2.jar pi4j-device-1.1.jar 
+ pi4j-core-1.1.jar pi4j-gpio-extension-1.1.jar pi4j-core-1.1.jar jgood
+ ies-common-1.9.0.jar jgoodies-common-1.9.0-tests.jar jgoodies-common-
+ 1.9.0-javadoc.jar jgoodies-common-1.9.0-sources.jar commons-collectio
+ ns4-4.1.jar joda-time-2.9.4.jar commons-lang3-3.5.jar jgoodies-forms-
+ 1.10.jar jgoodies-forms-1.10-tests.jar jgoodies-forms-1.10-javadoc.ja
+ r jgoodies-forms-1.10-sources.jar
 Main-Class: main.MissionBox
 

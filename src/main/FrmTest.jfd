@@ -140,7 +140,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblMessage"
-						"text": "text"
+						"text": "Initializing..."
 						"font": new java.awt.Font( "Dialog", 1, 28 )
 						"horizontalAlignment": 0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
@@ -374,7 +374,7 @@ new FormModel {
 					"title": "Settings"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "default, unrelgap, default:grow, unrelgap, default:grow, unrelgap, default:grow, labelcompgap, default:grow"
+					"$columnSpecs": "left:82dlu, unrelgap, default:grow, unrelgap, default:grow, unrelgap, default:grow, labelcompgap, default:grow"
 					"$rowSpecs": "default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default"
 				} ) {
 					name: "panel1"
@@ -567,10 +567,11 @@ new FormModel {
 						name: "panel10"
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label4"
-							"text": "Siren 1 - Handler Test"
+							"text": "Relay Test Scheme"
 						} )
 						add( new FormComponent( "javax.swing.JTextField" ) {
 							name: "txtHandlerPattern"
+							"text": "1;1000,1000"
 							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "txtHandlerPatternActionPerformed", true ) )
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
