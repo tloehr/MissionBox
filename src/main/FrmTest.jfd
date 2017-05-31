@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "6.0.0.0.84" Java: "1.8.0_112-release" encoding: "UTF-8"
+JFDML JFormDesigner: "6.0.1.0.112" Java: "1.8.0_112-release" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -184,7 +184,7 @@ new FormModel {
 						name: "lblFCYCapture"
 						"font": &Font1 new java.awt.Font( "Dialog", 1, 20 )
 						"text": "1"
-						"horizontalAlignment": 4
+						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYCaptureActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYCaptureFocusLost", true ) )
@@ -249,7 +249,7 @@ new FormModel {
 						name: "lblFCYGametime"
 						"font": #Font1
 						"text": "1"
-						"horizontalAlignment": 4
+						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYGametimeActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYGametimeFocusLost", true ) )
@@ -303,7 +303,7 @@ new FormModel {
 						name: "lblFCYRespawn"
 						"font": #Font1
 						"text": "1"
-						"horizontalAlignment": 4
+						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYRespawnActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYRespawnFocusLost", true ) )
@@ -359,7 +359,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label7"
-						"text": "Respawnsirene (sekunden)"
+						"text": "Respawnsirene (millis)"
 						"font": #Font0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
@@ -368,7 +368,7 @@ new FormModel {
 						name: "lblRspwnSiren"
 						"font": #Font1
 						"text": "1"
-						"horizontalAlignment": 4
+						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblRspwnSirenActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblRspwnSirenFocusLost", true ) )
@@ -376,10 +376,11 @@ new FormModel {
 						"gridY": 7
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"gridX": 3
+						"gridWidth": 3
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label6"
-						"text": "Startsirene (sekunden)"
+						"text": "Startsirene (millis)"
 						"font": #Font0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
@@ -388,7 +389,7 @@ new FormModel {
 						name: "lblStartsiren"
 						"font": #Font1
 						"text": "1"
-						"horizontalAlignment": 4
+						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblStartsirenActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblStartsirenFocusLost", true ) )
@@ -396,6 +397,7 @@ new FormModel {
 						"gridY": 9
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"gridX": 3
+						"gridWidth": 3
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label8"
@@ -408,10 +410,9 @@ new FormModel {
 						name: "lblWinningSiren"
 						"font": #Font1
 						"text": "5;1000,300,1000,300,1000,300"
-						"horizontalAlignment": 4
+						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblStartsirenActionPerformed", true ) )
-						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblStartsirenFocusLost", true ) )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblWinningSirenActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 11
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL

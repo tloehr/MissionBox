@@ -34,6 +34,7 @@ import static com.sun.org.apache.xalan.internal.utils.SecuritySupport.getResourc
  */
 public class MissionBox {
 
+
     private static int startup_progress = 0;
     private static Logger logger;
     private static Level logLevel = Level.DEBUG;
@@ -73,7 +74,8 @@ public class MissionBox {
     public static final String FCY_RESPAWN_INTERVAL = "fcy.respawn.interval";
     public static final String MBX_RESPAWN_SIRENTIME = "mbx.respawn.sirentime";
     public static final String MBX_STARTGAME_SIRENTIME = "mbx.startgame.sirentime";
-    //    public static final String MBX_DEBUG = "mbx.debug";
+    public static final String FCY_WINNING_SIREN_SCHEME = "fcy.winning.siren.scheme";
+
     public static final String MBX_SIREN1 = "mbx.siren1";
     public static final String MBX_SIREN2 = "mbx.siren2";
     //    public static final String MBX_SIREN3 = "mbx.siren3";
@@ -358,6 +360,7 @@ public class MissionBox {
 
         config.put(MBX_RESPAWN_SIRENTIME, "2000");
         config.put(MBX_STARTGAME_SIRENTIME, "10000");
+        config.put(FCY_WINNING_SIREN_SCHEME, "5;1000,300,1000,300,1000,300");
 
 //        config.put(MBX_SIREN_TIME, "750");
 

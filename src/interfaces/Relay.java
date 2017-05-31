@@ -37,7 +37,7 @@ public class Relay implements OnOffInterface {
         this.name = name;
         if (pin != null) pin.setState(PinState.LOW);
     }
-    
+
     public Relay(String configKey, Color color, JPanel addYourself2this, int instrument, int note) {
         this(MissionBox.getOutputMap().get(MissionBox.getConfig(configKey)), configKey, color, addYourself2this, instrument, note);
 
@@ -52,18 +52,23 @@ public class Relay implements OnOffInterface {
         debugLED = new MyLED(name, color);
         this.note = note;
         addYourself2this.add(debugLED);
-        try {
-            synthesizer = null;
-            if (instrument > 0) {
-                synthesizer = MidiSystem.getSynthesizer();
-                synthesizer.open();
-                //                Instrument instrs[] = synthesizer.getDefaultSoundbank().getInstruments();
-                channels = synthesizer.getChannels();
-                channels[0].programChange(instrument);
-                synthesizer.loadAllInstruments(synthesizer.getDefaultSoundbank());
+        synthesizer = null;
+
+        // Die Tonerzeugung ist nur zum Testen auf normalen Rechnern
+        // und nicht auf dem RASPI. Da muss keine Rechenzeit verschwendet werden.
+        if (MissionBox.getGPIO() == null) {
+            try {
+                if (instrument > 0) {
+                    synthesizer = MidiSystem.getSynthesizer();
+                    synthesizer.open();
+                    //                Instrument instrs[] = synthesizer.getDefaultSoundbank().getInstruments();
+                    channels = synthesizer.getChannels();
+                    channels[0].programChange(instrument);
+                    synthesizer.loadAllInstruments(synthesizer.getDefaultSoundbank());
+                }
+            } catch (javax.sound.midi.MidiUnavailableException e) {
+                synthesizer = null;
             }
-        } catch (javax.sound.midi.MidiUnavailableException e) {
-            synthesizer = null;
         }
     }
 

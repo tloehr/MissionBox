@@ -300,24 +300,6 @@ public class FrmTest extends JFrame implements GameEventListener {
         return debugPanel4Pins;
     }
 
-//    public void log(String text) {
-//
-//        if (text == null) {
-//            txtLog.setText("");
-//        } else {
-//            log(0, "", text);
-//        }
-//    }
-//
-//    public void log(long someID, String someText, String text) {
-//        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-//        String newTxt = txtLog.getText() + "\n(" + df.format(new Date()) + ") ";
-//        newTxt += someID > 0 ? " [" + someID + "] " : "";
-//        newTxt += !someText.isEmpty() ? " \"" + someText + "\" " : "";
-//        newTxt += text;
-//        txtLog.setText(newTxt);
-//    }
-
 
     private void tabbedPane1StateChanged(ChangeEvent e) {
         if (tabbedPane1.getSelectedIndex() == 0) {
@@ -326,7 +308,9 @@ public class FrmTest extends JFrame implements GameEventListener {
             lblFCYCapture.setText(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE));
             lblFCYGametime.setText(MissionBox.getConfig(MissionBox.FCY_GAMETIME));
             lblFCYRespawn.setText(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
-
+            lblRspwnSiren.setText(MissionBox.getConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
+            lblStartsiren.setText(MissionBox.getConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+            lblWinningSiren.setText(MissionBox.getConfig(MissionBox.FCY_WINNING_SIREN_SCHEME));
         } else {
             MissionBox.getPinHandler().off();
         }
@@ -401,13 +385,6 @@ public class FrmTest extends JFrame implements GameEventListener {
         lblFCYRespawnActionPerformed(new ActionEvent(e.getSource(), 0, ""));
     }
 
-    private void btnRespawnActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;1000,1000");
-    }
-
-    private void btnTimeSignalActionPerformed(ActionEvent e) {
-//        MissionBox.minuteSignal(2);
-    }
 
     private void btnFcyMinus60ActionPerformed(ActionEvent e) {
         fcyCapChange(-60);
@@ -486,9 +463,6 @@ public class FrmTest extends JFrame implements GameEventListener {
         setRevertEvent(null);
     }
 
-    private void btnNoRespawnActionPerformed(ActionEvent e) {
-        // TODO add your code here
-    }
 
     private void txtHandlerPatternActionPerformed(ActionEvent e) {
 
@@ -510,19 +484,40 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     private void lblRspwnSirenActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        JTextField txt = ((JTextField) e.getSource());
+
+        long respawnsiren = Long.parseLong(MissionBox.getConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
+        long value = Tools.parseLong(txt.getText(), 0, Long.MAX_VALUE, respawnsiren);
+
+        MissionBox.setConfig(MissionBox.MBX_RESPAWN_SIRENTIME, Long.toString(value)); // speichern als millis
+        txt.setText(Long.toString(value));
     }
 
     private void lblRspwnSirenFocusLost(FocusEvent e) {
-        // TODO add your code here
+        lblRspwnSirenActionPerformed(new ActionEvent(e.getSource(), 0, ""));
     }
 
     private void lblStartsirenActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        JTextField txt = ((JTextField) e.getSource());
+
+        long startsiren = Long.parseLong(MissionBox.getConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+        long value = Tools.parseLong(txt.getText(), 0, Long.MAX_VALUE, startsiren);
+
+        MissionBox.setConfig(MissionBox.MBX_STARTGAME_SIRENTIME, Long.toString(value)); // speichern als millis
+        txt.setText(Long.toString(value));
     }
 
+    //todo: die actions raus. focus lost reicht
+    //todo: bei flaggehot schaltet die sirene nicht aus wenn nach prepgame gegangen wird
+
     private void lblStartsirenFocusLost(FocusEvent e) {
-        // TODO add your code here
+        lblStartsirenActionPerformed(new ActionEvent(e.getSource(), 0, ""));
+    }
+
+    private void lblWinningSirenActionPerformed(ActionEvent e) {
+        JTextField txt = ((JTextField) e.getSource());
+        String winnigscheme = MissionBox.getConfig(MissionBox.FCY_WINNING_SIREN_SCHEME);
+        MissionBox.setConfig(MissionBox.FCY_WINNING_SIREN_SCHEME, txt.getText().trim());
     }
 
 
@@ -765,7 +760,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //---- lblFCYCapture ----
                 lblFCYCapture.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYCapture.setText("1");
-                lblFCYCapture.setHorizontalAlignment(SwingConstants.RIGHT);
+                lblFCYCapture.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYCapture.setBackground(Color.orange);
                 lblFCYCapture.addActionListener(e -> lblFCYCaptureActionPerformed(e));
                 lblFCYCapture.addFocusListener(new FocusAdapter() {
@@ -827,7 +822,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //---- lblFCYGametime ----
                 lblFCYGametime.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYGametime.setText("1");
-                lblFCYGametime.setHorizontalAlignment(SwingConstants.RIGHT);
+                lblFCYGametime.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYGametime.setBackground(Color.orange);
                 lblFCYGametime.addActionListener(e -> lblFCYGametimeActionPerformed(e));
                 lblFCYGametime.addFocusListener(new FocusAdapter() {
@@ -877,7 +872,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //---- lblFCYRespawn ----
                 lblFCYRespawn.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblFCYRespawn.setText("1");
-                lblFCYRespawn.setHorizontalAlignment(SwingConstants.RIGHT);
+                lblFCYRespawn.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYRespawn.setBackground(Color.orange);
                 lblFCYRespawn.addActionListener(e -> lblFCYRespawnActionPerformed(e));
                 lblFCYRespawn.addFocusListener(new FocusAdapter() {
@@ -932,14 +927,14 @@ public class FrmTest extends JFrame implements GameEventListener {
                 settingsPanel.add(panel6, CC.xy(5, 5));
 
                 //---- label7 ----
-                label7.setText("Respawnsirene (sekunden)");
+                label7.setText("Respawnsirene (millis)");
                 label7.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label7, CC.xy(1, 7));
 
                 //---- lblRspwnSiren ----
                 lblRspwnSiren.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblRspwnSiren.setText("1");
-                lblRspwnSiren.setHorizontalAlignment(SwingConstants.RIGHT);
+                lblRspwnSiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblRspwnSiren.setBackground(Color.orange);
                 lblRspwnSiren.addActionListener(e -> lblRspwnSirenActionPerformed(e));
                 lblRspwnSiren.addFocusListener(new FocusAdapter() {
@@ -948,17 +943,17 @@ public class FrmTest extends JFrame implements GameEventListener {
                         lblRspwnSirenFocusLost(e);
                     }
                 });
-                settingsPanel.add(lblRspwnSiren, CC.xy(3, 7, CC.FILL, CC.DEFAULT));
+                settingsPanel.add(lblRspwnSiren, CC.xywh(3, 7, 3, 1, CC.FILL, CC.DEFAULT));
 
                 //---- label6 ----
-                label6.setText("Startsirene (sekunden)");
+                label6.setText("Startsirene (millis)");
                 label6.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label6, CC.xy(1, 9));
 
                 //---- lblStartsiren ----
                 lblStartsiren.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblStartsiren.setText("1");
-                lblStartsiren.setHorizontalAlignment(SwingConstants.RIGHT);
+                lblStartsiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblStartsiren.setBackground(Color.orange);
                 lblStartsiren.addActionListener(e -> lblStartsirenActionPerformed(e));
                 lblStartsiren.addFocusListener(new FocusAdapter() {
@@ -967,7 +962,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                         lblStartsirenFocusLost(e);
                     }
                 });
-                settingsPanel.add(lblStartsiren, CC.xy(3, 9, CC.FILL, CC.DEFAULT));
+                settingsPanel.add(lblStartsiren, CC.xywh(3, 9, 3, 1, CC.FILL, CC.DEFAULT));
 
                 //---- label8 ----
                 label8.setText("Siegersirene (muster)");
@@ -977,15 +972,9 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //---- lblWinningSiren ----
                 lblWinningSiren.setFont(new Font("Dialog", Font.BOLD, 20));
                 lblWinningSiren.setText("5;1000,300,1000,300,1000,300");
-                lblWinningSiren.setHorizontalAlignment(SwingConstants.RIGHT);
+                lblWinningSiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblWinningSiren.setBackground(Color.orange);
-                lblWinningSiren.addActionListener(e -> lblStartsirenActionPerformed(e));
-                lblWinningSiren.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        lblStartsirenFocusLost(e);
-                    }
-                });
+                lblWinningSiren.addActionListener(e -> lblWinningSirenActionPerformed(e));
                 settingsPanel.add(lblWinningSiren, CC.xywh(3, 11, 3, 1, CC.FILL, CC.DEFAULT));
 
                 //======== panel5 ========

@@ -258,7 +258,7 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.off(MissionBox.MBX_LED_PB_RED);
 
                 // Einmal langer Heulton zum Ende, heisst verloren
-                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;5000,0");
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
 
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
                 /***
@@ -287,7 +287,7 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
 
                 // sirenengeheul als Sieg
-                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;2000,1000,2000,1000,2000,1000,5000,0");
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, MissionBox.getConfig(MissionBox.FCY_WINNING_SIREN_SCHEME));
 
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
                 /***

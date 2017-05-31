@@ -2,8 +2,6 @@ package misc;
 
 import com.pi4j.gpio.extension.mcp.MCP23017Pin;
 import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -181,12 +179,27 @@ public class Tools {
         return result;
     }
 
-    public static String formatLongTime(long time, String pattern){
+    public static long parseLong(String input, long min, long max, long previous) {
+        long result = previous;
+        try {
+            result = Integer.parseInt(input);
+        } catch (NumberFormatException nfe) {
+            result = previous;
+        }
+
+        if (result < min || result > max) {
+            result = previous;
+        }
+
+        return result;
+    }
+
+    public static String formatLongTime(long time, String pattern) {
         return time < 0l ? "--" : new DateTime(time, DateTimeZone.UTC).toString(pattern);
     }
 
 
-    public static String formatLongTime(long time){
+    public static String formatLongTime(long time) {
         return formatLongTime(time, "mm:ss,SSS");
     }
 
@@ -279,27 +292,26 @@ public class Tools {
 
 
     /**
-        * läuft rekursiv durch alle Kinder eines Containers und setzt deren Enabled Status auf
-        * enabled.
-        */
-       public static void setXEnabled(JComponent container, boolean enabled) {
-           // Bei einer Combobox muss die Rekursion ebenfalls enden.
-           // Sie besteht aus weiteren Unterkomponenten
-           // "disabled" wird sie aber bereits hier.
-           if (container.getComponentCount() == 0 || container instanceof JComboBox) {
-               // Rekursionsanker
-               container.setEnabled(enabled);
-           } else {
-               Component[] c = container.getComponents();
-               for (int i = 0; i < c.length; i++) {
-                   if (c[i] instanceof JComponent) {
-                       JComponent jc = (JComponent) c[i];
-                       setXEnabled(jc, enabled);
-                   }
-               }
-           }
-       }
-
+     * läuft rekursiv durch alle Kinder eines Containers und setzt deren Enabled Status auf
+     * enabled.
+     */
+    public static void setXEnabled(JComponent container, boolean enabled) {
+        // Bei einer Combobox muss die Rekursion ebenfalls enden.
+        // Sie besteht aus weiteren Unterkomponenten
+        // "disabled" wird sie aber bereits hier.
+        if (container.getComponentCount() == 0 || container instanceof JComboBox) {
+            // Rekursionsanker
+            container.setEnabled(enabled);
+        } else {
+            Component[] c = container.getComponents();
+            for (int i = 0; i < c.length; i++) {
+                if (c[i] instanceof JComponent) {
+                    JComponent jc = (JComponent) c[i];
+                    setXEnabled(jc, enabled);
+                }
+            }
+        }
+    }
 
 
 //    public static void flashBackground(final JComponent component, final Color flashcolor, int repeatTimes) {

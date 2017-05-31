@@ -3,10 +3,6 @@ package threads;
 import interfaces.Relay;
 import org.apache.log4j.Logger;
 
-import javax.sound.midi.Instrument;
-import javax.sound.midi.MidiChannel;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Synthesizer;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
@@ -73,7 +69,6 @@ public class PinBlinkModel implements Callable<String> {
 //    }
 
     public PinBlinkModel(Relay pin) {
-
         this.onOffScheme = new ArrayList<>();
         this.positionInScheme = -1;
         this.pin = pin;
