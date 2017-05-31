@@ -168,13 +168,13 @@ new FormModel {
 					"title": "Game"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "pref:grow, relgap, pref:grow, relgap, pref"
-					"$rowSpecs": "default, linegap, default, linegap, default, linegap, fill:default:grow"
+					"$columnSpecs": "left:70dlu:grow, relgap, pref:grow, relgap, pref"
+					"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, fill:default:grow, linegap, default"
 				} ) {
 					name: "settingsPanel"
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label1"
-						"text": "Flaggenzeit (sec)"
+						"text": "Flaggenzeit (Sekunden)"
 						"font": #Font0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 1
@@ -240,7 +240,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label2"
-						"text": "Spieldauer (min)"
+						"text": "Spieldauer (Minuten)"
 						"font": #Font0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
@@ -294,7 +294,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "label3"
-						"text": "respawn (sec)"
+						"text": "Respawn (Sekunden)"
 						"font": #Font0
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
@@ -357,6 +357,67 @@ new FormModel {
 						"gridX": 5
 						"gridY": 5
 					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label7"
+						"text": "Respawnsirene (sekunden)"
+						"font": #Font0
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 7
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "lblRspwnSiren"
+						"font": #Font1
+						"text": "1"
+						"horizontalAlignment": 4
+						"background": sfield java.awt.Color orange
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblRspwnSirenActionPerformed", true ) )
+						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblRspwnSirenFocusLost", true ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 7
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridX": 3
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label6"
+						"text": "Startsirene (sekunden)"
+						"font": #Font0
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 9
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "lblStartsiren"
+						"font": #Font1
+						"text": "1"
+						"horizontalAlignment": 4
+						"background": sfield java.awt.Color orange
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblStartsirenActionPerformed", true ) )
+						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblStartsirenFocusLost", true ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 9
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridX": 3
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label8"
+						"text": "Siegersirene (muster)"
+						"font": #Font0
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 11
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "lblWinningSiren"
+						"font": #Font1
+						"text": "5;1000,300,1000,300,1000,300"
+						"horizontalAlignment": 4
+						"background": sfield java.awt.Color orange
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblStartsirenActionPerformed", true ) )
+						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblStartsirenFocusLost", true ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 11
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridX": 3
+						"gridWidth": 3
+					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 						"columns": 2
 						"rows": 3
@@ -367,14 +428,14 @@ new FormModel {
 							"font": new java.awt.Font( "Dialog", 1, 16 )
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 7
+						"gridY": 13
 						"gridWidth": 5
 					} )
 				}, new FormLayoutConstraints( null ) {
 					"title": "Settings"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "left:82dlu, unrelgap, default:grow, unrelgap, default:grow, unrelgap, default:grow, labelcompgap, default:grow"
+					"$columnSpecs": "left:82dlu, unrelgap, default:grow, unrelgap, default:grow, unrelgap, 69dlu, labelcompgap, default:grow"
 					"$rowSpecs": "default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default"
 				} ) {
 					name: "panel1"
@@ -551,15 +612,22 @@ new FormModel {
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRespawn"
-						"text": "Respawn Signal"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRespawnActionPerformed", true ) )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 3
+					} ) {
+						name: "panel11"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label5"
+							"text": "Percentage"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtPercentage"
+							"text": "50"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "txtHandlerPatternActionPerformed", true ) )
+						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 7
 						"gridY": 9
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridX": 7
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
 						"axis": 3
@@ -596,15 +664,27 @@ new FormModel {
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnTimeSignal"
-						"text": "2 Minutes"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnTimeSignalActionPerformed", true ) )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 3
+					} ) {
+						name: "panel12"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnRelaySirens"
+							"text": "Sirens"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRelaySirensActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnFlagPole"
+							"text": "FlagPole"
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnProgess"
+							"text": "LEDPrgrss"
+						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 7
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"gridY": 11
+						"gridHeight": 5
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRelayTest7"
@@ -621,16 +701,6 @@ new FormModel {
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 13
 						"gridX": 5
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRedLedBar"
-						"text": "30 Seconds"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRedLedBarActionPerformed", true ) )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 7
-						"gridY": 13
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )

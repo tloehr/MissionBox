@@ -54,7 +54,7 @@ public class RelaySirensOneSignal extends PercentageInterface {
         logger.debug("offTime " + offTime);
 
 
-//        MissionBox.blink(key, onTime, offTime, Integer.MAX_VALUE); // only when necessary
+//        MissionBox.blink(mainSiren, onTime, offTime, Integer.MAX_VALUE); // only when necessary
 
 
     }

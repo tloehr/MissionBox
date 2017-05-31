@@ -71,13 +71,17 @@ public class MissionBox {
     public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
     public static final String MBX_LOGLEVEL = "mbx.loglevel";
     public static final String FCY_RESPAWN_INTERVAL = "fcy.respawn.interval";
+    public static final String MBX_RESPAWN_SIRENTIME = "mbx.respawn.sirentime";
+    public static final String MBX_STARTGAME_SIRENTIME = "mbx.startgame.sirentime";
     //    public static final String MBX_DEBUG = "mbx.debug";
     public static final String MBX_SIREN1 = "mbx.siren1";
     public static final String MBX_SIREN2 = "mbx.siren2";
-//    public static final String MBX_SIREN3 = "mbx.siren3";
+    //    public static final String MBX_SIREN3 = "mbx.siren3";
     public static final String MBX_AIRSIREN = "mbx.airsiren";
     public static final String MBX_SHUTDOWN_SIREN = "mbx.shutdown.siren";
-//    public static final String MBX_TIME_SIREN = "mbx.time.siren";
+
+
+    //    public static final String MBX_TIME_SIREN = "mbx.time.siren";
     public static final String MBX_LED_GREEN = "mbx.led.green";
     public static final String MBX_LED_RED = "mbx.led.red";
     public static final String MBX_LED_PB_GREEN = "mbx.led.progress.green";
@@ -213,10 +217,10 @@ public class MissionBox {
 
         // three sirens now.
         // Siren 1
-        pinHandler.add(1, new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 3
-        pinHandler.add(1, new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, 70, 80)); // Original Siren Button 3
+        pinHandler.add(new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, 70, 60)); // Original Siren Button 3
+        pinHandler.add(new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, 70, 80)); // Original Siren Button 3
 //        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 5
-        pinHandler.add(1, new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 20, 40));
+        pinHandler.add(new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 20, 40));
 
         // Siren 2
 //        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins, 20, 60)); // Original Siren Button 2
@@ -225,7 +229,7 @@ public class MissionBox {
 //        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
 
         // The Airsiren
-        pinHandler.add(0, new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, 50, 90)); // Motor Siren
+        pinHandler.add(new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, 50, 90)); // Motor Siren
 
         pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));
@@ -265,6 +269,10 @@ public class MissionBox {
         pinHandler.add(new Relay(outputMap.get("mcp23017-02-A6"), "mcp23017-02-A6", Color.BLUE, debugPanel4Pins));
         pinHandler.add(new Relay(outputMap.get("mcp23017-02-A7"), "mcp23017-02-A7", Color.BLUE, debugPanel4Pins));
 
+    }
+
+    public static void setScheme(String name, String scheme, Object... objects) {
+        pinHandler.setScheme(name, String.format(scheme, objects));
     }
 
     public static void setScheme(String name, String scheme) {
@@ -347,6 +355,10 @@ public class MissionBox {
         config.put(FCY_GAMETIME, "6");
         config.put(FCY_RESPAWN_INTERVAL, "60");
         config.put(MBX_RESUME_TIME, "10000"); // Zeit in ms, bevor es nach eine Pause weiter geht
+
+        config.put(MBX_RESPAWN_SIRENTIME, "2000");
+        config.put(MBX_STARTGAME_SIRENTIME, "10000");
+
 //        config.put(MBX_SIREN_TIME, "750");
 
         config.put(MBX_LOGLEVEL, "debug");
@@ -440,11 +452,21 @@ public class MissionBox {
 
     /**
      * @param key
-     * @param neutral - wenn es den key nicht gibt, wir dieser Neutralwert zurück gegeben
+     * @param neutral - wenn es den mainSiren nicht gibt, wir dieser Neutralwert zurück gegeben
      * @return
      */
     public static String getConfig(String key, String neutral) {
         return config.containsKey(key) ? config.getProperty(key) : neutral;
+    }
+
+    public static int getIntConfig(String key) {
+        return getIntConfig(key, 0);
+    }
+
+    public static int getIntConfig(String key, int neutral) {
+        String cfg = getConfig(key);
+        if (cfg.isEmpty()) return neutral;
+        return Integer.parseInt(getConfig(key));
     }
 
     public static void setMessage(String message) {
@@ -578,9 +600,9 @@ public class MissionBox {
 
 //        synchronized (mapWorker) {
 //            Set<String> keys = mapWorker.keySet();
-//            for (String key : keys) {
-//                logger.debug("cleaning key: "+key);
-//                MissionBox.blink(key, 0);
+//            for (String mainSiren : keys) {
+//                logger.debug("cleaning mainSiren: "+mainSiren);
+//                MissionBox.blink(mainSiren, 0);
 //            }
 //        }
 

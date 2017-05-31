@@ -73,7 +73,7 @@ public class Tools {
             ResourceBundle lang = ResourceBundle.getBundle("Messages");
             title = lang.getString(message);
         } catch (Exception e) {
-            // ok, its not a langbundle key
+            // ok, its not a langbundle mainSiren
         }
         return title;
     }

@@ -407,7 +407,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                 long respawntimer = lastrespawn + respawninterval - gametimer;
                 lastRemainingTime = getRemaining();
 
-                logger.debug(String.format("[gamemode|gametimer|remaining|respawntimer|lastrespawn] ==> [%s|%s|%s|%s|%s]", GAMSTATS[gameState], Tools.formatLongTime(gametimer), Tools.formatLongTime(lastRemainingTime), Tools.formatLongTime(respawntimer), Tools.formatLongTime(lastrespawn)));
+//                logger.debug(String.format("[gamemode|gametimer|remaining|respawntimer|lastrespawn] ==> [%s|%s|%s|%s|%s]", GAMSTATS[gameState], Tools.formatLongTime(gametimer), Tools.formatLongTime(lastRemainingTime), Tools.formatLongTime(respawntimer), Tools.formatLongTime(lastrespawn)));
 
                 if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
                     fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));

@@ -53,7 +53,7 @@ public class RelaySirensTwoSignals extends PercentageInterface {
 //        }
 //
 //        offTime = MAXTIMEFORSIGNAL - onTime;
-//        logger.debug("key " + key);
+//        logger.debug("mainSiren " + mainSiren);
 //        logger.debug("onTime " + onTime);
 //        logger.debug("offTime " + offTime);
 

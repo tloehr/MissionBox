@@ -94,7 +94,8 @@ public class Farcry1Assault implements GameMode {
                     String respawnTimer = Tools.formatLongTime(event.getLastrespawn() + event.getRespawninterval() - event.getGametimer(), "mm:ss");
                     MissionBox.setRespawnTimer(respawnTimer);
                     if (event.getLastrespawn() + event.getRespawninterval() <= event.getGametimer()) {
-                        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;2000,0");
+//                        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;2000,0");
+                        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
                         logger.info("Respawning");
                     }
                 }
@@ -299,8 +300,6 @@ public class Farcry1Assault implements GameMode {
                  */
                 logger.debug("GAME_FLAG_ACTIVE");
                 MissionBox.enableSettings(false);
-//                RESPAWNINSECONDS = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_TIME));
-
 
                 MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
                 MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
@@ -310,7 +309,7 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.off(MissionBox.MBX_LED_RGB_RED);
 
                 // the starting siren
-                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;5000,0");
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
             }
         };
 

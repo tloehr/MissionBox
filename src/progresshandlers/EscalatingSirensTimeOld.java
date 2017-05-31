@@ -51,6 +51,6 @@ public class EscalatingSirensTimeOld extends PercentageInterface {
         logger.debug("onTime " + onTime);
         logger.debug("offTime " + offTime);
 
-//        MissionBox.setScheme(key, FOREVER + ";" + onTime + "," + offTime);
+//        MissionBox.setScheme(mainSiren, FOREVER + ";" + onTime + "," + offTime);
     }
 }
