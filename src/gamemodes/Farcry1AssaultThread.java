@@ -195,6 +195,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                 switch (gameState) {
                     case GAME_PRE_GAME: {
                         starttime = -1l;
+                        timeWhenTheFlagWasActivated = -1l;
                         MissionBox.shutdownEverything();
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
                         MissionBox.getFrmTest().clearEvents();
