@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "6.0.1.0.112" Java: "1.8.0_112-release" encoding: "UTF-8"
+JFDML JFormDesigner: "6.0.0.0.84" Java: "1.8.0_112-release" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -370,7 +370,6 @@ new FormModel {
 						"text": "1"
 						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblRspwnSirenActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblRspwnSirenFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
@@ -412,7 +411,7 @@ new FormModel {
 						"text": "5;1000,300,1000,300,1000,300"
 						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblWinningSirenActionPerformed", true ) )
+						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblWinningSirenFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 11
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL

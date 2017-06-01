@@ -5,13 +5,12 @@ import main.MissionBox;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * This class progresses through a group of pins (defined by their keys within the outputMap. According to the number of defined pins
  * and the current percentage set by setValue(), the corresponding pin is chosen to blink in the frequency pulsetimeinmillis.
  */
-public class EscalatingSiren1Only extends PercentageInterface {
+public class EscalatingSiren1Ticking extends PercentageInterface {
     //    long pulsetimeinmillis = 1000; // Integer.parseInt(MissionBox.getConfig().getProperty(MissionBox.MBX_SIREN_TIME));
     private int previousTenth = -1;
     protected final Logger logger = Logger.getLogger(getClass());
@@ -22,11 +21,11 @@ public class EscalatingSiren1Only extends PercentageInterface {
 
 
     /**
-     * @param key
+     * @param siren
      */
-    public EscalatingSiren1Only(String key) {
-        super("Escalating with Siren 1 only");
-        this.key = key;
+    public EscalatingSiren1Ticking(String siren) {
+        super("Escalating Siren1 ticking");
+        this.key = siren;
         logger.setLevel(MissionBox.getLogLevel());
     }
 
@@ -48,13 +47,19 @@ public class EscalatingSiren1Only extends PercentageInterface {
         if (tenth == previousTenth) return;
         previousTenth = tenth;
 
+        // je weiter richtung Sieg, desto kürzer die Abstände
+        int tickPause = 100 * (100-tenth) / 10;
+        String tickingSound = "";
+        for (int t = 0; t < 9; t++) {
+            tickingSound += String.format("50,%d,", tickPause);
+        }
+        // der letzte ohne das nachfolgende Komma
+        // deswegen läuft die vorige schleife auch nur bis 9
+        tickingSound += String.format("50,%d", tickPause);
 
-
-
-        String pause = new Integer((110 - tenth) * 100).toString();
 
         // hundertmal sollten oft genug sein
-        MissionBox.setScheme(key, "100;70,25,70,25,70,25,800," + pause);
+        MissionBox.setScheme(key, "100;70,25,70,25,70,25,800,75," + tickingSound);
 
     }
 }

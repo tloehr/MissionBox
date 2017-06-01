@@ -223,6 +223,8 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.enableSettings(true);
                 MissionBox.getFrmTest().getBtnClearEvent().setEnabled(false);
 
+                MissionBox.setProgress(BigDecimal.ONE.negate()); // stop progess. -1 beendet alles.
+
                 MissionBox.off(MissionBox.MBX_LED_RED);
                 MissionBox.off(MissionBox.MBX_LED_GREEN);
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);

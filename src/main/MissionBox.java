@@ -360,7 +360,7 @@ public class MissionBox {
 
         config.put(MBX_RESPAWN_SIRENTIME, "2000");
         config.put(MBX_STARTGAME_SIRENTIME, "10000");
-        config.put(FCY_WINNING_SIREN_SCHEME, "5;1000,300,1000,300,1000,300");
+        config.put(FCY_WINNING_SIREN_SCHEME, "1;1000,300,1000,300,1000,300,10000,0");
 
 //        config.put(MBX_SIREN_TIME, "750");
 
@@ -598,7 +598,7 @@ public class MissionBox {
 
 
     public static void shutdownEverything() {
-//        pinHandler.off();
+        pinHandler.off();
 
 
 //        synchronized (mapWorker) {

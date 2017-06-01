@@ -13,6 +13,7 @@ import interfaces.PercentageInterface;
 import misc.Tools;
 import org.apache.log4j.Logger;
 import progresshandlers.EscalatingSiren1Only;
+import progresshandlers.EscalatingSiren1Ticking;
 import progresshandlers.EscalatingSiren1WithTickingSiren2;
 
 import javax.swing.*;
@@ -29,7 +30,8 @@ import java.util.ArrayList;
 public class FrmTest extends JFrame implements GameEventListener {
     PercentageInterface[] progressHandlers = new PercentageInterface[]{
             new EscalatingSiren1Only(MissionBox.MBX_SIREN1),
-            new EscalatingSiren1WithTickingSiren2(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2)
+            new EscalatingSiren1WithTickingSiren2(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2),
+            new EscalatingSiren1Ticking(MissionBox.MBX_SIREN1)
     };
     Logger logger = Logger.getLogger(getClass());
 
@@ -483,7 +485,8 @@ public class FrmTest extends JFrame implements GameEventListener {
         pi.setValue(bd);
     }
 
-    private void lblRspwnSirenActionPerformed(ActionEvent e) {
+
+    private void lblRspwnSirenFocusLost(FocusEvent e) {
         JTextField txt = ((JTextField) e.getSource());
 
         long respawnsiren = Long.parseLong(MissionBox.getConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
@@ -493,11 +496,10 @@ public class FrmTest extends JFrame implements GameEventListener {
         txt.setText(Long.toString(value));
     }
 
-    private void lblRspwnSirenFocusLost(FocusEvent e) {
-        lblRspwnSirenActionPerformed(new ActionEvent(e.getSource(), 0, ""));
-    }
 
-    private void lblStartsirenActionPerformed(ActionEvent e) {
+    //todo: die actions raus. focus lost reicht
+
+    private void lblStartsirenFocusLost(FocusEvent e) {
         JTextField txt = ((JTextField) e.getSource());
 
         long startsiren = Long.parseLong(MissionBox.getConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
@@ -507,17 +509,15 @@ public class FrmTest extends JFrame implements GameEventListener {
         txt.setText(Long.toString(value));
     }
 
-    //todo: die actions raus. focus lost reicht
-    //todo: bei flaggehot schaltet die sirene nicht aus wenn nach prepgame gegangen wird
 
-    private void lblStartsirenFocusLost(FocusEvent e) {
-        lblStartsirenActionPerformed(new ActionEvent(e.getSource(), 0, ""));
-    }
-
-    private void lblWinningSirenActionPerformed(ActionEvent e) {
+    private void lblWinningSirenFocusLost(FocusEvent e) {
         JTextField txt = ((JTextField) e.getSource());
         String winnigscheme = MissionBox.getConfig(MissionBox.FCY_WINNING_SIREN_SCHEME);
         MissionBox.setConfig(MissionBox.FCY_WINNING_SIREN_SCHEME, txt.getText().trim());
+    }
+
+    private void lblStartsirenActionPerformed(ActionEvent e) {
+        // TODO add your code here
     }
 
 
@@ -936,7 +936,6 @@ public class FrmTest extends JFrame implements GameEventListener {
                 lblRspwnSiren.setText("1");
                 lblRspwnSiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblRspwnSiren.setBackground(Color.orange);
-                lblRspwnSiren.addActionListener(e -> lblRspwnSirenActionPerformed(e));
                 lblRspwnSiren.addFocusListener(new FocusAdapter() {
                     @Override
                     public void focusLost(FocusEvent e) {
@@ -974,7 +973,12 @@ public class FrmTest extends JFrame implements GameEventListener {
                 lblWinningSiren.setText("5;1000,300,1000,300,1000,300");
                 lblWinningSiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblWinningSiren.setBackground(Color.orange);
-                lblWinningSiren.addActionListener(e -> lblWinningSirenActionPerformed(e));
+                lblWinningSiren.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        lblWinningSirenFocusLost(e);
+                    }
+                });
                 settingsPanel.add(lblWinningSiren, CC.xywh(3, 11, 3, 1, CC.FILL, CC.DEFAULT));
 
                 //======== panel5 ========
