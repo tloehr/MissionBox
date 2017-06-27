@@ -24,8 +24,8 @@ public class PinHandler {
     final HashMap<String, PinBlinkModel> pinMap;
     final HashMap<String, Future<String>> futures;
     final HashMap<String, String> schemes;
-    private ExecutorService executor;
-    boolean paused = false;
+    private ExecutorService executorService;
+//    boolean paused = false;
 
     /**
      * there relays that can be used at the same time. but others demand, that only *one* relay is used at the time (out of a set of relays). The sirens for instance.
@@ -68,7 +68,7 @@ public class PinHandler {
                 }
             }
             // es gibt kein Pause bei einem Executor
-            executor.shutdownNow();
+            executorService.shutdownNow();
         } finally {
             lock.unlock();
         }
@@ -84,11 +84,12 @@ public class PinHandler {
         // und auch kein Resume.
         lock.lock();
         try {
-            executor = Executors.newFixedThreadPool(12);
+            executorService = Executors.newFixedThreadPool(20);
+
             for (String name : schemes.keySet()) {
                 PinBlinkModel pinBlinkModel = pinMap.get(name);
                 pinBlinkModel.setScheme(schemes.get(name));
-                futures.put(name, executor.submit(pinBlinkModel));
+                futures.put(name, executorService.submit(pinBlinkModel));
             }
         } finally {
             lock.unlock();
@@ -162,16 +163,20 @@ public class PinHandler {
             PinBlinkModel pinBlinkModel = pinMap.get(name);
             if (pinBlinkModel != null) {
                 int cd = collisionDomain.containsKey(name) ? collisionDomain.get(name) : 0; // 0 means NO collision domain
+
+                // falls bereits laufende pins gibt, dann müssen wir sie zuerst anhalten
+                // einmal innerhalb derselben collision domain
                 if (cd > 0) { // we need to terminate a potentially running thread within this domain.
                     // get all the potentially colliding relays and check them.
                     for (String collidingName : collisionDomainReverse.get(cd)) {
                         if (futures.containsKey(collidingName) && !futures.get(collidingName).isDone()) { // but only if it runs
-//                            logger.debug("terminating: " + collidingName + ": colliding with " + (collidingName.equals(name) ? ">>itself<<" : name));
+                            logger.debug("terminating: " + collidingName + ": colliding with " + (collidingName.equals(name) ? ">>itself<<" : name));
                             futures.get(collidingName).cancel(true);
                         }
                     }
-                } else {
+                } else { // oder einfach nur die mit demselben namen
                     if (futures.containsKey(name) && !futures.get(name).isDone()) { // but only if it runs
+                        logger.debug("terminating: " + name);
                         futures.get(name).cancel(true);
                     }
                 }
@@ -179,8 +184,9 @@ public class PinHandler {
             }
 
             pinBlinkModel.setScheme(scheme);
-            futures.put(name, executor.submit(pinBlinkModel));
+            futures.put(name, executorService.submit(pinBlinkModel));
         } catch (Exception e) {
+            logger.trace(e);
             logger.fatal(e);
         } finally {
             lock.unlock();

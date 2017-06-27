@@ -59,6 +59,14 @@ public class Farcry1Assault implements GameMode {
 
         logger.setLevel(MissionBox.getLogLevel());
 
+        logger.info("\n" +
+                "      ____  _             _   _               _____           ____                 _                        _ _   \n" +
+                "     / ___|| |_ __ _ _ __| |_(_)_ __   __ _  |  ___|_ _ _ __ / ___|_ __ _   _     / \\   ___ ___  __ _ _   _| | |_ \n" +
+                "     \\___ \\| __/ _` | '__| __| | '_ \\ / _` | | |_ / _` | '__| |   | '__| | | |   / _ \\ / __/ __|/ _` | | | | | __|\n" +
+                "      ___) | || (_| | |  | |_| | | | | (_| | |  _| (_| | |  | |___| |  | |_| |  / ___ \\\\__ \\__ \\ (_| | |_| | | |_ \n" +
+                "     |____/ \\__\\__,_|_|   \\__|_|_| |_|\\__, | |_|  \\__,_|_|   \\____|_|   \\__, | /_/   \\_\\___/___/\\__,_|\\__,_|_|\\__|\n" +
+                "                                      |___/                             |___/                                     \n" +
+                "");
 
         MessageListener gameTimeListener = messageEvent -> {
 //            String thisAnnoucement = messageEvent.getDateTimeFormatted();

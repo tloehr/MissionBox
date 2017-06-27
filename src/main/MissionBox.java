@@ -113,6 +113,15 @@ public class MissionBox {
         System.setProperty("logs", Tools.getMissionboxDirectory());
         logger = Logger.getRootLogger();
 
+        logger.info("\n" +
+                "  ____ _____  _    ____ _____ ___ _   _  ____   __  __ _         _             ____            \n" +
+                " / ___|_   _|/ \\  |  _ \\_   _|_ _| \\ | |/ ___| |  \\/  (_)___ ___(_) ___  _ __ | __ )  _____  __\n" +
+                " \\___ \\ | | / _ \\ | |_) || |  | ||  \\| | |  _  | |\\/| | / __/ __| |/ _ \\| '_ \\|  _ \\ / _ \\ \\/ /\n" +
+                "  ___) || |/ ___ \\|  _ < | |  | || |\\  | |_| | | |  | | \\__ \\__ \\ | (_) | | | | |_) | (_) >  < \n" +
+                " |____/ |_/_/   \\_\\_| \\_\\|_| |___|_| \\_|\\____| |_|  |_|_|___/___/_|\\___/|_| |_|____/ \\___/_/\\_\\\n" +
+                "                                                                                               ");
+
+
         try {
             // Lade Build Informationen
             InputStream in2 = null;
@@ -128,7 +137,13 @@ public class MissionBox {
             public void run() {
                 saveLocalProps();
                 pinHandler.off();
-
+                logger.info("\n" +
+                        "  _____ _   _ ____     ___  _____   __  __ _         _             ____            \n" +
+                        " | ____| \\ | |  _ \\   / _ \\|  ___| |  \\/  (_)___ ___(_) ___  _ __ | __ )  _____  __\n" +
+                        " |  _| |  \\| | | | | | | | | |_    | |\\/| | / __/ __| |/ _ \\| '_ \\|  _ \\ / _ \\ \\/ /\n" +
+                        " | |___| |\\  | |_| | | |_| |  _|   | |  | | \\__ \\__ \\ | (_) | | | | |_) | (_) >  < \n" +
+                        " |_____|_| \\_|____/   \\___/|_|     |_|  |_|_|___/___/_|\\___/|_| |_|____/ \\___/_/\\_\\\n" +
+                        "                                                                                   ");
             }
         }));
 
@@ -148,7 +163,7 @@ public class MissionBox {
         frmTest = new FrmTest();
         frmTest.setVisible(true);
 
-        hwinit();
+        initRaspi();
         initPinHandler();
         initProgressSystem();
 
@@ -188,9 +203,6 @@ public class MissionBox {
         frmTest.setProgress(startup_progress);
 
         gameMode = new Farcry1Assault();
-
-//        logger.debug(gameMode);
-
         gameMode.runGame();
 
 
@@ -511,7 +523,7 @@ public class MissionBox {
         frmTest.setRespawnTimer(message);
     }
 
-    private static void hwinit() throws IOException, I2CFactory.UnsupportedBusNumberException {
+    private static void initRaspi() throws IOException, I2CFactory.UnsupportedBusNumberException {
 
         GPIO = null;
         if (Tools.isArm()) {
