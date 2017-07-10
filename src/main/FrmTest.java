@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import progresshandlers.EscalatingSiren1Only;
 import progresshandlers.EscalatingSiren1Ticking;
 import progresshandlers.EscalatingSiren1WithTickingSiren2;
+import progresshandlers.TickingSlowAndSilent;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -31,7 +32,8 @@ public class FrmTest extends JFrame implements GameEventListener {
     PercentageInterface[] progressHandlers = new PercentageInterface[]{
             new EscalatingSiren1Only(MissionBox.MBX_SIREN1),
             new EscalatingSiren1WithTickingSiren2(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2),
-            new EscalatingSiren1Ticking(MissionBox.MBX_SIREN1)
+            new EscalatingSiren1Ticking(MissionBox.MBX_SIREN1),
+            new TickingSlowAndSilent(MissionBox.MBX_SIREN1)
     };
     Logger logger = Logger.getLogger(getClass());
 
@@ -317,6 +319,12 @@ public class FrmTest extends JFrame implements GameEventListener {
             MissionBox.getPinHandler().off();
         }
     }
+
+    public void setProgress(long start, long now, long end){
+
+        BigDecimal progress = new BigDecimal(now - start).divide(new BigDecimal(end - start), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+        setProgress(progress.intValue());
+    };
 
     public void setProgress(int progress) {
         pb1.setIndeterminate(progress < 0);

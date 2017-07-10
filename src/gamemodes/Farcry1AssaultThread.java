@@ -80,7 +80,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     /**
      * Wenn irgendwelche Countdowns laufen, dann wird der Fortschritt als Event gesendet.
      */
-    private final EventListenerList percentageList;
+//    private final EventListenerList percentageList;
     /**
      * Veränderungen im Spielzustand der Box werden über diese Liste verschickt.
      */
@@ -97,13 +97,13 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     /**
      * @param messageListener
      * @param gameTimerListener
-     * @param percentageListener
+
      * @param gameModeListener
      * @param maxgametimeInMins  - in Minuten
      * @param capturetimeInSecs  - in Sekunden
      */
 
-    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener percentageListener, MessageListener gameModeListener, long maxgametimeInMins, long capturetimeInSecs, long respawnintervalInSecs) {
+    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener,  MessageListener gameModeListener, long maxgametimeInMins, long capturetimeInSecs, long respawnintervalInSecs) {
         super();
 
         lock = new ReentrantLock();
@@ -120,12 +120,12 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
         textMessageList = new EventListenerList();
         gameTimerList = new EventListenerList();
-        percentageList = new EventListenerList();
+//        percentageList = new EventListenerList();
         gameModeList = new EventListenerList();
 
         textMessageList.add(MessageListener.class, messageListener);
         gameTimerList.add(MessageListener.class, gameTimerListener);
-        percentageList.add(MessageListener.class, percentageListener);
+//        percentageList.add(MessageListener.class, percentageListener);
         gameModeList.add(MessageListener.class, gameModeListener);
 
         previousGameState = GAME_NON_EXISTENT;
@@ -475,7 +475,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     if (getRemaining() <= 0l) {
                         setGameState(GAME_OUTCOME_FLAG_DEFENDED);
                     }
-                    fireMessage(percentageList, new MessageEvent(this, gameState, new BigDecimal(-1)));
+//                    fireMessage(percentageList, new MessageEvent(this, gameState, new BigDecimal(-1)));
+                    fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
                 }
 
                 if (gameState == GAME_FLAG_HOT) {
@@ -483,10 +484,9 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         setGameState(GAME_OUTCOME_FLAG_TAKEN);
                     }
 
-                    long flagwillbetaken = timeWhenTheFlagWasActivated + capturetime;
-                    BigDecimal progress = new BigDecimal(gametimer - timeWhenTheFlagWasActivated).divide(new BigDecimal(flagwillbetaken - timeWhenTheFlagWasActivated), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
 
-                    fireMessage(percentageList, new MessageEvent(this, gameState, progress));
+                    fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
+//                    fireMessage(percentageList, new MessageEvent(this, gameState, progress));
                 }
 
                 if (gameState == GAME_GOING_TO_RESUME) {

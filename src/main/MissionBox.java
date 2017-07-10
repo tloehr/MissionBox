@@ -502,6 +502,13 @@ public class MissionBox {
         if (relaisLEDs != null) relaisLEDs.setValue(percent);
         if (relaisFlagpole != null) relaisFlagpole.setValue(percent);
     }
+
+    public static void setProgress(long start, long now, long stop) {
+        if (relaisSirens != null) relaisSirens.setValue(start, now, stop);
+        frmTest.setProgress(start, now, stop);
+        if (relaisLEDs != null) relaisLEDs.setValue(start, now, stop);
+        if (relaisFlagpole != null) relaisFlagpole.setValue(start, now, stop);
+    }
 //
 //
 //    public static boolean isRESPAWN() {

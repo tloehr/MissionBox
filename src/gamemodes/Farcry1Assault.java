@@ -128,6 +128,7 @@ public class Farcry1Assault implements GameMode {
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
+
 //                long secs2go = remain / 1000l;
 //                if (secs2go == 10l) { // ab 10 Sekunden ertönt eine zusätzliche Sirene
 //                    if (!countdownSirenWailing) MissionBox.setScheme(MissionBox.MBX_SIREN2, "10;500,500");
@@ -138,6 +139,8 @@ public class Farcry1Assault implements GameMode {
 //                }
                 String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss");
                 MissionBox.setMessage(message);
+                MissionBox.setProgress(((FC1DetailsMessageEvent) messageEvent).getTimeWhenTheFlagWasActivated(), ((FC1DetailsMessageEvent) messageEvent).getGametimer(), ((FC1DetailsMessageEvent) messageEvent).getTimeWhenTheFlagWasActivated() + ((FC1DetailsMessageEvent) messageEvent).getCapturetime());
+
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
@@ -168,16 +171,17 @@ public class Farcry1Assault implements GameMode {
 
         };
 
-        MessageListener percentageListener = messageEvent -> {
-            if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
-                MissionBox.setProgress(messageEvent.getPercentage());
-//                int countdown_index = messageEvent.getPercentage().intValue() / 10;
-//                if (prev_countdown_index != countdown_index) {
-//                    prev_countdown_index = countdown_index;
-////                    MissionBox.countdown(countdown_index);
-//                }
-            }
-        };
+//        MessageListener percentageListener = messageEvent -> {
+//            if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
+//
+//                MissionBox.setProgress(messageEvent.getPercentage());
+////                int countdown_index = messageEvent.getPercentage().intValue() / 10;
+////                if (prev_countdown_index != countdown_index) {
+////                    prev_countdown_index = countdown_index;
+//////                    MissionBox.countdown(countdown_index);
+////                }
+//            }
+//        };
 
         MessageListener gameModeListener = messageEvent -> {
 
@@ -325,7 +329,7 @@ public class Farcry1Assault implements GameMode {
 
 
         farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {
-        }, gameTimeListener, percentageListener, gameModeListener, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL)));
+        }, gameTimeListener, gameModeListener, Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE)), Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL)));
 
 
         /***
