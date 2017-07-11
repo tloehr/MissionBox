@@ -41,12 +41,12 @@ public class TickingSlowAndSilent extends PercentageInterface {
         // sind wird in den letzten 10 sekunden ?
         if (outroProcedureRunning) return;
         Interval remaining = new Interval(now, end);
-        logger.debug(Seconds.secondsIn(remaining).getSeconds());
+//        logger.debug(Seconds.secondsIn(remaining).getSeconds());
         if (Seconds.secondsIn(remaining).getSeconds() <= 10) {
             outroProcedureRunning = true;
             MissionBox.setScheme(key, "10;500,500");
         }
-        
+
         // Fortschritt im ersten Drittel.
         int third = -1;
         if (percent.compareTo(new BigDecimal(33)) <= 0) {
@@ -63,17 +63,20 @@ public class TickingSlowAndSilent extends PercentageInterface {
 
         String tickingScheme = "";
 
+        tickingScheme = "1;70,25,70,25,70,25,800,75,";
+
         if (third == 1) {
-            tickingScheme = "1;70,25,70,25,70,25,800,75,";
             for (int t = 0; t < 1000; t++) {
                 tickingScheme += "100,10000,";
             }
-            tickingScheme += "1000;100,10000";
         } else if (third == 2) {
-
-            tickingScheme += "1000;100,100,100,10000";
+            for (int t = 0; t < 1000; t++) {
+                tickingScheme += "100,100,100,10000,";
+            }
         } else {
-            tickingScheme += "1000;100,100,100,100,100,10000";
+            for (int t = 0; t < 1000; t++) {
+                tickingScheme += "100,100,100,100,100,10000,";
+            }
         }
 
         MissionBox.setScheme(key, tickingScheme);

@@ -18,9 +18,10 @@ import java.util.HashSet;
  */
 public class Farcry1Assault implements GameMode {
     private final Logger logger = Logger.getLogger(getClass());
+    private boolean gameJustStarted;
     private Farcry1AssaultThread farcryAssaultThread;
     private String FOREVER = Integer.toString(Integer.MAX_VALUE);
-    private boolean countdownSirenWailing = false;
+//    private boolean countdownSirenWailing = false;
     HashSet<String> timeAnnouncements = new HashSet<>();
     private Farcry1GameEvent revertEvent;
 
@@ -111,17 +112,17 @@ public class Farcry1Assault implements GameMode {
 
 
             if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
-                countdownSirenWailing = false;
+
                 MissionBox.setTimerMessage("--");
                 MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
-                countdownSirenWailing = false;
+
                 MissionBox.setRespawnTimer("--");
                 MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
-                countdownSirenWailing = false;
+
                 MissionBox.setRespawnTimer("--");
                 MissionBox.setMessage(Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]);
                 MissionBox.setRespawnTimer("--");
@@ -129,14 +130,6 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
 
-//                long secs2go = remain / 1000l;
-//                if (secs2go == 10l) { // ab 10 Sekunden ertönt eine zusätzliche Sirene
-//                    if (!countdownSirenWailing) MissionBox.setScheme(MissionBox.MBX_SIREN2, "10;500,500");
-//                    countdownSirenWailing = true;
-//                } else if (secs2go > 10l) {
-//                    MissionBox.off(MissionBox.MBX_SIREN2);
-//                    countdownSirenWailing = false;
-//                }
                 String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss");
                 MissionBox.setMessage(message);
                 MissionBox.setProgress(((FC1DetailsMessageEvent) messageEvent).getTimeWhenTheFlagWasActivated(), ((FC1DetailsMessageEvent) messageEvent).getGametimer(), ((FC1DetailsMessageEvent) messageEvent).getTimeWhenTheFlagWasActivated() + ((FC1DetailsMessageEvent) messageEvent).getCapturetime());
@@ -144,14 +137,9 @@ public class Farcry1Assault implements GameMode {
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
-//                long secs2go = remain / 1000l;
-//                if (secs2go == 10l) { // ab 10 Sekunden ertönt eine zusätzliche Sirene
-//                    if (!countdownSirenWailing) MissionBox.setScheme(MissionBox.MBX_SIREN2, "10;500,500");
-//                    countdownSirenWailing = true;
-//                } else if (secs2go > 10l) {
-//                    MissionBox.off(MissionBox.MBX_SIREN2);
-//                    countdownSirenWailing = false;
-//                }
+
+                
+
                 String message = Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss");
                 MissionBox.setMessage(message);
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PAUSING) {
@@ -219,7 +207,11 @@ public class Farcry1Assault implements GameMode {
 
                 MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
 
-                MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;1000,0");
+                if (!gameJustStarted){
+                    MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;1000,0");
+                }
+                gameJustStarted = false; // damit beim Anfang nicht direkt die Shutdown Sirene ertönt
+
 
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
                 /***
@@ -272,8 +264,9 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.off(MissionBox.MBX_LED_PB_RED);
 
                 // Einmal langer Heulton zum Ende, heisst verloren
-                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
-
+                MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;3000,0");
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;0,3000,%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+                
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
                 /***
                  *      _____ _            _____     _
@@ -301,7 +294,10 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
 
                 // sirenengeheul als Sieg
-                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, MissionBox.getConfig(MissionBox.FCY_WINNING_SIREN_SCHEME));
+//                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, MissionBox.getConfig(MissionBox.FCY_WINNING_SIREN_SCHEME));
+
+                MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;3000,0");
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;0,3000,%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
 
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
                 /***
@@ -324,6 +320,7 @@ public class Farcry1Assault implements GameMode {
 
                 // the starting siren
                 MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+                gameJustStarted = true;
             }
         };
 
