@@ -4,7 +4,6 @@ import interfaces.PercentageInterface;
 import main.MissionBox;
 import org.apache.log4j.Logger;
 
-import java.awt.*;
 import java.math.BigDecimal;
 
 /**
@@ -16,21 +15,27 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
     private final String pinRed;
     private final String pinGreen;
     private final String pinYellow;
-    protected int previousRelay = -1;
+    protected int previousPos = -1;
 
+    final String off = "0;";
     final String on = "1;" + Long.MAX_VALUE + ",0";
     final String slow = Integer.toString(Integer.MAX_VALUE) + ";500,500";
     final String fast = Integer.toString(Integer.MAX_VALUE) + ";100,100";
 
-    String[] colors;
-    final String[] schemes = {fast, slow, on, fast, slow, on, fast, slow, on};
+    //    String[] colors;
+    // immer drei angaben, ergeben das blickschma für rot-gelb-grün
+    // list geht von links nach rechts, also rot nach grün
+    final String[] schemesRed = {fast, slow, slow, off, off, off, off, off, off};
+    final String[] schemesYellow = {off, off, slow, slow, on, slow, slow, off, off};
+    final String[] schemesGreen = {off, off, off, off, off, off, slow, slow, on};
 
     public RelayProgressRedYellowGreen(String pinRed, String pinYellow, String pinGreen) {
         super("");
+        logger.setLevel(MissionBox.getLogLevel());
         this.pinRed = pinRed;
         this.pinGreen = pinGreen;
         this.pinYellow = pinYellow;
-        colors = new String[]{pinRed, pinRed, pinRed, pinYellow, pinYellow, pinYellow, pinGreen, pinGreen, pinGreen};
+//        colors = new String[]{pinRed, pinRed, pinRed, pinYellow, pinYellow, pinYellow, pinGreen, pinGreen, pinGreen};
     }
 
     @Override
@@ -40,29 +45,31 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 
     public void setValue(BigDecimal percent) {
 
-//        logger.debug("PERCENT: " + percent);
+//        if (percent.compareTo(BigDecimal.ZERO) < 0) {
+//            MissionBox.off(pinRed);
+//            MissionBox.off(pinGreen);
+//            MissionBox.off(pinYellow);
+//            return;
+//        }
 
-        if (percent.compareTo(BigDecimal.ZERO) < 0) {
-            MissionBox.off(pinRed);
-            MissionBox.off(pinGreen);
-            MissionBox.off(pinYellow);
-            return;
-        }
-
+        // /3 weil immer drei werte in der Liste zusammengehören
         BigDecimal myPercent = new BigDecimal(100).subtract(percent);
-        int colornum = new BigDecimal(colors.length).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
+        int schemepos = new BigDecimal(schemesRed.length-1).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
 
         // shortcut
-        if (previousRelay == colornum) return;
-        previousRelay = colornum;
+        if (previousPos == schemepos) return;
+        previousPos = schemepos;
 
-        MissionBox.off(pinRed);
-        MissionBox.off(pinGreen);
-        MissionBox.off(pinYellow);
+//        MissionBox.off(pinRed);
+//        MissionBox.off(pinGreen);
+//        MissionBox.off(pinYellow);
 
-        if (colornum < colors.length) {
-            MissionBox.setScheme(colors[colornum], schemes[colornum]);
-        }
+        logger.debug("schemepos " + schemepos);
+        logger.debug("schemesRed.length " + schemesRed.length);
+
+        MissionBox.setScheme(pinRed, schemesRed[schemepos]);
+        MissionBox.setScheme(pinYellow, schemesYellow[schemepos]);
+        MissionBox.setScheme(pinGreen, schemesGreen[schemepos]);
 
     }
 

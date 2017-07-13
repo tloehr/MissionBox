@@ -78,7 +78,7 @@ public class Farcry1GameEvent extends JPanel {
                 " | _|| | ' \\/ _` | | |_ / -_) | _|\\ V / -_) ' \\  _|\n" +
                 " |_| |_|_||_\\__,_|_|_/__\\___| |___|\\_/\\___|_||_\\__|\n" +
                 "                                                   ");
-        logger.debug("remaining: "+Tools.formatLongTime(remaining));
+        logger.debug("remaining: " + Tools.formatLongTime(remaining));
         logger.debug(toString());
 
         // ein Revert macht nur Sinn bei HOT oder COLD. Sonst nicht.
@@ -121,13 +121,13 @@ public class Farcry1GameEvent extends JPanel {
 
     @Override
     public String toString() {
-        String result = "\n" + StringUtils.repeat("-", 90+39) + "\n" +
+        String result = "\n" + StringUtils.repeat("-", 90 + 39) + "\n" +
                 "|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%37s|\n" +
-                StringUtils.repeat("-", 90+39) + "\n" +
+                StringUtils.repeat("-", 90 + 39) + "\n" +
                 "|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%9s|%37s|\n" +
-                StringUtils.repeat("-", 90+39) + "\n\n";
+                StringUtils.repeat("-", 90 + 39) + "\n\n";
         return String.format(result,
-                "gmstate", "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume","uuid",
+                "gmstate", "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume", "uuid",
                 Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()],
                 Tools.formatLongTime(getGametimerAtEnd()),
                 Tools.formatLongTime(remaining),
@@ -142,7 +142,8 @@ public class Farcry1GameEvent extends JPanel {
     }
 
     public String toHTML() {
-        String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> ";// + (eventDuration == -1 ? "" : messageEvent.toHTML("", eventDuration));
+        String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> gt@start: " + Tools.formatLongTime(getGametimerAtStart(),"mm:ss") +
+                (eventDuration == -1 ? "" : " gt@end: " + Tools.formatLongTime(getGametimerAtEnd(),"mm:ss"));
 
 //        // Restliche Spielzeit (rmn - remaining)
 //        html += (eventDuration == -1 ? "" : "gmrmn:" + Tools.formatLongTime(messageEvent.getMaxgametime() - messageEvent.getGametimer() - eventDuration - 1) + " ");

@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "6.0.0.0.84" Java: "1.8.0_112-release" encoding: "UTF-8"
+JFDML JFormDesigner: "6.0.1.0.112" Java: "1.8.0_112-release" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -12,7 +12,7 @@ new FormModel {
 				"font": &Font0 new java.awt.Font( "Dialog", 0, 16 )
 				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "tabbedPane1StateChanged", true ) )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "pref, relgap, default, labelcompgap, min:grow, labelcompgap, pref"
+					"$columnSpecs": "pref, relgap, pref, labelcompgap, min:grow, labelcompgap, pref"
 					"$rowSpecs": "fill:default:grow, linegap, fill:default:grow, linegap, fill:pref:grow, linegap, fill:default:grow, 10dlu, linegap, default"
 				} ) {
 					name: "contentPanel"
@@ -538,9 +538,9 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnSiren3"
-						"text": "Siren 3"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnSiren3ActionPerformed", true ) )
+						name: "btnRespawnSiren"
+						"text": "RespawnSiren"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRespawnSirenActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
@@ -732,3 +732,4 @@ new FormModel {
 		} )
 	}
 }
+

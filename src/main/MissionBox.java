@@ -77,7 +77,8 @@ public class MissionBox {
     public static final String FCY_WINNING_SIREN_SCHEME = "fcy.winning.siren.scheme";
 
     public static final String MBX_SIREN1 = "mbx.siren1";
-    public static final String MBX_SIREN2 = "mbx.siren2";
+//    public static final String MBX_SIREN2 = "mbx.siren2";
+    public static final String MBX_RESPAWN_SIREN = "mbx.respawn.siren";
     //    public static final String MBX_SIREN3 = "mbx.siren3";
     public static final String MBX_AIRSIREN = "mbx.airsiren";
     public static final String MBX_SHUTDOWN_SIREN = "mbx.shutdown.siren";
@@ -102,7 +103,6 @@ public class MissionBox {
     private static HashMap<String, Relay> relayMap = new HashMap<>();
 
     private static PinHandler pinHandler = null;
-
 
     public static Properties getAppinfo() {
         return appinfo;
@@ -231,57 +231,52 @@ public class MissionBox {
 
         // three sirens now.
         // Siren 1
-        pinHandler.add(new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, 70, 60)); // Original Siren Button 3
-        pinHandler.add(new Relay(MBX_SIREN2, Color.ORANGE, debugPanel4Pins, 70, 80)); // Original Siren Button 3
-//        pinHandler.add(1, new Relay(MBX_SIREN3, Color.ORANGE, debugPanel4Pins, 20, 60)); // Original Siren Button 5
-        pinHandler.add(new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 20, 40));
+        pinHandler.add(new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, 70, 60)); // Main Siren
+        pinHandler.add(new Relay(MBX_RESPAWN_SIREN, Color.ORANGE, debugPanel4Pins, 70, 80));
+        pinHandler.add(new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 20, 40)); // Shutdown Signal
+        pinHandler.add(new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, 50, 90)); // Motor Siren for Start Stop Signals
 
-        // Siren 2
-//        pinHandler.add(2, new Relay(MBX_TIME_SIREN, Color.BLUE, debugPanel4Pins, 20, 60)); // Original Siren Button 2
-
-        // Siren 3
-//        pinHandler.add(3, new Relay(MBX_RESPAWN_SIREN, Color.BLUE, debugPanel4Pins, true)); // Original Siren Button 6
-
-        // The Airsiren
-        pinHandler.add(new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, 50, 90)); // Motor Siren
-
+        // die leds in den Dome Buttons
         pinHandler.add(new Relay(MBX_LED_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RED, Color.RED, debugPanel4Pins));
+
+        // die fortschritts leds
         pinHandler.add(new Relay(MBX_LED_PB_GREEN, Color.GREEN, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_PB_YELLOW, Color.YELLOW, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_PB_RED, Color.RED, debugPanel4Pins));
 
+        // die fahne
         pinHandler.add(new Relay(MBX_LED_RGB_BLUE, Color.BLUE, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RGB_RED, Color.RED, debugPanel4Pins));
         pinHandler.add(new Relay(MBX_LED_RGB_GREEN, Color.GREEN, debugPanel4Pins));
 
         // for hardware testing only
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B0"), "mcp23017-01-B0", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B1"), "mcp23017-01-B1", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B2"), "mcp23017-01-B2", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B3"), "mcp23017-01-B3", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B4"), "mcp23017-01-B4", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B5"), "mcp23017-01-B5", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B6"), "mcp23017-01-B6", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B7"), "mcp23017-01-B7", Color.BLUE, debugPanel4Pins));
-
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A0"), "mcp23017-01-A0", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A1"), "mcp23017-01-A1", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A2"), "mcp23017-01-A2", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A3"), "mcp23017-01-A3", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A4"), "mcp23017-01-A4", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A5"), "mcp23017-01-A5", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A6"), "mcp23017-01-A6", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A7"), "mcp23017-01-A7", Color.BLUE, debugPanel4Pins));
-
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A0"), "mcp23017-02-A0", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A1"), "mcp23017-02-A1", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A2"), "mcp23017-02-A2", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A3"), "mcp23017-02-A3", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A4"), "mcp23017-02-A4", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A5"), "mcp23017-02-A5", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A6"), "mcp23017-02-A6", Color.BLUE, debugPanel4Pins));
-        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A7"), "mcp23017-02-A7", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B0"), "mcp23017-01-B0", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B1"), "mcp23017-01-B1", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B2"), "mcp23017-01-B2", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B3"), "mcp23017-01-B3", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B4"), "mcp23017-01-B4", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B5"), "mcp23017-01-B5", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B6"), "mcp23017-01-B6", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B7"), "mcp23017-01-B7", Color.BLUE, debugPanel4Pins));
+//
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A0"), "mcp23017-01-A0", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A1"), "mcp23017-01-A1", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A2"), "mcp23017-01-A2", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A3"), "mcp23017-01-A3", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A4"), "mcp23017-01-A4", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A5"), "mcp23017-01-A5", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A6"), "mcp23017-01-A6", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-01-A7"), "mcp23017-01-A7", Color.BLUE, debugPanel4Pins));
+//
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A0"), "mcp23017-02-A0", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A1"), "mcp23017-02-A1", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A2"), "mcp23017-02-A2", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A3"), "mcp23017-02-A3", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A4"), "mcp23017-02-A4", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A5"), "mcp23017-02-A5", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A6"), "mcp23017-02-A6", Color.BLUE, debugPanel4Pins));
+//        pinHandler.add(new Relay(outputMap.get("mcp23017-02-A7"), "mcp23017-02-A7", Color.BLUE, debugPanel4Pins));
 
     }
 
@@ -389,7 +384,7 @@ public class MissionBox {
 
         // die hier brauchen wir immer
         config.put(MBX_SIREN1, "mcp23017-01-B1"); // die große
-        config.put(MBX_SIREN2, "mcp23017-01-B3"); // die kleine
+        config.put(MBX_RESPAWN_SIRENTIME, "mcp23017-01-B3"); // die kleine
 
         config.put(MBX_AIRSIREN, "mcp23017-01-B0");
         config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B2");

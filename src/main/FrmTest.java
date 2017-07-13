@@ -31,7 +31,6 @@ import java.util.ArrayList;
 public class FrmTest extends JFrame implements GameEventListener {
     PercentageInterface[] progressHandlers = new PercentageInterface[]{
             new EscalatingSiren1Only(MissionBox.MBX_SIREN1),
-            new EscalatingSiren1WithTickingSiren2(MissionBox.MBX_SIREN1, MissionBox.MBX_SIREN2),
             new EscalatingSiren1Ticking(MissionBox.MBX_SIREN1),
             new TickingSlowAndSilent(MissionBox.MBX_SIREN1)
     };
@@ -104,7 +103,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
             SwingUtilities.invokeLater(() -> {
                 if (i.getStateChange() == ItemEvent.SELECTED) {
-                    ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("default"));
+                    ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("300dlu"));
                 } else {
                     ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("0dlu"));
                 }
@@ -116,7 +115,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
         SwingUtilities.invokeLater(() -> {
             if (tbDebug.isSelected()) {
-                ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("default"));
+                ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("300dlu"));
             } else {
                 ((FormLayout) contentPanel.getLayout()).setColumnSpec(3, ColumnSpec.decode("0dlu"));
             }
@@ -324,7 +323,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
         BigDecimal progress = new BigDecimal(now - start).divide(new BigDecimal(end - start), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
         setProgress(progress.intValue());
-    };
+    }
 
     public void setProgress(int progress) {
         pb1.setIndeterminate(progress < 0);
@@ -458,11 +457,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     private void btnSiren2ActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_SIREN2, txtHandlerPattern.getText().trim());
-    }
-
-    private void btnSiren3ActionPerformed(ActionEvent e) {
-        //MissionBox.setScheme(MissionBox.MBX_SIREN3, "1;1000,1000");
+        // MissionBox.setScheme(MissionBox.MBX_SIREN2, txtHandlerPattern.getText().trim());
     }
 
     private void btnAirSirenActionPerformed(ActionEvent e) {
@@ -526,6 +521,10 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void lblStartsirenActionPerformed(ActionEvent e) {
         // TODO add your code here
+    }
+
+    private void btnRespawnSirenActionPerformed(ActionEvent e) {
+        MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, txtHandlerPattern.getText().trim());
     }
 
 
@@ -598,7 +597,7 @@ public class FrmTest extends JFrame implements GameEventListener {
         lblButtonPAUSE = new JLabel();
         btnRelayTest3 = new JButton();
         btnRedProgress = new JButton();
-        btnSiren3 = new JButton();
+        btnRespawnSiren = new JButton();
         lblButtonStartStop = new JLabel();
         btnRelayTest4 = new JButton();
         btnYellowProgress = new JButton();
@@ -636,7 +635,7 @@ public class FrmTest extends JFrame implements GameEventListener {
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new FormLayout(
-                    "pref, $rgap, default, $lcgap, min:grow, $lcgap, pref",
+                    "pref, $rgap, pref, $lcgap, min:grow, $lcgap, pref",
                     "2*(fill:default:grow, $lgap), fill:pref:grow, $lgap, fill:default:grow, 10dlu, $lgap, default"));
 
                 //---- btn1 ----
@@ -1062,10 +1061,10 @@ public class FrmTest extends JFrame implements GameEventListener {
                 btnRedProgress.setText("PBred");
                 panel1.add(btnRedProgress, CC.xy(5, 5, CC.FILL, CC.FILL));
 
-                //---- btnSiren3 ----
-                btnSiren3.setText("Siren 3");
-                btnSiren3.addActionListener(e -> btnSiren3ActionPerformed(e));
-                panel1.add(btnSiren3, CC.xy(7, 5, CC.FILL, CC.FILL));
+                //---- btnRespawnSiren ----
+                btnRespawnSiren.setText("RespawnSiren");
+                btnRespawnSiren.addActionListener(e -> btnRespawnSirenActionPerformed(e));
+                panel1.add(btnRespawnSiren, CC.xy(7, 5, CC.FILL, CC.FILL));
 
                 //---- lblButtonStartStop ----
                 lblButtonStartStop.setText("Button Start/Stop");
@@ -1297,7 +1296,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     private JLabel lblButtonPAUSE;
     private JButton btnRelayTest3;
     private JButton btnRedProgress;
-    private JButton btnSiren3;
+    private JButton btnRespawnSiren;
     private JLabel lblButtonStartStop;
     private JButton btnRelayTest4;
     private JButton btnYellowProgress;

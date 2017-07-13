@@ -16,7 +16,7 @@ public class TickingSlowAndSilent extends PercentageInterface {
     private int previousThird = -1;
     private final Logger logger = Logger.getLogger(getClass());
     private final String key;
-    private boolean outroProcedureRunning;
+//    private boolean outroProcedureRunning;
 
 
     /**
@@ -25,7 +25,7 @@ public class TickingSlowAndSilent extends PercentageInterface {
     public TickingSlowAndSilent(String siren) {
         super("Ticking Slow and Silent");
         this.key = siren;
-        outroProcedureRunning = false;
+//        outroProcedureRunning = false;
         logger.setLevel(MissionBox.getLogLevel());
     }
 
@@ -34,18 +34,18 @@ public class TickingSlowAndSilent extends PercentageInterface {
         if (percent.compareTo(BigDecimal.ZERO) < 0 || percent.compareTo(new BigDecimal(100)) >= 0) {
             MissionBox.off(key);
             previousThird = -1;
-            outroProcedureRunning = false;
+//            outroProcedureRunning = false;
             return;
         }
 
-        // sind wird in den letzten 10 sekunden ?
-        if (outroProcedureRunning) return;
+        // sind wir in den letzten 10 sekunden ?
+ // dann brauchen wir keinen progress mehr. 
         Interval remaining = new Interval(now, end);
-//        logger.debug(Seconds.secondsIn(remaining).getSeconds());
-        if (Seconds.secondsIn(remaining).getSeconds() <= 10) {
-            outroProcedureRunning = true;
-            MissionBox.setScheme(key, "10;500,500");
-        }
+        if (Seconds.secondsIn(remaining).getSeconds() <= 10) return;
+//        {
+////            outroProcedureRunning = true;
+//            MissionBox.setScheme(key, "10;500,500");
+//        }
 
         // Fortschritt im ersten Drittel.
         int third = -1;
@@ -63,6 +63,7 @@ public class TickingSlowAndSilent extends PercentageInterface {
 
         String tickingScheme = "";
 
+        // intro signal zu beginn jedes drittels
         tickingScheme = "1;70,25,70,25,70,25,800,75,";
 
         if (third == 1) {
