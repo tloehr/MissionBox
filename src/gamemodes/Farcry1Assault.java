@@ -220,18 +220,6 @@ public class Farcry1Assault implements GameMode {
 
         };
 
-//        MessageListener percentageListener = messageEvent -> {
-//            if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
-//
-//                MissionBox.setProgress(messageEvent.getPercentage());
-////                int countdown_index = messageEvent.getPercentage().intValue() / 10;
-////                if (prev_countdown_index != countdown_index) {
-////                    prev_countdown_index = countdown_index;
-//////                    MissionBox.countdown(countdown_index);
-////                }
-//            }
-//        };
-
         MessageListener gameModeListener = messageEvent -> {
 
             if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
@@ -333,8 +321,11 @@ public class Farcry1Assault implements GameMode {
 
                 MissionBox.off(MissionBox.MBX_LED_RGB_RED);
                 MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
+
                 MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
                 MissionBox.off(MissionBox.MBX_LED_PB_RED);
+
+                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";500,500");
                 MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";500,500");
                 MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";500,500");
 
@@ -358,11 +349,12 @@ public class Farcry1Assault implements GameMode {
 
                 MissionBox.off(MissionBox.MBX_LED_RGB_GREEN);
                 MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
+
                 MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
                 MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
 
                 MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";500,500");
-                MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
+                MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";500,500");
                 MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";500,500");
 
                 MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;3000,0");
@@ -463,6 +455,14 @@ public class Farcry1Assault implements GameMode {
             farcryAssaultThread.setFlagHot(false);
         });
 
+        /***
+         *      ____  _         ____  _             _   ____  _                 ____ ____ ___ ___
+         *     | __ )| |_ _ __ / ___|| |_ __ _ _ __| |_/ ___|| |_ ___  _ __    / ___|  _ \_ _/ _ \
+         *     |  _ \| __| '_ \\___ \| __/ _` | '__| __\___ \| __/ _ \| '_ \  | |  _| |_) | | | | |
+         *     | |_) | |_| | | |___) | || (_| | |  | |_ ___) | || (_) | |_) | | |_| |  __/| | |_| |
+         *     |____/ \__|_| |_|____/ \__\__,_|_|   \__|____/ \__\___/| .__/   \____|_|  |___\___/
+         *                                                            |_|
+         */
         MissionBox.getBtnGameStartStop().addListener((GpioPinListenerDigital) event -> {
             logger.debug(ToStringBuilder.reflectionToString(event.getState()));
             MissionBox.getFrmTest().setButtonTestLabel("start", event.getState() == PinState.LOW); // for debugging
@@ -478,6 +478,14 @@ public class Farcry1Assault implements GameMode {
             }
         });
 
+        /***
+         *      ____  _         ____  _             _   ____  _                ____          _
+         *     | __ )| |_ _ __ / ___|| |_ __ _ _ __| |_/ ___|| |_ ___  _ __   / ___|_      _(_)_ __   __ _
+         *     |  _ \| __| '_ \\___ \| __/ _` | '__| __\___ \| __/ _ \| '_ \  \___ \ \ /\ / / | '_ \ / _` |
+         *     | |_) | |_| | | |___) | || (_| | |  | |_ ___) | || (_) | |_) |  ___) \ V  V /| | | | | (_| |
+         *     |____/ \__|_| |_|____/ \__\__,_|_|   \__|____/ \__\___/| .__/  |____/ \_/\_/ |_|_| |_|\__, |
+         *                                                            |_|                            |___/
+         */
         MissionBox.getBtnGameStartStop().addListener(e -> {
             if (!MissionBox.isGameStartable()) return;
             if (farcryAssaultThread.isPausing()) return;
@@ -489,11 +497,14 @@ public class Farcry1Assault implements GameMode {
             }
         });
 
-        MissionBox.getBtnPAUSE().addListener(e -> {
-            logger.debug("btnPause - on Screen");
-            farcryAssaultThread.togglePause();
-        });
-
+        /***
+         *      ____  _         ____                         ____ ____ ___ ___
+         *     | __ )| |_ _ __ |  _ \ __ _ _   _ ___  ___   / ___|  _ \_ _/ _ \
+         *     |  _ \| __| '_ \| |_) / _` | | | / __|/ _ \ | |  _| |_) | | | | |
+         *     | |_) | |_| | | |  __/ (_| | |_| \__ \  __/ | |_| |  __/| | |_| |
+         *     |____/ \__|_| |_|_|   \__,_|\__,_|___/\___|  \____|_|  |___\___/
+         *
+         */
         MissionBox.getBtnPAUSE().addListener((GpioPinListenerDigital) event -> {
             logger.debug(ToStringBuilder.reflectionToString(event.getState()));
             MissionBox.getFrmTest().setButtonTestLabel("pause", event.getState() == PinState.LOW); // for debugging
@@ -501,7 +512,19 @@ public class Farcry1Assault implements GameMode {
                 logger.debug("GPIO BtnPause down");
                 farcryAssaultThread.togglePause();
             }
-            //quitGame();
+        });
+
+        /***
+         *      ____  _         ____                        ____          _
+         *     | __ )| |_ _ __ |  _ \ __ _ _   _ ___  ___  / ___|_      _(_)_ __   __ _
+         *     |  _ \| __| '_ \| |_) / _` | | | / __|/ _ \ \___ \ \ /\ / / | '_ \ / _` |
+         *     | |_) | |_| | | |  __/ (_| | |_| \__ \  __/  ___) \ V  V /| | | | | (_| |
+         *     |____/ \__|_| |_|_|   \__,_|\__,_|___/\___| |____/ \_/\_/ |_|_| |_|\__, |
+         *                                                                        |___/
+         */
+        MissionBox.getBtnPAUSE().addListener(e -> {
+            logger.debug("btnPause - on Screen");
+            farcryAssaultThread.togglePause();
         });
 
     } // constructor

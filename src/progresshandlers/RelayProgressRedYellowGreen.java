@@ -18,16 +18,17 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
     protected int previousPos = -1;
 
     final String off = "0;";
-    final String on = "1;" + Long.MAX_VALUE + ",0";
-    final String slow = Integer.toString(Integer.MAX_VALUE) + ";500,500";
-    final String fast = Integer.toString(Integer.MAX_VALUE) + ";100,100";
+    final String onn = "1;" + Long.MAX_VALUE + ",0";
+    final String slo = Integer.toString(Integer.MAX_VALUE) + ";500,500";
+    final String fst = Integer.toString(Integer.MAX_VALUE) + ";100,100";
 
     //    String[] colors;
     // immer drei angaben, ergeben das blickschma für rot-gelb-grün
     // list geht von links nach rechts, also rot nach grün
-    final String[] schemesRed = {fast, slow, slow, off, off, off, off, off, off};
-    final String[] schemesYellow = {off, off, slow, slow, on, slow, slow, off, off};
-    final String[] schemesGreen = {off, off, off, off, off, off, slow, slow, on};
+    //                              RED           YELLOW                   GREEN
+    final String[] schemesRedXXX = {fst, onn, slo, slo, off, off, off, off, off};
+    final String[] schemesYellow = {off, off, off, slo, onn, slo, slo, off, off};
+    final String[] schemesGreenX = {off, off, off, off, off, off, slo, slo, onn};
 
     public RelayProgressRedYellowGreen(String pinRed, String pinYellow, String pinGreen) {
         super("");
@@ -35,7 +36,6 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
         this.pinRed = pinRed;
         this.pinGreen = pinGreen;
         this.pinYellow = pinYellow;
-//        colors = new String[]{pinRed, pinRed, pinRed, pinYellow, pinYellow, pinYellow, pinGreen, pinGreen, pinGreen};
     }
 
     @Override
@@ -54,7 +54,7 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 
         // /3 weil immer drei werte in der Liste zusammengehören
         BigDecimal myPercent = new BigDecimal(100).subtract(percent);
-        int schemepos = new BigDecimal(schemesRed.length-1).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
+        int schemepos = new BigDecimal(schemesRedXXX.length - 1).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
 
         // shortcut
         if (previousPos == schemepos) return;
@@ -65,11 +65,11 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 //        MissionBox.off(pinYellow);
 
         logger.debug("schemepos " + schemepos);
-        logger.debug("schemesRed.length " + schemesRed.length);
+        logger.debug("schemesRedXXX.length " + schemesRedXXX.length);
 
-        MissionBox.setScheme(pinRed, schemesRed[schemepos]);
+        MissionBox.setScheme(pinRed, schemesRedXXX[schemepos]);
         MissionBox.setScheme(pinYellow, schemesYellow[schemepos]);
-        MissionBox.setScheme(pinGreen, schemesGreen[schemepos]);
+        MissionBox.setScheme(pinGreen, schemesGreenX[schemepos]);
 
     }
 
