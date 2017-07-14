@@ -61,6 +61,10 @@ public class FrmTest extends JFrame implements GameEventListener {
             JScrollBar vertical = panel7.getVerticalScrollBar();
             vertical.setValue(vertical.getMaximum());
         });
+
+        // wenn der letzte Event ein "GameOver" bedeutet, macht es keinen Sinn, ein Revert auf den vorherigen
+        // Event zu erlauben. Wohin sollte das führen. Ein GameOver tritt durch die Zeit ein und nicht
+        // durch eine unfaire Spieler-Aktion (wie z.B. drücken obwohl getroffen).
     }
 
     public void clearEvents() {
