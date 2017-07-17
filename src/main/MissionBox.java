@@ -366,7 +366,7 @@ public class MissionBox {
         config.put(MBX_RESUME_TIME, "10000"); // Zeit in ms, bevor es nach eine Pause weiter geht
 
         config.put(MBX_RESPAWN_SIRENTIME, "2000");
-        config.put(MBX_STARTGAME_SIRENTIME, "10000");
+        config.put(MBX_STARTGAME_SIRENTIME, "5000");
         config.put(FCY_WINNING_SIREN_SCHEME, "1;1000,300,1000,300,1000,300,10000,0");
 
 //        config.put(MBX_SIREN_TIME, "750");
@@ -384,7 +384,8 @@ public class MissionBox {
 
         // die hier brauchen wir immer
         config.put(MBX_SIREN1, "mcp23017-01-B1"); // die große
-        config.put(MBX_RESPAWN_SIRENTIME, "mcp23017-01-B3"); // die kleine
+        config.put(MBX_RESPAWN_SIREN, "mcp23017-01-B3"); // die kleine
+
 
         config.put(MBX_AIRSIREN, "mcp23017-01-B0");
         config.put(MBX_SHUTDOWN_SIREN, "mcp23017-01-B2");
