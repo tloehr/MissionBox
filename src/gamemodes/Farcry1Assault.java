@@ -114,11 +114,10 @@ public class Farcry1Assault implements GameMode {
                 if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
 
                     FC1DetailsMessageEvent event = (FC1DetailsMessageEvent) messageEvent;
-//                    logger.debug(event.getLastrespawn() + event.getRespawninterval() - event.getGametimer());
                     String respawnTimer = Tools.formatLongTime(event.getLastrespawn() + event.getRespawninterval() - event.getGametimer(), "mm:ss");
                     MissionBox.setRespawnTimer(respawnTimer);
+                    logger.debug(event.getLastrespawn() + ", " + event.getRespawninterval() + " , " + event.getGametimer());
                     if (event.getLastrespawn() + event.getRespawninterval() <= event.getGametimer()) {
-//                        MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;2000,0");
                         MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
                         logger.info("Respawning");
                     }
@@ -178,17 +177,17 @@ public class Farcry1Assault implements GameMode {
             if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
 
                 MissionBox.setTimerMessage("--");
-                MissionBox.setMessage(Tools.h1(Tools.xx("fc1assault.gamestate." +Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()])));
+                MissionBox.setMessage(Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()])));
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
 
                 MissionBox.setRespawnTimer("--");
-                MissionBox.setMessage(Tools.h1(Tools.xx("fc1assault.gamestate." +Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()])));
+                MissionBox.setMessage(Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()])));
                 MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
 
                 MissionBox.setRespawnTimer("--");
-                String message = Tools.h1(Tools.xx("fc1assault.gamestate." +Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]));
+                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]));
 
 //                // todo: das hier erscheint immer
 //                if (((FC1DetailsMessageEvent) messageEvent).isOvertime()) {
@@ -204,7 +203,7 @@ public class Farcry1Assault implements GameMode {
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss"));
 
                 if (((FC1DetailsMessageEvent) messageEvent).isOvertime()) {
-                    message += "<h2> OVERTIME: " + Tools.formatLongTime(((FC1DetailsMessageEvent) messageEvent).getOvertime(),"mm:ss")+"</h2>";
+                    message += "<h2> OVERTIME: " + Tools.formatLongTime(((FC1DetailsMessageEvent) messageEvent).getOvertime(), "mm:ss") + "</h2>";
                 }
 
 
