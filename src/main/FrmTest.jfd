@@ -117,16 +117,27 @@ new FormModel {
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
 					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblTimer"
-						"text": "--"
-						"font": new java.awt.Font( "Dialog", 0, 12 )
-						"horizontalAlignment": 0
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 3
+					} ) {
+						name: "panel13"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "lblTimer"
+							"text": "--"
+							"font": new java.awt.Font( "Dialog", 0, 12 )
+							"horizontalAlignment": 0
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "lblMessage"
+							"text": "<html><h1>Initializing...</h1></html>"
+							"horizontalAlignment": 0
+						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 5
 						"gridX": 3
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridY": 5
 						"gridWidth": 3
+						"gridHeight": 3
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JToggleButton" ) {
 						name: "tbDebug"
@@ -137,16 +148,6 @@ new FormModel {
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblMessage"
-						"text": "Initializing..."
-						"font": new java.awt.Font( "Dialog", 1, 28 )
-						"horizontalAlignment": 0
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 7
-						"gridX": 3
-						"gridWidth": 3
 					} )
 					add( new FormComponent( "javax.swing.JProgressBar" ) {
 						name: "pb1"
@@ -398,26 +399,6 @@ new FormModel {
 						"gridX": 3
 						"gridWidth": 3
 					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "label8"
-						"text": "Siegersirene (muster)"
-						"font": #Font0
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 11
-					} )
-					add( new FormComponent( "javax.swing.JTextField" ) {
-						name: "lblWinningSiren"
-						"font": #Font1
-						"text": "5;1000,300,1000,300,1000,300"
-						"horizontalAlignment": 2
-						"background": sfield java.awt.Color orange
-						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblWinningSirenFocusLost", true ) )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 11
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"gridX": 3
-						"gridWidth": 3
-					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 						"columns": 2
 						"rows": 3
@@ -531,6 +512,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRedProgress"
 						"text": "PBred"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRedProgressActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
 						"gridX": 5
@@ -568,6 +550,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnYellowProgress"
 						"text": "PByellow"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnYellowProgressActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 5
 						"gridY": 7
@@ -606,6 +589,7 @@ new FormModel {
 						name: "btnGreenProgress"
 						"text": "PBgreen"
 						"actionCommand": "Progress yellow"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnGreenProgressActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
 						"gridX": 5
@@ -732,4 +716,3 @@ new FormModel {
 		} )
 	}
 }
-

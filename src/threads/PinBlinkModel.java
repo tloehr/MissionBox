@@ -22,7 +22,6 @@ public class PinBlinkModel implements Callable<String> {
     String infinity = "\u221E";
 
 
-
     @Override
     public String call() throws Exception {
 
@@ -43,7 +42,12 @@ public class PinBlinkModel implements Callable<String> {
                     }
 
                     time = next();
-                    pin.setOn(currentlyOn);
+
+
+                    // currentlyOn nur verwenden, wenn die zeit über 0 ist. ansonsten blitzen die
+                    // die LEDs kurz auf, obwohl sie aus bleiben sollen.
+                    // abschalten geht auch immer
+                    if (time > 0 || !currentlyOn) pin.setOn(currentlyOn);
 
                     try {
                         if (time > 0) Thread.sleep(time);

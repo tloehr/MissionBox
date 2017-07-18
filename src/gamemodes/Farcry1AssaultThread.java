@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
-import java.math.BigDecimal;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -97,13 +96,12 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     /**
      * @param messageListener
      * @param gameTimerListener
-
      * @param gameModeListener
-     * @param maxgametimeInMins  - in Minuten
-     * @param capturetimeInSecs  - in Sekunden
+     * @param maxgametimeInMins - in Minuten
+     * @param capturetimeInSecs - in Sekunden
      */
 
-    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener,  MessageListener gameModeListener, long maxgametimeInMins, long capturetimeInSecs, long respawnintervalInSecs) {
+    public Farcry1AssaultThread(MessageListener messageListener, MessageListener gameTimerListener, MessageListener gameModeListener, long maxgametimeInMins, long capturetimeInSecs, long respawnintervalInSecs) {
         super();
 
         lock = new ReentrantLock();
@@ -391,9 +389,10 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
     public void togglePause() {
         if (isPausing()) {
             setGameState(GAME_GOING_TO_RESUME);
-
         } else {
-            if (isGameRunning() || isGameJustEnded()) {
+            // DEFENDED, weil das könnte ja ein getroffener Verteidiger noch schnell entschärft haben.
+            // Wenn er das im OVERTIME macht, dann ist ein UNDO nötig.
+            if (isGameRunning() || gameState == GAME_OUTCOME_FLAG_DEFENDED) {
                 MissionBox.getFrmTest().setToPauseMode(true);
                 setGameState(GAME_GOING_TO_PAUSE);
             }
@@ -443,12 +442,12 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 //                long respawntimer = lastrespawn + respawninterval - gametimer;
                 lastRemainingTime = getRemaining();
 
-//                if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
+                if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
                     fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
                     if ((lastrespawn + respawninterval) <= gametimer) {
                         lastrespawn = gametimer;
                     }
-//                }
+                }
             } else if (pausingSince >= 0) {
 
                 if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.

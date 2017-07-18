@@ -14,7 +14,6 @@ import misc.Tools;
 import org.apache.log4j.Logger;
 import progresshandlers.EscalatingSiren1Only;
 import progresshandlers.EscalatingSiren1Ticking;
-import progresshandlers.EscalatingSiren1WithTickingSiren2;
 import progresshandlers.TickingSlowAndSilent;
 
 import javax.swing.*;
@@ -317,13 +316,12 @@ public class FrmTest extends JFrame implements GameEventListener {
             lblFCYRespawn.setText(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
             lblRspwnSiren.setText(MissionBox.getConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
             lblStartsiren.setText(MissionBox.getConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
-            lblWinningSiren.setText(MissionBox.getConfig(MissionBox.FCY_WINNING_SIREN_SCHEME));
         } else {
             MissionBox.getPinHandler().off();
         }
     }
 
-    public void setProgress(long start, long now, long end){
+    public void setProgress(long start, long now, long end) {
 
         BigDecimal progress = new BigDecimal(now - start).divide(new BigDecimal(end - start), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
         setProgress(progress.intValue());
@@ -531,6 +529,18 @@ public class FrmTest extends JFrame implements GameEventListener {
         MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, txtHandlerPattern.getText().trim());
     }
 
+    private void btnRedProgressActionPerformed(ActionEvent e) {
+        MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, txtHandlerPattern.getText().trim());
+    }
+
+    private void btnYellowProgressActionPerformed(ActionEvent e) {
+        MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, txtHandlerPattern.getText().trim());
+    }
+
+    private void btnGreenProgressActionPerformed(ActionEvent e) {
+        MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, txtHandlerPattern.getText().trim());
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -550,9 +560,10 @@ public class FrmTest extends JFrame implements GameEventListener {
         btnGreen = new JButton();
         btnPause = new JButton();
         btn2 = new JButton();
+        panel13 = new JPanel();
         lblTimer = new JLabel();
-        tbDebug = new JToggleButton();
         lblMessage = new JLabel();
+        tbDebug = new JToggleButton();
         pb1 = new JProgressBar();
         lblRespawn = new JLabel();
         settingsPanel = new JPanel();
@@ -585,8 +596,6 @@ public class FrmTest extends JFrame implements GameEventListener {
         lblRspwnSiren = new JTextField();
         label6 = new JLabel();
         lblStartsiren = new JTextField();
-        label8 = new JLabel();
-        lblWinningSiren = new JTextField();
         panel5 = new JPanel();
         cmbSirenHandler = new JComboBox();
         panel1 = new JPanel();
@@ -729,11 +738,22 @@ public class FrmTest extends JFrame implements GameEventListener {
                 btn2.setIcon(new ImageIcon(getClass().getResource("/artwork/exit64.png")));
                 contentPanel.add(btn2, CC.xy(1, 5));
 
-                //---- lblTimer ----
-                lblTimer.setText("--");
-                lblTimer.setFont(new Font("Dialog", Font.PLAIN, 12));
-                lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
-                contentPanel.add(lblTimer, CC.xywh(3, 5, 3, 1, CC.FILL, CC.DEFAULT));
+                //======== panel13 ========
+                {
+                    panel13.setLayout(new BoxLayout(panel13, BoxLayout.PAGE_AXIS));
+
+                    //---- lblTimer ----
+                    lblTimer.setText("--");
+                    lblTimer.setFont(new Font("Dialog", Font.PLAIN, 12));
+                    lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
+                    panel13.add(lblTimer);
+
+                    //---- lblMessage ----
+                    lblMessage.setText("<html><h1>Initializing...</h1></html>");
+                    lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
+                    panel13.add(lblMessage);
+                }
+                contentPanel.add(panel13, CC.xywh(3, 5, 3, 3, CC.FILL, CC.DEFAULT));
 
                 //---- tbDebug ----
                 tbDebug.setText("Debug");
@@ -741,12 +761,6 @@ public class FrmTest extends JFrame implements GameEventListener {
                 tbDebug.setIcon(new ImageIcon(getClass().getResource("/artwork/circle_grey_32.png")));
                 tbDebug.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/circle_yellow_32.png")));
                 contentPanel.add(tbDebug, CC.xy(1, 7, CC.FILL, CC.DEFAULT));
-
-                //---- lblMessage ----
-                lblMessage.setText("Initializing...");
-                lblMessage.setFont(new Font("Dialog", Font.BOLD, 28));
-                lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
-                contentPanel.add(lblMessage, CC.xywh(3, 7, 3, 1));
                 contentPanel.add(pb1, CC.xywh(1, 8, 7, 1));
 
                 //---- lblRespawn ----
@@ -974,24 +988,6 @@ public class FrmTest extends JFrame implements GameEventListener {
                 });
                 settingsPanel.add(lblStartsiren, CC.xywh(3, 9, 3, 1, CC.FILL, CC.DEFAULT));
 
-                //---- label8 ----
-                label8.setText("Siegersirene (muster)");
-                label8.setFont(new Font("Dialog", Font.PLAIN, 16));
-                settingsPanel.add(label8, CC.xy(1, 11));
-
-                //---- lblWinningSiren ----
-                lblWinningSiren.setFont(new Font("Dialog", Font.BOLD, 20));
-                lblWinningSiren.setText("5;1000,300,1000,300,1000,300");
-                lblWinningSiren.setHorizontalAlignment(SwingConstants.LEFT);
-                lblWinningSiren.setBackground(Color.orange);
-                lblWinningSiren.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        lblWinningSirenFocusLost(e);
-                    }
-                });
-                settingsPanel.add(lblWinningSiren, CC.xywh(3, 11, 3, 1, CC.FILL, CC.DEFAULT));
-
                 //======== panel5 ========
                 {
                     panel5.setLayout(new GridLayout(3, 2));
@@ -1063,6 +1059,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- btnRedProgress ----
                 btnRedProgress.setText("PBred");
+                btnRedProgress.addActionListener(e -> btnRedProgressActionPerformed(e));
                 panel1.add(btnRedProgress, CC.xy(5, 5, CC.FILL, CC.FILL));
 
                 //---- btnRespawnSiren ----
@@ -1083,6 +1080,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- btnYellowProgress ----
                 btnYellowProgress.setText("PByellow");
+                btnYellowProgress.addActionListener(e -> btnYellowProgressActionPerformed(e));
                 panel1.add(btnYellowProgress, CC.xy(5, 7, CC.FILL, CC.FILL));
 
                 //---- btnAirSiren ----
@@ -1104,6 +1102,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //---- btnGreenProgress ----
                 btnGreenProgress.setText("PBgreen");
                 btnGreenProgress.setActionCommand("Progress yellow");
+                btnGreenProgress.addActionListener(e -> btnGreenProgressActionPerformed(e));
                 panel1.add(btnGreenProgress, CC.xy(5, 9, CC.FILL, CC.FILL));
 
                 //======== panel11 ========
@@ -1208,11 +1207,15 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     public void setTimer(String time) {
-        SwingUtilities.invokeLater(() -> {
-            lblTimer.setText("<html>" + time + "</html>");
-            revalidate();
-            repaint();
-        });
+        if (tbDebug.isSelected()) {
+            SwingUtilities.invokeLater(() -> {
+                lblTimer.setText("<html>" + time + "</html>");
+                revalidate();
+                repaint();
+            });
+        } else {
+            lblTimer.setText(null);
+        }
     }
 
     public void setRespawnTimer(String time) {
@@ -1226,7 +1229,8 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     public void setMessage(String message) {
         SwingUtilities.invokeLater(() -> {
-            lblMessage.setText(message);
+//            logger.debug("<html>" + message + "</html>");
+            lblMessage.setText("<html>" + message + "</html>");
             revalidate();
             repaint();
         });
@@ -1249,9 +1253,10 @@ public class FrmTest extends JFrame implements GameEventListener {
     private JButton btnGreen;
     private JButton btnPause;
     private JButton btn2;
+    private JPanel panel13;
     private JLabel lblTimer;
-    private JToggleButton tbDebug;
     private JLabel lblMessage;
+    private JToggleButton tbDebug;
     private JProgressBar pb1;
     private JLabel lblRespawn;
     private JPanel settingsPanel;
@@ -1284,8 +1289,6 @@ public class FrmTest extends JFrame implements GameEventListener {
     private JTextField lblRspwnSiren;
     private JLabel label6;
     private JTextField lblStartsiren;
-    private JLabel label8;
-    private JTextField lblWinningSiren;
     private JPanel panel5;
     private JComboBox cmbSirenHandler;
     private JPanel panel1;

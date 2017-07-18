@@ -76,6 +76,11 @@ public class Tools {
         return title;
     }
 
+
+    public static String h1(String in){
+        return "<h1>"+in+"</h1>";
+    }
+
     public static String catchNull(String in) {
         return (in == null ? "" : in.trim());
     }

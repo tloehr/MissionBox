@@ -100,6 +100,14 @@ public class FC1DetailsMessageEvent extends MessageEvent {
 
     }
 
+    public long getOvertime(){
+        return gametimer-maxgametime;
+    }
+
+    public boolean isOvertime(){
+        return gametimer > maxgametime;
+    }
+
 //    public long getNextRespawn() {
 //        return lastrespawn + respawninterval - gametimer;
 //    }
