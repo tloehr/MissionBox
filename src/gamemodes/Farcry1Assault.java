@@ -116,10 +116,16 @@ public class Farcry1Assault implements GameMode {
                     FC1DetailsMessageEvent event = (FC1DetailsMessageEvent) messageEvent;
                     String respawnTimer = Tools.formatLongTime(event.getLastrespawn() + event.getRespawninterval() - event.getGametimer(), "mm:ss");
                     MissionBox.setRespawnTimer(respawnTimer);
-                    logger.debug(event.getLastrespawn() + ", " + event.getRespawninterval() + " , " + event.getGametimer());
+//                    logger.debug(event.getLastrespawn() + ", " + event.getRespawninterval() + " , " + event.getGametimer());
                     if (event.getLastrespawn() + event.getRespawninterval() <= event.getGametimer()) {
                         MissionBox.setScheme(MissionBox.MBX_RESPAWN_SIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
-                        logger.info("Respawning");
+                        logger.info("\n" +
+                                "  ____                                      _             \n" +
+                                " |  _ \\ ___  ___ _ __   __ ___      ___ __ (_)_ __   __ _ \n" +
+                                " | |_) / _ \\/ __| '_ \\ / _` \\ \\ /\\ / / '_ \\| | '_ \\ / _` |\n" +
+                                " |  _ <  __/\\__ \\ |_) | (_| |\\ V  V /| | | | | | | | (_| |\n" +
+                                " |_| \\_\\___||___/ .__/ \\__,_| \\_/\\_/ |_| |_|_|_| |_|\\__, |\n" +
+                                "                |_|                                 |___/ ");
                     }
                 }
             }
