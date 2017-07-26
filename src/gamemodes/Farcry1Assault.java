@@ -252,8 +252,8 @@ public class Farcry1Assault implements GameMode {
                  *                    |___/
                  */
                 logger.debug("GAME_FLAG_HOT");
-                MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";1000,1000");
-                MissionBox.off(MissionBox.MBX_LED_RED);
+                MissionBox.setScheme(MissionBox.MBX_LED_BTN_GREEN, FOREVER + ";1000,1000");
+                MissionBox.off(MissionBox.MBX_LED_BTN_RED);
 
                 // anders rum (bei cold) brauchen wir das nicht, weil diese sirene über das Percentage Interface abgeschaltet wird.
                 if (coldcountdownrunning.get()) MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
@@ -276,17 +276,17 @@ public class Farcry1Assault implements GameMode {
 
                 MissionBox.setProgress(new BigDecimal(-1));
 
-                MissionBox.off(MissionBox.MBX_LED_GREEN);
-//                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";350,0,0,350,0,350,0,3000");
-//                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";0,350,350,0,0,350,0,3000");
-//                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";0,350,0,350,350,0,0,3000");
+                MissionBox.off(MissionBox.MBX_LED_BTN_GREEN);
 
-                MissionBox.off(MissionBox.MBX_LED_PB_RED);
-                MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
-                MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_RED);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_GREEN);
 
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";350,3000");
-                MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";1000,1000");
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_RED);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_GREEN);
+
+                MissionBox.setScheme(MissionBox.MBX_LED_BTN_RED, FOREVER + ";1000,1000");
 
                 // damit beim Anfang nicht direkt die Shutdown Sirene ertönt
                 // UND damit bei einem Overtime die End-Sirene und die Shutdown-Sirene nicht kollidieren
@@ -313,28 +313,23 @@ public class Farcry1Assault implements GameMode {
 
                 MissionBox.setProgress(BigDecimal.ONE.negate()); // stop progess. -1 beendet alles.
 
-                MissionBox.off(MissionBox.MBX_LED_RED);
-                MissionBox.off(MissionBox.MBX_LED_GREEN);
+
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
                 MissionBox.off(MissionBox.MBX_AIRSIREN);
                 MissionBox.off(MissionBox.MBX_SIREN1);
                 MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
 
-                MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
-                MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
                 MissionBox.off(MissionBox.MBX_RESPAWN_SIREN);
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";350,0,0,350,0,350,0,3000");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";0,360,350,0,0,360,0,3000");
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";0,360,0,360,350,0,0,3000");
 
+                MissionBox.setScheme(MissionBox.MBX_LED_BTN_RED, FOREVER + ";1000,1000");
+                MissionBox.setScheme(MissionBox.MBX_LED_BTN_GREEN, FOREVER + ";0,1000,1000,1000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_RED, FOREVER + ";350,0,0,350,0,350,0,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_YELLOW, FOREVER + ";0,350,350,0,0,350,0,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_GREEN, FOREVER + ";0,350,0,350,350,0,0,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_RED, FOREVER + ";350,0,0,350,0,350,0,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_GREEN, FOREVER + ";0,350,350,0,0,350,0,3000");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_YELLOW, FOREVER + ";0,350,0,350,350,0,0,3000");
 
-//                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";2000,500,100,2000,100,2000,100,2000,100,2000");
-//                MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, FOREVER + ";2000,500,100,2000,100,2000,100,2000,100,2000");
-//                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";2000,500,100,2000,100,2000,100,2000,100,2000");
-
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";1000,2000");
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_BLUE, FOREVER + ";0,1000,1000,1000");
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";0,2000,1000,0");
 
                 coldcountdownrunning.set(false);
                 hotcountdownrunning.set(false);
@@ -350,18 +345,18 @@ public class Farcry1Assault implements GameMode {
                  */
                 logger.debug("GAME_OUTCOME_FLAG_DEFENDED");
 
-                MissionBox.off(MissionBox.MBX_LED_RED);
-                MissionBox.off(MissionBox.MBX_LED_GREEN);
+                MissionBox.off(MissionBox.MBX_LED_BTN_RED);
+                MissionBox.off(MissionBox.MBX_LED_BTN_GREEN);
 
-                MissionBox.off(MissionBox.MBX_LED_RGB_RED);
-                MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS2_RED);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS2_GREEN);
 
-                MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
-                MissionBox.off(MissionBox.MBX_LED_PB_RED);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_RED);
 
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, FOREVER + ";500,500");
-                MissionBox.setScheme(MissionBox.MBX_LED_GREEN, FOREVER + ";500,500");
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_GREEN, FOREVER + ";500,500");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_GREEN, FOREVER + ";500,500");
+                MissionBox.setScheme(MissionBox.MBX_LED_BTN_GREEN, FOREVER + ";500,500");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_YELLOW, FOREVER + ";500,500");
 
 
                 // Einmal langer Heulton zum Ende, heisst verloren
@@ -381,15 +376,15 @@ public class Farcry1Assault implements GameMode {
 
                 MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
 
-                MissionBox.off(MissionBox.MBX_LED_RGB_GREEN);
-                MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS2_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS2_GREEN);
 
-                MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
-                MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_GREEN);
 
-                MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, FOREVER + ";500,500");
-                MissionBox.setScheme(MissionBox.MBX_LED_RED, FOREVER + ";500,500");
-                MissionBox.setScheme(MissionBox.MBX_LED_RGB_RED, FOREVER + ";500,500");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_RED, FOREVER + ";500,500");
+                MissionBox.setScheme(MissionBox.MBX_LED_BTN_RED, FOREVER + ";500,500");
+                MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_RED, FOREVER + ";500,500");
 
                 MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;3000,0");
                 MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;0,3000,%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
@@ -406,12 +401,12 @@ public class Farcry1Assault implements GameMode {
                 logger.debug("GAME_FLAG_ACTIVE");
                 MissionBox.enableSettings(false);
 
-                MissionBox.off(MissionBox.MBX_LED_PB_GREEN);
-                MissionBox.off(MissionBox.MBX_LED_PB_YELLOW);
-                MissionBox.off(MissionBox.MBX_LED_PB_RED);
-                MissionBox.off(MissionBox.MBX_LED_RGB_GREEN);
-                MissionBox.off(MissionBox.MBX_LED_RGB_BLUE);
-                MissionBox.off(MissionBox.MBX_LED_RGB_RED);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_GREEN);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS1_RED);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS2_YELLOW);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS2_GREEN);
+                MissionBox.off(MissionBox.MBX_LED_PROGRESS2_RED);
 
                 // the starting siren
                 MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));

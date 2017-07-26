@@ -28,9 +28,9 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
     // immer drei angaben, ergeben das blickschma für rot-gelb-grün
     // list geht von links nach rechts, also rot nach grün
     //                              RED           YELLOW                   GREEN
-    final String[] schemesRedXXX = {vfs, fst, slo, slo, off, off, off, off};
-    final String[] schemesYellow = {vfs, off, off, slo, slo, slo, off, off};
-    final String[] schemesGreenX = {vfs, off, off, off, off, slo, slo, onn};
+    final String[] schemesRedXXX = { fst, slo, slo, off, off, off, off};
+    final String[] schemesYellow = { off, off, slo, slo, slo, off, off};
+    final String[] schemesGreenX = { off, off, off, off, slo, slo, onn};
 
     public RelayProgressRedYellowGreen(String pinRed, String pinYellow, String pinGreen) {
         super("");
@@ -69,21 +69,21 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
         logger.debug("schemepos " + schemepos);
         logger.debug("schemesRedXXX.length " + schemesRedXXX.length);
 
-        // die IFs nur, damit die LEDs gleichmässig blinken und nicht immer aussetzer haben
-        if (!prevRed.equals(schemesRedXXX[schemepos])) {
-            prevRed = schemesRedXXX[schemepos];
-            MissionBox.setScheme(pinRed, schemesRedXXX[schemepos]);
-        }
-        if (!prevGreen.equals(schemesGreenX[schemepos])) {
-            prevGreen = schemesGreenX[schemepos];
-            MissionBox.setScheme(pinGreen, schemesGreenX[schemepos]);
-        }
-        if (!prevYellow.equals(schemesYellow[schemepos])) {
-            prevYellow = schemesYellow[schemepos];
-            MissionBox.setScheme(pinYellow, schemesYellow[schemepos]);
-        }
+//        // die IFs nur, damit die LEDs gleichmässig blinken und nicht immer aussetzer haben
+//        if (!prevRed.equals(schemesRedXXX[schemepos])) {
+//            prevRed = schemesRedXXX[schemepos];
+//            MissionBox.setScheme(pinRed, schemesRedXXX[schemepos]);
+//        }
+//        if (!prevGreen.equals(schemesGreenX[schemepos])) {
+//            prevGreen = schemesGreenX[schemepos];
+//            MissionBox.setScheme(pinGreen, schemesGreenX[schemepos]);
+//        }
+//        if (!prevYellow.equals(schemesYellow[schemepos])) {
+//            prevYellow = schemesYellow[schemepos];
+//            MissionBox.setScheme(pinYellow, schemesYellow[schemepos]);
+//        }
 
-
+        MissionBox.setScheme(pinRed, schemesRedXXX[schemepos]);
         MissionBox.setScheme(pinYellow, schemesYellow[schemepos]);
         MissionBox.setScheme(pinGreen, schemesGreenX[schemepos]);
 

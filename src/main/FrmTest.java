@@ -515,11 +515,6 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
 
-    private void lblWinningSirenFocusLost(FocusEvent e) {
-        JTextField txt = ((JTextField) e.getSource());
-        String winnigscheme = MissionBox.getConfig(MissionBox.FCY_WINNING_SIREN_SCHEME);
-        MissionBox.setConfig(MissionBox.FCY_WINNING_SIREN_SCHEME, txt.getText().trim());
-    }
 
     private void lblStartsirenActionPerformed(ActionEvent e) {
         // TODO add your code here
@@ -530,15 +525,15 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     private void btnRedProgressActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_LED_PB_RED, txtHandlerPattern.getText().trim());
+        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_RED, txtHandlerPattern.getText().trim());
     }
 
     private void btnYellowProgressActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_LED_PB_YELLOW, txtHandlerPattern.getText().trim());
+        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_YELLOW, txtHandlerPattern.getText().trim());
     }
 
     private void btnGreenProgressActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_LED_PB_GREEN, txtHandlerPattern.getText().trim());
+        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_GREEN, txtHandlerPattern.getText().trim());
     }
 
 
