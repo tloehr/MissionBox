@@ -128,5 +128,9 @@ public class PinBlinkModel implements Callable<String> {
         return next;
     }
 
+    public Relay getPin(){
+        return pin;
+    }
+
 
 }

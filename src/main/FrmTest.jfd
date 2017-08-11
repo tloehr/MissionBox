@@ -187,7 +187,6 @@ new FormModel {
 						"text": "1"
 						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYCaptureActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYCaptureFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
@@ -252,7 +251,6 @@ new FormModel {
 						"text": "1"
 						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYGametimeActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYGametimeFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
@@ -306,7 +304,6 @@ new FormModel {
 						"text": "1"
 						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblFCYRespawnActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblFCYRespawnFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
@@ -391,7 +388,6 @@ new FormModel {
 						"text": "1"
 						"horizontalAlignment": 2
 						"background": sfield java.awt.Color orange
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lblStartsirenActionPerformed", true ) )
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "lblStartsirenFocusLost", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
@@ -416,7 +412,7 @@ new FormModel {
 					"title": "Settings"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "left:82dlu, unrelgap, default:grow, unrelgap, default:grow, unrelgap, 69dlu, labelcompgap, default:grow"
+					"$columnSpecs": "left:82dlu, unrelgap, default:grow, unrelgap, default:grow, unrelgap, 69dlu:grow, labelcompgap, default:grow"
 					"$rowSpecs": "default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default:grow, linegap, default"
 				} ) {
 					name: "panel1"
@@ -431,14 +427,14 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRelayTest1"
-						"text": "Relay1"
+						"text": "relay1"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 3
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRedLED"
+						name: "btnRedLED1"
 						"text": "LEDred"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 5
@@ -446,13 +442,12 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnSiren1"
-						"text": "Siren 1"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnSiren1ActionPerformed", true ) )
+						name: "btnRedLED2"
+						"text": "LEDred"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 7
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"gridX": 7
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonRed"
@@ -465,7 +460,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRelayTest2"
-						"text": "Relay2"
+						"text": "relay2"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
 						"gridX": 3
@@ -473,7 +468,7 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnGreenLED"
+						name: "btnGreenLED1"
 						"text": "LEDgreen"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 3
@@ -482,14 +477,13 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnSiren2"
-						"text": "Siren 2"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnSiren2ActionPerformed", true ) )
+						name: "btnGreenLED2"
+						"text": "LEDgreen"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"gridY": 3
 						"gridX": 7
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonPAUSE"
@@ -502,7 +496,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRelayTest3"
-						"text": "Relay3"
+						"text": "relay3"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 5
 						"gridX": 3
@@ -510,7 +504,7 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRedProgress"
+						name: "btnRedProgress1"
 						"text": "PBred"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRedProgressActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
@@ -520,14 +514,13 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRespawnSiren"
-						"text": "RespawnSiren"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRespawnSirenActionPerformed", true ) )
+						name: "btnSiren1"
+						"text": "Siren 1"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"gridY": 5
 						"gridX": 7
+						"gridY": 5
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonStartStop"
@@ -540,7 +533,7 @@ new FormModel {
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRelayTest4"
-						"text": "Relay4"
+						"text": "relay4"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 7
 						"gridX": 3
@@ -548,7 +541,7 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnYellowProgress"
+						name: "btnYellowProgress1"
 						"text": "PByellow"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnYellowProgressActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
@@ -558,27 +551,17 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnAirSiren"
-						"text": "AirSiren"
-						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnAirSirenActionPerformed", true ) )
+						name: "btnSiren2"
+						"text": "Siren 2"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"gridY": 7
 						"gridX": 7
 					} )
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "lblButtonQuit"
-						"text": "Button Quit"
-						"icon": #SwingIcon0
-						"enabled": false
-						"disabledIcon": #SwingIcon1
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 9
-					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "btnRelayTest5"
-						"text": "Relay5"
+						"text": "relay5"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
 						"gridX": 3
@@ -586,12 +569,93 @@ new FormModel {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnGreenProgress"
+						name: "btnGreenProgress1"
 						"text": "PBgreen"
 						"actionCommand": "Progress yellow"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnGreenProgressActionPerformed", true ) )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 9
+						"gridX": 5
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnSiren3"
+						"text": "RespawnSiren"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridY": 9
+						"gridX": 7
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 3
+					} ) {
+						name: "panel10"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label4"
+							"text": "Relay Test Scheme"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "txtHandlerPattern"
+							"text": "1;1000,1000"
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 11
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnRelayTest6"
+						"text": "relay6"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 11
+						"gridX": 3
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnRedProgress2"
+						"text": "RGBred"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 11
+						"gridX": 5
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnSiren4"
+						"text": "AirSiren"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridY": 11
+						"gridX": 7
+					} )
+					add( new FormComponent( "javax.swing.JToggleButton" ) {
+						name: "tbUsePinHandler"
+						"text": "Use Pinhandler"
+						"selected": true
+						addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "tbUsePinHandlerItemStateChanged", true ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 13
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnRelayTest7"
+						"text": "relay7"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 13
+						"gridX": 3
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnYellowProgress2"
+						"text": "RGBgreen"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 13
 						"gridX": 5
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
@@ -607,43 +671,25 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JTextField" ) {
 							name: "txtPercentage"
 							"text": "50"
-							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "txtHandlerPatternActionPerformed", true ) )
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 9
+						"gridY": 13
 						"gridX": 7
 					} )
-					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
-						"axis": 3
-					} ) {
-						name: "panel10"
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label4"
-							"text": "Relay Test Scheme"
-						} )
-						add( new FormComponent( "javax.swing.JTextField" ) {
-							name: "txtHandlerPattern"
-							"text": "1;1000,1000"
-							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "txtHandlerPatternActionPerformed", true ) )
-						} )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 1
-						"gridY": 11
-					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRelayTest6"
-						"text": "Relay6"
+						name: "btnRelayTest8"
+						"text": "relay8"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 11
+						"gridY": 15
 						"gridX": 3
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRGBred"
-						"text": "RGBred"
+						name: "btnGreenProgress2"
+						"text": "RGBblue"
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 11
+						"gridY": 15
 						"gridX": 5
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
@@ -658,53 +704,13 @@ new FormModel {
 							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnRelaySirensActionPerformed", true ) )
 						} )
 						add( new FormComponent( "javax.swing.JButton" ) {
-							name: "btnFlagPole"
-							"text": "FlagPole"
-						} )
-						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "btnProgess"
-							"text": "LEDPrgrss"
+							"text": "ProgressLEDs"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnProgessActionPerformed", true ) )
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridX": 7
-						"gridY": 11
-						"gridHeight": 5
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRelayTest7"
-						"text": "Relay7"
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 13
-						"gridX": 3
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRGBgreen"
-						"text": "RGBgreen"
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 13
-						"gridX": 5
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRelayTest8"
-						"text": "Relay8"
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"gridY": 15
-						"gridX": 3
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "btnRGBblue"
-						"text": "RGBblue"
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridY": 15
-						"gridX": 5
-						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
 				}, new FormLayoutConstraints( null ) {
 					"title": "HW-Test"

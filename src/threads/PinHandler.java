@@ -181,13 +181,16 @@ public class PinHandler {
                     }
                 }
                 schemes.put(name, scheme); // aufbewahren für die Wiederherstellung nach der Pause
-            }
 
-            pinBlinkModel.setScheme(scheme);
-            futures.put(name, executorService.submit(pinBlinkModel));
+                pinBlinkModel.setScheme(scheme);
+                futures.put(name, executorService.submit(pinBlinkModel));
+            } else {
+                logger.error("Pin not found in handler");
+            }
         } catch (Exception e) {
             logger.trace(e);
             logger.fatal(e);
+            System.exit(0);
         } finally {
             lock.unlock();
         }
@@ -211,6 +214,10 @@ public class PinHandler {
         for (String name : pinMap.keySet()) {
             off(name);
         }
+    }
+
+    public Relay getPin(String id){
+        return  pinMap.get(id).getPin();
     }
 
 }

@@ -20,17 +20,17 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 
     final String off = "0;";
     final String onn = "1;" + Long.MAX_VALUE + ",0";
-    final String slo = Integer.toString(Integer.MAX_VALUE) + ";500,500";
-    final String fst = Integer.toString(Integer.MAX_VALUE) + ";100,100";
-    final String vfs = Integer.toString(Integer.MAX_VALUE) + ";50,50"; // very fast
+    final String slo = Integer.toString(Integer.MAX_VALUE) + ";750,750";
+    final String fst = Integer.toString(Integer.MAX_VALUE) + ";200,200";
+    final String vfs = Integer.toString(Integer.MAX_VALUE) + ";100,100"; // very fast
 
     //    String[] colors;
     // immer drei angaben, ergeben das blickschma für rot-gelb-grün
     // list geht von links nach rechts, also rot nach grün
     //                              RED           YELLOW                   GREEN
-    final String[] schemesRedXXX = { fst, slo, slo, off, off, off, off};
-    final String[] schemesYellow = { off, off, slo, slo, slo, off, off};
-    final String[] schemesGreenX = { off, off, off, off, slo, slo, onn};
+    final String[] schemesRedXXX = { vfs, fst, slo, onn, slo, off, off, off, off, off};
+    final String[] schemesYellow = { off, off, off, off, slo, onn, slo, slo, off, off};
+    final String[] schemesGreenX = { off, off, off, off, off, off, off, slo, slo, onn};
 
     public RelayProgressRedYellowGreen(String pinRed, String pinYellow, String pinGreen) {
         super("");
@@ -57,6 +57,9 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
         // /3 weil immer drei werte in der Liste zusammengehören
         BigDecimal myPercent = new BigDecimal(100).subtract(percent);
         int schemepos = new BigDecimal(schemesRedXXX.length - 1).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
+
+
+        logger.debug("Percent: "+percent.toPlainString()+", #schemes: "+schemesRedXXX.length+", schemepos: "+schemepos);
 
         // shortcut
         if (previousPos == schemepos) return;

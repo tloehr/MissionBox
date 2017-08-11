@@ -53,7 +53,7 @@ public class MissionBox {
     private static final HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
     private static final HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
 
-    private static PercentageInterface relaisSirens, relaisLEDs, relaisFlagpole;
+    private static PercentageInterface relaisSirens, relaidPBLeds1, relaidPBLeds2;
 
     public static SortedProperties appinfo = new SortedProperties();
 
@@ -74,9 +74,10 @@ public class MissionBox {
     public static final String MBX_AIRSIREN = "mbx.airsiren";
     public static final String MBX_SHUTDOWN_SIREN = "mbx.shutdown.siren";
 
-
-    public static final String MBX_LED_BTN_RED = "mbx.led.btn.red";
-    public static final String MBX_LED_BTN_GREEN = "mbx.led.btn.green";
+    public static final String MBX_LED1_BTN_RED = "mbx.led1.btn.red";
+    public static final String MBX_LED1_BTN_GREEN = "mbx.led1.btn.green";
+    public static final String MBX_LED2_BTN_RED = "mbx.led2.btn.red";
+    public static final String MBX_LED2_BTN_GREEN = "mbx.led2.btn.green";
     public static final String MBX_LED_PROGRESS1_RED = "mbx.led.progress1.red";
     public static final String MBX_LED_PROGRESS1_YELLOW = "mbx.led.progress1.yellow";
     public static final String MBX_LED_PROGRESS1_GREEN = "mbx.led.progress1.green";
@@ -199,8 +200,14 @@ public class MissionBox {
     }
 
     private static void initProgressSystem() {
-        relaisLEDs = new RelayProgressRedYellowGreen(MBX_LED_PROGRESS1_RED, MBX_LED_PROGRESS1_YELLOW, MBX_LED_PROGRESS1_GREEN);
-        relaisFlagpole = new RelayProgressRedYellowGreen(MBX_LED_PROGRESS2_RED, MBX_LED_PROGRESS2_GREEN, MBX_LED_PROGRESS2_YELLOW);
+        relaidPBLeds1 = new RelayProgressRedYellowGreen(MBX_LED_PROGRESS1_RED, MBX_LED_PROGRESS1_YELLOW, MBX_LED_PROGRESS1_GREEN);
+        relaidPBLeds2 = new RelayProgressRedYellowGreen(MBX_LED_PROGRESS2_RED, MBX_LED_PROGRESS2_YELLOW, MBX_LED_PROGRESS2_GREEN);
+    }
+
+    //todo: das ganze hin und her über die Hauptklasse muss anders werden. das ist schrecklicher code.
+    public static void prepareGame() {
+        if (gameMode == null) return;
+        ((Farcry1Assault) gameMode).prepareGame();
     }
 
     public static void setRelaisSirens(PercentageInterface relaisSirens) {
@@ -227,20 +234,33 @@ public class MissionBox {
         pinHandler.add(new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, 50, 90)); // Motor Siren for Start Stop Signals
 
         // die leds in den Dome Buttons
-        pinHandler.add(new Relay(MBX_LED_BTN_GREEN, Color.GREEN, debugPanel4Pins));
-        pinHandler.add(new Relay(MBX_LED_BTN_RED, Color.RED, debugPanel4Pins));
 
-        // die fortschritts leds
-        pinHandler.add(new Relay(MBX_LED_PROGRESS1_GREEN, Color.GREEN, debugPanel4Pins));
-        pinHandler.add(new Relay(MBX_LED_PROGRESS1_YELLOW, Color.YELLOW, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED1_BTN_RED, Color.RED, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED1_BTN_GREEN, Color.GREEN, debugPanel4Pins));
+
+        pinHandler.add(new Relay(MBX_LED2_BTN_RED, Color.RED, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED2_BTN_GREEN, Color.GREEN, debugPanel4Pins));
+
+        // die fortschritts leds 1
         pinHandler.add(new Relay(MBX_LED_PROGRESS1_RED, Color.RED, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_PROGRESS1_YELLOW, Color.YELLOW, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_PROGRESS1_GREEN, Color.GREEN, debugPanel4Pins));
 
-        // die fahne
-        pinHandler.add(new Relay(MBX_LED_PROGRESS2_GREEN, Color.BLUE, debugPanel4Pins));
+        // die fortschritts leds 2
         pinHandler.add(new Relay(MBX_LED_PROGRESS2_RED, Color.RED, debugPanel4Pins));
-        pinHandler.add(new Relay(MBX_LED_PROGRESS2_YELLOW, Color.GREEN, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_PROGRESS2_YELLOW, Color.YELLOW, debugPanel4Pins));
+        pinHandler.add(new Relay(MBX_LED_PROGRESS2_GREEN, Color.GREEN, debugPanel4Pins));
 
         // for hardware testing only
+        pinHandler.add(new Relay(outputMap.get("GPIO 0"), "relay1", Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("GPIO 2"), "relay2", Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("GPIO 3"), "relay3", Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("GPIO 12"), "relay4", Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("GPIO 13"), "relay5", Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("GPIO 14"), "relay6", Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("GPIO 21"), "relay7", Color.BLUE, debugPanel4Pins));
+        pinHandler.add(new Relay(outputMap.get("GPIO 22"), "relay8", Color.BLUE, debugPanel4Pins));
+
 //        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B0"), "mcp23017-01-B0", Color.BLUE, debugPanel4Pins));
 //        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B1"), "mcp23017-01-B1", Color.BLUE, debugPanel4Pins));
 //        pinHandler.add(new Relay(outputMap.get("mcp23017-01-B2"), "mcp23017-01-B2", Color.BLUE, debugPanel4Pins));
@@ -378,27 +398,32 @@ public class MissionBox {
         // GPIO 0
 
 
-        
+        // Standardwerte für die config datei werden hier gesetzt.
+        // danach werden evtl. die geänderten Werte aus der Datei drübergeschrieben
+        // bei Programm Ende werden alle geänderten Werte wieder in die config.txt zurückgeschrieben
         config.put(MBX_AIRSIREN, "GPIO 0"); // Relais 1
         config.put(MBX_SIREN1, "GPIO 2");  // Relais 2
         config.put(MBX_SHUTDOWN_SIREN, "GPIO 3");  // Relais 3
         config.put(MBX_RESPAWN_SIREN, "GPIO 12");  // Relais 4
 
+        config.put(MBX_LED1_BTN_RED, "GPIO 11");
+        config.put(MBX_LED1_BTN_GREEN, "GPIO 26");
 
+        config.put(MBX_LED2_BTN_RED, "GPIO 23");
+        config.put(MBX_LED2_BTN_GREEN, "GPIO 24");
+        
+        config.put(MBX_LED_PROGRESS1_RED, "GPIO 5");
+        config.put(MBX_LED_PROGRESS1_YELLOW, "GPIO 6");
+        config.put(MBX_LED_PROGRESS1_GREEN, "GPIO 10");
 
-        config.put(MBX_LED_BTN_GREEN, "mcp23017-01-A7");
-        config.put(MBX_LED_BTN_RED, "mcp23017-01-A6");
-        config.put(MBX_LED_PROGRESS1_GREEN, "mcp23017-01-A3");
-        config.put(MBX_LED_PROGRESS1_YELLOW, "mcp23017-01-A4");
-        config.put(MBX_LED_PROGRESS1_RED, "mcp23017-01-A5");
-        config.put(MBX_LED_PROGRESS2_GREEN, "mcp23017-02-A5");
-        config.put(MBX_LED_PROGRESS2_RED, "mcp23017-02-A7");
-        config.put(MBX_LED_PROGRESS2_YELLOW, "mcp23017-02-A6");
+        config.put(MBX_LED_PROGRESS2_RED, "GPIO 27");
+        config.put(MBX_LED_PROGRESS2_YELLOW, "GPIO 28");
+        config.put(MBX_LED_PROGRESS2_GREEN, "GPIO 29");
 
-        config.put(MBX_BTN_RED, "mcp23017-02-B0");
-        config.put(MBX_BTN_GREEN, "mcp23017-02-B1");
-        config.put(MBX_BTN_START_STOP, "mcp23017-02-B2");
-        config.put(MBX_BTN_PAUSE, "mcp23017-02-B3");
+        config.put(MBX_BTN_RED, "GPIO 15");
+        config.put(MBX_BTN_GREEN, "GPIO 16");
+        config.put(MBX_BTN_START_STOP, "GPIO 1");
+        config.put(MBX_BTN_PAUSE, "GPIO 4");
 
         File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
 
@@ -488,19 +513,27 @@ public class MissionBox {
 //        MissionBox.gamemode = gamemode;
 //    }
 
+    public static void setPBLeds(BigDecimal percent) {
+        if (relaidPBLeds1 != null) relaidPBLeds1.setValue(percent);
+        if (relaidPBLeds2 != null) relaidPBLeds2.setValue(percent);
+    }
+
+
     public static void setProgress(BigDecimal percent) {
         if (relaisSirens != null) relaisSirens.setValue(percent);
         frmTest.setProgress(percent.intValue());
-        if (relaisLEDs != null) relaisLEDs.setValue(percent);
-        if (relaisFlagpole != null) relaisFlagpole.setValue(percent);
+        if (relaidPBLeds1 != null) relaidPBLeds1.setValue(percent);
+        if (relaidPBLeds2 != null) relaidPBLeds2.setValue(percent);
     }
 
     public static void setProgress(long start, long now, long stop) {
         if (relaisSirens != null) relaisSirens.setValue(start, now, stop);
         frmTest.setProgress(start, now, stop);
-        if (relaisLEDs != null) relaisLEDs.setValue(start, now, stop);
-        if (relaisFlagpole != null) relaisFlagpole.setValue(start, now, stop);
+        if (relaidPBLeds1 != null) relaidPBLeds1.setValue(start, now, stop);
+        if (relaidPBLeds2 != null) relaidPBLeds2.setValue(start, now, stop);
     }
+
+
 //
 //
 //    public static boolean isRESPAWN() {
@@ -601,8 +634,13 @@ public class MissionBox {
                     GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_05, PinState.LOW), // PB1 RED
                     GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_06, PinState.LOW), // PB1 YLW
                     GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_10, PinState.LOW), // PB1 GRN
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_11, PinState.LOW), // BTNLED RED
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_26, PinState.LOW), // BTNLED GREEN
+                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_11, PinState.LOW), // BTNLED1 RED
+                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_26, PinState.LOW), // BTNLED1 GREEN
+                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_27, PinState.LOW), // PB2 RED
+                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_28, PinState.LOW), // PB2 YLW
+                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_29, PinState.LOW), // PB2 GRN
+                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_23, PinState.LOW), // BTNLED2 RED
+                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_24, PinState.LOW) // BTNLED2 GREEN
             };
             for (int ioPin = 0; ioPin < myOutputs.length; ioPin++) {
                 outputMap.put(myOutputs[ioPin].getName(), myOutputs[ioPin]);
@@ -616,11 +654,16 @@ public class MissionBox {
              *     |___|_| \_|_|    \___/  |_|   |_|   |_|_| |_|___/
              *
              */
+
+
+            // PULL_UP bei direktem Anschluss an den Raspi
+            // PULL_DOWN bei Anschluss über einen MCP23017
+
             GpioPinDigitalInput myInputs[] = {
-                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_15, PinPullResistance.PULL_DOWN),
-                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_16, PinPullResistance.PULL_DOWN),
-                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_01, PinPullResistance.PULL_DOWN),
-                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_04, PinPullResistance.PULL_DOWN)
+                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_15, PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_16, PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_01, PinPullResistance.PULL_UP),
+                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_04, PinPullResistance.PULL_UP)
             };
             for (int ioPin = 0; ioPin < myInputs.length; ioPin++) {
                 inputMap.put(myInputs[ioPin].getName(), myInputs[ioPin]);
@@ -651,6 +694,7 @@ public class MissionBox {
 
     public static void shutdownEverything() {
         pinHandler.off();
+        GPIO.shutdown();
 
 
 //        synchronized (mapWorker) {

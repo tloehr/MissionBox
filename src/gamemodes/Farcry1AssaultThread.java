@@ -372,6 +372,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
     @Override
     public void prepareGame() {
+        previousGameState = GAME_NON_EXISTENT;
         setGameState(GAME_PRE_GAME);
     }
 
