@@ -16,6 +16,7 @@ public class TickingSlowAndSilent extends PercentageInterface {
     private int previousThird = -1;
     private final Logger logger = Logger.getLogger(getClass());
     private final String key;
+    private final StringBuilder tickingScheme;
 //    private boolean outroProcedureRunning;
 
 
@@ -24,6 +25,7 @@ public class TickingSlowAndSilent extends PercentageInterface {
      */
     public TickingSlowAndSilent(String siren) {
         super("Ticking Slow and Silent");
+        tickingScheme = new StringBuilder(6*25);
         this.key = siren;
 //        outroProcedureRunning = false;
         logger.setLevel(MissionBox.getLogLevel());
@@ -39,7 +41,7 @@ public class TickingSlowAndSilent extends PercentageInterface {
         }
 
         // sind wir in den letzten 10 sekunden ?
- // dann brauchen wir keinen progress mehr. 
+        // dann brauchen wir keinen progress mehr.
         Interval remaining = new Interval(now, end);
         if (Seconds.secondsIn(remaining).getSeconds() <= 10) return;
 //        {
@@ -61,26 +63,29 @@ public class TickingSlowAndSilent extends PercentageInterface {
         if (third == previousThird) return;
         previousThird = third;
 
-        String tickingScheme = "";
+
+        tickingScheme.setLength(0);
 
         // intro signal zu beginn jedes drittels
-        tickingScheme = "1;70,25,70,25,70,25,800,75,";
+        tickingScheme.append("1;70,25,70,25,70,25,800,75,");
 
+        // Achtung. Bei längeren Spielzeit (über 120 Minuten) muss der Source-Code geändert werden.
+        // dann müssen die schleifen auf 500 statt 250 erhöht werden.
         if (third == 1) {
-            for (int t = 0; t < 1000; t++) {
-                tickingScheme += "100,10000,";
+            for (int t = 0; t < 250; t++) {
+                tickingScheme.append("100,10000,");
             }
         } else if (third == 2) {
-            for (int t = 0; t < 1000; t++) {
-                tickingScheme += "100,100,100,10000,";
+            for (int t = 0; t < 250; t++) {
+                tickingScheme.append("100,100,100,10000,");
             }
         } else {
-            for (int t = 0; t < 1000; t++) {
-                tickingScheme += "100,100,100,100,100,10000,";
+            for (int t = 0; t < 250; t++) {
+                tickingScheme.append("100,100,100,100,100,10000,");
             }
         }
 
-        MissionBox.setScheme(key, tickingScheme);
+        MissionBox.setScheme(key, tickingScheme.toString());
 
 
         // hundertmal sollten oft genug sein

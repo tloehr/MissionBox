@@ -28,9 +28,18 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
     // immer drei angaben, ergeben das blickschma für rot-gelb-grün
     // list geht von links nach rechts, also rot nach grün
     //                              RED           YELLOW                   GREEN
-    final String[] schemesRedXXX = { vfs, fst, slo, onn, slo, off, off, off, off, off};
-    final String[] schemesYellow = { off, off, off, off, slo, onn, slo, slo, off, off};
-    final String[] schemesGreenX = { off, off, off, off, off, off, off, slo, slo, onn};
+//    final String[] schemesRedXXX = { vfs, fst, slo, onn, slo, off, off, off, off, off};
+//    final String[] schemesYellow = { off, off, off, off, slo, onn, slo, slo, off, off};
+//    final String[] schemesGreenX = { off, off, off, off, off, off, off, slo, slo, onn};
+//
+//    final String[] schemesRedXXX = { vfs, fst, slo, slo, off, off, off};
+//    final String[] schemesYellow = { off, off, off, slo, slo, slo, off};
+//    final String[] schemesGreenX = { off, off, off, off, off, slo, slo};
+
+    final String[] schemesRedXXX = {off, off, off, slo, slo, fst, vfs};
+    final String[] schemesYellow = {off, slo, slo, slo, off, off, off};
+    final String[] schemesGreenX = {slo, slo, off, off, off, off, off};
+
 
     public RelayProgressRedYellowGreen(String pinRed, String pinYellow, String pinGreen) {
         super("");
@@ -55,21 +64,23 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 //        }
 
         // /3 weil immer drei werte in der Liste zusammengehören
-        BigDecimal myPercent = new BigDecimal(100).subtract(percent);
-        int schemepos = new BigDecimal(schemesRedXXX.length - 1).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(myPercent).intValue();
+//        BigDecimal myPercent = new BigDecimal(100).subtract(percent);
+
+        BigDecimal bdPos = new BigDecimal(schemesRedXXX.length).divide(new BigDecimal(100), 0, BigDecimal.ROUND_HALF_UP).multiply(percent);
+        int intpos = bdPos.intValue();
 
 
-        logger.debug("Percent: "+percent.toPlainString()+", #schemes: "+schemesRedXXX.length+", schemepos: "+schemepos);
+        logger.debug("Percent: " + percent.toPlainString() + ", #schemes: " + schemesRedXXX.length + ", intpos: " + intpos);
 
         // shortcut
-        if (previousPos == schemepos) return;
-        previousPos = schemepos;
+        if (previousPos == intpos) return;
+        previousPos = intpos;
 
 //        MissionBox.off(pinRed);
 //        MissionBox.off(pinGreen);
 //        MissionBox.off(pinYellow);
 
-        logger.debug("schemepos " + schemepos);
+        logger.debug("intpos " + intpos);
         logger.debug("schemesRedXXX.length " + schemesRedXXX.length);
 
 //        // die IFs nur, damit die LEDs gleichmässig blinken und nicht immer aussetzer haben
@@ -86,9 +97,9 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 //            MissionBox.setScheme(pinYellow, schemesYellow[schemepos]);
 //        }
 
-        MissionBox.setScheme(pinRed, schemesRedXXX[schemepos]);
-        MissionBox.setScheme(pinYellow, schemesYellow[schemepos]);
-        MissionBox.setScheme(pinGreen, schemesGreenX[schemepos]);
+        MissionBox.setScheme(pinRed, schemesRedXXX[intpos]);
+        MissionBox.setScheme(pinYellow, schemesYellow[intpos]);
+        MissionBox.setScheme(pinGreen, schemesGreenX[intpos]);
 
     }
 

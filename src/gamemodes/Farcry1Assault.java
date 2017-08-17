@@ -442,9 +442,14 @@ public class Farcry1Assault implements GameMode {
          *
          */
         MissionBox.getBtnRed().addListener((GpioPinListenerDigital) event -> {
-            logger.debug(event);
+//            logger.debug(event);
             MissionBox.getFrmTest().setButtonTestLabel("red", event.getState() == PinState.LOW); // for debugging
             if (event.getState() == PinState.LOW) {
+                logger.debug("GPIO RedButton down");
+                logger.debug("GPIO RedButton down");
+                logger.debug("GPIO RedButton down");
+                logger.debug("GPIO RedButton down");
+                logger.debug("GPIO RedButton down");
                 logger.debug("GPIO RedButton down");
                 farcryAssaultThread.setFlagHot(true);
             }
