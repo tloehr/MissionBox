@@ -695,16 +695,6 @@ public class MissionBox {
     public static void shutdownEverything() {
         pinHandler.off();
         GPIO.shutdown();
-
-
-//        synchronized (mapWorker) {
-//            Set<String> keys = mapWorker.keySet();
-//            for (String mainSiren : keys) {
-//                logger.debug("cleaning mainSiren: "+mainSiren);
-//                MissionBox.blink(mainSiren, 0);
-//            }
-//        }
-
     }
 
 

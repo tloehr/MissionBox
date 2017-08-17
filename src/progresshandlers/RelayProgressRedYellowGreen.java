@@ -24,18 +24,6 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
     final String fst = Integer.toString(Integer.MAX_VALUE) + ";200,200";
     final String vfs = Integer.toString(Integer.MAX_VALUE) + ";100,100"; // very fast
 
-    //    String[] colors;
-    // immer drei angaben, ergeben das blickschma für rot-gelb-grün
-    // list geht von links nach rechts, also rot nach grün
-    //                              RED           YELLOW                   GREEN
-//    final String[] schemesRedXXX = { vfs, fst, slo, onn, slo, off, off, off, off, off};
-//    final String[] schemesYellow = { off, off, off, off, slo, onn, slo, slo, off, off};
-//    final String[] schemesGreenX = { off, off, off, off, off, off, off, slo, slo, onn};
-//
-//    final String[] schemesRedXXX = { vfs, fst, slo, slo, off, off, off};
-//    final String[] schemesYellow = { off, off, off, slo, slo, slo, off};
-//    final String[] schemesGreenX = { off, off, off, off, off, slo, slo};
-
     final String[] schemesRedXXX = {off, off, off, slo, slo, fst, vfs};
     final String[] schemesYellow = {off, slo, slo, slo, off, off, off};
     final String[] schemesGreenX = {slo, slo, off, off, off, off, off};
@@ -56,29 +44,14 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 
     public void setValue(BigDecimal percent) {
 
-//        if (percent.compareTo(BigDecimal.ZERO) < 0) {
-//            MissionBox.off(pinRed);
-//            MissionBox.off(pinGreen);
-//            MissionBox.off(pinYellow);
-//            return;
-//        }
-
-        // /3 weil immer drei werte in der Liste zusammengehören
-//        BigDecimal myPercent = new BigDecimal(100).subtract(percent);
-
-        BigDecimal bdPos = new BigDecimal(schemesRedXXX.length).divide(new BigDecimal(100), 0, BigDecimal.ROUND_HALF_UP).multiply(percent);
-        int intpos = bdPos.intValue();
-
+        BigDecimal bdPos = new BigDecimal(6).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent);
+        int intpos = bdPos.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 
         logger.debug("Percent: " + percent.toPlainString() + ", #schemes: " + schemesRedXXX.length + ", intpos: " + intpos);
 
         // shortcut
         if (previousPos == intpos) return;
         previousPos = intpos;
-
-//        MissionBox.off(pinRed);
-//        MissionBox.off(pinGreen);
-//        MissionBox.off(pinYellow);
 
         logger.debug("intpos " + intpos);
         logger.debug("schemesRedXXX.length " + schemesRedXXX.length);
