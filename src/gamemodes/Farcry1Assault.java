@@ -372,8 +372,8 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setScheme(MissionBox.MBX_LED2_BTN_GREEN, FOREVER + ";500,500");
 
                 // Einmal langer Heulton zum Ende, heisst verloren
-                MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;3000,0");
-                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;0,3000,%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+//                MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;3000,0");
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
 
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
                 /***
@@ -400,8 +400,8 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setScheme(MissionBox.MBX_LED1_BTN_RED, FOREVER + ";500,500");
                 MissionBox.setScheme(MissionBox.MBX_LED2_BTN_RED, FOREVER + ";500,500");
 
-                MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;3000,0");
-                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;0,3000,%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+//                MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;3000,0");
+                MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
 
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_ACTIVE) {
                 /***

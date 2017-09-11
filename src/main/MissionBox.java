@@ -411,7 +411,7 @@ public class MissionBox {
 
         config.put(MBX_LED2_BTN_RED, "GPIO 23");
         config.put(MBX_LED2_BTN_GREEN, "GPIO 24");
-        
+
         config.put(MBX_LED_PROGRESS1_RED, "GPIO 5");
         config.put(MBX_LED_PROGRESS1_YELLOW, "GPIO 6");
         config.put(MBX_LED_PROGRESS1_GREEN, "GPIO 10");
@@ -694,7 +694,7 @@ public class MissionBox {
 
     public static void shutdownEverything() {
         pinHandler.off();
-        GPIO.shutdown();
+        if (GPIO != null) GPIO.shutdown();
     }
 
 

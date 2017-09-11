@@ -15,7 +15,7 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
     private final String pinRed;
     private final String pinGreen;
     private final String pinYellow;
-    private String prevRed = "", prevGreen = "", prevYellow = "";
+//    private String prevRed = "", prevGreen = "", prevYellow = "";
     protected int previousPos = -1;
 
     final String off = "0;";
@@ -35,6 +35,7 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
         this.pinRed = pinRed;
         this.pinGreen = pinGreen;
         this.pinYellow = pinYellow;
+        previousPos = -1;
     }
 
     @Override
@@ -44,13 +45,24 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 
     public void setValue(BigDecimal percent) {
 
+        if (percent.equals(BigDecimal.ONE.negate())){
+            previousPos = -1;
+            MissionBox.off(pinRed);
+            MissionBox.off(pinYellow);
+            MissionBox.off(pinGreen);
+            return;
+        }
+
         BigDecimal bdPos = new BigDecimal(6).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent);
         int intpos = bdPos.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 
-        logger.debug("Percent: " + percent.toPlainString() + ", #schemes: " + schemesRedXXX.length + ", intpos: " + intpos);
+        logger.debug("Percent: " + percent.toPlainString() + ", #schemes: " + schemesRedXXX.length + ", intpos: " + intpos+", previousPos: "+previousPos);
 
         // shortcut
-        if (previousPos == intpos) return;
+        if (previousPos == intpos) {
+//            logger.debug("shortcutting...");
+            return;
+        }
         previousPos = intpos;
 
         logger.debug("intpos " + intpos);
