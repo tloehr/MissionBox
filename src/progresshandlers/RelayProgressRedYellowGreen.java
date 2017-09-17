@@ -23,10 +23,11 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
     final String slo = Integer.toString(Integer.MAX_VALUE) + ";750,750";
     final String fst = Integer.toString(Integer.MAX_VALUE) + ";200,200";
     final String vfs = Integer.toString(Integer.MAX_VALUE) + ";100,100"; // very fast
+    final String sfs = Integer.toString(Integer.MAX_VALUE) + ";50,50"; // super very fast
 
-    final String[] schemesRedXXX = {off, off, off, slo, slo, fst, vfs};
-    final String[] schemesYellow = {off, slo, slo, slo, off, off, off};
-    final String[] schemesGreenX = {slo, slo, off, off, off, off, off};
+    final String[] schemesRedXXX = {off, off, off, off, fst, fst, vfs, sfs};
+    final String[] schemesYellow = {off, off, fst, fst, fst, off, off, off};
+    final String[] schemesGreenX = {slo, fst, fst, off, off, off, off, off};
 
 
     public RelayProgressRedYellowGreen(String pinRed, String pinYellow, String pinGreen) {

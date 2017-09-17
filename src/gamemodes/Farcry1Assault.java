@@ -8,6 +8,8 @@ import main.MissionBox;
 import misc.Tools;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.Seconds;
 
@@ -23,9 +25,9 @@ public class Farcry1Assault implements GameMode {
     private boolean gameJustStarted;
     private Farcry1AssaultThread farcryAssaultThread;
     private String FOREVER = Integer.toString(Integer.MAX_VALUE);
-    //    private boolean countdownSirenWailing = false;
-//    HashSet<String> timeAnnouncements = new HashSet<>();
-//    private Farcry1GameEvent revertEvent;
+    //    private String lastAnnoucement = "";
+    private int lastAnnouncedMinute = -1;
+
 
     // das mach ich nur, weil ich diese beiden Flags als finals brauche.
     private final AtomicBoolean coldcountdownrunning, hotcountdownrunning;
@@ -78,28 +80,13 @@ public class Farcry1Assault implements GameMode {
         hotcountdownrunning = new AtomicBoolean(false);
 
         MessageListener gameTimeListener = messageEvent -> {
+
+
+//            logger.debug(messageEvent);
+
 //            String thisAnnoucement = messageEvent.getDateTimeFormatted();
 
-//            // Time announcer
-//            if (isGameRunning(messageEvent.getGameState())) {
-//                if (messageEvent.getGameState() != Farcry1AssaultThread.GAME_FLAG_HOT && !lastAnnoucement.equals(thisAnnoucement) && MissionBox.getTimeAnnouncements().containsKey(thisAnnoucement)) {
-//                    lastAnnoucement = thisAnnoucement;
-//
-//                    int minutes = messageEvent.getTime().getMinuteOfHour();
-//                    int seconds = messageEvent.getTime().getSecondOfMinute();
-//
-//                    logger.debug("time announcer: " + minutes + ":" + seconds);
-//
-//                    if (minutes > 0 && minutes <= 5) {
-//                        MissionBox.minuteSignal(minutes);
-//                    }
-//
-//                    if (minutes == 0) {
-//                        if (seconds > 10) MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, seconds / 10 + ";500,500");
-//                        else if (seconds == 10) MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, seconds + ";500,500");
-//                    }
-//                }
-//            }
+            // Time announcer
 
 
             /***
@@ -219,8 +206,31 @@ public class Farcry1Assault implements GameMode {
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
+                DateTime remainingTime = new DateTime(remain, DateTimeZone.UTC);
+
+                int minutes = remainingTime.getMinuteOfHour();
+                int seconds = remainingTime.getSecondOfMinute();
 
 
+                if (lastAnnouncedMinute != minutes) {
+                    lastAnnouncedMinute = minutes;
+                    logger.debug("time announcer: " + minutes + ":" + seconds);
+                    if (minutes > 0) {
+                        String scheme = "";
+                        for (int m = 1; m < minutes; m++) {
+                            scheme += "250,250,";
+                        }
+
+                        scheme += "250,10000";
+
+                        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_GREEN, "10000;" + scheme);
+                        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_GREEN, "10000;" + scheme);
+                    } else {
+                        MissionBox.off(MissionBox.MBX_LED_PROGRESS1_GREEN);
+                        MissionBox.off(MissionBox.MBX_LED_PROGRESS2_GREEN);
+                    }
+                }
+                
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss"));
                 MissionBox.setMessage(message);
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PAUSING) {
@@ -260,6 +270,7 @@ public class Farcry1Assault implements GameMode {
                 // anders rum (bei cold) brauchen wir das nicht, weil diese sirene über das Percentage Interface abgeschaltet wird.
                 if (coldcountdownrunning.get()) MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
 
+                lastAnnouncedMinute = -1;
                 hotcountdownrunning.set(false);
                 coldcountdownrunning.set(false);
 
@@ -292,6 +303,10 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setScheme(MissionBox.MBX_LED1_BTN_RED, FOREVER + ";1000,1000");
                 MissionBox.setScheme(MissionBox.MBX_LED2_BTN_RED, FOREVER + ";1000,1000");
 
+
+                // LED Anzeige, welche die Langeweile der Verteidiger ausdrückt.
+
+
                 // damit beim Anfang nicht direkt die Shutdown Sirene ertönt
                 // UND damit bei einem Overtime die End-Sirene und die Shutdown-Sirene nicht kollidieren
                 if (!gameJustStarted && !((FC1DetailsMessageEvent) messageEvent).isOvertime()) {
@@ -299,6 +314,7 @@ public class Farcry1Assault implements GameMode {
                 }
 
                 gameJustStarted = false;
+                lastAnnouncedMinute = -1;
                 hotcountdownrunning.set(false);
                 coldcountdownrunning.set(false);
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
@@ -338,7 +354,7 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_YELLOW, FOREVER + ";0,350,350,0,0,350,0,3000");
                 MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_GREEN, FOREVER + ";0,350,0,350,350,0,0,3000");
 
-
+                lastAnnouncedMinute = -1;
                 coldcountdownrunning.set(false);
                 hotcountdownrunning.set(false);
 
@@ -445,11 +461,6 @@ public class Farcry1Assault implements GameMode {
 //            logger.debug(event);
             MissionBox.getFrmTest().setButtonTestLabel("red", event.getState() == PinState.LOW); // for debugging
             if (event.getState() == PinState.LOW) {
-                logger.debug("GPIO RedButton down");
-                logger.debug("GPIO RedButton down");
-                logger.debug("GPIO RedButton down");
-                logger.debug("GPIO RedButton down");
-                logger.debug("GPIO RedButton down");
                 logger.debug("GPIO RedButton down");
                 farcryAssaultThread.setFlagHot(true);
             }

@@ -36,7 +36,6 @@ public class MissionBox {
     private static Level logLevel = Level.DEBUG;
     private static GpioController GPIO;
     private static FrmTest frmTest;
-    //    private static FrmSimulator frmSimulator;
     private static Properties config;
 
 
@@ -104,6 +103,7 @@ public class MissionBox {
         System.setProperty("logs", Tools.getMissionboxDirectory());
         logger = Logger.getRootLogger();
 
+
         logger.info("\n" +
                 "  ____ _____  _    ____ _____ ___ _   _  ____   __  __ _         _             ____            \n" +
                 " / ___|_   _|/ \\  |  _ \\_   _|_ _| \\ | |/ ___| |  \\/  (_)___ ___(_) ___  _ __ | __ )  _____  __\n" +
@@ -111,7 +111,6 @@ public class MissionBox {
                 "  ___) || |/ ___ \\|  _ < | |  | || |\\  | |_| | | |  | | \\__ \\__ \\ | (_) | | | | |_) | (_) >  < \n" +
                 " |____/ |_/_/   \\_\\_| \\_\\|_| |___|_| \\_|\\____| |_|  |_|_|___/___/_|\\___/|_| |_|____/ \\___/_/\\_\\\n" +
                 "                                                                                               ");
-
 
         try {
             // Lade Build Informationen
@@ -123,6 +122,9 @@ public class MissionBox {
         } catch (IOException iOException) {
             iOException.printStackTrace();
         }
+
+        logger.info(MissionBox.getAppinfo().getProperty("program.BUILDDATE") + " [" + MissionBox.getAppinfo().getProperty("program.BUILDNUM") + "]");
+
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {

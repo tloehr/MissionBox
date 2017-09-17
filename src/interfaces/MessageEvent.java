@@ -78,18 +78,15 @@ public class MessageEvent extends EventObject {
         return message;
     }
 
-    public DateTime getTime() {
-        return new DateTime(message, DateTimeZone.UTC);
-    }
+//    public DateTime getTime() {
+//
+//        FC1DetailsMessageEvent ev = (FC1DetailsMessageEvent) message;
+//
+//        return new DateTime(ev., DateTimeZone.UTC);
+//    }
 
 //    public String getDateTimeFormatted() {
 //        String result = getTime().toString("mm:ss");
-//        if (message2 != null) {
-//            long m2 = (long) message2;
-//
-//            result += " (" + new DateTime(Math.abs(m2), DateTimeZone.UTC).toString("mm:ss") + (m2 < 0 ? " overtime)" : ")");
-//        }
-//
 //        return result;
 //    }
 
