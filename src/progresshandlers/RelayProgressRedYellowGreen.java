@@ -56,9 +56,9 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
 
         BigDecimal bdPos = new BigDecimal(schemesRedXXX.length).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent);
 
-        int intpos = bdPos.setScale(0, BigDecimal.ROUND_DOWN).intValue();
+        int intpos = Math.min(bdPos.setScale(0, BigDecimal.ROUND_DOWN).intValue(), schemesRedXXX.length-1);
 
-        logger.debug("Percent: " + percent.toPlainString() + ", #schemes: " + schemesRedXXX.length + ", bdpos: " + bdPos +", intpos: " + intpos+", previousPos: "+previousPos);
+//        logger.debug("Percent: " + percent.toPlainString() + ", #schemes: " + schemesRedXXX.length + ", bdpos: " + bdPos +", intpos: " + intpos+", previousPos: "+previousPos);
 
         // shortcut
         if (previousPos == intpos) {
@@ -67,8 +67,8 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
         }
         previousPos = intpos;
 
-        logger.debug("intpos " + intpos);
-        logger.debug("schemesRedXXX.length " + schemesRedXXX.length);
+//        logger.debug("intpos " + intpos);
+//        logger.debug("schemesRedXXX.length " + schemesRedXXX.length);
 
 //        // die IFs nur, damit die LEDs gleichmässig blinken und nicht immer aussetzer haben
 //        if (!prevRed.equals(schemesRedXXX[schemepos])) {

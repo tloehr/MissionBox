@@ -105,7 +105,7 @@ public class FC1DetailsMessageEvent extends MessageEvent {
     }
 
     public boolean isOvertime() {
-        logger.debug("overtime gametimer:" + gametimer + " maxgametime:" + maxgametime);
+//        logger.debug("overtime gametimer:" + gametimer + " maxgametime:" + maxgametime);
         return gametimer > maxgametime;
     }
 

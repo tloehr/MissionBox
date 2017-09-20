@@ -27,6 +27,7 @@ public class Farcry1Assault implements GameMode {
     private String FOREVER = Integer.toString(Integer.MAX_VALUE);
     //    private String lastAnnoucement = "";
     private int lastAnnouncedMinute = -1;
+    private int lastAnnouncedSecoond = -1;
 
 
     // das mach ich nur, weil ich diese beiden Flags als finals brauche.
@@ -200,7 +201,7 @@ public class Farcry1Assault implements GameMode {
                 int minutes = remainingTime.getMinuteOfHour();
                 int seconds = remainingTime.getSecondOfMinute();
 
-
+                // mehr als 1 Minute
                 if (lastAnnouncedMinute != minutes) {
                     lastAnnouncedMinute = minutes;
                     logger.debug("time announcer: " + minutes + ":" + seconds);
@@ -219,6 +220,25 @@ public class Farcry1Assault implements GameMode {
                         MissionBox.off(MissionBox.MBX_LED_PROGRESS2_GREEN);
                     }
                 }
+
+                // weniger als 1 minute
+                if (minutes == 0 && (seconds == 50 || seconds == 40 || seconds == 30 || seconds == 20 || seconds == 10)) {
+                    if (lastAnnouncedSecoond != seconds) {
+                        lastAnnouncedSecoond = seconds;
+                        logger.debug("time announcer: " + minutes + ":" + seconds);
+
+                        String scheme = "";
+                        for (int s = 1; s < seconds/10; s++) {
+                            scheme += "125,125,";
+                        }
+
+                        scheme += "125,3000";
+
+                        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_GREEN, "10000;" + scheme);
+                        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_GREEN, "10000;" + scheme);
+
+                    }
+                } 
 
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss"));
                 MissionBox.setMessage(message);
@@ -260,6 +280,7 @@ public class Farcry1Assault implements GameMode {
                 if (coldcountdownrunning.get()) MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
 
                 lastAnnouncedMinute = -1;
+                lastAnnouncedSecoond = -1;
                 hotcountdownrunning.set(false);
                 coldcountdownrunning.set(false);
 
@@ -304,6 +325,7 @@ public class Farcry1Assault implements GameMode {
 
                 gameJustStarted = false;
                 lastAnnouncedMinute = -1;
+                lastAnnouncedSecoond = -1;
                 hotcountdownrunning.set(false);
                 coldcountdownrunning.set(false);
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PRE_GAME) {
@@ -345,6 +367,7 @@ public class Farcry1Assault implements GameMode {
 
 
                 lastAnnouncedMinute = -1;
+                lastAnnouncedSecoond = -1;
                 coldcountdownrunning.set(false);
                 hotcountdownrunning.set(false);
                 overtime.set(false);
@@ -359,11 +382,12 @@ public class Farcry1Assault implements GameMode {
                  */
                 logger.debug("GAME_OUTCOME_FLAG_DEFENDED");
 
+                MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
+
                 MissionBox.off(MissionBox.MBX_LED1_BTN_RED);
                 MissionBox.off(MissionBox.MBX_LED1_BTN_GREEN);
                 MissionBox.off(MissionBox.MBX_LED2_BTN_RED);
                 MissionBox.off(MissionBox.MBX_LED2_BTN_GREEN);
-
 
                 MissionBox.off(MissionBox.MBX_LED_PROGRESS1_RED);
                 MissionBox.off(MissionBox.MBX_LED_PROGRESS1_YELLOW);
@@ -400,7 +424,10 @@ public class Farcry1Assault implements GameMode {
                  */
                 logger.debug("GAME_OUTCOME_FLAG_TAKEN");
 
-                MissionBox.off(MissionBox.MBX_SHUTDOWN_SIREN);
+                MissionBox.off(MissionBox.MBX_LED1_BTN_RED);
+                MissionBox.off(MissionBox.MBX_LED1_BTN_GREEN);
+                MissionBox.off(MissionBox.MBX_LED2_BTN_RED);
+                MissionBox.off(MissionBox.MBX_LED2_BTN_GREEN);
 
                 MissionBox.off(MissionBox.MBX_LED_PROGRESS1_RED);
                 MissionBox.off(MissionBox.MBX_LED_PROGRESS1_YELLOW);

@@ -31,6 +31,7 @@ public class TickingSlowAndSilent extends PercentageInterface {
 
     public void setValue(BigDecimal percent) {
         if (percent.compareTo(BigDecimal.ZERO) < 0 || percent.compareTo(new BigDecimal(100)) >= 0) {
+            previousQuarter = -1;
             MissionBox.off(key);
             return;
         }
