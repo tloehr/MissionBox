@@ -25,9 +25,9 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
     final String vfs = Integer.toString(Integer.MAX_VALUE) + ";100,100"; // very fast
     final String sfs = Integer.toString(Integer.MAX_VALUE) + ";50,50"; // super very fast
 
-    final String[] schemesRedXXX = {off, off, off, off, fst, fst, vfs, sfs};
-    final String[] schemesYellow = {off, off, fst, fst, fst, off, off, off};
-    final String[] schemesGreenX = {slo, fst, fst, off, off, off, off, off};
+    final String[] schemesRedXXX = {off, off, fst, vfs};
+    final String[] schemesYellow = {off, fst, off, off};
+    final String[] schemesGreenX = {slo, off, off, off};
 
 
     public RelayProgressRedYellowGreen(String pinRed, String pinYellow, String pinGreen) {
@@ -54,10 +54,11 @@ public class RelayProgressRedYellowGreen extends PercentageInterface {
             return;
         }
 
-        BigDecimal bdPos = new BigDecimal(6).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent);
-        int intpos = bdPos.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        BigDecimal bdPos = new BigDecimal(schemesRedXXX.length).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).multiply(percent);
 
-        logger.debug("Percent: " + percent.toPlainString() + ", #schemes: " + schemesRedXXX.length + ", intpos: " + intpos+", previousPos: "+previousPos);
+        int intpos = bdPos.setScale(0, BigDecimal.ROUND_DOWN).intValue();
+
+        logger.debug("Percent: " + percent.toPlainString() + ", #schemes: " + schemesRedXXX.length + ", bdpos: " + bdPos +", intpos: " + intpos+", previousPos: "+previousPos);
 
         // shortcut
         if (previousPos == intpos) {

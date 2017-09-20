@@ -277,6 +277,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                                 "                                                                             ");
                         MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/shield32.png")))), 0);
                         addEventToList = true;
+//                        fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
+                        logger.debug("defended gametimer: "+gametimer);
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.defended"));
                         break;
                     }
@@ -439,7 +441,6 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
 
                 gametimer = System.currentTimeMillis() - starttime;
-
 //                long respawntimer = lastrespawn + respawninterval - gametimer;
                 lastRemainingTime = getRemaining();
 

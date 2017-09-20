@@ -30,7 +30,7 @@ public class Farcry1Assault implements GameMode {
 
 
     // das mach ich nur, weil ich diese beiden Flags als finals brauche.
-    private final AtomicBoolean coldcountdownrunning, hotcountdownrunning;
+    private final AtomicBoolean coldcountdownrunning, hotcountdownrunning, overtime;
 
     /**
      * wird gebraucht, wenn während eines PREGAMES die Zeiten geändert werden
@@ -78,6 +78,7 @@ public class Farcry1Assault implements GameMode {
 
         coldcountdownrunning = new AtomicBoolean(false);
         hotcountdownrunning = new AtomicBoolean(false);
+        overtime = new AtomicBoolean(false);
 
         MessageListener gameTimeListener = messageEvent -> {
 
@@ -172,30 +173,18 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setTimerMessage("--");
                 MissionBox.setMessage(Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()])));
                 MissionBox.setRespawnTimer("--");
-            } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
-
-                MissionBox.setRespawnTimer("--");
-                MissionBox.setMessage(Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()])));
-                MissionBox.setRespawnTimer("--");
-            } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
-
-                MissionBox.setRespawnTimer("--");
-                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]));
-
-//                // todo: das hier erscheint immer
-//                if (((FC1DetailsMessageEvent) messageEvent).isOvertime()) {
-//                    message += "<h2>SUDDEN DEATH (Overtime)</h2>";
-//                }
-
-                MissionBox.setMessage(message);
-                MissionBox.setRespawnTimer("--");
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT) {
                 MissionBox.setTimerMessage(((FC1DetailsMessageEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
 
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss"));
 
-                if (((FC1DetailsMessageEvent) messageEvent).isOvertime()) {
+                // das muss ich hier machen, weil der gametimer nur dann noch richtig ist, solange das spiel
+                // läuft. Wenn ich den nach Ende setzen, sind dann noch ein paar Millis mehr auf der Uhr.
+                // und dann klappen die Abfragen nicht mehr.
+                overtime.set(((FC1DetailsMessageEvent) messageEvent).isOvertime());
+
+                if (overtime.get()) {
                     message += "<h2> OVERTIME: " + Tools.formatLongTime(((FC1DetailsMessageEvent) messageEvent).getOvertime(), "mm:ss") + "</h2>";
                 }
 
@@ -230,7 +219,7 @@ public class Farcry1Assault implements GameMode {
                         MissionBox.off(MissionBox.MBX_LED_PROGRESS2_GREEN);
                     }
                 }
-                
+
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]) + " " + Tools.formatLongTime(remain, "mm:ss"));
                 MissionBox.setMessage(message);
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_PAUSING) {
@@ -309,7 +298,7 @@ public class Farcry1Assault implements GameMode {
 
                 // damit beim Anfang nicht direkt die Shutdown Sirene ertönt
                 // UND damit bei einem Overtime die End-Sirene und die Shutdown-Sirene nicht kollidieren
-                if (!gameJustStarted && !((FC1DetailsMessageEvent) messageEvent).isOvertime()) {
+                if (!gameJustStarted && ((FC1DetailsMessageEvent) messageEvent).getOvertime() < 0) {
                     MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;1000,0");
                 }
 
@@ -354,10 +343,11 @@ public class Farcry1Assault implements GameMode {
                 MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_YELLOW, FOREVER + ";0,350,350,0,0,350,0,3000");
                 MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_GREEN, FOREVER + ";0,350,0,350,350,0,0,3000");
 
+
                 lastAnnouncedMinute = -1;
                 coldcountdownrunning.set(false);
                 hotcountdownrunning.set(false);
-
+                overtime.set(false);
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_DEFENDED) {
                 /***
                  *      _____ _             ____        __                _          _
@@ -390,6 +380,14 @@ public class Farcry1Assault implements GameMode {
                 // Einmal langer Heulton zum Ende, heisst verloren
 //                MissionBox.setScheme(MissionBox.MBX_SHUTDOWN_SIREN, "1;3000,0");
                 MissionBox.setScheme(MissionBox.MBX_AIRSIREN, "1;%d,0", MissionBox.getIntConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+
+                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()]));
+                if (overtime.get()) {
+                    message += "<h2>SUDDEN DEATH (Overtime)</h2>";
+                }
+
+                MissionBox.setMessage(message);
+                MissionBox.setRespawnTimer("--");
 
             } else if (messageEvent.getGameState() == Farcry1AssaultThread.GAME_OUTCOME_FLAG_TAKEN) {
                 /***

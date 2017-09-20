@@ -22,12 +22,12 @@ public class FC1DetailsMessageEvent extends MessageEvent {
     private long respawninterval;
     private long resumeinterval;
     public static final String css = "<style type=\"text/css\">\n" +
-                    ".tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}\n" +
-                    ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}\n" +
-                    ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}\n" +
-                    ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
-                    ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
-                    "</style>\n";
+            ".tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}\n" +
+            ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}\n" +
+            ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#039;background-color:#b9c9fe;}\n" +
+            ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
+            ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
+            "</style>\n";
     private long remaining;
 
     public long getResumeinterval() {
@@ -100,11 +100,12 @@ public class FC1DetailsMessageEvent extends MessageEvent {
 
     }
 
-    public long getOvertime(){
-        return gametimer-maxgametime;
+    public long getOvertime() {
+        return gametimer - maxgametime;
     }
 
-    public boolean isOvertime(){
+    public boolean isOvertime() {
+        logger.debug("overtime gametimer:" + gametimer + " maxgametime:" + maxgametime);
         return gametimer > maxgametime;
     }
 
