@@ -222,20 +222,13 @@ public class Farcry1Assault implements GameMode {
                 }
 
                 // weniger als 1 minute
-                if (minutes == 0 && (seconds == 50 || seconds == 40 || seconds == 30 || seconds == 20 || seconds == 10)) {
-                    if (lastAnnouncedSecoond != seconds) {
-                        lastAnnouncedSecoond = seconds;
-                        logger.debug("time announcer: " + minutes + ":" + seconds);
+                if (minutes < 1) {
+                    if (lastAnnouncedSecoond != 1) { // muss ja nur einmal aufgerufen werden.
+                        lastAnnouncedSecoond = 1;
+                        logger.debug("blinken in den letzten 60 Sekunden");
 
-                        String scheme = "";
-                        for (int s = 1; s < seconds/10; s++) {
-                            scheme += "125,125,";
-                        }
-
-                        scheme += "125,3000";
-
-                        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_GREEN, "10000;" + scheme);
-                        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_GREEN, "10000;" + scheme);
+                        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_GREEN, "10000;250,500");
+                        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS2_GREEN, "10000;250,500");
 
                     }
                 } 
@@ -500,6 +493,7 @@ public class Farcry1Assault implements GameMode {
          *                                                              |___/
          */
         MissionBox.getBtnRed().addListener(e -> {
+            logger.debug("SWING RedButton clicked");
             farcryAssaultThread.setFlagHot(true);
         });
 
@@ -535,7 +529,7 @@ public class Farcry1Assault implements GameMode {
          *                                                                        |___/
          */
         MissionBox.getBtnGreen().addListener(e -> {
-            logger.debug("GreenButton clicked");
+            logger.debug("SWING GreenButton clicked");
             farcryAssaultThread.setFlagHot(false);
         });
 

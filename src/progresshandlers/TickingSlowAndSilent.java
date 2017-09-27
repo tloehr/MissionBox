@@ -17,12 +17,26 @@ public class TickingSlowAndSilent extends PercentageInterface {
     private final Logger logger = Logger.getLogger(getClass());
     private final String key;
     private final StringBuilder tickingScheme;
+    private final long repeats;
 
     /**
      * @param siren - der Schlüssel der Sirene, die benutzt werden soll.
      */
-    public TickingSlowAndSilent(String siren) {
+    public TickingSlowAndSilent(String siren, long maxgametime) {
         super("Ticking Slow and Silent");
+
+//        BigDecimal max = new BigDecimal(maxgametime);
+//        BigDecimal quarters = max.divide(new BigDecimal(4),2, BigDecimal.ROUND_DOWN);
+//        BigDecimal bdRepeat = quarters.divide(new BigDecimal(1000), 2, BigDecimal.ROUND_DOWN);
+//        repeats = bdRepeat.intValue();
+
+
+        // maximale anzahl von 10 sekunden intervalle bei einer max. spielzeit von 60 Minuten. Müsste was elegantersein.
+        // wenn ich das berechnen soll, muss ich ein weg finden, dass neu zu setzen, wenn jemand das während der laufzeit ändet
+        // idee: die drei handlers neu erstellen, wenn jemand die parameter ändert.
+        // todo: später...
+        repeats = 90;
+
         tickingScheme = new StringBuilder(6 * 25);
         this.key = siren;
         logger.setLevel(MissionBox.getLogLevel());
@@ -65,19 +79,19 @@ public class TickingSlowAndSilent extends PercentageInterface {
         // Achtung. Bei längeren Spielzeit (über 120 Minuten) muss der Source-Code geändert werden.
         // dann müssen die schleifen auf 500 statt 250 erhöht werden.
         if (quarter == 1) {
-            for (int t = 0; t < 250; t++) {
+            for (int t = 0; t < repeats; t++) {
                 tickingScheme.append("100,10000,");
             }
         } else if (quarter == 2) {
-            for (int t = 0; t < 250; t++) {
+            for (int t = 0; t < repeats; t++) {
                 tickingScheme.append("100,100,100,10000,");
             }
         } else if (quarter == 3) {
-            for (int t = 0; t < 250; t++) {
+            for (int t = 0; t < repeats; t++) {
                 tickingScheme.append("100,100,100,100,100,10000,");
             }
         } else {
-            for (int t = 0; t < 250; t++) {
+            for (int t = 0; t < repeats; t++) {
                 tickingScheme.append("100,100,100,100,100,100,100,10000,");
             }
         }

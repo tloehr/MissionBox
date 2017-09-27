@@ -22,6 +22,7 @@ public class Relay implements OnOffInterface {
     private int note = -1;
     private Synthesizer synthesizer;
     private MidiChannel[] channels;
+    private String text;
 //
 //    private Relay(GpioPinDigitalOutput pin, String name) {
 //        this(pin, name, -1, -1);
@@ -83,14 +84,17 @@ public class Relay implements OnOffInterface {
 
 
     public void setText(String text) {
+        this.text = text;
         if (!MissionBox.getFrmTest().getTbDebug().isSelected()) return;
         SwingUtilities.invokeLater(() -> {
             debugLED.setText(text.isEmpty() ? name : name + " [" + text + "]");
             debugLED.revalidate();
             debugLED.repaint();
         });
+    }
 
-
+    public String getText() {
+        return text;
     }
 
     @Override

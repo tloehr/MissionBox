@@ -185,6 +185,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         try {
             this.gameState = state;
             logger.debug("setting gamestate to: " + GAMSTATS[gameState]);
+            logger.debug("gametimer is now: " + Tools.formatLongTime(getRemaining()));
 
             if (gameState != previousGameState) {
 
@@ -436,31 +437,29 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
         while (!thread.isInterrupted()) {
 
-            threadcycles++;
+//            threadcycles++;
             if (isGameRunning()) {
-
-
                 gametimer = System.currentTimeMillis() - starttime;
 //                long respawntimer = lastrespawn + respawninterval - gametimer;
                 lastRemainingTime = getRemaining();
 
-                if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
+//                if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
                     fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
                     if (lastrespawn + respawninterval <= gametimer) {
                         lastrespawn = gametimer;
                     }
 
-                }
+//                }
             } else if (pausingSince >= 0) {
 
-                if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
+//                if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
                     fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
-                }
+//                }
 
             } else if (gameState == GAME_PRE_GAME) {
-                if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
+//                if (threadcycles % 10 == 0) { // nicht jedes mal die gameTime als event melden. Ist nicht nötig.
                     fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
-                }
+//                }
             }
 
 

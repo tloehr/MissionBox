@@ -28,7 +28,7 @@ public class PinHandler {
 //    boolean paused = false;
 
     /**
-     * there relays that can be used at the same time. but others demand, that only *one* relay is used at the time (out of a set of relays). The sirens for instance.
+     * there are relays that can be used at the same time. but others demand, that only *one* relay is used at the time (out of a set of relays). The sirens for instance.
      * Out of the 6 different signals that can be activated, ONLY ONE can be used at the time. If you activate more than two, the results are unpredictable.
      * So this thread makes sure, that only one is used at every point in time.
      * <p>

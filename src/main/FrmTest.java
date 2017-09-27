@@ -31,7 +31,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     PercentageInterface[] progressHandlers = new PercentageInterface[]{
             new EscalatingSiren1Only(MissionBox.MBX_SIREN1),
             new EscalatingSiren1Ticking(MissionBox.MBX_SIREN1),
-            new TickingSlowAndSilent(MissionBox.MBX_SIREN1)
+            new TickingSlowAndSilent(MissionBox.MBX_SIREN1, 20000l)
     };
     Logger logger = Logger.getLogger(getClass());
 
@@ -720,7 +720,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                     "6*(default, $lgap), fill:default:grow, $lgap, default"));
 
                 //---- label1 ----
-                label1.setText("Flaggenzeit (Sekunden)");
+                label1.setText("Eroberungszeit (Sek.)");
                 label1.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label1, CC.xy(1, 1));
 
@@ -781,7 +781,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 settingsPanel.add(panel3, CC.xy(5, 1, CC.CENTER, CC.DEFAULT));
 
                 //---- label2 ----
-                label2.setText("Spieldauer (Minuten)");
+                label2.setText("Spielzeit (Minuten)");
                 label2.setFont(new Font("Dialog", Font.PLAIN, 16));
                 settingsPanel.add(label2, CC.xy(1, 3));
 

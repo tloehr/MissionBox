@@ -1,8 +1,11 @@
 package threads;
 
 import interfaces.Relay;
+import misc.Tools;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
@@ -18,17 +21,18 @@ public class PinBlinkModel implements Callable<String> {
     int repeat;
     boolean currentlyOn;
     int positionInScheme;
-    private final Logger logger = Logger.getLogger(getClass().getName());
+    private final Logger logger = Logger.getLogger(getClass());
     String infinity = "\u221E";
 
 
     @Override
     public String call() throws Exception {
-
+//        System.out.println(new DateTime().toString() + " call() to:" + pin.getName() + " [" + pin.getText() + "]");
         if (repeat == 0) {
             restart();
             pin.setOn(false);
         } else {
+//            System.out.println(new DateTime().toString() + " working on:" + pin.getName() + " [" + pin.getText() + "]");
             for (int turn = 0; turn < repeat; turn++) {
                 restart();
 
@@ -128,7 +132,7 @@ public class PinBlinkModel implements Callable<String> {
         return next;
     }
 
-    public Relay getPin(){
+    public Relay getPin() {
         return pin;
     }
 
