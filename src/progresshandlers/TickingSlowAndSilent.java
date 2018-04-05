@@ -74,11 +74,13 @@ public class TickingSlowAndSilent extends PercentageInterface {
         tickingScheme.setLength(0);
 
         // intro signal zu beginn jedes drittels
-        tickingScheme.append("1;70,25,70,25,70,25,800,75,");
+        //tickingScheme.append("1;70,25,70,25,70,25,800,75,");  // beloved shuttle bay doors
+        tickingScheme.append("1;");  // beloved shuttle bay doors
 
         // Achtung. Bei längeren Spielzeit (über 120 Minuten) muss der Source-Code geändert werden.
         // dann müssen die schleifen auf 500 statt 250 erhöht werden.
         if (quarter == 1) {
+            tickingScheme.append("2000,10000,");
             for (int t = 0; t < repeats; t++) {
                 tickingScheme.append("100,10000,");
             }
