@@ -5,9 +5,11 @@ import com.pi4j.io.i2c.I2CFactory;
 import gamemodes.Farcry1Assault;
 import gamemodes.Farcry1GameEvent;
 import gamemodes.GameMode;
-import interfaces.MyAbstractButton;
+import hardware.abstraction.MyAbstractButton;
+import hardware.abstraction.MyPin;
 import interfaces.PercentageInterface;
 import interfaces.Relay;
+import misc.Configs;
 import misc.SortedProperties;
 import misc.Tools;
 import org.apache.log4j.Level;
@@ -17,9 +19,11 @@ import threads.PinHandler;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Properties;
 
 import static com.sun.org.apache.xalan.internal.utils.SecuritySupport.getResourceAsStream;
@@ -31,12 +35,74 @@ import static com.sun.org.apache.xalan.internal.utils.SecuritySupport.getResourc
 public class MissionBox {
 
 
+    public static final String PH_POLE = "flagPole";
+    public static final String PH_LED_RED_BTN = "ledRedButton";
+    public static final String PH_LED_BLUE_BTN = "ledBlueButton";
+    public static final String PH_LED_GREEN_BTN = "ledGreenButton";
+    public static final String PH_LED_YELLOW_BTN = "ledYellowButton";
+    public static final String PH_LED_GREEN = "ledGreen";
+    public static final String PH_LED_WHITE = "ledWhite";
+    public static final String PH_SIREN_COLOR_CHANGE = "colorchangesiren";
+    public static final String PH_AIRSIREN = "airsiren";
+
+    public static final String PH_RESERVE01 = "reserve01";
+    public static final String PH_RESERVE02 = "reserve02";
+    public static final String PH_RESERVE03 = "reserve03";
+    public static final String PH_RESERVE04 = "reserve04";
+    public static final String PH_RESERVE05 = "reserve05";
+    public static final String PH_RESERVE06 = "reserve06";
+    public static final String PH_RESERVE07 = "reserve07";
+    public static final String PH_RESERVE08 = "reserve08";
+    public static final String PH_RESERVE09 = "reserve09";
+    public static final String PH_RESERVE10 = "reserve10";
+
+    // Parameter für die einzelnen PINs am Raspi sowie die I2C Adressen.
+    private static final int DISPLAY_BLUE = 0x71;
+    private static final int DISPLAY_RED = 0x72;
+    private static final int DISPLAY_WHITE = 0x70;
+    private static final int DISPLAY_YELLOW = 0x73;
+    private static final int DISPLAY_GREEN = 0x74;
+
+    private static final int MCP23017_1 = 0x20;
+
+    // Linke Seite des JP8 Header
+
+    // Klemmleiste
+    /* btn01 */ private static final Pin MBX_AIRSIREN = RaspiPin.GPIO_00;
+    /* btn02 */ private static final Pin MBX_SIREN1 = RaspiPin.GPIO_02;
+    /* btn03 */ private static final Pin MBX_SHUTDOWN_SIREN = RaspiPin.GPIO_03;
+    /* btn04 */ private static final Pin MBX_RESPAWN_SIREN = RaspiPin.GPIO_12;
+
+    /* btn05 */ private static final Pin MBX_LED1_BTN_RED = RaspiPin.GPIO_11;
+    /* btn06 */ private static final Pin MBX_LED1_BTN_GREEN = RaspiPin.GPIO_26;
+
+    /* btn07 */ private static final Pin MBX_LED2_BTN_RED = RaspiPin.GPIO_23;
+    /* btn08 */ private static final Pin MBX_LED2_BTN_GREEN = RaspiPin.GPIO_24;
+
+    private static final Pin MBX_LED_PROGRESS1_RED = RaspiPin.GPIO_05;
+    private static final Pin MBX_LED_PROGRESS1_YELLOW = RaspiPin.GPIO_06;
+    private static final Pin MBX_LED_PROGRESS1_GREEN = RaspiPin.GPIO_10;
+
+    private static final Pin MBX_LED_PROGRESS2_RED = RaspiPin.GPIO_27;
+    private static final Pin MBX_LED_PROGRESS2_YELLOW = RaspiPin.GPIO_28;
+    private static final Pin MBX_LED_PROGRESS2_GREEN = RaspiPin.GPIO_29;
+
+
+    /* btn05 */ private static final Pin MBX_BTN_RED = RaspiPin.GPIO_15;
+    /* btn06 */ private static final Pin MBX_BTN_GREEN = RaspiPin.GPIO_16;
+    /* btn07 */ private static final Pin MBX_BTN_START_STOP = RaspiPin.GPIO_01;
+    /* btn08 */ private static final Pin MBX_BTN_PAUSE = RaspiPin.GPIO_04;
+
+
+    public static final int DEBOUNCE = 200; //ms
+
+
     private static int startup_progress = 0;
     private static Logger logger;
     private static Level logLevel = Level.DEBUG;
     private static GpioController GPIO;
     private static FrmTest frmTest;
-    private static Properties config;
+    private static Configs configs;
 
 
     public static PinHandler getPinHandler() {
@@ -49,48 +115,13 @@ public class MissionBox {
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnPAUSE;
     private static JButton btnQuit;
 
-    private static final HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
-    private static final HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
+//    private static final HashMap<String, GpioPinDigitalOutput> outputMap = new HashMap<>();
+//    private static final HashMap<String, GpioPinDigitalInput> inputMap = new HashMap<>();
 
     private static PercentageInterface relaisSirens, relaidPBLeds1, relaidPBLeds2;
 
     public static SortedProperties appinfo = new SortedProperties();
 
-    /**
-     * Hier stehen die möglichen Schlüssel aus der config.txt
-     */
-    public static final String FCY_TIME2CAPTURE = "fcy.time2capture";
-    public static final String FCY_GAMETIME = "fcy.gametime";
-    public static final String MBX_RESUME_TIME = "mbx.resume.time"; // in ms
-    public static final String MBX_SIRENHANDLER = "mbx.sirenhandler";
-    public static final String MBX_LOGLEVEL = "mbx.loglevel";
-    public static final String FCY_RESPAWN_INTERVAL = "fcy.respawn.interval";
-    public static final String MBX_RESPAWN_SIRENTIME = "mbx.respawn.sirentime";
-    public static final String MBX_STARTGAME_SIRENTIME = "mbx.startgame.sirentime";
-
-    public static final String MBX_SIREN1 = "mbx.siren1";
-    public static final String MBX_RESPAWN_SIREN = "mbx.respawn.siren";
-    public static final String MBX_AIRSIREN = "mbx.airsiren";
-    public static final String MBX_SHUTDOWN_SIREN = "mbx.shutdown.siren";
-
-    public static final String MBX_LED1_BTN_RED = "mbx.led1.btn.red";
-    public static final String MBX_LED1_BTN_GREEN = "mbx.led1.btn.green";
-    public static final String MBX_LED2_BTN_RED = "mbx.led2.btn.red";
-    public static final String MBX_LED2_BTN_GREEN = "mbx.led2.btn.green";
-    public static final String MBX_LED_PROGRESS1_RED = "mbx.led.progress1.red";
-    public static final String MBX_LED_PROGRESS1_YELLOW = "mbx.led.progress1.yellow";
-    public static final String MBX_LED_PROGRESS1_GREEN = "mbx.led.progress1.green";
-    public static final String MBX_LED_PROGRESS2_RED = "mbx.led.progress2.red";
-    public static final String MBX_LED_PROGRESS2_YELLOW = "mbx.led.progress2.yellow";
-    public static final String MBX_LED_PROGRESS2_GREEN = "mbx.led.progress2.green";
-
-    //    public static final String MBX_I2C_1 = "mbx.i2c.1";
-//    public static final String MBX_I2C_2 = "mbx.i2c.2";
-
-    public static final String MBX_BTN_GREEN = "mbx.button.green";
-    public static final String MBX_BTN_RED = "mbx.button.red";
-    public static final String MBX_BTN_START_STOP = "mbx.button.startstop";
-    public static final String MBX_BTN_PAUSE = "mbx.button.pause";
 
     private static PinHandler pinHandler = null;
 
@@ -128,7 +159,7 @@ public class MissionBox {
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
-                saveLocalProps();
+
                 pinHandler.off();
                 logger.info("\n" +
                         "  _____ _   _ ____     ___  _____   __  __ _         _             ____            \n" +
@@ -151,13 +182,15 @@ public class MissionBox {
 
         Tools.printProgBar(startup_progress);
 
-        loadLocalProperties();
+        pinHandler = new PinHandler();
+        configs = new Configs();
+
 
         frmTest = new FrmTest();
         frmTest.setVisible(true);
 
         initRaspi();
-        initPinHandler();
+        initGameSystem();
         initProgressSystem();
 
 
@@ -171,19 +204,6 @@ public class MissionBox {
         Tools.printProgBar(startup_progress);
         frmTest.setProgress(startup_progress);
 
-        /***
-         *      ____        _   _
-         *     | __ ) _   _| |_| |_ ___  _ __  ___
-         *     |  _ \| | | | __| __/ _ \| '_ \/ __|
-         *     | |_) | |_| | |_| || (_) | | | \__ \
-         *     |____/ \__,_|\__|\__\___/|_| |_|___/
-         *
-         */
-        btnRed = new MyAbstractButton(ioRed, getGUIBtnRed());
-        btnGreen = new MyAbstractButton(ioGreen, getGUIBtnGreen());
-        btnGameStartStop = new MyAbstractButton(ioGameStartStop, getGUIBtn1());
-        btnQuit = frmTest.getBtn2();
-        btnPAUSE = new MyAbstractButton(ioPAUSE, getGUIBtnPause());
 
         btnQuit.addActionListener(e -> {
             MissionBox.shutdownEverything();
@@ -216,10 +236,6 @@ public class MissionBox {
         MissionBox.relaisSirens = relaisSirens;
     }
 
-    public static HashMap<String, GpioPinDigitalOutput> getOutputMap() {
-        return outputMap;
-    }
-
     private static void initPinHandler() {
 
         pinHandler = new PinHandler();
@@ -230,7 +246,13 @@ public class MissionBox {
 
         // three sirens now.
         // Siren 1
-        pinHandler.add(new Relay(MBX_SIREN1, Color.ORANGE, debugPanel4Pins, 70, 60)); // Main Siren
+
+
+
+
+        // hier gehts weiter
+
+        pinHandler.add(new MyPin(GPIO, MBX_SIREN1, Color.ORANGE, debugPanel4Pins, "", 70, 60)); // Main Siren
         pinHandler.add(new Relay(MBX_RESPAWN_SIREN, Color.ORANGE, debugPanel4Pins, 70, 80));
         pinHandler.add(new Relay(MBX_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, 20, 40)); // Shutdown Signal
         pinHandler.add(new Relay(MBX_AIRSIREN, Color.ORANGE, debugPanel4Pins, 50, 90)); // Motor Siren for Start Stop Signals
@@ -368,116 +390,9 @@ public class MissionBox {
     }
 
 
-    private static void loadLocalProperties() throws IOException {
-        config = new SortedProperties();
-
-        // Hier stehen die Standardwerte, falls keine missionbox.cfg existiert.
-        config.put(FCY_TIME2CAPTURE, "180");
-        config.put(FCY_GAMETIME, "6");
-        config.put(FCY_RESPAWN_INTERVAL, "60");
-        config.put(MBX_RESUME_TIME, "10000"); // Zeit in ms, bevor es nach eine Pause weiter geht
-
-        config.put(MBX_RESPAWN_SIRENTIME, "2000");
-        config.put(MBX_STARTGAME_SIRENTIME, "5000");
-
-
-//        config.put(MBX_SIREN_TIME, "750");
-
-        config.put(MBX_LOGLEVEL, "debug");
-
-        // config.put(MBX_I2C_1, "0x20");
-        // config.put(MBX_I2C_2, "0x24");
-
-        // hier werden die üblichen Zuordnungen der einzelnen GPIOs
-        // zu den jeweiligen Signalleitungen vorgenommen.
-        // Falls man mal was umstecken muss, kann man das einfach
-        // später in der missionbox.cfg ändern.
-        // diese Werte werden hier so gesetzt, wie es in der
-        // Bauanleitung der Box steht.
-
-        // die hier brauchen wir immer
-        // Änderung auf RASPI Pins statt MCP23017 PINS am 26.07.2017
-        // GPIO 0
-
-
-        // Standardwerte für die config datei werden hier gesetzt.
-        // danach werden evtl. die geänderten Werte aus der Datei drübergeschrieben
-        // bei Programm Ende werden alle geänderten Werte wieder in die config.txt zurückgeschrieben
-        config.put(MBX_AIRSIREN, "GPIO 0"); // Relais 1
-        config.put(MBX_SIREN1, "GPIO 2");  // Relais 2
-        config.put(MBX_SHUTDOWN_SIREN, "GPIO 3");  // Relais 3
-        config.put(MBX_RESPAWN_SIREN, "GPIO 12");  // Relais 4
-
-        config.put(MBX_LED1_BTN_RED, "GPIO 11");
-        config.put(MBX_LED1_BTN_GREEN, "GPIO 26");
-
-        config.put(MBX_LED2_BTN_RED, "GPIO 23");
-        config.put(MBX_LED2_BTN_GREEN, "GPIO 24");
-
-        config.put(MBX_LED_PROGRESS1_RED, "GPIO 5");
-        config.put(MBX_LED_PROGRESS1_YELLOW, "GPIO 6");
-        config.put(MBX_LED_PROGRESS1_GREEN, "GPIO 10");
-
-        config.put(MBX_LED_PROGRESS2_RED, "GPIO 27");
-        config.put(MBX_LED_PROGRESS2_YELLOW, "GPIO 28");
-        config.put(MBX_LED_PROGRESS2_GREEN, "GPIO 29");
-
-        config.put(MBX_BTN_RED, "GPIO 15");
-        config.put(MBX_BTN_GREEN, "GPIO 16");
-        config.put(MBX_BTN_START_STOP, "GPIO 1");
-        config.put(MBX_BTN_PAUSE, "GPIO 4");
-
-        File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
-
-        configFile.getParentFile().mkdirs();
-
-        configFile.createNewFile();
-
-        FileInputStream in = new FileInputStream(configFile);
-        Properties p = new SortedProperties();
-        p.load(in);
-        config.putAll(p);
-        p.clear();
-        in.close();
-
-        logLevel = Level.toLevel(config.getProperty(MissionBox.MBX_LOGLEVEL), Level.DEBUG);
-
-    }
-
-    public static void saveLocalProps() {
-        logger.debug("saving local props");
-        try {
-            File configFile = new File(Tools.getMissionboxDirectory() + File.separator + "config.txt");
-            FileOutputStream out = new FileOutputStream(configFile);
-            config.store(out, "Settings MissionBox");
-            out.close();
-        } catch (Exception ex) {
-            logger.fatal(ex);
-            System.exit(1);
-        }
-    }
-
-
 //    public static Properties getConfig() {
 //        return config;
 //    }
-
-
-    public static void setConfig(String key, String value) {
-        config.setProperty(key, value);
-
-        if (key.equalsIgnoreCase(FCY_TIME2CAPTURE)) {
-            ((Farcry1Assault) gameMode).setCapturetime(Long.parseLong(value));
-        }
-        if (key.equalsIgnoreCase(FCY_GAMETIME)) {
-            ((Farcry1Assault) gameMode).setMaxgametime(Long.parseLong(value));
-        }
-        if (key.equalsIgnoreCase(FCY_RESPAWN_INTERVAL)) {
-            ((Farcry1Assault) gameMode).setRespawninterval(Long.parseLong(value));
-        }
-
-        saveLocalProps();
-    }
 
 
     public static String getConfig(String key) {
@@ -569,128 +484,7 @@ public class MissionBox {
                 System.exit(0);
             }
 
-//            MCP23017GpioProvider gpioProvider0 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.decode(config.getProperty(MissionBox.MBX_I2C_1)));
-//            MCP23017GpioProvider gpioProvider1 = new MCP23017GpioProvider(I2CBus.BUS_1, Integer.decode(config.getProperty(MissionBox.MBX_I2C_2)));
-
-//            GpioPinDigitalOutput myOutputs[] = {
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A0, "mcp23017-01-A0", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A1, "mcp23017-01-A1", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A2, "mcp23017-01-A2", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A3, "mcp23017-01-A3", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A4, "mcp23017-01-A4", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A5, "mcp23017-01-A5", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A6, "mcp23017-01-A6", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_A7, "mcp23017-01-A7", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B0, "mcp23017-01-B0", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B1, "mcp23017-01-B1", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B2, "mcp23017-01-B2", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B3, "mcp23017-01-B3", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B4, "mcp23017-01-B4", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B5, "mcp23017-01-B5", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B6, "mcp23017-01-B6", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider0, MCP23017Pin.GPIO_B7, "mcp23017-01-B7", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A0, "mcp23017-02-A0", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A1, "mcp23017-02-A1", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A2, "mcp23017-02-A2", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A3, "mcp23017-02-A3", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A4, "mcp23017-02-A4", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A5, "mcp23017-02-A5", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A6, "mcp23017-02-A6", PinState.LOW),
-//                    GPIO.provisionDigitalOutputPin(gpioProvider1, MCP23017Pin.GPIO_A7, "mcp23017-02-A7", PinState.LOW)
-//            };
-//            for (int ioPin = 0; ioPin < myOutputs.length; ioPin++) {
-//                outputMap.put(myOutputs[ioPin].getName(), myOutputs[ioPin]);
-//            }
-//
-//            GpioPinDigitalInput myInputs[] = {
-//                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B0, "mcp23017-02-B0", PinPullResistance.PULL_UP),
-//                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B1, "mcp23017-02-B1", PinPullResistance.PULL_UP),
-//                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B2, "mcp23017-02-B2", PinPullResistance.PULL_UP),
-//                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B3, "mcp23017-02-B3", PinPullResistance.PULL_UP),
-//                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B4, "mcp23017-02-B4", PinPullResistance.PULL_UP),
-//                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B5, "mcp23017-02-B5", PinPullResistance.PULL_UP),
-//                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B6, "mcp23017-02-B6", PinPullResistance.PULL_UP),
-//                    GPIO.provisionDigitalInputPin(gpioProvider1, MCP23017Pin.GPIO_B7, "mcp23017-02-B7", PinPullResistance.PULL_UP)
-//            };
-//            for (int ioPin = 0; ioPin < myInputs.length; ioPin++) {
-//                inputMap.put(myInputs[ioPin].getName(), myInputs[ioPin]);
-//            }
-
-            /***
-             *       ___  _   _ _____ ____  _   _ _____   ____  _
-             *      / _ \| | | |_   _|  _ \| | | |_   _| |  _ \(_)_ __  ___
-             *     | | | | | | | | | | |_) | | | | | |   | |_) | | '_ \/ __|
-             *     | |_| | |_| | | | |  __/| |_| | | |   |  __/| | | | \__ \
-             *      \___/ \___/  |_| |_|    \___/  |_|   |_|   |_|_| |_|___/
-             *
-             */
-            GpioPinDigitalOutput myOutputs[] = {
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_00, PinState.LOW), // Rly1
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_02, PinState.LOW), // Rly2
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_03, PinState.LOW), // Rly3
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_12, PinState.LOW), // Rly4
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_13, PinState.LOW), // Rly5
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_14, PinState.LOW), // Rly6
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_21, PinState.LOW), // Rly7
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_22, PinState.LOW), // Rly8
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_05, PinState.LOW), // PB1 RED
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_06, PinState.LOW), // PB1 YLW
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_10, PinState.LOW), // PB1 GRN
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_11, PinState.LOW), // BTNLED1 RED
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_26, PinState.LOW), // BTNLED1 GREEN
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_27, PinState.LOW), // PB2 RED
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_28, PinState.LOW), // PB2 YLW
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_29, PinState.LOW), // PB2 GRN
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_23, PinState.LOW), // BTNLED2 RED
-                    GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_24, PinState.LOW) // BTNLED2 GREEN
-            };
-            for (int ioPin = 0; ioPin < myOutputs.length; ioPin++) {
-                outputMap.put(myOutputs[ioPin].getName(), myOutputs[ioPin]);
-            }
-
-            /***
-             *      ___ _   _ ____  _   _ _____   ____  _
-             *     |_ _| \ | |  _ \| | | |_   _| |  _ \(_)_ __  ___
-             *      | ||  \| | |_) | | | | | |   | |_) | | '_ \/ __|
-             *      | || |\  |  __/| |_| | | |   |  __/| | | | \__ \
-             *     |___|_| \_|_|    \___/  |_|   |_|   |_|_| |_|___/
-             *
-             */
-
-
-            // PULL_UP bei direktem Anschluss an den Raspi
-            // PULL_DOWN bei Anschluss über einen MCP23017
-
-            GpioPinDigitalInput myInputs[] = {
-                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_15, PinPullResistance.PULL_UP),
-                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_16, PinPullResistance.PULL_UP),
-                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_01, PinPullResistance.PULL_UP),
-                    GPIO.provisionDigitalInputPin(RaspiPin.GPIO_04, PinPullResistance.PULL_UP)
-            };
-            for (int ioPin = 0; ioPin < myInputs.length; ioPin++) {
-                inputMap.put(myInputs[ioPin].getName(), myInputs[ioPin]);
-            }
-
-//            ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN); // Board 11
-//            ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN); // Board 13
-//            ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN); // Board 15
-//            ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
-
-
-            /***
-             *      ____        _   _
-             *     | __ ) _   _| |_| |_ ___  _ __  ___
-             *     |  _ \| | | | __| __/ _ \| '_ \/ __|
-             *     | |_) | |_| | |_| || (_) | | | \__ \
-             *     |____/ \__,_|\__|\__\___/|_| |_|___/
-             *
-             */
-            ioRed = inputMap.get(config.getProperty(MBX_BTN_RED));
-            ioGreen = inputMap.get(config.getProperty(MBX_BTN_GREEN));
-            ioGameStartStop = inputMap.get((config.getProperty(MBX_BTN_START_STOP)));
-            ioPAUSE = inputMap.get((config.getProperty(MBX_BTN_PAUSE)));
         }
-
     }
 
 
@@ -702,5 +496,83 @@ public class MissionBox {
 
     public static void setRevertEvent(Farcry1GameEvent revert2Event) {
         ((Farcry1Assault) MissionBox.gameMode).setRevertEvent(revert2Event);
+    }
+
+    private static void initGameSystem() throws IOException {
+        /***
+               *      ____        _   _
+               *     | __ ) _   _| |_| |_ ___  _ __  ___
+               *     |  _ \| | | | __| __/ _ \| '_ \/ __|
+               *     | |_) | |_| | |_| || (_) | | | \__ \
+               *     |____/ \__,_|\__|\__\___/|_| |_|___/
+               *
+               */
+        btnRed = new MyAbstractButton(GPIO, MBX_BTN_RED, getGUIBtnRed());
+        btnGreen = new MyAbstractButton(GPIO, MBX_BTN_GREEN, getGUIBtnGreen());
+        btnGameStartStop = new MyAbstractButton(GPIO, MBX_BTN_START_STOP, getGUIBtn1());
+        btnQuit = frmTest.getBtn2();
+        btnPAUSE = new MyAbstractButton(GPIO, MBX_BTN_PAUSE, getGUIBtnPause());
+
+
+
+        /***
+         *       ___  _   _ _____ ____  _   _ _____   ____  _
+         *      / _ \| | | |_   _|  _ \| | | |_   _| |  _ \(_)_ __  ___
+         *     | | | | | | | | | | |_) | | | | | |   | |_) | | '_ \/ __|
+         *     | |_| | |_| | | | |  __/| |_| | | |   |  __/| | | | \__ \
+         *      \___/ \___/  |_| |_|    \___/  |_|   |_|   |_|_| |_|___/
+         *
+         */
+        GpioPinDigitalOutput myOutputs[] = {
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_00, PinState.LOW), // Rly1
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_02, PinState.LOW), // Rly2
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_03, PinState.LOW), // Rly3
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_12, PinState.LOW), // Rly4
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_13, PinState.LOW), // Rly5
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_14, PinState.LOW), // Rly6
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_21, PinState.LOW), // Rly7
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_22, PinState.LOW), // Rly8
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_05, PinState.LOW), // PB1 RED
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_06, PinState.LOW), // PB1 YLW
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_10, PinState.LOW), // PB1 GRN
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_11, PinState.LOW), // BTNLED1 RED
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_26, PinState.LOW), // BTNLED1 GREEN
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_27, PinState.LOW), // PB2 RED
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_28, PinState.LOW), // PB2 YLW
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_29, PinState.LOW), // PB2 GRN
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_23, PinState.LOW), // BTNLED2 RED
+                GPIO.provisionDigitalOutputPin(RaspiPin.GPIO_24, PinState.LOW) // BTNLED2 GREEN
+        };
+
+
+        /***
+         *      ___ _   _ ____  _   _ _____   ____  _
+         *     |_ _| \ | |  _ \| | | |_   _| |  _ \(_)_ __  ___
+         *      | ||  \| | |_) | | | | | |   | |_) | | '_ \/ __|
+         *      | || |\  |  __/| |_| | | |   |  __/| | | | \__ \
+         *     |___|_| \_|_|    \___/  |_|   |_|   |_|_| |_|___/
+         *
+         */
+
+
+        // PULL_UP bei direktem Anschluss an den Raspi
+        // PULL_DOWN bei Anschluss über einen MCP23017
+
+        GpioPinDigitalInput myInputs[] = {
+                GPIO.provisionDigitalInputPin(RaspiPin.GPIO_15, PinPullResistance.PULL_UP),
+                GPIO.provisionDigitalInputPin(RaspiPin.GPIO_16, PinPullResistance.PULL_UP),
+                GPIO.provisionDigitalInputPin(RaspiPin.GPIO_01, PinPullResistance.PULL_UP),
+                GPIO.provisionDigitalInputPin(RaspiPin.GPIO_04, PinPullResistance.PULL_UP)
+        };
+        for (int ioPin = 0; ioPin < myInputs.length; ioPin++) {
+            inputMap.put(myInputs[ioPin].getName(), myInputs[ioPin]);
+        }
+
+        //            ioRed = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_00, "RedTrigger", PinPullResistance.PULL_DOWN); // Board 11
+        //            ioGreen = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_02, "GreenTrigger", PinPullResistance.PULL_DOWN); // Board 13
+        //            ioGameStartStop = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_03, "GameStartStop", PinPullResistance.PULL_DOWN); // Board 15
+        //            ioMisc = GPIO.provisionDigitalInputPin(RaspiPin.GPIO_21, "MISC", PinPullResistance.PULL_DOWN); // Board 29
+
+
     }
 }
