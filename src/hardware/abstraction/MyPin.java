@@ -61,9 +61,12 @@ public class MyPin {
         }
     }
 
+    public MyPin(GpioController gpio, Pin pin, Color color, JPanel addYourself2this, String name) {
+        this(gpio, pin, color, addYourself2this, name, -1, -1);
+    }
 
     public MyPin(GpioController gpio, Pin pin, Color color, JPanel addYourself2this, String name, int instrument, int note) {
-        this(gpio, pin, new MyLED(name, color), name, -1, -1);
+        this(gpio, pin, new MyLED(name, color), name, instrument, note);
         addYourself2this.add(guiControlLED);
     }
 

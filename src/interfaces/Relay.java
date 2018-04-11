@@ -3,7 +3,7 @@ package interfaces;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import hardware.abstraction.MyLED;
-import main.MissionBox;
+import main.Main;
 import org.apache.log4j.Logger;
 
 import javax.sound.midi.MidiChannel;
@@ -26,7 +26,7 @@ public class Relay implements OnOffInterface {
     private String text;
 
     private Relay(GpioPinDigitalOutput pin, String name) {
-        if (MissionBox.getGPIO() != null && pin == null) {
+        if (Main.getGPIO() != null && pin == null) {
             logger.fatal("WRONG CONFIG FOR " + name);
             System.exit(1);
         }
@@ -54,7 +54,7 @@ public class Relay implements OnOffInterface {
 
         // Die Tonerzeugung ist nur zum Testen auf normalen Rechnern
         // und nicht auf dem RASPI. Da muss keine Rechenzeit verschwendet werden.
-        if (MissionBox.getGPIO() == null) {
+        if (Main.getGPIO() == null) {
             try {
                 if (instrument > 0) {
                     synthesizer = MidiSystem.getSynthesizer();
@@ -81,7 +81,7 @@ public class Relay implements OnOffInterface {
 
     public void setText(String text) {
         this.text = text;
-        if (!MissionBox.getFrmTest().getTbDebug().isSelected()) return;
+        if (!Main.getFrmTest().getTbDebug().isSelected()) return;
         SwingUtilities.invokeLater(() -> {
             debugLED.setText(text.isEmpty() ? name : name + " [" + text + "]");
             debugLED.revalidate();
@@ -101,7 +101,7 @@ public class Relay implements OnOffInterface {
     @Override
     public void setOn(boolean on) {
         if (pin != null) pin.setState(on ? PinState.HIGH : PinState.LOW);
-        if (debugLED != null && MissionBox.getFrmTest().getTbDebug().isSelected()) debugLED.setState(on);
+        if (debugLED != null && Main.getFrmTest().getTbDebug().isSelected()) debugLED.setState(on);
 
         if (synthesizer != null) {
             if (on) channels[0].noteOn(note, 90);

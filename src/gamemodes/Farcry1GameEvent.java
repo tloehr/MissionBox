@@ -1,7 +1,7 @@
 package gamemodes;
 
 import interfaces.FC1DetailsMessageEvent;
-import main.MissionBox;
+import main.Main;
 import misc.Tools;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,7 +39,7 @@ public class Farcry1GameEvent extends JPanel {
         this.messageEvent = messageEvent;
         this.remaining = -1;
         uuid = UUID.randomUUID();
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
         logger.debug("new event: " + uuid);
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         btnRevert = new JButton(new ImageIcon((Farcry1GameEvent.class.getResource("/artwork/agt_reload32.png"))));

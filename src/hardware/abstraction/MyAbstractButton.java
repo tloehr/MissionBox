@@ -5,7 +5,7 @@ import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.event.GpioPinListener;
-import main.MissionBox;
+import main.Main;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -20,7 +20,7 @@ public class MyAbstractButton {
 
       public MyAbstractButton(GpioController gpio, Pin pin, JButton guiButton) {
           hardwareButton = gpio == null ? null : gpio.provisionDigitalInputPin(pin, PinPullResistance.PULL_UP);
-          if (hardwareButton != null) hardwareButton.setDebounce(MissionBox.DEBOUNCE);
+          if (hardwareButton != null) hardwareButton.setDebounce(Main.DEBOUNCE);
           this.guiButton = guiButton;
       }
 

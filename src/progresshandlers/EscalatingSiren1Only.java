@@ -1,11 +1,10 @@
 package progresshandlers;
 
 import interfaces.PercentageInterface;
-import main.MissionBox;
+import main.Main;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * This class progresses through a group of pins (defined by their keys within the outputMap. According to the number of defined pins
@@ -27,7 +26,7 @@ public class EscalatingSiren1Only extends PercentageInterface {
     public EscalatingSiren1Only(String key) {
         super("Escalating with Siren 1 only");
         this.key = key;
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
     }
 
 
@@ -35,7 +34,7 @@ public class EscalatingSiren1Only extends PercentageInterface {
 //       logger.debug("PERCENT: " + percent);
 
         if (percent.compareTo(BigDecimal.ZERO) < 0 || percent.compareTo(new BigDecimal(100)) >= 0) {
-            MissionBox.off(key);
+            Main.off(key);
             previousTenth = -1;
             return;
         }
@@ -54,7 +53,7 @@ public class EscalatingSiren1Only extends PercentageInterface {
         String pause = new Integer((110 - tenth) * 100).toString();
 
         // hundertmal sollten oft genug sein
-        MissionBox.setScheme(key, "100;70,25,70,25,70,25,800," + pause);
+        Main.setScheme(key, "100;70,25,70,25,70,25,800," + pause);
 
     }
 }

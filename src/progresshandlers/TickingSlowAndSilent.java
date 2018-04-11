@@ -1,7 +1,7 @@
 package progresshandlers;
 
 import interfaces.PercentageInterface;
-import main.MissionBox;
+import main.Main;
 import org.apache.log4j.Logger;
 import org.joda.time.Interval;
 import org.joda.time.Seconds;
@@ -39,14 +39,14 @@ public class TickingSlowAndSilent extends PercentageInterface {
 
         tickingScheme = new StringBuilder(6 * 25);
         this.key = siren;
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
     }
 
 
     public void setValue(BigDecimal percent) {
         if (percent.compareTo(BigDecimal.ZERO) < 0 || percent.compareTo(new BigDecimal(100)) >= 0) {
             previousQuarter = -1;
-            MissionBox.off(key);
+            Main.off(key);
             return;
         }
 
@@ -98,7 +98,7 @@ public class TickingSlowAndSilent extends PercentageInterface {
             }
         }
 
-        MissionBox.setScheme(key, tickingScheme.toString());
+        Main.setScheme(key, tickingScheme.toString());
 
 
         // hundertmal sollten oft genug sein

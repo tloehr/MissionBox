@@ -29,9 +29,9 @@ import java.util.ArrayList;
  */
 public class FrmTest extends JFrame implements GameEventListener {
     PercentageInterface[] progressHandlers = new PercentageInterface[]{
-            new EscalatingSiren1Only(MissionBox.MBX_SIREN1),
-            new EscalatingSiren1Ticking(MissionBox.MBX_SIREN1),
-            new TickingSlowAndSilent(MissionBox.MBX_SIREN1, 20000l)
+            new EscalatingSiren1Only(Main.MBX_SIREN1),
+            new EscalatingSiren1Ticking(Main.MBX_SIREN1),
+            new TickingSlowAndSilent(Main.MBX_SIREN1, 20000l)
     };
     Logger logger = Logger.getLogger(getClass());
 
@@ -79,12 +79,12 @@ public class FrmTest extends JFrame implements GameEventListener {
     public void setRevertEvent(Farcry1GameEvent revertEvent) {
         lblRevertEvent.setText(revertEvent == null ? "--" : revertEvent.toHTML());
         lblRevertEvent.setIcon(revertEvent == null ? null : revertEvent.getIcon());
-        MissionBox.setRevertEvent(revertEvent);
+        Main.setRevertEvent(revertEvent);
     }
 
 
     private void initPanel() {
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
 //        tbDebug.setSelected(MissionBox.getConfig(MissionBox.MBX_DEBUG).equals("true"));
         tbDebug.addItemListener(i -> {
 //            MissionBox.setConfig(MissionBox.MBX_DEBUG, i.getStateChange() == ItemEvent.SELECTED ? "true" : "false");
@@ -111,44 +111,44 @@ public class FrmTest extends JFrame implements GameEventListener {
             contentPanel.repaint();
         });
 
-        setTitle(MissionBox.getAppinfo().getProperty("program.BUILDDATE") + " [" + MissionBox.getAppinfo().getProperty("program.BUILDNUM") + "]");
+        setTitle(Main.getAppinfo().getProperty("program.BUILDDATE") + " [" + Main.getAppinfo().getProperty("program.BUILDNUM") + "]");
 
         pb1.setVisible(true);
 
         cmbSirenHandler.setModel(new DefaultComboBoxModel<>(progressHandlers));
-        int sirenhandler = Integer.parseInt(MissionBox.getConfig(MissionBox.MBX_SIRENHANDLER, "0"));
+        int sirenhandler = Integer.parseInt(Main.getConfig(Main.MBX_SIRENHANDLER, "0"));
         cmbSirenHandler.setSelectedIndex(sirenhandler);
-        MissionBox.setRelaisSirens(progressHandlers[sirenhandler]);
+        Main.setRelaisSirens(progressHandlers[sirenhandler]);
 
         cmbSirenHandler.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    MissionBox.setRelaisSirens((PercentageInterface) e.getItem());
-                    MissionBox.setConfig(MissionBox.MBX_SIRENHANDLER, Integer.toString(cmbSirenHandler.getSelectedIndex()));
+                    Main.setRelaisSirens((PercentageInterface) e.getItem());
+                    Main.setConfig(Main.MBX_SIRENHANDLER, Integer.toString(cmbSirenHandler.getSelectedIndex()));
                 }
             }
         });
 
 
-        btnRedLED1.setText(MissionBox.MBX_LED1_BTN_RED);
-        btnGreenLED1.setText(MissionBox.MBX_LED1_BTN_GREEN);
+        btnRedLED1.setText(Main.MBX_LED1_BTN_RED);
+        btnGreenLED1.setText(Main.MBX_LED1_BTN_GREEN);
 
-        btnRedLED2.setText(MissionBox.MBX_LED2_BTN_RED);
-        btnGreenLED2.setText(MissionBox.MBX_LED2_BTN_GREEN);
+        btnRedLED2.setText(Main.MBX_LED2_BTN_RED);
+        btnGreenLED2.setText(Main.MBX_LED2_BTN_GREEN);
 
-        btnRedProgress1.setText(MissionBox.MBX_LED_PROGRESS1_RED);
-        btnYellowProgress1.setText(MissionBox.MBX_LED_PROGRESS1_YELLOW);
-        btnGreenProgress1.setText(MissionBox.MBX_LED_PROGRESS1_GREEN);
+        btnRedProgress1.setText(Main.MBX_LED_PROGRESS1_RED);
+        btnYellowProgress1.setText(Main.MBX_LED_PROGRESS1_YELLOW);
+        btnGreenProgress1.setText(Main.MBX_LED_PROGRESS1_GREEN);
 
-        btnRedProgress2.setText(MissionBox.MBX_LED_PROGRESS2_RED);
-        btnYellowProgress2.setText(MissionBox.MBX_LED_PROGRESS2_YELLOW);
-        btnGreenProgress2.setText(MissionBox.MBX_LED_PROGRESS2_GREEN);
+        btnRedProgress2.setText(Main.MBX_LED_PROGRESS2_RED);
+        btnYellowProgress2.setText(Main.MBX_LED_PROGRESS2_YELLOW);
+        btnGreenProgress2.setText(Main.MBX_LED_PROGRESS2_GREEN);
 
-        btnSiren1.setText(MissionBox.MBX_SIREN1);
-        btnSiren2.setText(MissionBox.MBX_RESPAWN_SIREN);
-        btnSiren3.setText(MissionBox.MBX_SHUTDOWN_SIREN);
-        btnSiren4.setText(MissionBox.MBX_AIRSIREN);
+        btnSiren1.setText(Main.MBX_SIREN1);
+        btnSiren2.setText(Main.MBX_RESPAWN_SIREN);
+        btnSiren3.setText(Main.MBX_SHUTDOWN_SIREN);
+        btnSiren4.setText(Main.MBX_AIRSIREN);
 
         // Events for the Hardware Test
         btnRelayTest1.addActionListener(e -> pinActionHandler(e));
@@ -211,9 +211,9 @@ public class FrmTest extends JFrame implements GameEventListener {
         logger.debug(text);
 
         if (tbUsePinHandler.isSelected()) {
-            MissionBox.setScheme(text, txtHandlerPattern.getText().trim());
+            Main.setScheme(text, txtHandlerPattern.getText().trim());
         } else {
-            MissionBox.getPinHandler().getPin(text).setOn(true);
+            Main.getPinHandler().getPin(text).setOn(true);
         }
     }
 
@@ -223,13 +223,13 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     void fcyCapChange(int seconds) {
-        int time2capture = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE));
+        int time2capture = Integer.parseInt(Main.getConfig(Main.FCY_TIME2CAPTURE));
 
         if (time2capture + seconds < 1) time2capture = 1;
         else time2capture += seconds;
 
         final String text = Integer.toString(time2capture);
-        MissionBox.setConfig(MissionBox.FCY_TIME2CAPTURE, text);
+        Main.setConfig(Main.FCY_TIME2CAPTURE, text);
         SwingUtilities.invokeLater(() -> {
             lblFCYCapture.setText(text);
             revalidate();
@@ -238,13 +238,13 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     void fcyGameTimeChange(int seconds) {
-        int gametime = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME));
+        int gametime = Integer.parseInt(Main.getConfig(Main.FCY_GAMETIME));
 
         if (gametime + seconds < 1) gametime = 1;
         else gametime += seconds;
 
         final String text = Integer.toString(gametime);
-        MissionBox.setConfig(MissionBox.FCY_GAMETIME, text);
+        Main.setConfig(Main.FCY_GAMETIME, text);
 
         SwingUtilities.invokeLater(() -> {
             lblFCYGametime.setText(text);
@@ -254,13 +254,13 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     void fcyRespawnChange(int seconds) {
-        long respawn = Long.parseLong(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
+        long respawn = Long.parseLong(Main.getConfig(Main.FCY_RESPAWN_INTERVAL));
 
         if (respawn + seconds < 0) respawn = 0;
         else respawn += seconds;
 
         final String text = Long.toString(respawn);
-        MissionBox.setConfig(MissionBox.FCY_RESPAWN_INTERVAL, text);
+        Main.setConfig(Main.FCY_RESPAWN_INTERVAL, text);
         SwingUtilities.invokeLater(() -> {
             lblFCYRespawn.setText(text);
             revalidate();
@@ -280,16 +280,16 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void tabbedPane1StateChanged(ChangeEvent e) {
         if (tabbedPane1.getSelectedIndex() == 0) {
-            MissionBox.prepareGame(); // zurück zum Pregame Mode
+            Main.prepareGame(); // zurück zum Pregame Mode
         } else if (tabbedPane1.getSelectedIndex() == 1) {
-            MissionBox.getPinHandler().off();
-            lblFCYCapture.setText(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE));
-            lblFCYGametime.setText(MissionBox.getConfig(MissionBox.FCY_GAMETIME));
-            lblFCYRespawn.setText(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
-            lblRspwnSiren.setText(MissionBox.getConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
-            lblStartsiren.setText(MissionBox.getConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+            Main.getPinHandler().off();
+            lblFCYCapture.setText(Main.getConfig(Main.FCY_TIME2CAPTURE));
+            lblFCYGametime.setText(Main.getConfig(Main.FCY_GAMETIME));
+            lblFCYRespawn.setText(Main.getConfig(Main.FCY_RESPAWN_INTERVAL));
+            lblRspwnSiren.setText(Main.getConfig(Main.MBX_RESPAWN_SIRENTIME));
+            lblStartsiren.setText(Main.getConfig(Main.MBX_STARTGAME_SIRENTIME));
         } else {
-            MissionBox.getPinHandler().off();
+            Main.getPinHandler().off();
         }
     }
 
@@ -334,9 +334,9 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void lblFCYCaptureActionPerformed(ActionEvent e) {
         JTextField txt = ((JTextField) e.getSource());
-        int capture = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_TIME2CAPTURE));
+        int capture = Integer.parseInt(Main.getConfig(Main.FCY_TIME2CAPTURE));
         int value = Tools.parseInt(txt.getText(), 0, Integer.MAX_VALUE, capture);
-        MissionBox.setConfig(MissionBox.FCY_TIME2CAPTURE, Integer.toString(value));
+        Main.setConfig(Main.FCY_TIME2CAPTURE, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
 
@@ -346,9 +346,9 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void lblFCYGametimeActionPerformed(ActionEvent e) {
         JTextField txt = ((JTextField) e.getSource());
-        int capture = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_GAMETIME));
+        int capture = Integer.parseInt(Main.getConfig(Main.FCY_GAMETIME));
         int value = Tools.parseInt(txt.getText(), 1, Integer.MAX_VALUE, capture);
-        MissionBox.setConfig(MissionBox.FCY_GAMETIME, Integer.toString(value));
+        Main.setConfig(Main.FCY_GAMETIME, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
 
@@ -358,9 +358,9 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void lblFCYRespawnActionPerformed(ActionEvent e) {
         JTextField txt = ((JTextField) e.getSource());
-        int respawn = Integer.parseInt(MissionBox.getConfig(MissionBox.FCY_RESPAWN_INTERVAL));
+        int respawn = Integer.parseInt(Main.getConfig(Main.FCY_RESPAWN_INTERVAL));
         int value = Tools.parseInt(txt.getText(), 0, Integer.MAX_VALUE, respawn);
-        MissionBox.setConfig(MissionBox.FCY_RESPAWN_INTERVAL, Integer.toString(value));
+        Main.setConfig(Main.FCY_RESPAWN_INTERVAL, Integer.toString(value));
         txt.setText(Integer.toString(value));
     }
 
@@ -441,10 +441,10 @@ public class FrmTest extends JFrame implements GameEventListener {
     private void lblRspwnSirenFocusLost(FocusEvent e) {
         JTextField txt = ((JTextField) e.getSource());
 
-        long respawnsiren = Long.parseLong(MissionBox.getConfig(MissionBox.MBX_RESPAWN_SIRENTIME));
+        long respawnsiren = Long.parseLong(Main.getConfig(Main.MBX_RESPAWN_SIRENTIME));
         long value = Tools.parseLong(txt.getText(), 0, Long.MAX_VALUE, respawnsiren);
 
-        MissionBox.setConfig(MissionBox.MBX_RESPAWN_SIRENTIME, Long.toString(value)); // speichern als millis
+        Main.setConfig(Main.MBX_RESPAWN_SIRENTIME, Long.toString(value)); // speichern als millis
         txt.setText(Long.toString(value));
     }
 
@@ -452,34 +452,34 @@ public class FrmTest extends JFrame implements GameEventListener {
     private void lblStartsirenFocusLost(FocusEvent e) {
         JTextField txt = ((JTextField) e.getSource());
 
-        long startsiren = Long.parseLong(MissionBox.getConfig(MissionBox.MBX_STARTGAME_SIRENTIME));
+        long startsiren = Long.parseLong(Main.getConfig(Main.MBX_STARTGAME_SIRENTIME));
         long value = Tools.parseLong(txt.getText(), 0, Long.MAX_VALUE, startsiren);
 
-        MissionBox.setConfig(MissionBox.MBX_STARTGAME_SIRENTIME, Long.toString(value)); // speichern als millis
+        Main.setConfig(Main.MBX_STARTGAME_SIRENTIME, Long.toString(value)); // speichern als millis
         txt.setText(Long.toString(value));
     }
 
 
     private void btnRedProgressActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_RED, txtHandlerPattern.getText().trim());
+        Main.setScheme(Main.MBX_LED_PROGRESS1_RED, txtHandlerPattern.getText().trim());
     }
 
     private void btnYellowProgressActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_YELLOW, txtHandlerPattern.getText().trim());
+        Main.setScheme(Main.MBX_LED_PROGRESS1_YELLOW, txtHandlerPattern.getText().trim());
     }
 
     private void btnGreenProgressActionPerformed(ActionEvent e) {
-        MissionBox.setScheme(MissionBox.MBX_LED_PROGRESS1_GREEN, txtHandlerPattern.getText().trim());
+        Main.setScheme(Main.MBX_LED_PROGRESS1_GREEN, txtHandlerPattern.getText().trim());
     }
 
     private void tbUsePinHandlerItemStateChanged(ItemEvent e) {
-        MissionBox.getPinHandler().off();
+        Main.getPinHandler().off();
     }
 
     private void btnProgessActionPerformed(ActionEvent e) {
         BigDecimal bd = new BigDecimal(txtPercentage.getText().trim());
         logger.debug("intvalue: " + bd.intValue() / 10);
-        MissionBox.setPBLeds(bd);
+        Main.setPBLeds(bd);
     }
 
 
@@ -584,7 +584,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
         //======== tabbedPane1 ========
         {
-            tabbedPane1.setFont(new Font("Dialog", Font.PLAIN, 16));
+            tabbedPane1.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
             tabbedPane1.addChangeListener(e -> tabbedPane1StateChanged(e));
 
             //======== contentPanel ========
@@ -598,7 +598,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 btn1.setIcon(new ImageIcon(getClass().getResource("/artwork/farcry-logo-64.png")));
                 btn1.setHorizontalTextPosition(SwingConstants.CENTER);
                 btn1.setVerticalTextPosition(SwingConstants.BOTTOM);
-                btn1.setFont(new Font("Dialog", Font.BOLD, 18));
+                btn1.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
                 contentPanel.add(btn1, CC.xy(1, 1));
 
                 //======== scrollPane2 ========
@@ -641,7 +641,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                         //---- lblRevertEvent ----
                         lblRevertEvent.setText("--");
                         lblRevertEvent.setAlignmentX(0.5F);
-                        lblRevertEvent.setFont(new Font("Dialog", Font.BOLD, 16));
+                        lblRevertEvent.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                         lblRevertEvent.setHorizontalAlignment(SwingConstants.CENTER);
                         panel9.add(lblRevertEvent, BorderLayout.CENTER);
                     }
@@ -670,7 +670,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 //---- btnPause ----
                 btnPause.setText("PAUSE");
                 btnPause.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue64.png")));
-                btnPause.setFont(new Font("Dialog", Font.BOLD, 18));
+                btnPause.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
                 btnPause.setVerticalTextPosition(SwingConstants.BOTTOM);
                 btnPause.setHorizontalTextPosition(SwingConstants.CENTER);
                 contentPanel.add(btnPause, CC.xy(1, 3));
@@ -686,7 +686,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                     //---- lblTimer ----
                     lblTimer.setText("--");
-                    lblTimer.setFont(new Font("Dialog", Font.PLAIN, 12));
+                    lblTimer.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
                     lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
                     panel13.add(lblTimer);
 
@@ -699,7 +699,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- tbDebug ----
                 tbDebug.setText("Debug");
-                tbDebug.setFont(new Font("Dialog", Font.BOLD, 18));
+                tbDebug.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
                 tbDebug.setIcon(new ImageIcon(getClass().getResource("/artwork/circle_grey_32.png")));
                 tbDebug.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/circle_yellow_32.png")));
                 contentPanel.add(tbDebug, CC.xy(1, 7, CC.FILL, CC.DEFAULT));
@@ -707,7 +707,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- lblRespawn ----
                 lblRespawn.setText("--");
-                lblRespawn.setFont(new Font("Dialog", Font.PLAIN, 16));
+                lblRespawn.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 lblRespawn.setForeground(Color.red);
                 contentPanel.add(lblRespawn, CC.xy(7, 10, CC.CENTER, CC.DEFAULT));
             }
@@ -721,11 +721,11 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- label1 ----
                 label1.setText("Eroberungszeit (Sek.)");
-                label1.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label1.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label1, CC.xy(1, 1));
 
                 //---- lblFCYCapture ----
-                lblFCYCapture.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYCapture.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblFCYCapture.setText("1");
                 lblFCYCapture.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYCapture.setBackground(Color.orange);
@@ -743,38 +743,38 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                     //---- btnFcyPlus60 ----
                     btnFcyPlus60.setText("+60");
-                    btnFcyPlus60.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyPlus60.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyPlus60.addActionListener(e -> btnFcyPlus60ActionPerformed(e));
                     panel3.add(btnFcyPlus60);
 
                     //---- btnFcyPlus10 ----
                     btnFcyPlus10.setText("+10");
-                    btnFcyPlus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyPlus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyPlus10.addActionListener(e -> btnFcyPlus10ActionPerformed(e));
                     panel3.add(btnFcyPlus10);
 
                     //---- btnFCYcapPlus ----
                     btnFCYcapPlus.setText("+1");
-                    btnFCYcapPlus.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFCYcapPlus.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFCYcapPlus.setActionCommand("+");
                     btnFCYcapPlus.addActionListener(e -> btnFCYcapPlusActionPerformed(e));
                     panel3.add(btnFCYcapPlus);
 
                     //---- btnFCYcapMinus ----
                     btnFCYcapMinus.setText("-1");
-                    btnFCYcapMinus.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFCYcapMinus.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFCYcapMinus.addActionListener(e -> btnFCYcapMinusActionPerformed(e));
                     panel3.add(btnFCYcapMinus);
 
                     //---- btnFcyMinus10 ----
                     btnFcyMinus10.setText("-10");
-                    btnFcyMinus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyMinus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyMinus10.addActionListener(e -> btnFcyMinus10ActionPerformed(e));
                     panel3.add(btnFcyMinus10);
 
                     //---- btnFcyMinus60 ----
                     btnFcyMinus60.setText("-60");
-                    btnFcyMinus60.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyMinus60.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyMinus60.addActionListener(e -> btnFcyMinus60ActionPerformed(e));
                     panel3.add(btnFcyMinus60);
                 }
@@ -782,11 +782,11 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- label2 ----
                 label2.setText("Spielzeit (Minuten)");
-                label2.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label2.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label2, CC.xy(1, 3));
 
                 //---- lblFCYGametime ----
-                lblFCYGametime.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYGametime.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblFCYGametime.setText("1");
                 lblFCYGametime.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYGametime.setBackground(Color.orange);
@@ -804,26 +804,26 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                     //---- btnFcyGTPlus10 ----
                     btnFcyGTPlus10.setText("+10");
-                    btnFcyGTPlus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyGTPlus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyGTPlus10.addActionListener(e -> btnFcyGTPlus10ActionPerformed(e));
                     panel4.add(btnFcyGTPlus10);
 
                     //---- btnFcyGTPlus1 ----
                     btnFcyGTPlus1.setText("+1");
-                    btnFcyGTPlus1.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyGTPlus1.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyGTPlus1.setActionCommand("+");
                     btnFcyGTPlus1.addActionListener(e -> btnFcyGTPlus1ActionPerformed(e));
                     panel4.add(btnFcyGTPlus1);
 
                     //---- btnFcyGTMinus1 ----
                     btnFcyGTMinus1.setText("-1");
-                    btnFcyGTMinus1.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyGTMinus1.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyGTMinus1.addActionListener(e -> btnFcyGTMinus1ActionPerformed(e));
                     panel4.add(btnFcyGTMinus1);
 
                     //---- btnFcyGTMinus10 ----
                     btnFcyGTMinus10.setText("-10");
-                    btnFcyGTMinus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyGTMinus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyGTMinus10.addActionListener(e -> btnFcyGTMinus10ActionPerformed(e));
                     panel4.add(btnFcyGTMinus10);
                 }
@@ -831,11 +831,11 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- label3 ----
                 label3.setText("Respawn (Sekunden)");
-                label3.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label3.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label3, CC.xy(1, 5));
 
                 //---- lblFCYRespawn ----
-                lblFCYRespawn.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYRespawn.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblFCYRespawn.setText("1");
                 lblFCYRespawn.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYRespawn.setBackground(Color.orange);
@@ -853,38 +853,38 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                     //---- btnFcyRpwnPlus60 ----
                     btnFcyRpwnPlus60.setText("+60");
-                    btnFcyRpwnPlus60.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnPlus60.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnPlus60.addActionListener(e -> btnFcyRpwnPlus60ActionPerformed(e));
                     panel6.add(btnFcyRpwnPlus60);
 
                     //---- btnFcyRpwnPlus10 ----
                     btnFcyRpwnPlus10.setText("+10");
-                    btnFcyRpwnPlus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnPlus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnPlus10.addActionListener(e -> btnFcyRpwnPlus10ActionPerformed(e));
                     panel6.add(btnFcyRpwnPlus10);
 
                     //---- btnFcyRpwnPlus1 ----
                     btnFcyRpwnPlus1.setText("+1");
-                    btnFcyRpwnPlus1.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnPlus1.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnPlus1.setActionCommand("+");
                     btnFcyRpwnPlus1.addActionListener(e -> btnFcyRpwnPlus1ActionPerformed(e));
                     panel6.add(btnFcyRpwnPlus1);
 
                     //---- btnFcyRpwnMinus1 ----
                     btnFcyRpwnMinus1.setText("-1");
-                    btnFcyRpwnMinus1.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnMinus1.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnMinus1.addActionListener(e -> btnFcyRpwnMinus1ActionPerformed(e));
                     panel6.add(btnFcyRpwnMinus1);
 
                     //---- btnFcyRpwnMinus10 ----
                     btnFcyRpwnMinus10.setText("-10");
-                    btnFcyRpwnMinus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnMinus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnMinus10.addActionListener(e -> btnFcyRpwnMinus10ActionPerformed(e));
                     panel6.add(btnFcyRpwnMinus10);
 
                     //---- btnFcyRpwnMinus60 ----
                     btnFcyRpwnMinus60.setText("-60");
-                    btnFcyRpwnMinus60.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnMinus60.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnMinus60.addActionListener(e -> btnFcyRpwnMinus60ActionPerformed(e));
                     panel6.add(btnFcyRpwnMinus60);
                 }
@@ -892,11 +892,11 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- label7 ----
                 label7.setText("Respawnsirene (millis)");
-                label7.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label7.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label7, CC.xy(1, 7));
 
                 //---- lblRspwnSiren ----
-                lblRspwnSiren.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblRspwnSiren.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblRspwnSiren.setText("1");
                 lblRspwnSiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblRspwnSiren.setBackground(Color.orange);
@@ -910,11 +910,11 @@ public class FrmTest extends JFrame implements GameEventListener {
 
                 //---- label6 ----
                 label6.setText("Startsirene (millis)");
-                label6.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label6.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label6, CC.xy(1, 9));
 
                 //---- lblStartsiren ----
-                lblStartsiren.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblStartsiren.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblStartsiren.setText("1");
                 lblStartsiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblStartsiren.setBackground(Color.orange);
@@ -931,7 +931,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                     panel5.setLayout(new GridLayout(3, 2));
 
                     //---- cmbSirenHandler ----
-                    cmbSirenHandler.setFont(new Font("Dialog", Font.BOLD, 16));
+                    cmbSirenHandler.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     panel5.add(cmbSirenHandler);
                 }
                 settingsPanel.add(panel5, CC.xywh(1, 13, 5, 1));

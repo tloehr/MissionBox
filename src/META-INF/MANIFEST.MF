@@ -6,5 +6,5 @@ Class-Path: jgoodies-common-1.9.0.jar jgoodies-common-1.9.0-tests.jar
  1.10-sources.jar commons-lang3-3.5.jar pi4j-core-1.1.jar commons-coll
  ections4-4.1.jar joda-time-2.9.4.jar pi4j-device-1.1.jar pi4j-core-1.
  1.jar pi4j-gpio-extension-1.1.jar
-Main-Class: main.MissionBox
+Main-Class: main.Main
 

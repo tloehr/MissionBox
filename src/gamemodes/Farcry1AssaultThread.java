@@ -3,7 +3,7 @@ package gamemodes;
 import interfaces.FC1DetailsMessageEvent;
 import interfaces.MessageEvent;
 import interfaces.MessageListener;
-import main.MissionBox;
+import main.Main;
 import misc.Tools;
 import org.apache.log4j.Logger;
 
@@ -107,14 +107,14 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         lock = new ReentrantLock();
 
         // todo: das muss noch auf die config seite
-        resumeInterval = Long.parseLong(MissionBox.getConfig(MissionBox.MBX_RESUME_TIME));
+        resumeInterval = Long.parseLong(Main.getConfig(Main.MBX_RESUME_TIME));
 
         setRespawninterval(respawnintervalInSecs);
         setMaxgametime(maxgametimeInMins);
         setCapturetime(capturetimeInSecs);
 
         thread = new Thread(this);
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
 
         textMessageList = new EventListenerList();
         gameTimerList = new EventListenerList();
@@ -204,7 +204,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         timeWhenTheFlagWasActivated = -1l;
 //                        MissionBox.shutdownEverything();
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.pre.game"));
-                        MissionBox.getFrmTest().clearEvents();
+                        Main.getFrmTest().clearEvents();
                         break;
                     }
                     case GAME_FLAG_ACTIVE: { // hier wird das Spiel gestartet
@@ -234,7 +234,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         // nämlich, wenn die Pause gerade vorbei ist, aber kein Revert ausgewählt wurde.
                         // dann soll alles normal weiter laufen, wie VOR der Pause.
                         if (addEventToList) {
-                            MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/ledred32.png")))), lastRemainingTime);
+                            Main.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/ledred32.png")))), lastRemainingTime);
                         }
                         addEventToList = true;
 
@@ -250,7 +250,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                                 " |_|   |_____/_/   \\_\\____|  \\____\\___/|_____|____/ \n" +
                                 "                                                    ");
                         if (addEventToList) {
-                            MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/ledgreen32.png")))), lastRemainingTime);
+                            Main.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/ledgreen32.png")))), lastRemainingTime);
                         }
                         addEventToList = true;
 
@@ -264,7 +264,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                                 " |  _| | |___ / ___ \\ |_| |   | |/ ___ \\| . \\| |___| |\\  |\n" +
                                 " |_|   |_____/_/   \\_\\____|   |_/_/   \\_\\_|\\_\\_____|_| \\_|\n" +
                                 "                                                          ");
-                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/rocket32.png")))), 0);
+                        Main.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/rocket32.png")))), 0);
                         addEventToList = true;
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.outcome.flag.taken"));
                         break;
@@ -276,7 +276,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                                 " |  _| | |___ / ___ \\ |_| | | |_| | |___|  _| | |___| |\\  | |_| | |___| |_| |\n" +
                                 " |_|   |_____/_/   \\_\\____| |____/|_____|_|   |_____|_| \\_|____/|_____|____/ \n" +
                                 "                                                                             ");
-                        MissionBox.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/shield32.png")))), 0);
+                        Main.getFrmTest().addGameEvent(new Farcry1GameEvent(new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/shield32.png")))), 0);
                         addEventToList = true;
 //                        fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameState, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
                         logger.debug("defended gametimer: "+gametimer);
@@ -286,7 +286,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     case GAME_GOING_TO_PAUSE: {
                         pausingSince = System.currentTimeMillis();
                         resumeToState = previousGameState; // falls doch kein revert gebraucht wird
-                        MissionBox.getPinHandler().pause();
+                        Main.getPinHandler().pause();
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.going.to.pause"));
                         setGameState(GAME_PAUSING);
                         break;
@@ -298,7 +298,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     case GAME_GOING_TO_RESUME: {
                         resumingSince = System.currentTimeMillis();
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.going.to.resume"));
-                        MissionBox.getFrmTest().setToPauseMode(false);
+                        Main.getFrmTest().setToPauseMode(false);
                         break;
                     }
                     case GAME_RESUMED: {
@@ -341,16 +341,16 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                                 logger.debug("flagactivate ist nun: " + Tools.formatLongTime(timeWhenTheFlagWasActivated));
                             }
 
-                            MissionBox.getFrmTest().setRevertEvent(null);
+                            Main.getFrmTest().setRevertEvent(null);
                             revertEvent = null;
-                            MissionBox.getFrmTest().clearEvents(); // jedes revert geht nur einmal, danach ist die Liste leer.
+                            Main.getFrmTest().clearEvents(); // jedes revert geht nur einmal, danach ist die Liste leer.
                         } else {
                             // pause_perios enthält auch die Zeit für den Resume
                             starttime = starttime + pause_period;
                         }
 
                         fireMessage(textMessageList, new MessageEvent(this, gameState, "assault.gamestate.resumed"));
-                        MissionBox.getPinHandler().resume();
+                        Main.getPinHandler().resume();
 
                         int resume = resumeToState;
                         resumeToState = -1; // das muss hier schon erledigt werden, sonst stolpere ich da beim nächsten Durchlauf drüber.
@@ -397,7 +397,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
             // DEFENDED, weil das könnte ja ein getroffener Verteidiger noch schnell entschärft haben.
             // Wenn er das im OVERTIME macht, dann ist ein UNDO nötig.
             if (isGameRunning() || gameState == GAME_OUTCOME_FLAG_DEFENDED) {
-                MissionBox.getFrmTest().setToPauseMode(true);
+                Main.getFrmTest().setToPauseMode(true);
                 setGameState(GAME_GOING_TO_PAUSE);
             }
         }

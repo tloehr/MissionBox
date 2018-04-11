@@ -1,10 +1,8 @@
 package interfaces;
 
-import main.MissionBox;
+import main.Main;
 import misc.Tools;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import java.math.BigDecimal;
 import java.util.EventObject;
@@ -23,7 +21,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState, String message) {
         super(source);
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
         this.gameState = gameState;
         this.message = Tools.xx(message);
 
@@ -31,7 +29,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState, Long message) { //
         super(source);
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
         this.gameState = gameState;
         this.message = message;
 
@@ -39,7 +37,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState, BigDecimal percentage) {
         super(source);
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
         this.gameState = gameState;
         this.message = percentage;
 
@@ -47,7 +45,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState) {
         super(source);
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
         this.gameState = gameState;
         this.message = new Integer(gameState);
 
@@ -55,7 +53,7 @@ public class MessageEvent extends EventObject {
 
     public MessageEvent(Object source, int gameState, Boolean on) {
         super(source);
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
         this.gameState = gameState;
         this.message = on;
 

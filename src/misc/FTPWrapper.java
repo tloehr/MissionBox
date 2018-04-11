@@ -1,6 +1,6 @@
 package misc;
 
-import de.flashheart.ocfflag.Main;
+import main.Main;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.log4j.Logger;

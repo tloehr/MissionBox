@@ -164,7 +164,7 @@ public class Tools {
         return null;
     }
 
-    public static String getMissionboxDirectory() {
+    public static String getWorkingPath() {
         return (isArm() ? "/home/pi" : System.getProperty("user.home")) + File.separator + "missionbox";
     }
 
@@ -209,7 +209,7 @@ public class Tools {
     }
 
     public static String getSoundPath() {
-        return getMissionboxDirectory() + File.separator + "sounds";
+        return getWorkingPath() + File.separator + "sounds";
     }
 //
 //    public static String getWinningSong() {
@@ -418,6 +418,10 @@ public class Tools {
 //
 //
 //    }
-
+// https://stackoverflow.com/questions/4672271/reverse-opposing-colors
+   public static Color getContrastColor(Color color) {
+       double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
+       return y >= 128 ? Color.black : Color.white;
+   }
 
 }

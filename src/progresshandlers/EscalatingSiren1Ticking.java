@@ -1,7 +1,7 @@
 package progresshandlers;
 
 import interfaces.PercentageInterface;
-import main.MissionBox;
+import main.Main;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
@@ -26,7 +26,7 @@ public class EscalatingSiren1Ticking extends PercentageInterface {
     public EscalatingSiren1Ticking(String siren) {
         super("Escalating Siren1 ticking");
         this.key = siren;
-        logger.setLevel(MissionBox.getLogLevel());
+        logger.setLevel(Main.getLogLevel());
     }
 
 
@@ -34,7 +34,7 @@ public class EscalatingSiren1Ticking extends PercentageInterface {
 //       logger.debug("PERCENT: " + percent);
 
         if (percent.compareTo(BigDecimal.ZERO) < 0 || percent.compareTo(new BigDecimal(100)) >= 0) {
-            MissionBox.off(key);
+            Main.off(key);
             previousTenth = -1;
             return;
         }
@@ -59,7 +59,7 @@ public class EscalatingSiren1Ticking extends PercentageInterface {
 
 
         // hundertmal sollten oft genug sein
-        MissionBox.setScheme(key, "100;70,25,70,25,70,25,800,75," + tickingSound);
+        Main.setScheme(key, "100;70,25,70,25,70,25,800,75," + tickingSound);
 
     }
 }

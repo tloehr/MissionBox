@@ -2,7 +2,8 @@ package hardware.abstraction;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.wiringpi.SoftPwm;
-import de.flashheart.ocfflag.misc.Tools;
+
+import misc.Tools;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
