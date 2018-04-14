@@ -71,7 +71,7 @@ public class PinHandler {
         lock.lock();
         try {
             GenericBlinkModel genericBlinkModel = pinMap.get(name);
-            genericBlinkModel.setText(text);
+
             if (genericBlinkModel != null) {
                 if (futures.containsKey(name) && !futures.get(name).isDone()) { // but only if it runs
                     //logger.debug("terminating: " + name);

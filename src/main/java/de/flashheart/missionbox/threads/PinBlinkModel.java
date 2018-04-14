@@ -57,14 +57,14 @@ public class PinBlinkModel implements GenericBlinkModel {
             }
         }
 
-        setText("");
+//        setText("");
         return null;
     }
-
-    @Override
-    public void setText(String text) {
-        pin.setText(text);
-    }
+//
+//    @Override
+//    public void setText(String text) {
+//        pin.setText(text);
+//    }
 
 
     /**
@@ -102,7 +102,7 @@ public class PinBlinkModel implements GenericBlinkModel {
             }
         }
 
-        pin.setToolTipText(textScheme);
+        pin.setToolTipText(scheme);
     }
 
 

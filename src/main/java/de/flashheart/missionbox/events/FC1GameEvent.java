@@ -1,14 +1,13 @@
-package de.flashheart.missionbox.interfaces;
+package de.flashheart.missionbox.events;
 
 
-import de.flashheart.missionbox.gamemodes.Farcry1AssaultThread;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Dieses Event beinhaltet jedes Detail eines Farcry1 Zeit Ereignisses
  */
-public class FC1DetailsMessageEvent extends MessageEvent {
+public class FC1GameEvent extends GameEvent {
 
     private long starttime = -1l;
     private long gametimer = 0l; // wie lange läuft das Spiel schon ?
@@ -83,8 +82,8 @@ public class FC1DetailsMessageEvent extends MessageEvent {
 //        return endtime - gametimer - Math.max(eventDuration, 0);
 //    }
 
-    public FC1DetailsMessageEvent(Object source, int gameState, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval, long remaining) {
-        super(source, gameState);
+    public FC1GameEvent(Object source, String event, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval, long remaining) {
+        super(source, event);
 
         this.starttime = starttime;
         this.gametimer = gametimer;
@@ -127,7 +126,7 @@ public class FC1DetailsMessageEvent extends MessageEvent {
                 StringUtils.repeat("-", 90) + "\n\n";
         return String.format(result,
                 "gmstate", "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume",
-                Farcry1AssaultThread.GAMSTATS[gameState],
+                event,
                 Tools.formatLongTime(gametimer + Math.max(finalizedEventDuration, 0)),
                 Tools.formatLongTime(remaining),
                 Tools.formatLongTime(timeWhenTheFlagWasActivated),

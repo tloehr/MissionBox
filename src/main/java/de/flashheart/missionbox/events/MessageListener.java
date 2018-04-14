@@ -1,4 +1,4 @@
-package de.flashheart.missionbox.interfaces;
+package de.flashheart.missionbox.events;
 
 import java.util.EventListener;
 
@@ -7,6 +7,6 @@ import java.util.EventListener;
  */
 public interface MessageListener extends EventListener{
     
-    void messageReceived(MessageEvent messageEvent);
+    void messageReceived(GameEvent gameEvent);
 
 }

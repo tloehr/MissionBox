@@ -8,9 +8,8 @@ import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import de.flashheart.missionbox.Main;
-import de.flashheart.missionbox.gamemodes.Farcry1GameEvent;
-import de.flashheart.missionbox.gamemodes.GameEventListener;
-import de.flashheart.missionbox.interfaces.PercentageInterface;
+import de.flashheart.missionbox.gamemodes.FC1SavePoint;
+import de.flashheart.missionbox.events.GameEventListener;
 
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.Tools;
@@ -34,7 +33,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     Logger logger = Logger.getLogger(getClass());
 
-    ArrayList<Farcry1GameEvent> eventModel = new ArrayList<>();
+    ArrayList<FC1SavePoint> eventModel = new ArrayList<>();
 
     public FrmTest() {
         initComponents();
@@ -42,11 +41,11 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     @Override
-    public void eventSent(Farcry1GameEvent event) {
+    public void eventSent(FC1SavePoint event) {
         setRevertEvent(event);
     }
 
-    public void addGameEvent(Farcry1GameEvent event, long remaining) {
+    public void addGameEvent(FC1SavePoint event, long remaining) {
         event.setGameEventListener(this);
         if (!eventModel.isEmpty()) {
             getLastEvent().finalizeEvent(event.getMessageEvent().getGametimer(), remaining);
@@ -70,12 +69,12 @@ public class FrmTest extends JFrame implements GameEventListener {
         listEvents.removeAll();
     }
 
-    public Farcry1GameEvent getLastEvent() {
+    public FC1SavePoint getLastEvent() {
         return eventModel.get(eventModel.size() - 1);
     }
 
     // setzt einen Revert Event fest, zu dem zurückgesprungen werden soll.
-    public void setRevertEvent(Farcry1GameEvent revertEvent) {
+    public void setRevertEvent(FC1SavePoint revertEvent) {
         lblRevertEvent.setText(revertEvent == null ? "--" : revertEvent.toHTML());
         lblRevertEvent.setIcon(revertEvent == null ? null : revertEvent.getIcon());
         Main.setRevertEvent(revertEvent);
@@ -143,7 +142,7 @@ public class FrmTest extends JFrame implements GameEventListener {
         btnSiren3.addActionListener(e -> pinActionHandler(e));
         btnSiren4.addActionListener(e -> pinActionHandler(e));
 
-
+        debugPanel4Pins.add(new JLabel("yipiieee"));
     }
 
     public void setButtonTestLabel(String name, boolean on) {
@@ -171,12 +170,8 @@ public class FrmTest extends JFrame implements GameEventListener {
      */
     private void pinActionHandler(ActionEvent e) {
         String text = ((JButton) e.getSource()).getText();
-
         logger.debug(text);
-
-
         Main.getPinHandler().setScheme(text, txtHandlerPattern.getText().trim());
-
     }
 
 

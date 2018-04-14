@@ -86,9 +86,9 @@ public class MyPin {
         if (guiControlLED != null) guiControlLED.setText(text);
     }
 
-    public String getText() {
-        return guiControlLED != null ? guiControlLED.getToolTipText() : "";
-    }
+//    public String getText() {
+//        return guiControlLED != null ? guiControlLED.getToolTipText() : "";
+//    }
 
     public void setToolTipText(String text) {
         if (guiControlLED != null) guiControlLED.setToolTipText(text);

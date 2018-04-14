@@ -99,10 +99,5 @@ public class RGBBlinkModel implements GenericBlinkModel {
         myRGBLed.setToolTipText(textScheme);
     }
 
-    @Override
-    public void setText(String text) {
-        myRGBLed.setToolTipText(text);
-    }
-
 
 }

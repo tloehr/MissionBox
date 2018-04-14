@@ -3,13 +3,14 @@ package de.flashheart.missionbox;
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.i2c.I2CFactory;
 import de.flashheart.missionbox.gamemodes.Farcry1Assault;
-import de.flashheart.missionbox.gamemodes.Farcry1GameEvent;
+import de.flashheart.missionbox.gamemodes.FC1SavePoint;
 import de.flashheart.missionbox.gamemodes.GameMode;
 import de.flashheart.missionbox.hardware.abstraction.MyAbstractButton;
 import de.flashheart.missionbox.hardware.abstraction.MyPin;
 import de.flashheart.missionbox.interfaces.PercentageInterface;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.Tools;
+import de.flashheart.missionbox.threads.MessageProcessor;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import de.flashheart.missionbox.progresshandlers.RelayProgressRedYellowGreen;
@@ -80,7 +81,7 @@ public class Main {
     private static GpioController GPIO;
     private static FrmTest frmTest;
     private static Configs configs;
-//    private static MessageProcessor messageProcessor;
+    private static MessageProcessor messageProcessor;
 
 
     public static PinHandler getPinHandler() {
@@ -116,7 +117,7 @@ public class Main {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             pinHandler.off();
-//            if (messageProcessor != null) messageProcessor.interrupt();
+            if (messageProcessor != null) messageProcessor.interrupt();
             if (GPIO != null) {
 
 
@@ -136,10 +137,10 @@ public class Main {
         pinHandler = new PinHandler();
         configs = new Configs();
 
-//        if (Long.parseLong(configs.get(Configs.MIN_STAT_SEND_TIME)) > 0 && configs.isFTPComplete()) {
-//            messageProcessor = new MessageProcessor();
-//            messageProcessor.start();
-//        }
+        if (Long.parseLong(configs.get(Configs.MIN_STAT_SEND_TIME)) > 0 && configs.isFTPComplete()) {
+            messageProcessor = new MessageProcessor();
+            messageProcessor.start();
+        }
 
         logger.info(configs.getApplicationInfo("program.BUILDDATE") + " [" + configs.getApplicationInfo("program.BUILDNUM") + "]");
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -371,7 +372,7 @@ public class Main {
         return configs;
     }
 
-    public static void setRevertEvent(Farcry1GameEvent revert2Event) {
+    public static void setRevertEvent(FC1SavePoint revert2Event) {
         ((Farcry1Assault) Main.gameMode).setRevertEvent(revert2Event);
     }
 
@@ -381,5 +382,9 @@ public class Main {
         gameMode.runGame();
 
 
+    }
+
+    public static MessageProcessor getMessageProcessor() {
+        return messageProcessor;
     }
 }

@@ -1,10 +1,10 @@
 package de.flashheart.missionbox.gamemodes;
 
 import de.flashheart.missionbox.Main;
-import de.flashheart.missionbox.interfaces.FC1DetailsMessageEvent;
+import de.flashheart.missionbox.events.GameEventListener;
+import de.flashheart.missionbox.events.FC1GameEvent;
 
-import de.flashheart.missionbox.gamemodes.Farcry1AssaultThread;
-
+import de.flashheart.missionbox.events.Statistics;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -15,9 +15,9 @@ import java.awt.*;
 import java.util.UUID;
 
 /**
- * Created by Torsten on 05.07.2016.
+ * Das sind Ereignisse zu denen man zurückspringen kann.
  */
-public class Farcry1GameEvent extends JPanel {
+public class FC1SavePoint extends JPanel {
     private final UUID uuid;
     private long remaining;
     private final long pit = System.currentTimeMillis();
@@ -29,15 +29,15 @@ public class Farcry1GameEvent extends JPanel {
 
     private JButton btnRevert;
     private JLabel lbl;
-    private de.flashheart.missionbox.gamemodes.GameEventListener gameEventListener;
+    private GameEventListener gameEventListener;
 
-    private final FC1DetailsMessageEvent messageEvent;
+    private final FC1GameEvent messageEvent;
 
     public UUID getUuid() {
         return uuid;
     }
 
-    public Farcry1GameEvent(FC1DetailsMessageEvent messageEvent, Icon icon) {
+    public FC1SavePoint(FC1GameEvent messageEvent, Icon icon) {
         super();
         this.messageEvent = messageEvent;
         this.remaining = -1;
@@ -45,7 +45,7 @@ public class Farcry1GameEvent extends JPanel {
         logger.setLevel(Main.getLogLevel());
         logger.debug("new event: " + uuid);
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        btnRevert = new JButton(new ImageIcon((Farcry1GameEvent.class.getResource("/artwork/agt_reload32.png"))));
+        btnRevert = new JButton(new ImageIcon((FC1SavePoint.class.getResource("/artwork/agt_reload32.png"))));
         btnRevert.setEnabled(false);
 
         btnRevert.addActionListener(e -> {
@@ -74,7 +74,7 @@ public class Farcry1GameEvent extends JPanel {
 
         eventDuration = gametimer - messageEvent.getGametimer(); // also der aktuelle gametimer minus dem gametimer zum Start dieses Events.
         this.remaining = remaining;
-        setToolTipText("<html>" + messageEvent.toHTML(FC1DetailsMessageEvent.css, eventDuration) + "</html>");
+        setToolTipText("<html>" + messageEvent.toHTML(FC1GameEvent.css, eventDuration) + "</html>");
 
         logger.debug("\n  ___ _           _ _          ___             _   \n" +
                 " | __(_)_ _  __ _| (_)______  | __|_ _____ _ _| |_ \n" +
@@ -85,7 +85,7 @@ public class Farcry1GameEvent extends JPanel {
         logger.debug(toString());
 
         // ein Revert macht nur Sinn bei HOT oder COLD. Sonst nicht.
-        btnRevert.setVisible(messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_HOT || messageEvent.getGameState() == Farcry1AssaultThread.GAME_FLAG_COLD);
+        btnRevert.setVisible(messageEvent.getEvent() == Statistics.GAME_FLAG_HOT || messageEvent.getEvent() == Statistics.GAME_FLAG_COLD);
         refreshTextLine();
     }
 
@@ -105,12 +105,12 @@ public class Farcry1GameEvent extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                lbl.setText(Farcry1GameEvent.this.toHTML());
+                lbl.setText(FC1SavePoint.this.toHTML());
             }
         });
     }
 
-    public FC1DetailsMessageEvent getMessageEvent() {
+    public FC1GameEvent getMessageEvent() {
         return messageEvent;
     }
 
@@ -118,7 +118,7 @@ public class Farcry1GameEvent extends JPanel {
         return lbl.getIcon();
     }
 
-    public void setGameEventListener(de.flashheart.missionbox.gamemodes.GameEventListener al) {
+    public void setGameEventListener(GameEventListener al) {
         gameEventListener = al;
     }
 
@@ -131,7 +131,7 @@ public class Farcry1GameEvent extends JPanel {
                 StringUtils.repeat("-", 90 + 39) + "\n\n";
         return String.format(result,
                 "gmstate", "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume", "uuid",
-                Farcry1AssaultThread.GAMSTATS[messageEvent.getGameState()],
+                messageEvent.getEvent(),
                 Tools.formatLongTime(getGametimerAtEnd()),
                 Tools.formatLongTime(remaining),
                 Tools.formatLongTime(messageEvent.getTimeWhenTheFlagWasActivated()),
