@@ -72,7 +72,7 @@ public class FC1SavePoint extends JPanel {
      */
     public void finalizeEvent(long gametimer, long remaining) {
 
-        eventDuration = gametimer - messageEvent.getGametimer(); // also der aktuelle gametimer minus dem gametimer zum Start dieses Events.
+        eventDuration = gametimer - messageEvent.getGametime(); // also der aktuelle gametimer minus dem gametimer zum Start dieses Events.
         this.remaining = remaining;
         setToolTipText("<html>" + messageEvent.toHTML(FC1GameEvent.css, eventDuration) + "</html>");
 
@@ -94,11 +94,11 @@ public class FC1SavePoint extends JPanel {
     }
 
     public long getGametimerAtStart() {
-        return messageEvent.getGametimer();
+        return messageEvent.getGametime();
     }
 
     public long getGametimerAtEnd() {
-        return messageEvent.getGametimer() + Math.max(eventDuration, 0);
+        return messageEvent.getGametime() + Math.max(eventDuration, 0);
     }
 
     public void refreshTextLine() {

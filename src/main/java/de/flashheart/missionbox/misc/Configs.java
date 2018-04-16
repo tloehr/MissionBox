@@ -9,11 +9,10 @@ import java.io.*;
 import java.util.Properties;
 import java.util.UUID;
 
-public class Configs {
+public class Configs implements HasLogger {
     private final de.flashheart.missionbox.misc.SortedProperties configs;
     private final Properties applicationContext;
 
-    private final Logger logger = Logger.getLogger(getClass());
 
 
     public static final String MATCHID = "matchid";
@@ -76,7 +75,7 @@ public class Configs {
         configs.put(BRIGHTNESS_BLUE, "10");
         configs.put(BRIGHTNESS_GREEN, "10");
         configs.put(BRIGHTNESS_YELLOW, "10");
-        configs.put(MIN_STAT_SEND_TIME, "0"); // in Millis, wie oft sollen die Stastiken spätestens gesendet werden. 0 = gar nicht
+        configs.put(MIN_STAT_SEND_TIME, "5000"); // in Millis, wie oft sollen die Stastiken spätestens gesendet werden. 0 = gar nicht
         configs.put(AIRSIREN_SIGNAL, "1:on,5000;off,1");
         configs.put(COLORCHANGE_SIREN_SIGNAL, "2:on,50;off,50");
 
@@ -85,7 +84,7 @@ public class Configs {
         loadApplicationContext();
 
         // und der Rest
-        logger.setLevel(Level.toLevel(configs.getProperty(LOGLEVEL), Level.DEBUG));
+        Logger.getRootLogger().setLevel(Level.toLevel(configs.getProperty(LOGLEVEL), Level.DEBUG));
         if (!configs.containsKey(MYUUID)) {
             configs.put(MYUUID, UUID.randomUUID().toString());
         }
@@ -142,7 +141,7 @@ public class Configs {
             configs.store(out, "Settings MissionBox");
             out.close();
         } catch (Exception ex) {
-            logger.fatal(ex);
+            getLogger().fatal(ex);
             System.exit(1);
         }
     }

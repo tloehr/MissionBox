@@ -1,17 +1,17 @@
-package de.flashheart.missionbox.interfaces;
+package de.flashheart.missionbox.progresshandlers;
 
 import java.math.BigDecimal;
 
 /**
  * Created by tloehr on 28.04.15.
  */
-public abstract class PercentageInterface {
+public abstract class ProgressInterface {
     private String name;
     protected long start;
     protected long now;
     protected long end;
 
-    public PercentageInterface(String name) {
+    public ProgressInterface(String name) {
         this.name = name;
     }
 

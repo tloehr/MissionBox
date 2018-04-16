@@ -14,16 +14,22 @@ public class GameEvent extends EventObject {
 
     protected DateTime pit;
     protected String event;
+    protected int matchid;
+    protected long gametime;
+    protected long remaining;
 
-    public GameEvent(Object source, String event) {
-        this(source, new DateTime(), event);
+    public GameEvent(Object source, String event, int matchid, long gametime, long remaining) {
+        this(source, new DateTime(), event, matchid, gametime, remaining);
     }
 
 
-    public GameEvent(Object source, DateTime pit, String event) {
+    public GameEvent(Object source, DateTime pit, String event, int matchid, long gametime, long remaining) {
         super(source);
         this.pit = pit;
         this.event = event;
+        this.matchid = matchid;
+        this.gametime = gametime;
+        this.remaining = remaining;
     }
 
     public DateTime getPit() {
@@ -33,6 +39,18 @@ public class GameEvent extends EventObject {
 
     public String getEvent() {
         return event;
+    }
+
+    public int getMatchid() {
+        return matchid;
+    }
+
+    public long getGametime() {
+        return gametime;
+    }
+
+    public long getRemaining() {
+        return remaining;
     }
 
     @Override
@@ -46,6 +64,8 @@ public class GameEvent extends EventObject {
     public String toPHPArray() {
         return "   ['pit' => '" + pit.toString("HH:mm:ss") + "','event' => '" + event + "'],\n";
     }
+
+
 
 
 }

@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 public class FC1GameEvent extends GameEvent {
 
     private long starttime = -1l;
-    private long gametimer = 0l; // wie lange läuft das Spiel schon ?
+
     private long timeWhenTheFlagWasActivated = -1l; // wann wurde die Flagge zuletzt aktiviert. -1l heisst, nicht aktiv.
     private long maxgametime = 0l; // wie lange kann dieses Spiel maximal laufen
     private long capturetime = 0l; // wie lange muss die Flagge gehalten werden bis sie erobert wurde ?
@@ -27,7 +27,6 @@ public class FC1GameEvent extends GameEvent {
             ".tg .tg-jbmi{font-size:100%%;vertical-align:top}\n" +
             ".tg .tg-da58{background-color:#D2E4FC;font-size:100%%;text-align:center;vertical-align:top}\n" +
             "</style>\n";
-    private long remaining;
 
     public long getResumeinterval() {
         return resumeinterval;
@@ -37,14 +36,6 @@ public class FC1GameEvent extends GameEvent {
         return starttime;
     }
 
-    /**
-     * der gametimer zu Beginn des Events.
-     *
-     * @return
-     */
-    public long getGametimer() {
-        return gametimer;
-    }
 
     public long getTimeWhenTheFlagWasActivated() {
         return timeWhenTheFlagWasActivated;
@@ -82,11 +73,11 @@ public class FC1GameEvent extends GameEvent {
 //        return endtime - gametimer - Math.max(eventDuration, 0);
 //    }
 
-    public FC1GameEvent(Object source, String event, long starttime, long gametimer, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval, long remaining) {
-        super(source, event);
+    public FC1GameEvent(Object source, int gameid, String event, long starttime, long gametime, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval, long remaining) {
+        super(source, event, gameid, gametime, remaining);
 
         this.starttime = starttime;
-        this.gametimer = gametimer;
+
         this.timeWhenTheFlagWasActivated = timeWhenTheFlagWasActivated;
         this.maxgametime = maxgametime;
         this.capturetime = capturetime;
@@ -95,17 +86,17 @@ public class FC1GameEvent extends GameEvent {
         this.resumeinterval = resumeinterval;
         this.lastrespawn = lastrespawn;
         this.respawninterval = respawninterval;
-        this.remaining = remaining;
+
 
     }
 
     public long getOvertime() {
-        return gametimer - maxgametime;
+        return gametime - maxgametime;
     }
 
     public boolean isOvertime() {
 //        logger.debug("overtime gametimer:" + gametimer + " maxgametime:" + maxgametime);
-        return gametimer > maxgametime;
+        return gametime > maxgametime;
     }
 
 //    public long getNextRespawn() {
@@ -127,7 +118,7 @@ public class FC1GameEvent extends GameEvent {
         return String.format(result,
                 "gmstate", "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume",
                 event,
-                Tools.formatLongTime(gametimer + Math.max(finalizedEventDuration, 0)),
+                Tools.formatLongTime(gametime + Math.max(finalizedEventDuration, 0)),
                 Tools.formatLongTime(remaining),
                 Tools.formatLongTime(timeWhenTheFlagWasActivated),
                 Tools.formatLongTime(lastrespawn), Tools.formatLongTime(maxgametime), Tools.formatLongTime(capturetime), Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince),
@@ -168,7 +159,7 @@ public class FC1GameEvent extends GameEvent {
 
         return String.format(result,
                 "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume",
-                Tools.formatLongTime(gametimer + Math.max(finalizedEventDuration, 0), "mm:ss"),
+                Tools.formatLongTime(gametime + Math.max(finalizedEventDuration, 0), "mm:ss"),
                 Tools.formatLongTime(remaining, "mm:ss"),
                 Tools.formatLongTime(timeWhenTheFlagWasActivated, "mm:ss"),
                 Tools.formatLongTime(lastrespawn, "mm:ss"),

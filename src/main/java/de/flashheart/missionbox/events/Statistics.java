@@ -1,25 +1,18 @@
 package de.flashheart.missionbox.events;
 
 import de.flashheart.missionbox.Main;
-import de.flashheart.missionbox.interfaces.HasLogger;
 import de.flashheart.missionbox.misc.Configs;
+import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Stack;
 
 public class Statistics implements HasLogger {
 
-    private final int numTeams;
-    private long time;
-
-    private LinkedHashMap<String, Integer> rank;
 
     // Die hier gehören alle zur OCF Flagge. Da ich aber die beiden Clients mal vereinheitlichen will, habe ich das hier mit aufgenommen.
     public static final String EVENT_PAUSE = "EVENT_PAUSE";
@@ -54,38 +47,30 @@ public class Statistics implements HasLogger {
     public Stack<GameEvent> stackEvents;
     private int matchid;
     private DateTime endOfGame = null;
-    private ArrayList<String> winningTeams = new ArrayList<>();
-    private SwingWorker<Boolean, Boolean> worker;
 
-    private String flagcolor;
+    private boolean bombfused;
+    private long remainingTime;
 
-    public Statistics(int numTeams) {
-        this.numTeams = numTeams;
-        rank = new LinkedHashMap<>();
+    public Statistics() {
+
+
         stackEvents = new Stack<>();
         reset();
     }
 
     public void reset() {
         endOfGame = null;
-        flagcolor = "neutral";
-        winningTeams.clear();
-        rank.clear();
-        time = 0l;
+        bombfused = false;
 
-        rank.put("red", 0);
-        rank.put("blue", 0);
-        if (numTeams >= 3) rank.put("green", 0);
-        if (numTeams >= 4) rank.put("yellow", 0);
+        remainingTime = 0l;
 
         matchid = 0;
         stackEvents.clear();
     }
 
-    public void setTimes(int matchid, long time, LinkedHashMap<String, Integer> myrank) {
-        this.matchid = matchid;
-        this.time = time;
-        this.rank = myrank;
+    public void updateTimers(GameEvent gameEvent) {
+        this.matchid = gameEvent.getMatchid();
+        this.remainingTime = gameEvent.getRemaining();
     }
 
     /**
@@ -93,31 +78,23 @@ public class Statistics implements HasLogger {
      */
     public void sendStats() {
         getLogger().debug("sendStats()\n" + toPHP());
-        if (Main.getMessageProcessor() != null)
-            Main.getMessageProcessor().pushMessage(new PHPMessage(toPHP(), stackEvents.peek()));
+//        if (Main.getMessageProcessor() != null)
+//            Main.getMessageProcessor().pushMessage(new PHPMessage(toPHP(), stackEvents.peek()));
     }
 
-    public long addEvent(String event) {
+    public long addEvent(GameEvent gameEvent) {
         DateTime now = new DateTime();
-//        if (Long.parseLong(Main.getConfigs().get(Configs.MIN_STAT_SEND_TIME)) > 0) return now.getMillis();
-
-        stackEvents.push(new GameEvent(now, event));
+        this.matchid = matchid;
+        stackEvents.push(gameEvent);
 
         if (endOfGame == null) {
-            if (event == EVENT_GAME_ABORTED || event == EVENT_GAME_OVER) {
+            if (gameEvent.getEvent() == GAME_OUTCOME_FLAG_TAKEN || gameEvent.getEvent() == GAME_OUTCOME_FLAG_DEFENDED) {
                 endOfGame = now;
             }
+        } else {
+            if (gameEvent.getEvent() == GAME_FLAG_HOT) bombfused = true;
+            if (gameEvent.getEvent() == GAME_FLAG_COLD) bombfused = false;
         }
-
-        if (event == EVENT_RESULT_RED_WON) winningTeams.add("red");
-        if (event == EVENT_RESULT_BLUE_WON) winningTeams.add("blue");
-        if (event == EVENT_RESULT_GREEN_WON) winningTeams.add("green");
-        if (event == EVENT_RESULT_YELLOW_WON) winningTeams.add("yellow");
-
-        if (event == EVENT_RED_ACTIVATED) flagcolor = "red";
-        if (event == EVENT_BLUE_ACTIVATED) flagcolor = "blue";
-        if (event == EVENT_GREEN_ACTIVATED) flagcolor = "green";
-        if (event == EVENT_YELLOW_ACTIVATED) flagcolor = "yellow";
 
         sendStats(); // jedes Ereignis wird gesendet.
 
@@ -136,36 +113,15 @@ public class Statistics implements HasLogger {
         flagname = StringUtils.replace(flagname, "'", "\\'");
         flagname = StringUtils.replace(flagname, "\"", "\\\"");
 
-        php.append("$game['flagname'] = '" + flagname + "';\n");
-        php.append("$game['flagcolor'] = '" + flagcolor + "';\n");
+        php.append("$game['bombname'] = '" + flagname + "';\n");
         php.append("$game['uuid'] = '" + Main.getConfigs().get(Configs.MYUUID) + "';\n");
         php.append("$game['matchid'] = '" + matchid + "';\n");
         php.append("$game['timestamp'] = '" + DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(new DateTime()) + "';\n");
         php.append("$game['ts_game_started'] = '" + DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(stackEvents.get(0).getPit()) + "';\n");
-        php.append("$game['ts_game_paused'] = '" + (stackEvents.peek().getEvent() == EVENT_PAUSE ? DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(stackEvents.peek().getPit()) : "null") + "';\n");
+        php.append("$game['ts_game_paused'] = '" + (stackEvents.peek().getEvent().equals(EVENT_PAUSE) ? DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(stackEvents.peek().getPit()) : "null") + "';\n");
         php.append("$game['ts_game_ended'] = '" + (endOfGame == null ? "null" : DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(endOfGame)) + "';\n");
-        php.append("$game['time'] = '" + Tools.formatLongTime(time, "HH:mm:ss") + "';\n");
-        php.append("$game['num_teams'] = '" + numTeams + "';\n");
-
-
-        php.append("$game['rank'] = [\n");
-
-        rank.entrySet().stream()
-                .forEach(stringIntegerEntry -> {
-                    php.append("   '" + stringIntegerEntry.getKey() + "' => '" + Tools.formatLongTime(stringIntegerEntry.getValue() * 1000, "HH:mm:ss") + "',\n");
-                });
-
-        php.append("];\n");
-
-        php.append("$game['winning_teams'] = [\n");
-        if (winningTeams.isEmpty()) {
-            php.append(endOfGame == null ? "'notdecidedyet'" : "'drawgame'");
-        } else {
-            for (String team : winningTeams) {
-                php.append("'" + team + "',");
-            }
-        }
-        php.append("];\n");
+        php.append("$game['bombfused'] = '" + Boolean.toString(bombfused) + "';\n");
+        php.append("$game['remainingTime'] = '" + Tools.formatLongTime(remainingTime, "HH:mm:ss") + "';\n");
 
         php.append("$game['events'] = [\n");
         for (GameEvent event : stackEvents) {

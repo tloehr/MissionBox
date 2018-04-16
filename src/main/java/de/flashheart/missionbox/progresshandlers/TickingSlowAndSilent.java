@@ -1,10 +1,8 @@
 package de.flashheart.missionbox.progresshandlers;
 
 import de.flashheart.missionbox.Main;
-import de.flashheart.missionbox.interfaces.HasLogger;
-import de.flashheart.missionbox.interfaces.PercentageInterface;
+import de.flashheart.missionbox.misc.HasLogger;
 
-import org.apache.log4j.Logger;
 import org.joda.time.Interval;
 import org.joda.time.Seconds;
 
@@ -14,7 +12,7 @@ import java.math.BigDecimal;
  * Diese Klasse unterteilt den Zeitraum zwischen 1% und 100% in 4 Viertel. Zu Beginn jeden Viertels ertönt einmalig das Einleitungssignal
  * gefolgt von 1 - 4 kurzen Signalen, je nachdem welches Viertel jetzt gerade läuft.
  */
-public class TickingSlowAndSilent extends PercentageInterface implements HasLogger {
+public class TickingSlowAndSilent extends ProgressInterface implements HasLogger {
     private int previousQuarter = -1;
 //    private final Logger logger = Logger.getLogger(getClass());
     private final String key;

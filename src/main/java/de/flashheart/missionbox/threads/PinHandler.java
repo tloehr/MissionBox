@@ -3,6 +3,7 @@ package de.flashheart.missionbox.threads;
 
 import de.flashheart.missionbox.hardware.abstraction.MyPin;
 import de.flashheart.missionbox.hardware.abstraction.MyRGBLed;
+import de.flashheart.missionbox.misc.HasLogger;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -16,10 +17,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * Dieser Handler läuft parallel zum Hauptprogramm. Er steuert alles Relais und achtet auch auf widersprüchliche Befehle und Kollisionen (falls bestimmte Relais nicht gleichzeitig anziehen dürfen, gibt mittlerweile nicht mehr).
  */
 
-public class PinHandler {
+public class PinHandler implements HasLogger {
     public static final String FOREVER = "∞";
 
-    final Logger logger;
+   
     final ReentrantLock lock;
     final HashMap<String, GenericBlinkModel> pinMap;
     final HashMap<String, Future<String>> futures;
@@ -30,7 +31,7 @@ public class PinHandler {
         lock = new ReentrantLock();
         pinMap = new HashMap<>();
         futures = new HashMap<>();
-        logger = Logger.getLogger(getClass());
+       
         schemes = new HashMap<>();
 
         executorService = Executors.newFixedThreadPool(20);
@@ -67,25 +68,27 @@ public class PinHandler {
 
 
     private void setScheme(String name, String text, String scheme) {
-        logger.debug(name + "-" + scheme);
+        getLogger().debug(name + "-" + scheme);
         lock.lock();
         try {
             GenericBlinkModel genericBlinkModel = pinMap.get(name);
 
             if (genericBlinkModel != null) {
                 if (futures.containsKey(name) && !futures.get(name).isDone()) { // but only if it runs
-                    //logger.debug("terminating: " + name);
+                    //getLogger().debug("terminating: " + name);
                     futures.get(name).cancel(true);
                 }
                 schemes.put(name, scheme); // aufbewahren für die Wiederherstellung nach der Pause
                 genericBlinkModel.setScheme(scheme);
                 futures.put(name, executorService.submit(genericBlinkModel));
             } else {
-                logger.error("Element not found in handler");
+                getLogger().error("Element not found in handler");
             }
+        } catch (NumberFormatException nfe){
+            getLogger().warn(nfe);
         } catch (Exception e) {
-            logger.trace(e);
-            logger.fatal(e);
+            getLogger().trace(e);
+            getLogger().fatal(e);
             System.exit(0);
         } finally {
             lock.unlock();

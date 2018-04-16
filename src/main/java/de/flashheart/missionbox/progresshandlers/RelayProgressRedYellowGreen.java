@@ -1,7 +1,6 @@
 package de.flashheart.missionbox.progresshandlers;
 
 import de.flashheart.missionbox.Main;
-import de.flashheart.missionbox.interfaces.PercentageInterface;
 
 import org.apache.log4j.Logger;
 
@@ -10,7 +9,7 @@ import java.math.BigDecimal;
 /**
  * Created by tloehr on 07.06.15.
  */
-public class RelayProgressRedYellowGreen extends PercentageInterface {
+public class RelayProgressRedYellowGreen extends ProgressInterface {
 
     protected final Logger logger = Logger.getLogger(getClass());
     private final String pinRed;

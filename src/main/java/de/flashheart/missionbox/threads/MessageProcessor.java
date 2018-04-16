@@ -4,7 +4,7 @@ import de.flashheart.missionbox.events.PHPMessage;
 import de.flashheart.missionbox.events.Statistics;
 import de.flashheart.missionbox.events.StatsSentEvent;
 import de.flashheart.missionbox.events.StatsSentListener;
-import de.flashheart.missionbox.interfaces.HasLogger;
+import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.FTPWrapper;
 
 import java.io.IOException;

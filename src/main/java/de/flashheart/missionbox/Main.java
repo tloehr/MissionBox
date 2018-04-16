@@ -7,7 +7,7 @@ import de.flashheart.missionbox.gamemodes.FC1SavePoint;
 import de.flashheart.missionbox.gamemodes.GameMode;
 import de.flashheart.missionbox.hardware.abstraction.MyAbstractButton;
 import de.flashheart.missionbox.hardware.abstraction.MyPin;
-import de.flashheart.missionbox.interfaces.PercentageInterface;
+import de.flashheart.missionbox.progresshandlers.ProgressInterface;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.Tools;
 import de.flashheart.missionbox.threads.MessageProcessor;
@@ -33,8 +33,8 @@ public class Main {
 
 
     // Klemmleiste
-    public static final Pin PIN_AIRSIREN = RaspiPin.GPIO_00;
-    public static final String NAME_AIRSIREN = "airsiren";
+    public static final Pin PIN_START_STOP_SIREN = RaspiPin.GPIO_00;
+    public static final String NAME_START_STOP_SIREN = "startstopsiren";
     public static final Pin PIN_SIREN1 = RaspiPin.GPIO_02;
     public static final String NAME_SIREN1 = "siren1";
     public static final Pin PIN_SHUTDOWN_SIREN = RaspiPin.GPIO_03;
@@ -90,11 +90,10 @@ public class Main {
 
     private static GameMode gameMode;
 
-    private static GpioPinDigitalInput ioRed, ioGreen, ioGameStartStop, ioPAUSE;
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnPAUSE;
     private static JButton btnQuit;
 
-    private static PercentageInterface relaidPBLeds1, relaidPBLeds2, relaisSirens;
+    private static ProgressInterface relaidPBLeds1, relaidPBLeds2, relaisSirens;
 
 
     private static PinHandler pinHandler = null;
@@ -137,12 +136,14 @@ public class Main {
         pinHandler = new PinHandler();
         configs = new Configs();
 
-        if (Long.parseLong(configs.get(Configs.MIN_STAT_SEND_TIME)) > 0 && configs.isFTPComplete()) {
+        logger.info("MissionBox " + Main.getConfigs().getApplicationInfo("my.version") + " [" + Main.getConfigs().getApplicationInfo("project.build.timestamp") + "]");
+
+
+        if (Long.parseLong(configs.get(Configs.MIN_STAT_SEND_TIME)) > 0) {
             messageProcessor = new MessageProcessor();
             messageProcessor.start();
         }
 
-        logger.info(configs.getApplicationInfo("program.BUILDDATE") + " [" + configs.getApplicationInfo("program.BUILDNUM") + "]");
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
 
@@ -229,7 +230,7 @@ public class Main {
         pinHandler.add(new MyPin(GPIO, PIN_SIREN1, Color.ORANGE, debugPanel4Pins, NAME_SIREN1, 70, 60)); // Main Siren
         pinHandler.add(new MyPin(GPIO, PIN_RESPAWN_SIREN, Color.ORANGE, debugPanel4Pins, NAME_RESPAWN_SIREN, 70, 80));
         pinHandler.add(new MyPin(GPIO, PIN_SHUTDOWN_SIREN, Color.MAGENTA, debugPanel4Pins, NAME_SHUTDOWN_SIREN, 20, 40)); // Shutdown Signal
-        pinHandler.add(new MyPin(GPIO, PIN_AIRSIREN, Color.ORANGE, debugPanel4Pins, NAME_AIRSIREN, 50, 90)); // Motor Siren for Start Stop Signals
+        pinHandler.add(new MyPin(GPIO, PIN_START_STOP_SIREN, Color.ORANGE, debugPanel4Pins, NAME_START_STOP_SIREN, 50, 90)); // Motor Siren for Start Stop Signals
 
         // die leds in den Dome Buttons
 
@@ -359,7 +360,7 @@ public class Main {
         }
     }
 
-    public static PercentageInterface getRelaisSirens() {
+    public static ProgressInterface getRelaisSirens() {
         return relaisSirens;
     }
 

@@ -1,6 +1,6 @@
 package de.flashheart.missionbox.hardware.abstraction;
 
-import de.flashheart.missionbox.interfaces.HasLogger;
+import de.flashheart.missionbox.misc.HasLogger;
 
 import javax.swing.*;
 import java.awt.*;

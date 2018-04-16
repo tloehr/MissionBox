@@ -1,4 +1,4 @@
-package de.flashheart.missionbox.interfaces;
+package de.flashheart.missionbox.misc;
 
 
 import org.apache.log4j.Logger;
