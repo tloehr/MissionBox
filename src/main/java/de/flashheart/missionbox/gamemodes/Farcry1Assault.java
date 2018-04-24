@@ -7,6 +7,7 @@ import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.events.Statistics;
 import de.flashheart.missionbox.misc.Configs;
+import de.flashheart.missionbox.misc.FTPWrapper;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -274,7 +275,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
         };
 
         MessageListener gameModeListener = messageEvent -> {
-            lastStatsSent = statistics.addEvent(messageEvent);
+            if (messageEvent.getEvent() != Statistics.GAME_PRE_GAME) lastStatsSent = statistics.addEvent(messageEvent);
 
             if (messageEvent.getEvent() == Statistics.GAME_FLAG_HOT) {
                 /***
@@ -285,7 +286,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                  *     |_|   |_|\__,_|\__, |_| |_|\___/ \__|
                  *                    |___/
                  */
-                getLogger().debug("GAME_FLAG_HOT");
+
                 Main.getPinHandler().setScheme(Main.NAME_LED1_BTN_GREEN, "∞:on,250;off,250");
                 Main.getPinHandler().off(Main.NAME_LED1_BTN_RED);
                 Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_GREEN, "∞:on,250;off,250");
@@ -310,7 +311,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                  *     |_|   |_|\__,_|\__, |\____\___/|_|\__,_|
                  *                    |___/
                  */
-                getLogger().debug("GAME_FLAG_COLD");
+
 
                 Main.setProgress(new BigDecimal(-1));
 
@@ -352,7 +353,6 @@ public class Farcry1Assault implements GameMode, HasLogger {
                  *     |_|   |_|  \___|\____|\__,_|_| |_| |_|\___|
                  *
                  */
-                getLogger().debug("GAME_PRE_GAME");
 
                 Main.enableSettings(true);
                 Main.getFrmTest().getBtnClearEvent().setEnabled(false);
@@ -380,12 +380,21 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_YELLOW, "∞:on,0;off,350;on,350;off,0;on,0;off,350;on,0;off,3000");
                 Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:on,0;off,350;on,0;off,350;on,350;off,0;on,0;off,3000");
 
+                statistics.reset();
                 lastMinuteAnnounced = false;
                 lastAnnouncedMinute = -1;
                 lastAnnouncedSecond = -1;
                 coldcountdownrunning.set(false);
                 hotcountdownrunning.set(false);
                 overtime.set(false);
+
+                try {
+                    FTPWrapper.initFTPDir();
+                } catch (IOException e) {
+                    getLogger().error(e);
+                }
+
+
             } else if (messageEvent.getEvent() == Statistics.GAME_OUTCOME_FLAG_DEFENDED) {
                 /***
                  *      _____ _             ____        __                _          _
@@ -395,7 +404,6 @@ public class Farcry1Assault implements GameMode, HasLogger {
                  *     |_|   |_|\__,_|\__, |____/ \___|_|  \___|_| |_|\__,_|\___|\__,_|
                  *                    |___/
                  */
-                getLogger().debug("GAME_OUTCOME_FLAG_DEFENDED");
 
                 Main.getPinHandler().off(Main.NAME_SHUTDOWN_SIREN);
 
@@ -436,7 +444,6 @@ public class Farcry1Assault implements GameMode, HasLogger {
                  *     |_|   |_|\__,_|\__, ||_|\__,_|_|\_\___|_| |_|
                  *                    |___/
                  */
-                getLogger().debug("GAME_OUTCOME_FLAG_TAKEN");
 
                 Main.getPinHandler().off(Main.NAME_LED1_BTN_RED);
                 Main.getPinHandler().off(Main.NAME_LED1_BTN_GREEN);
@@ -467,7 +474,6 @@ public class Farcry1Assault implements GameMode, HasLogger {
                  *     |_|   |_|\__,_|\__, /_/   \_\___|\__|_| \_/ \___|
                  *                    |___/
                  */
-                getLogger().debug("GAME_FLAG_ACTIVE");
                 Main.enableSettings(false);
 
                 Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_RED);

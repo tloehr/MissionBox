@@ -12,6 +12,7 @@ import de.flashheart.missionbox.gamemodes.FC1SavePoint;
 import de.flashheart.missionbox.events.GameEventListener;
 
 import de.flashheart.missionbox.misc.Configs;
+import de.flashheart.missionbox.misc.FTPWrapper;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.log4j.Logger;
 
@@ -409,14 +410,14 @@ public class FrmTest extends JFrame implements GameEventListener {
         Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_GREEN, txtHandlerPattern.getText().trim());
     }
 
-    private void tbUsePinHandlerItemStateChanged(ItemEvent e) {
-        Main.getPinHandler().off();
-    }
-
     private void btnProgessActionPerformed(ActionEvent e) {
         BigDecimal bd = new BigDecimal(txtPercentage.getText().trim());
         logger.debug("intvalue: " + bd.intValue() / 10);
         Main.setPBLeds(bd);
+    }
+
+    private void btnTestFTPActionPerformed(ActionEvent e) {
+        FTPWrapper.testFTP(txtFTPlog, btnTestFTP);
     }
 
 
@@ -474,7 +475,9 @@ public class FrmTest extends JFrame implements GameEventListener {
         lblRspwnSiren = new JTextField();
         label6 = new JLabel();
         lblStartsiren = new JTextField();
-        panel5 = new JPanel();
+        btnTestFTP = new JButton();
+        scrollPane1 = new JScrollPane();
+        txtFTPlog = new JTextArea();
         panel1 = new JPanel();
         lblButtonGreen = new JLabel();
         btnRedLED1 = new JButton();
@@ -495,7 +498,6 @@ public class FrmTest extends JFrame implements GameEventListener {
         txtHandlerPattern = new JTextField();
         btnRedProgress2 = new JButton();
         btnSiren4 = new JButton();
-        tbUsePinHandler = new JToggleButton();
         btnYellowProgress2 = new JButton();
         panel11 = new JPanel();
         label5 = new JLabel();
@@ -854,11 +856,20 @@ public class FrmTest extends JFrame implements GameEventListener {
                 });
                 settingsPanel.add(lblStartsiren, CC.xywh(3, 9, 3, 1, CC.FILL, CC.DEFAULT));
 
-                //======== panel5 ========
+                //---- btnTestFTP ----
+                btnTestFTP.setText("Test FTP");
+                btnTestFTP.addActionListener(e -> btnTestFTPActionPerformed(e));
+                settingsPanel.add(btnTestFTP, CC.xy(1, 11, CC.FILL, CC.DEFAULT));
+
+                //======== scrollPane1 ========
                 {
-                    panel5.setLayout(new GridLayout(3, 2));
+
+                    //---- txtFTPlog ----
+                    txtFTPlog.setBackground(Color.black);
+                    txtFTPlog.setForeground(new Color(0, 255, 51));
+                    scrollPane1.setViewportView(txtFTPlog);
                 }
-                settingsPanel.add(panel5, CC.xywh(1, 13, 5, 1));
+                settingsPanel.add(scrollPane1, CC.xywh(3, 11, 3, 3, CC.FILL, CC.FILL));
             }
             tabbedPane1.addTab("Settings", settingsPanel);
 
@@ -962,13 +973,6 @@ public class FrmTest extends JFrame implements GameEventListener {
                 btnSiren4.setText("Respawn");
                 panel1.add(btnSiren4, CC.xy(5, 11, CC.FILL, CC.FILL));
 
-                //---- tbUsePinHandler ----
-                tbUsePinHandler.setText("Use Pinhandler");
-                tbUsePinHandler.setSelected(true);
-                tbUsePinHandler.setEnabled(false);
-                tbUsePinHandler.addItemListener(e -> tbUsePinHandlerItemStateChanged(e));
-                panel1.add(tbUsePinHandler, CC.xy(1, 13, CC.FILL, CC.FILL));
-
                 //---- btnYellowProgress2 ----
                 btnYellowProgress2.setText("btnYellowProgress2");
                 panel1.add(btnYellowProgress2, CC.xy(3, 13, CC.FILL, CC.FILL));
@@ -1007,7 +1011,7 @@ public class FrmTest extends JFrame implements GameEventListener {
                 }
                 panel1.add(panel12, CC.xy(5, 15));
             }
-            tabbedPane1.addTab("HW-Test", panel1);
+            tabbedPane1.addTab("Test", panel1);
         }
         contentPane.add(tabbedPane1);
         setSize(675, 470);
@@ -1118,7 +1122,9 @@ public class FrmTest extends JFrame implements GameEventListener {
     private JTextField lblRspwnSiren;
     private JLabel label6;
     private JTextField lblStartsiren;
-    private JPanel panel5;
+    private JButton btnTestFTP;
+    private JScrollPane scrollPane1;
+    private JTextArea txtFTPlog;
     private JPanel panel1;
     private JLabel lblButtonGreen;
     private JButton btnRedLED1;
@@ -1139,7 +1145,6 @@ public class FrmTest extends JFrame implements GameEventListener {
     private JTextField txtHandlerPattern;
     private JButton btnRedProgress2;
     private JButton btnSiren4;
-    private JToggleButton tbUsePinHandler;
     private JButton btnYellowProgress2;
     private JPanel panel11;
     private JLabel label5;

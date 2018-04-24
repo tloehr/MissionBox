@@ -56,7 +56,7 @@ public class Configs implements HasLogger {
         // defaults
         configs.put(FCY_TIME2CAPTURE, "180");
         configs.put(FCY_GAMETIME, "6");
-        configs.put(FCY_RESPAWN_INTERVAL, "60");
+        configs.put(FCY_RESPAWN_INTERVAL, "0");
         configs.put(MBX_RESUME_TIME, "10000"); // Zeit in ms, bevor es nach eine Pause weiter geht
 
         configs.put(MBX_RESPAWN_SIRENTIME, "2000");

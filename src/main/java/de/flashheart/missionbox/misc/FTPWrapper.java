@@ -11,11 +11,15 @@ import javax.swing.*;
 import java.io.*;
 import java.util.concurrent.ExecutionException;
 
+
+
 /**
  * FTP-Utility, basierend auf Apache FTPClient:
  * {@link "http://commons.apache.org/net/apidocs/org/apache/commons/net/ftp/FTPClient.html"}
  */
 public class FTPWrapper {
+    static final String SUBDIR = "missionbox";
+
     /**
      * FTP-Dateienliste.
      *
@@ -97,13 +101,13 @@ public class FTPWrapper {
         String remotepath = Main.getConfigs().get(Configs.FTPREMOTEPATH);
         String uuid = Main.getConfigs().get(Configs.MYUUID);
 
-        String activeFile = remotepath + "/ocfflag/active/" + uuid + ".php";
+        String activeFile = remotepath + "/"+SUBDIR+"/active/" + uuid + ".php";
 
         boolean resultOk = true;
         Logger logger = Logger.getLogger(FTPWrapper.class);
 
 
-        File tempPHPFile = File.createTempFile("ocfflag", ".php");
+        File tempPHPFile = File.createTempFile(SUBDIR, ".php");
         tempPHPFile.deleteOnExit();
         FileUtils.writeStringToFile(tempPHPFile, content, "UTF-8");
 
@@ -123,7 +127,7 @@ public class FTPWrapper {
 
             if (move2archive) {
                 DateTime now = new DateTime();
-                String archivefile = remotepath + "/ocfflag/archive/" + now.toString("yyyyMMddHHmmss") + "-" + uuid + ".php";
+                String archivefile = remotepath + "/"+SUBDIR+"/archive/" + now.toString("yyyyMMddHHmmss") + "-" + uuid + ".php";
                 resultOk &= ftpClient.storeFile(archivefile, fis);
                 ftpClient.deleteFile(activeFile); // egal ob es eine gab oder nicht
             } else {
@@ -186,8 +190,8 @@ public class FTPWrapper {
 
                 String remotepath = Main.getConfigs().get(Configs.FTPREMOTEPATH);
 
-                String archivepath = remotepath + "/ocfflag/archive";
-                String activepath = remotepath + "/ocfflag/active";
+                String archivepath = remotepath + "/"+SUBDIR+"/archive";
+                String activepath = remotepath + "/"+SUBDIR+"/active";
 
                 String remoteFile = activepath + "/" + uuid + ".php";
 
@@ -266,7 +270,7 @@ public class FTPWrapper {
                     outputArea.append(line);
 
                     // creating a testfile for the ftp test
-                    File file = File.createTempFile("ocfflag", ".txt");
+                    File file = File.createTempFile(SUBDIR, ".txt");
                     file.createNewFile();
                     FileWriter writer = new FileWriter(file);
 
@@ -284,12 +288,12 @@ public class FTPWrapper {
 
                     // upload
                     FileInputStream fis = new FileInputStream(file);
-                    resultOk &= ftpClient.storeFile("ocfflagtest-" + uuid, fis);
+                    resultOk &= ftpClient.storeFile("ftptest-" + uuid, fis);
                     line = ftpClient.getReplyString();
                     logger.debug(line);
                     outputArea.append(line);
 
-                    ftpClient.deleteFile("ocfflagtest-" + uuid);
+                    ftpClient.deleteFile("ftptest-" + uuid);
 
 
                 } catch (Exception ftpEx) {

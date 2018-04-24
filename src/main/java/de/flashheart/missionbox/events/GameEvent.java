@@ -1,6 +1,7 @@
 package de.flashheart.missionbox.events;
 
 
+import de.flashheart.missionbox.misc.Tools;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
@@ -62,7 +63,7 @@ public class GameEvent extends EventObject {
     }
 
     public String toPHPArray() {
-        return "   ['pit' => '" + pit.toString("HH:mm:ss") + "','event' => '" + event + "'],\n";
+        return "   ['pit' => '" + pit.toString("HH:mm:ss") + "','event' => '" + event + "','remaining' => '" + Tools.formatLongTime(remaining, "HH:mm:ss") + "'],\n";
     }
 
 

@@ -50,10 +50,9 @@ public class Statistics implements HasLogger {
 
     private boolean bombfused;
     private long remainingTime;
+    private long captureTime, maxgametime;
 
     public Statistics() {
-
-
         stackEvents = new Stack<>();
         reset();
     }
@@ -63,13 +62,14 @@ public class Statistics implements HasLogger {
         bombfused = false;
 
         remainingTime = 0l;
+        captureTime = 0l;
+        maxgametime = 0l;
 
         matchid = 0;
         stackEvents.clear();
     }
 
     public void updateTimers(GameEvent gameEvent) {
-        this.matchid = gameEvent.getMatchid();
         this.remainingTime = gameEvent.getRemaining();
     }
 
@@ -78,23 +78,26 @@ public class Statistics implements HasLogger {
      */
     public void sendStats() {
         getLogger().debug("sendStats()\n" + toPHP());
-//        if (Main.getMessageProcessor() != null)
-//            Main.getMessageProcessor().pushMessage(new PHPMessage(toPHP(), stackEvents.peek()));
+        if (Main.getMessageProcessor() != null)
+            Main.getMessageProcessor().pushMessage(new PHPMessage(toPHP(), stackEvents.peek()));
     }
 
     public long addEvent(GameEvent gameEvent) {
         DateTime now = new DateTime();
-        this.matchid = matchid;
+        this.matchid = gameEvent.getMatchid();
+        this.captureTime = ((FC1GameEvent) gameEvent).getCapturetime();
+        this.maxgametime = ((FC1GameEvent) gameEvent).getMaxgametime();
         stackEvents.push(gameEvent);
 
         if (endOfGame == null) {
             if (gameEvent.getEvent() == GAME_OUTCOME_FLAG_TAKEN || gameEvent.getEvent() == GAME_OUTCOME_FLAG_DEFENDED) {
                 endOfGame = now;
             }
-        } else {
-            if (gameEvent.getEvent() == GAME_FLAG_HOT) bombfused = true;
-            if (gameEvent.getEvent() == GAME_FLAG_COLD) bombfused = false;
         }
+
+        if (gameEvent.getEvent() == GAME_FLAG_HOT) bombfused = true;
+        if (gameEvent.getEvent() == GAME_FLAG_COLD) bombfused = false;
+
 
         sendStats(); // jedes Ereignis wird gesendet.
 
@@ -121,7 +124,11 @@ public class Statistics implements HasLogger {
         php.append("$game['ts_game_paused'] = '" + (stackEvents.peek().getEvent().equals(EVENT_PAUSE) ? DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(stackEvents.peek().getPit()) : "null") + "';\n");
         php.append("$game['ts_game_ended'] = '" + (endOfGame == null ? "null" : DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(endOfGame)) + "';\n");
         php.append("$game['bombfused'] = '" + Boolean.toString(bombfused) + "';\n");
-        php.append("$game['remainingTime'] = '" + Tools.formatLongTime(remainingTime, "HH:mm:ss") + "';\n");
+        php.append("$game['remaining'] = '" + Tools.formatLongTime(remainingTime, "HH:mm:ss") + "';\n");
+        php.append("$game['capturetime'] = '" + Tools.formatLongTime(captureTime, "HH:mm:ss") + "';\n");
+        php.append("$game['maxgametime'] = '" + Tools.formatLongTime(maxgametime, "HH:mm:ss") + "';\n");
+        // ist eigentlich überflüssig. macht aber den PHP code leichter.
+        php.append("$game['winner'] = '" + (endOfGame == null ? "notdecidedyet" : (bombfused ? "attacker" : "defender")) + "';\n");
 
         php.append("$game['events'] = [\n");
         for (GameEvent event : stackEvents) {

@@ -52,7 +52,7 @@ public class MessageProcessor extends Thread implements HasLogger {
     public void pushMessage(PHPMessage message) {
         lock.lock();
         try {
-            getLogger().debug("pushMessage() pushing " + message.toString());
+//            getLogger().debug("pushMessage() pushing " + message.toString());
             messageQ.push(message);
         } finally {
             lock.unlock();
@@ -68,13 +68,14 @@ public class MessageProcessor extends Thread implements HasLogger {
                         PHPMessage myMessage = messageQ.pop();
 
                         boolean move2archive = myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_ABORTED ||
-                                myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_OVER;
+                                myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_OVER ||
+                                myMessage.getGameEvent().getEvent() == Statistics.GAME_OUTCOME_FLAG_TAKEN ||
+                                myMessage.getGameEvent().getEvent() == Statistics.GAME_OUTCOME_FLAG_DEFENDED;
                         getLogger().debug("run() move2archive=" + move2archive);
 
 
                         boolean successful = FTPWrapper.upload(myMessage.getPhp(), move2archive);
                         messageQ.clear(); // nur die letzte Nachricht ist wichtig
-                        // sorge dafür, dass die weiße LED den erfolgreichen Versand anzeigt
                         fireChangeEvent(new StatsSentEvent(this, myMessage.getGameEvent(), successful));
                     }
                 } finally {
