@@ -88,7 +88,7 @@ public class Main {
         return pinHandler;
     }
 
-    private static GameMode gameMode;
+    private static Farcry1Assault gameMode;
 
     private static MyAbstractButton btnRed, btnGreen, btnGameStartStop, btnPAUSE;
     private static JButton btnQuit;
@@ -216,7 +216,7 @@ public class Main {
     //todo: das ganze hin und her über die Hauptklasse muss anders werden. das ist schrecklicher code.
     public static void prepareGame() {
         if (gameMode == null) return;
-        ((Farcry1Assault) gameMode).prepareGame();
+        gameMode.prepareGame();
     }
 
 
@@ -274,6 +274,10 @@ public class Main {
 
     public static MyAbstractButton getBtnGameStartStop() {
         return btnGameStartStop;
+    }
+
+    public static Farcry1Assault getGameMode() {
+        return gameMode;
     }
 
     public static JButton getGUIBtnRed() {

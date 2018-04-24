@@ -14,7 +14,6 @@ public class Configs implements HasLogger {
     private final Properties applicationContext;
 
 
-
     public static final String MATCHID = "matchid";
     public static final String MYUUID = "uuid";
     public static final String LOGLEVEL = "loglevel";
@@ -114,6 +113,17 @@ public class Configs implements HasLogger {
 
     public void put(Object key, Object value) {
         configs.put(key, value.toString());
+
+        if (key.toString().equalsIgnoreCase(FCY_TIME2CAPTURE)) {
+            Main.getGameMode().setCapturetime(Long.parseLong(value.toString()));
+        }
+        if (key.toString().equalsIgnoreCase(FCY_GAMETIME)) {
+            Main.getGameMode().setMaxgametime(Long.parseLong(value.toString()));
+        }
+        if (key.toString().equalsIgnoreCase(FCY_RESPAWN_INTERVAL)) {
+            Main.getGameMode().setRespawninterval(Long.parseLong(value.toString()));
+        }
+        
         saveConfigs();
     }
 

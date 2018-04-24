@@ -87,6 +87,8 @@ public class Statistics implements HasLogger {
         this.matchid = gameEvent.getMatchid();
         this.captureTime = ((FC1GameEvent) gameEvent).getCapturetime();
         this.maxgametime = ((FC1GameEvent) gameEvent).getMaxgametime();
+        this.remainingTime = gameEvent.getRemaining();
+
         stackEvents.push(gameEvent);
 
         if (endOfGame == null) {

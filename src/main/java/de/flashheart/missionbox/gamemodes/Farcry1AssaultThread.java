@@ -179,10 +179,10 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         try {
             this.gameEvent = state;
             logger.debug("setting gamestate to: " + gameEvent);
-            logger.debug("gametimer is now: " + Tools.formatLongTime(getRemaining()));
-
+            lastRemainingTime = getRemaining();
+            
             if (gameEvent != previousGameState) {
-                
+
                 fireMessage(gameModeList, new FC1GameEvent(this, running_match_id, gameEvent, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
 
                 switch (gameEvent) {
