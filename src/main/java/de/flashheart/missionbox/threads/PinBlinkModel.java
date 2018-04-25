@@ -32,7 +32,7 @@ public class PinBlinkModel implements GenericBlinkModel {
 
         if (repeat == 0) {
             pin.setState(false);
-            return null;
+            return "done";
         }
 
         for (int turn = 0; turn < repeat; turn++) {
@@ -41,7 +41,7 @@ public class PinBlinkModel implements GenericBlinkModel {
 
                 if (Thread.currentThread().isInterrupted()) {
                     pin.setState(false);
-                    return null;
+                    return "interrupted";
                 }
 
                 pin.setState(event.isOn());
@@ -51,14 +51,14 @@ public class PinBlinkModel implements GenericBlinkModel {
                     Thread.sleep(event.getDuration());
                 } catch (InterruptedException exc) {
                     pin.setState(false);
-                    return null;
+                    return "interrupted";
                 }
 
             }
         }
 
 //        setText("");
-        return null;
+        return "done";
     }
 //
 //    @Override

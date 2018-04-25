@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 
 public class PinHandler implements HasLogger {
-    public static final String FOREVER = "∞";
+//    public static final String FOREVER = "∞";
 
    
     final ReentrantLock lock;
@@ -122,7 +122,9 @@ public class PinHandler implements HasLogger {
                for (String name : futures.keySet()) {
                    if (!futures.get(name).isDone()) { // but only if it runs
                        futures.get(name).cancel(true);
+                       getLogger().debug("cancelling running task: "+name);
                    } else {
+                       getLogger().debug("removing finished task: "+name);
                        schemes.remove(name);
                    }
                }

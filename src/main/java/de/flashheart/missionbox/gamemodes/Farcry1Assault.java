@@ -4,6 +4,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
+import de.flashheart.missionbox.events.GameEvent;
 import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.events.Statistics;
 import de.flashheart.missionbox.misc.Configs;
@@ -24,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by tloehr on 31.05.15.
  */
 public class Farcry1Assault implements GameMode, HasLogger {
-    private boolean gameJustStarted;
+    private boolean gameJustStarted, gameJustResumed;
     private Farcry1AssaultThread farcryAssaultThread;
     private String FOREVER = Integer.toString(Integer.MAX_VALUE);
     //    private String lastAnnoucement = "";
@@ -35,7 +36,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
     private Statistics statistics;
 
     // das mach ich nur, weil ich diese beiden Flags als finals brauche.
-    private final AtomicBoolean coldcountdownrunning, hotcountdownrunning, overtime;
+    private final AtomicBoolean coldcountdownrunning, hotcountdownrunning, overtime, resumecountdownrunning;
 
     /**
      * wird gebraucht, wenn während eines PREGAMES die Zeiten geändert werden
@@ -83,6 +84,8 @@ public class Farcry1Assault implements GameMode, HasLogger {
         statistics = new Statistics();
         coldcountdownrunning = new AtomicBoolean(false);
         hotcountdownrunning = new AtomicBoolean(false);
+        resumecountdownrunning = new AtomicBoolean(false);
+        gameJustResumed = false;
         overtime = new AtomicBoolean(false);
 
         /***
@@ -185,9 +188,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 }
             }
 
-
             if (messageEvent.getEvent() == Statistics.GAME_PRE_GAME) {
-
                 Main.setTimerMessage("--");
                 Main.getFrmTest().setMessage(Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent())));
                 Main.setRespawnTimer("--");
@@ -275,9 +276,11 @@ public class Farcry1Assault implements GameMode, HasLogger {
         };
 
         MessageListener gameModeListener = messageEvent -> {
-            if (messageEvent.getEvent() != Statistics.GAME_PRE_GAME) lastStatsSent = statistics.addEvent(messageEvent);
+            if (messageEvent.getEvent() != Statistics.GAME_PRE_GAME ) lastStatsSent = statistics.addEvent(messageEvent);
 
-            if (messageEvent.getEvent() == Statistics.GAME_FLAG_HOT) {
+            if (messageEvent.getEvent() == Statistics.GAME_RESUMED) {
+                gameJustResumed = true;
+            } else if (messageEvent.getEvent() == Statistics.GAME_FLAG_HOT) {
                 /***
                  *      _____ _             _   _       _
                  *     |  ___| | __ _  __ _| | | | ___ | |_
@@ -335,11 +338,12 @@ public class Farcry1Assault implements GameMode, HasLogger {
 
                 // damit beim Anfang nicht direkt die Shutdown Sirene ertönt
                 // UND damit bei einem Overtime die End-Sirene und die Shutdown-Sirene nicht kollidieren
-                if (!gameJustStarted && ((FC1GameEvent) messageEvent).getOvertime() < 0) {
+                if (!gameJustResumed && !gameJustStarted && ((FC1GameEvent) messageEvent).getOvertime() < 0) {
                     Main.getPinHandler().setScheme(Main.NAME_SHUTDOWN_SIREN, "1:on,2000;off,0");
                 }
 
                 gameJustStarted = false;
+                gameJustResumed = false;
                 lastAnnouncedMinute = -1;
                 lastAnnouncedSecond = -1;
                 hotcountdownrunning.set(false);
@@ -425,11 +429,12 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_GREEN, "∞:on,500;off,500");
 
                 // Einmal langer Heulton zum Ende, heisst verloren
-                Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,∞", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
+                Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,0", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
 
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()));
                 if (overtime.get()) {
                     message += "<h2>SUDDEN DEATH (Overtime)</h2>";
+                    // lastStatsSent = statistics.addEvent(new GameEvent(this, Statistics.SUD));
                 }
 
                 Main.getFrmTest().setMessage(message);
@@ -463,7 +468,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_RED, "∞:on,500;off,500");
 
 //                MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;3000,0");
-                Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,∞", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
+                Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,0", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
 
             } else if (messageEvent.getEvent() == Statistics.GAME_FLAG_ACTIVE) {
                 /***
@@ -484,8 +489,11 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_GREEN);
 
                 // the starting siren
-                Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,∞", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
+
+                Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,0", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
+
                 gameJustStarted = true;
+//                gameJustResumed = false;
 
 
             }

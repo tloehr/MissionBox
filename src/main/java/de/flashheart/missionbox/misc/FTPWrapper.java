@@ -12,7 +12,6 @@ import java.io.*;
 import java.util.concurrent.ExecutionException;
 
 
-
 /**
  * FTP-Utility, basierend auf Apache FTPClient:
  * {@link "http://commons.apache.org/net/apidocs/org/apache/commons/net/ftp/FTPClient.html"}
@@ -101,7 +100,7 @@ public class FTPWrapper {
         String remotepath = Main.getConfigs().get(Configs.FTPREMOTEPATH);
         String uuid = Main.getConfigs().get(Configs.MYUUID);
 
-        String activeFile = remotepath + "/"+SUBDIR+"/active/" + uuid + ".php";
+        String activeFile = remotepath + "/" + SUBDIR + "/active/" + uuid + ".php";
 
         boolean resultOk = true;
         Logger logger = Logger.getLogger(FTPWrapper.class);
@@ -127,7 +126,7 @@ public class FTPWrapper {
 
             if (move2archive) {
                 DateTime now = new DateTime();
-                String archivefile = remotepath + "/"+SUBDIR+"/archive/" + now.toString("yyyyMMddHHmmss") + "-" + uuid + ".php";
+                String archivefile = remotepath + "/" + SUBDIR + "/archive/" + now.toString("yyyyMMddHHmmss") + "-" + uuid + ".php";
                 resultOk &= ftpClient.storeFile(archivefile, fis);
                 ftpClient.deleteFile(activeFile); // egal ob es eine gab oder nicht
             } else {
@@ -163,7 +162,8 @@ public class FTPWrapper {
     public static boolean initFTPDir() throws IOException {
         FTPClient ftpClient = new FTPClient();
 
-        if (!Main.getConfigs().isFTPComplete()) return false;
+        if (Long.parseLong(Main.getConfigs().get(Configs.MIN_STAT_SEND_TIME)) <= 0 || !Main.getConfigs().isFTPComplete())
+            return false;
 
         String host = Main.getConfigs().get(Configs.FTPHOST);
         int port = Integer.parseInt(Main.getConfigs().get(Configs.FTPPORT));
@@ -190,8 +190,8 @@ public class FTPWrapper {
 
                 String remotepath = Main.getConfigs().get(Configs.FTPREMOTEPATH);
 
-                String archivepath = remotepath + "/"+SUBDIR+"/archive";
-                String activepath = remotepath + "/"+SUBDIR+"/active";
+                String archivepath = remotepath + "/" + SUBDIR + "/archive";
+                String activepath = remotepath + "/" + SUBDIR + "/active";
 
                 String remoteFile = activepath + "/" + uuid + ".php";
 

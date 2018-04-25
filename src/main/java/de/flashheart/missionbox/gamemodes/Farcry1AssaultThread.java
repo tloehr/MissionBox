@@ -6,8 +6,8 @@ import de.flashheart.missionbox.events.GameEvent;
 import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.events.Statistics;
 import de.flashheart.missionbox.misc.Configs;
+import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -23,8 +23,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * Der Thread informiert den GameMode über EventListener, wenn etwas zu melden ist.
  */
-public class Farcry1AssaultThread implements Runnable, GameThread {
-    final Logger logger = Logger.getLogger(getClass());
+public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
+    //    final Logger logger = getLogger().getLogger(getClass());
     private final Thread thread;
     final ReentrantLock lock;
 
@@ -108,7 +108,6 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         setCapturetime(capturetimeInSecs);
 
         thread = new Thread(this);
-        logger.setLevel(Main.getLogLevel());
 
         textMessageList = new EventListenerList();
         gameTimerList = new EventListenerList();
@@ -178,16 +177,16 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
         lock.lock();
         try {
             this.gameEvent = state;
-            logger.debug("setting gamestate to: " + gameEvent);
+            getLogger().debug("setting gamestate to: " + gameEvent);
             lastRemainingTime = getRemaining();
-            
+
             if (gameEvent != previousGameState) {
 
                 fireMessage(gameModeList, new FC1GameEvent(this, running_match_id, gameEvent, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
 
                 switch (gameEvent) {
                     case Statistics.GAME_PRE_GAME: {
-                        logger.info("\n  ____  ____  _____ ____    _    __  __ _____ \n" +
+                        getLogger().info("\n  ____  ____  _____ ____    _    __  __ _____ \n" +
                                 " |  _ \\|  _ \\| ____/ ___|  / \\  |  \\/  | ____|\n" +
                                 " | |_) | |_) |  _|| |  _  / _ \\ | |\\/| |  _|  \n" +
                                 " |  __/|  _ <| |__| |_| |/ ___ \\| |  | | |___ \n" +
@@ -207,7 +206,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         break;
                     }
                     case Statistics.GAME_FLAG_ACTIVE: { // hier wird das Spiel gestartet
-                        logger.info("\n  _____ _        _    ____      _    ____ _____ _____     _______ \n" +
+                        getLogger().info("\n  _____ _        _    ____      _    ____ _____ _____     _______ \n" +
                                 " |  ___| |      / \\  / ___|    / \\  / ___|_   _|_ _\\ \\   / / ____|\n" +
                                 " | |_  | |     / _ \\| |  _    / _ \\| |     | |  | | \\ \\ / /|  _|  \n" +
                                 " |  _| | |___ / ___ \\ |_| |  / ___ \\ |___  | |  | |  \\ V / | |___ \n" +
@@ -224,7 +223,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         break;
                     }
                     case Statistics.GAME_FLAG_HOT: {
-                        logger.info("\n  _____ _        _    ____   _   _  ___ _____ \n" +
+                        getLogger().info("\n  _____ _        _    ____   _   _  ___ _____ \n" +
                                 " |  ___| |      / \\  / ___| | | | |/ _ \\_   _|\n" +
                                 " | |_  | |     / _ \\| |  _  | |_| | | | || |  \n" +
                                 " |  _| | |___ / ___ \\ |_| | |  _  | |_| || |  \n" +
@@ -244,7 +243,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                     }
 
                     case Statistics.GAME_FLAG_COLD: {
-                        logger.info("\n  _____ _        _    ____    ____ ___  _     ____  \n" +
+                        getLogger().info("\n  _____ _        _    ____    ____ ___  _     ____  \n" +
                                 " |  ___| |      / \\  / ___|  / ___/ _ \\| |   |  _ \\ \n" +
                                 " | |_  | |     / _ \\| |  _  | |  | | | | |   | | | |\n" +
                                 " |  _| | |___ / ___ \\ |_| | | |__| |_| | |___| |_| |\n" +
@@ -259,7 +258,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         break;
                     }
                     case Statistics.GAME_OUTCOME_FLAG_TAKEN: {
-                        logger.info("\n  _____ _        _    ____   _____  _    _  _______ _   _ \n" +
+                        getLogger().info("\n  _____ _        _    ____   _____  _    _  _______ _   _ \n" +
                                 " |  ___| |      / \\  / ___| |_   _|/ \\  | |/ / ____| \\ | |\n" +
                                 " | |_  | |     / _ \\| |  _    | | / _ \\ | ' /|  _| |  \\| |\n" +
                                 " |  _| | |___ / ___ \\ |_| |   | |/ ___ \\| . \\| |___| |\\  |\n" +
@@ -272,7 +271,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         break;
                     }
                     case Statistics.GAME_OUTCOME_FLAG_DEFENDED: {
-                        logger.info("\n  _____ _        _    ____   ____  _____ _____ _____ _   _ ____  _____ ____  \n" +
+                        getLogger().info("\n  _____ _        _    ____   ____  _____ _____ _____ _   _ ____  _____ ____  \n" +
                                 " |  ___| |      / \\  / ___| |  _ \\| ____|  ___| ____| \\ | |  _ \\| ____|  _ \\ \n" +
                                 " | |_  | |     / _ \\| |  _  | | | |  _| | |_  |  _| |  \\| | | | |  _| | | | |\n" +
                                 " |  _| | |___ / ___ \\ |_| | | |_| | |___|  _| | |___| |\\  | |_| | |___| |_| |\n" +
@@ -281,7 +280,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         Main.getFrmTest().addGameEvent(new FC1SavePoint(new FC1GameEvent(this, running_match_id, gameEvent, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, getRemaining()), new ImageIcon((getClass().getResource("/artwork/shield32.png")))), 0);
                         addEventToList = true;
 //                        fireMessage(gameTimerList, new FC1DetailsMessageEvent(this, gameEvent, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
-                        logger.debug("defended gametimer: " + gametimer);
+                        getLogger().debug("defended gametimer: " + gametimer);
                         fireMessage(textMessageList, new GameEvent(this, gameEvent, running_match_id, gametimer, lastRemainingTime));
                         running_match_id = 0;
                         break;
@@ -308,7 +307,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
                         // Korrektur der Pausen und Resume Zeit
                         long pause_period = System.currentTimeMillis() - pausingSince;      // damit ist auch die resume zeit inbegriffen.
-                        logger.debug("diese Pause (inklusive dem resume) dauerte: " + Tools.formatLongTime(pause_period));
+                        getLogger().debug("diese Pause (inklusive dem resume) dauerte: " + Tools.formatLongTime(pause_period));
 
                         resumingSince = -1l;
                         pausingSince = -1l;
@@ -319,14 +318,14 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                         // wenn es einen Event gibt, zu dem Zurückgesprungen werden soll, dann
                         // muss er jetzt berücksichtigt werden.
                         if (savePoint != null) {
-                            logger.debug("\n" +
+                            getLogger().debug("\n" +
                                     "  ____  _______     _______ ____ _____   _______     _______ _   _____\n" +
                                     " |  _ \\| ____\\ \\   / / ____|  _ \\_   _| | ____\\ \\   / / ____| \\ | |_   _|\n" +
                                     " | |_) |  _|  \\ \\ / /|  _| | |_) || |   |  _|  \\ \\ / /|  _| |  \\| | | |  \n" +
                                     " |  _ <| |___  \\ V / | |___|  _ < | |   | |___  \\ V / | |___| |\\  | | |  \n" +
                                     " |_| \\_\\_____|  \\_/  |_____|_| \\_\\|_|   |_____|  \\_/  |_____|_| \\_| |_|  \n" +
                                     "                                                                         ");
-                            logger.debug(savePoint.toString());
+                            getLogger().debug(savePoint.toString());
 
                             resumeToState = savePoint.getMessageEvent().getEvent();
 
@@ -341,7 +340,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
                             timeWhenTheFlagWasActivated = -1l;
                             if (resumeToState == Statistics.GAME_FLAG_HOT) {
                                 timeWhenTheFlagWasActivated = savePoint.getMessageEvent().getTimeWhenTheFlagWasActivated();
-                                logger.debug("flagactivate ist nun: " + Tools.formatLongTime(timeWhenTheFlagWasActivated));
+                                getLogger().debug("flagactivate ist nun: " + Tools.formatLongTime(timeWhenTheFlagWasActivated));
                             }
 
                             Main.getFrmTest().setRevertEvent(null);
@@ -354,6 +353,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
                         fireMessage(textMessageList, new GameEvent(this, gameEvent, running_match_id, gametimer, lastRemainingTime));
                         Main.getPinHandler().resume();
+
+                        Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, "1:on,500;off,500;on,500;off,500;on,500;off,500;on,2000;off,0");
 
                         String resume = resumeToState;
                         resumeToState = "null"; // das muss hier schon erledigt werden, sonst stolpere ich da beim nächsten Durchlauf drüber.
@@ -472,7 +473,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
                 if (gameEvent == Statistics.GAME_GOING_TO_RESUME) {
                     // um einen Countdown zu zeigen, bevor es weiter geht.
-                    // logger.debug("resuming in " + new DateTime(resumeInterval - (System.currentTimeMillis() - resumingSince), DateTimeZone.UTC).toString("mm:ss"));
+                    // getLogger().debug("resuming in " + new DateTime(resumeInterval - (System.currentTimeMillis() - resumingSince), DateTimeZone.UTC).toString("mm:ss"));
                     if (System.currentTimeMillis() - resumingSince >= resumeInterval) {
                         setGameEvent(Statistics.GAME_RESUMED);
                     } else {
@@ -482,7 +483,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread {
 
                 Thread.sleep(millispercycle);
             } catch (InterruptedException ie) {
-                logger.debug(this + " interrupted!");
+                getLogger().debug(this + " interrupted!");
             }
         }
     }

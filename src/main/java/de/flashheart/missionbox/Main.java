@@ -130,6 +130,7 @@ public class Main {
             sw.toString(); // stack trace as a string
             logger.fatal(e);
             logger.fatal(sw);
+            System.exit(0);
         });
 
 
