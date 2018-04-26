@@ -36,6 +36,8 @@ public class Statistics implements HasLogger {
     public static final String GAME_FLAG_ACTIVE = "FLAGACTV";
     public static final String GAME_FLAG_COLD = "FLAGCOLD";
     public static final String GAME_FLAG_HOT = "FLAG_HOT";
+    public static final String GAME_SUDDEN_DEATH = "SDDNDEATH";
+    public static final String GAME_OVERTIME = "OVRTIME";
     public static final String GAME_OUTCOME_FLAG_TAKEN = "FLAGTAKN";
     public static final String GAME_OUTCOME_FLAG_DEFENDED = "FLAGDFND";
     public static final String GAME_GOING_TO_PAUSE = "GNGPAUSE";
@@ -50,7 +52,7 @@ public class Statistics implements HasLogger {
 
     private boolean bombfused;
     private long remainingTime;
-    private long captureTime, maxgametime;
+    private long captureTime, maxgametime, gametime;
 
     public Statistics() {
         stackEvents = new Stack<>();
@@ -61,6 +63,8 @@ public class Statistics implements HasLogger {
         endOfGame = null;
         bombfused = false;
 
+
+        gametime = 0l;
         remainingTime = 0l;
         captureTime = 0l;
         maxgametime = 0l;
@@ -71,6 +75,7 @@ public class Statistics implements HasLogger {
 
     public void updateTimers(GameEvent gameEvent) {
         this.remainingTime = gameEvent.getRemaining();
+        this.gametime = gameEvent.getGametime();
     }
 
     /**
@@ -88,6 +93,7 @@ public class Statistics implements HasLogger {
         this.captureTime = ((FC1GameEvent) gameEvent).getCapturetime();
         this.maxgametime = ((FC1GameEvent) gameEvent).getMaxgametime();
         this.remainingTime = gameEvent.getRemaining();
+        this.gametime = gameEvent.getGametime();
 
         stackEvents.push(gameEvent);
 
@@ -108,8 +114,6 @@ public class Statistics implements HasLogger {
 
 
     private String toPHP() {
-
-
         final StringBuilder php = new StringBuilder();
         php.append("<?php\n");
 
@@ -129,8 +133,10 @@ public class Statistics implements HasLogger {
         php.append("$game['remaining'] = '" + Tools.formatLongTime(remainingTime, "HH:mm:ss") + "';\n");
         php.append("$game['capturetime'] = '" + Tools.formatLongTime(captureTime, "HH:mm:ss") + "';\n");
         php.append("$game['maxgametime'] = '" + Tools.formatLongTime(maxgametime, "HH:mm:ss") + "';\n");
+        php.append("$game['gametime'] = '" + Tools.formatLongTime(gametime, "HH:mm:ss") + "';\n");
         // ist eigentlich überflüssig. macht aber den PHP code leichter.
         php.append("$game['winner'] = '" + (endOfGame == null ? "notdecidedyet" : (bombfused ? "attacker" : "defender")) + "';\n");
+        php.append("$game['overtime'] = '" + (gametime > maxgametime  ? Tools.formatLongTime(gametime - maxgametime, "HH:mm:ss") : "--") + "';\n");
 
         php.append("$game['events'] = [\n");
         for (GameEvent event : stackEvents) {

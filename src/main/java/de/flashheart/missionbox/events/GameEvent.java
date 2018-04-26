@@ -23,6 +23,9 @@ public class GameEvent extends EventObject {
         this(source, new DateTime(), event, matchid, gametime, remaining);
     }
 
+    public GameEvent(GameEvent gameEvent, String event) {
+            this(gameEvent.getSource(), new DateTime(), event, gameEvent.getMatchid(), gameEvent.getGametime(), gameEvent.getRemaining());
+        }
 
     public GameEvent(Object source, DateTime pit, String event, int matchid, long gametime, long remaining) {
         super(source);

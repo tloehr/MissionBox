@@ -205,6 +205,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
 
                 if (overtime.get()) {
                     message += "<h2> OVERTIME: " + Tools.formatLongTime(((FC1GameEvent) messageEvent).getOvertime(), "mm:ss") + "</h2>";
+//                    lastStatsSent = statistics.addEvent(new GameEvent(messageEvent, Statistics.GAME_OVERTIME));
                 }
 
 
@@ -276,7 +277,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
         };
 
         MessageListener gameModeListener = messageEvent -> {
-            if (messageEvent.getEvent() != Statistics.GAME_PRE_GAME ) lastStatsSent = statistics.addEvent(messageEvent);
+            if (messageEvent.getEvent() != Statistics.GAME_PRE_GAME) lastStatsSent = statistics.addEvent(messageEvent);
 
             if (messageEvent.getEvent() == Statistics.GAME_RESUMED) {
                 gameJustResumed = true;
@@ -434,7 +435,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()));
                 if (overtime.get()) {
                     message += "<h2>SUDDEN DEATH (Overtime)</h2>";
-                    // lastStatsSent = statistics.addEvent(new GameEvent(this, Statistics.SUD));
+//                    lastStatsSent = statistics.addEvent(new GameEvent(messageEvent, Statistics.GAME_SUDDEN_DEATH));
                 }
 
                 Main.getFrmTest().setMessage(message);
