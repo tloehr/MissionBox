@@ -67,14 +67,14 @@ public class MessageProcessor extends Thread implements HasLogger {
                     if (!messageQ.isEmpty()) {
                         PHPMessage myMessage = messageQ.pop();
 
-                        boolean move2archive = myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_ABORTED ||
-                                myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_OVER ||
-                                myMessage.getGameEvent().getEvent() == Statistics.GAME_OUTCOME_FLAG_TAKEN ||
-                                myMessage.getGameEvent().getEvent() == Statistics.GAME_OUTCOME_FLAG_DEFENDED;
-                        getLogger().debug("run() move2archive=" + move2archive);
+//                        boolean move2archive = myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_ABORTED ||
+//                                myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_OVER ||
+//                                myMessage.getGameEvent().getEvent() == Statistics.GAME_OUTCOME_FLAG_TAKEN ||
+//                                myMessage.getGameEvent().getEvent() == Statistics.GAME_OUTCOME_FLAG_DEFENDED;
+//                        getLogger().debug("run() move2archive=" + move2archive);
+//
 
-
-                        boolean successful = FTPWrapper.upload(myMessage.getPhp(), move2archive);
+                        boolean successful = FTPWrapper.upload(myMessage.getPhp(), false);
                         messageQ.clear(); // nur die letzte Nachricht ist wichtig
                         fireChangeEvent(new StatsSentEvent(this, myMessage.getGameEvent(), successful));
                     }
