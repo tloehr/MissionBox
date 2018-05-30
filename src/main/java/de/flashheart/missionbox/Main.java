@@ -1,25 +1,27 @@
 package de.flashheart.missionbox;
 
-import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.i2c.I2CFactory;
-import de.flashheart.missionbox.gamemodes.Farcry1Assault;
 import de.flashheart.missionbox.gamemodes.FC1SavePoint;
-import de.flashheart.missionbox.gamemodes.GameMode;
+import de.flashheart.missionbox.gamemodes.Farcry1Assault;
+import de.flashheart.missionbox.gui.FrmTest;
 import de.flashheart.missionbox.hardware.abstraction.MyAbstractButton;
 import de.flashheart.missionbox.hardware.abstraction.MyPin;
-import de.flashheart.missionbox.progresshandlers.ProgressInterface;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.Tools;
-import de.flashheart.missionbox.threads.MessageProcessor;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import de.flashheart.missionbox.progresshandlers.ProgressInterface;
 import de.flashheart.missionbox.progresshandlers.RelayProgressRedYellowGreen;
 import de.flashheart.missionbox.progresshandlers.TickingSlowAndSilent;
+import de.flashheart.missionbox.threads.MessageProcessor;
 import de.flashheart.missionbox.threads.PinHandler;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
-import de.flashheart.missionbox.gui.FrmTest;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -137,7 +139,9 @@ public class Main {
         pinHandler = new PinHandler();
         configs = new Configs();
 
-        logger.info("MissionBox " + Main.getConfigs().getApplicationInfo("my.version") + " [" + Main.getConfigs().getApplicationInfo("project.build.timestamp") + "]");
+        String title = "MissionBox " + Main.getConfigs().getApplicationInfo("my.version") + "." + Main.getConfigs().getApplicationInfo("buildNumber") + " [" + Main.getConfigs().getApplicationInfo("project.build.timestamp") + "]";
+
+        logger.info(title);
 
 
         if (Long.parseLong(configs.get(Configs.MIN_STAT_SEND_TIME)) > 0) {
@@ -176,6 +180,24 @@ public class Main {
         frmTest.setVisible(true);
         if (Tools.isArm()) frmTest.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+
+    }
+
+
+    public static final void main(String[] args) throws Exception {
+
+        initBaseSystem();
+        initDebugFrame();
+        initRaspi();
+        initButtons();
+        initPinHandler();
+        initProgressSystem();
+        initGameSystem();
+
+
+    }
+
+    private static void initButtons() {
         /***
          *      ____        _   _
          *     | __ ) _   _| |_| |_ ___  _ __  ___
@@ -194,19 +216,6 @@ public class Main {
             Main.shutdownEverything();
             System.exit(0);
         });
-    }
-
-
-    public static final void main(String[] args) throws Exception {
-
-        initBaseSystem();
-        initDebugFrame();
-        initRaspi();
-        initPinHandler();
-        initProgressSystem();
-        initGameSystem();
-
-
     }
 
     private static void initProgressSystem() {

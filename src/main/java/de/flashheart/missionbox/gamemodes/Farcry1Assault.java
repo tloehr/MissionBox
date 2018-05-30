@@ -378,12 +378,12 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_RED, "∞:on,1000;off,1000");
                 Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_GREEN, "∞:on,1000;off,1000");
 
-                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_RED, "∞:on,350;off,0;on,0;off,350;on,0;off,350;on,0;off,3000");
-                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_YELLOW, "∞:on,0;off,350;on,350;off,0;on,0;off,350;on,0;off,3000");
-                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_GREEN, "∞:on,0;off,350;on,0;off,350;on,350;off,0;on,0;off,3000");
-                Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_RED, "∞:on,350;off,0;on,0;off,350;on,0;off,350;on,0;off,3000");
-                Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_YELLOW, "∞:on,0;off,350;on,350;off,0;on,0;off,350;on,0;off,3000");
-                Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:on,0;off,350;on,0;off,350;on,350;off,0;on,0;off,3000");
+                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_RED, "∞:on,350;off,3700");
+                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_YELLOW, "∞:off,350;on,350;off,3350");
+                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_GREEN, "∞:off,700;on,350;off,3000");
+                Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_RED, "∞:on,350;off,3700");
+                Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_YELLOW, "∞:off,350;on,350;off,3350");
+                Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:off,700;on,350;off,3000");
 
                 statistics.reset();
                 lastMinuteAnnounced = false;
