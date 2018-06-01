@@ -50,6 +50,7 @@ public class Statistics implements HasLogger {
     private int matchid;
     private DateTime endOfGame = null;
 
+    private long min_stat_send_time;
     private boolean bombfused;
     private long remainingTime;
     private long captureTime, maxgametime, gametime;
@@ -60,6 +61,7 @@ public class Statistics implements HasLogger {
     }
 
     public void reset() {
+        min_stat_send_time = Long.parseLong(Main.getConfigs().get(Configs.MIN_STAT_SEND_TIME));
         endOfGame = null;
         bombfused = false;
 
@@ -83,7 +85,7 @@ public class Statistics implements HasLogger {
      */
     public void sendStats() {
         getLogger().debug("sendStats()\n" + toPHP());
-        if (Main.getMessageProcessor() != null)
+        if (min_stat_send_time > 0)
             Main.getMessageProcessor().pushMessage(new PHPMessage(toPHP(), stackEvents.peek()));
     }
 
@@ -136,7 +138,7 @@ public class Statistics implements HasLogger {
         php.append("$game['gametime'] = '" + Tools.formatLongTime(gametime, "HH:mm:ss") + "';\n");
         // ist eigentlich überflüssig. macht aber den PHP code leichter.
         php.append("$game['winner'] = '" + (endOfGame == null ? "notdecidedyet" : (bombfused ? "attacker" : "defender")) + "';\n");
-        php.append("$game['overtime'] = '" + (gametime > maxgametime  ? Tools.formatLongTime(gametime - maxgametime, "HH:mm:ss") : "--") + "';\n");
+        php.append("$game['overtime'] = '" + (gametime > maxgametime ? Tools.formatLongTime(gametime - maxgametime, "HH:mm:ss") : "--") + "';\n");
 
         php.append("$game['events'] = [\n");
         for (GameEvent event : stackEvents) {

@@ -1,5 +1,6 @@
 package de.flashheart.missionbox.threads;
 
+import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.PHPMessage;
 import de.flashheart.missionbox.events.Statistics;
 import de.flashheart.missionbox.events.StatsSentEvent;
@@ -50,9 +51,9 @@ public class MessageProcessor extends Thread implements HasLogger {
     }
 
     public void pushMessage(PHPMessage message) {
+        if (lock.isLocked()) return;
         lock.lock();
         try {
-//            getLogger().debug("pushMessage() pushing " + message.toString());
             messageQ.push(message);
         } finally {
             lock.unlock();
@@ -67,16 +68,9 @@ public class MessageProcessor extends Thread implements HasLogger {
                     if (!messageQ.isEmpty()) {
                         PHPMessage myMessage = messageQ.pop();
 
-//                        boolean move2archive = myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_ABORTED ||
-//                                myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_OVER ||
-//                                myMessage.getGameEvent().getEvent() == Statistics.GAME_OUTCOME_FLAG_TAKEN ||
-//                                myMessage.getGameEvent().getEvent() == Statistics.GAME_OUTCOME_FLAG_DEFENDED;
-//                        getLogger().debug("run() move2archive=" + move2archive);
-//
-
-                        boolean successful = FTPWrapper.upload(myMessage.getPhp(), false);
+                        Main.getFtpWrapper().upload(myMessage.getPhp(), false);
                         messageQ.clear(); // nur die letzte Nachricht ist wichtig
-                        fireChangeEvent(new StatsSentEvent(this, myMessage.getGameEvent(), successful));
+                        fireChangeEvent(new StatsSentEvent(this, myMessage.getGameEvent(), Main.getFtpWrapper().isFTPWorking()));
                     }
                 } finally {
                     lock.unlock();
@@ -84,8 +78,6 @@ public class MessageProcessor extends Thread implements HasLogger {
                 Thread.sleep(500); // Millisekunden
             } catch (InterruptedException ie) {
                 interrupted = true;
-            } catch (IOException io) {
-                getLogger().error(io);
             }
         }
     }

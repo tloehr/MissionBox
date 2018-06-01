@@ -417,7 +417,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     private void btnTestFTPActionPerformed(ActionEvent e) {
-        FTPWrapper.testFTP(txtFTPlog, btnTestFTP);
+        Main.getFtpWrapper().testFTP(txtFTPlog, btnTestFTP);
     }
 
 

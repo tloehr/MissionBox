@@ -11,6 +11,7 @@ import de.flashheart.missionbox.gui.FrmTest;
 import de.flashheart.missionbox.hardware.abstraction.MyAbstractButton;
 import de.flashheart.missionbox.hardware.abstraction.MyPin;
 import de.flashheart.missionbox.misc.Configs;
+import de.flashheart.missionbox.misc.FTPWrapper;
 import de.flashheart.missionbox.misc.Tools;
 import de.flashheart.missionbox.progresshandlers.ProgressInterface;
 import de.flashheart.missionbox.progresshandlers.RelayProgressRedYellowGreen;
@@ -72,7 +73,7 @@ public class Main {
     public static final Pin PIN_BTN_GREEN = RaspiPin.GPIO_16;
     public static final Pin PIN_BTN_START_STOP = RaspiPin.GPIO_01;
     public static final Pin PIN_BTN_PAUSE = RaspiPin.GPIO_04;
-
+    private static FTPWrapper ftpWrapper;
 
     public static final int DEBOUNCE = 200; //ms
 
@@ -100,6 +101,10 @@ public class Main {
 
     private static PinHandler pinHandler = null;
 
+
+    public static FTPWrapper getFtpWrapper() {
+        return ftpWrapper;
+    }
 
     private static void initBaseSystem() throws IOException {
         Tools.printProgBar(startup_progress);
@@ -140,14 +145,14 @@ public class Main {
         configs = new Configs();
 
         String title = "MissionBox " + Main.getConfigs().getApplicationInfo("my.version") + "." + Main.getConfigs().getApplicationInfo("buildNumber") + " [" + Main.getConfigs().getApplicationInfo("project.build.timestamp") + "]";
+        ftpWrapper = new FTPWrapper();
 
         logger.info(title);
 
 
-        if (Long.parseLong(configs.get(Configs.MIN_STAT_SEND_TIME)) > 0) {
-            messageProcessor = new MessageProcessor();
-            messageProcessor.start();
-        }
+        messageProcessor = new MessageProcessor();
+        messageProcessor.start();
+
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
@@ -185,7 +190,6 @@ public class Main {
 
 
     public static final void main(String[] args) throws Exception {
-
         initBaseSystem();
         initDebugFrame();
         initRaspi();
@@ -193,8 +197,6 @@ public class Main {
         initPinHandler();
         initProgressSystem();
         initGameSystem();
-
-
     }
 
     private static void initButtons() {
@@ -379,6 +381,7 @@ public class Main {
     }
 
     public static void shutdownEverything() {
+        ftpWrapper.cleanupStatsFile();
         pinHandler.off();
         if (GPIO != null) GPIO.shutdown();
     }

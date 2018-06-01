@@ -17,12 +17,11 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <exec.mainClass>de.flashheart.missionbox.Main</exec.mainClass>
 
-      
 
         <project.build.timestamp>${maven.build.timestamp}</project.build.timestamp>
-        
+
         <my.version>${project.version}</my.version>
-        
+
     </properties>
 
     <dependencies>
@@ -47,12 +46,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.7</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>3.4</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
@@ -86,14 +79,19 @@
             <artifactId>properties-maven-plugin</artifactId>
             <version>1.0.0</version>
             <type>maven-plugin</type>
-
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant-jsch</artifactId>
             <version>1.9.6</version>
-
         </dependency>
+        <!-- local libs -->
+        <dependency>
+            <groupId>com.enterprisedt</groupId>
+            <artifactId>edtFTPj</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
     </dependencies>
 
     <scm>
@@ -216,7 +214,7 @@
 
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>

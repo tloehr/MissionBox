@@ -1,85 +1,92 @@
 package de.flashheart.missionbox.misc;
 
-
+import com.enterprisedt.net.ftp.FTPClient;
+import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.enterprisedt.net.ftp.FTPException;
 import de.flashheart.missionbox.Main;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.log4j.Logger;
+import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.spi.LoggingEvent;
 import org.joda.time.DateTime;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-
 
 /**
  * FTP-Utility, basierend auf Apache FTPClient:
  * {@link "http://commons.apache.org/net/apidocs/org/apache/commons/net/ftp/FTPClient.html"}
  */
-public class FTPWrapper {
+public class FTPWrapper implements HasLogger {
     static final String SUBDIR = "missionbox";
 
-    /**
-     * FTP-Dateienliste.
-     *
-     * @return String-Array der Dateinamen auf dem FTP-Server
-     */
-    public static String[] list(String host, int port, String usr, String pwd) throws IOException {
-        FTPClient ftpClient = new FTPClient();
-        String[] filenameList;
+    private FTPClient ftp;
+    private boolean lastOperationSuccessful = false;
+    private String archivepath, activepath, remoteFile, uuid;
 
-        try {
-            ftpClient.connect(host, port);
-            ftpClient.login(usr, pwd);
-            filenameList = ftpClient.listNames();
-            ftpClient.logout();
-        } finally {
-            ftpClient.disconnect();
-        }
-
-        return filenameList;
+    public FTPWrapper() {
+        tryToInitFTP();
     }
 
-    /**
-     * FTP-Client-Download.
-     *
-     * @return true falls ok
-     */
-    public static boolean download(String localResultFile, String remoteSourceFile,
-                                   String host, int port, String usr, String pwd, boolean showMessages) throws IOException {
-        FTPClient ftpClient = new FTPClient();
-        FileOutputStream fos = null;
-        boolean resultOk = true;
-        Logger logger = Logger.getLogger(FTPWrapper.class);
-
-        try {
-            ftpClient.connect(host, port);
-            if (showMessages) {
-                logger.debug(ftpClient.getReplyString());
-            }
-            resultOk &= ftpClient.login(usr, pwd);
-            if (showMessages) {
-                logger.debug(ftpClient.getReplyString());
-            }
-            fos = new FileOutputStream(localResultFile);
-            resultOk &= ftpClient.retrieveFile(remoteSourceFile, fos);
-            if (showMessages) {
-                logger.debug(ftpClient.getReplyString());
-            }
-            resultOk &= ftpClient.logout();
-            if (showMessages) {
-                logger.debug(ftpClient.getReplyString());
-            }
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException e) {/* nothing to do */}
-            ftpClient.disconnect();
+    private void tryToInitFTP() {
+        if (!Main.getConfigs().isFTPComplete()) {
+            ftp = null;
+            return;
         }
+        ftp = new FTPClient();
+        try {
+            ftp.setRemoteHost(Main.getConfigs().get(Configs.FTPHOST));
+            ftp.setRemotePort(Integer.parseInt(Main.getConfigs().get(Configs.FTPPORT)));
+            ftp.setTimeout(3000);
+            ftp.connect();
+            ftp.login(Main.getConfigs().get(Configs.FTPUSER), Main.getConfigs().get(Configs.FTPPWD));
+            getLogger().debug(ftp.getLastReply().getReplyText());
+            ftp.setConnectMode(FTPConnectMode.PASV);
+            if (!Main.getConfigs().get(Configs.FTPREMOTEPATH).isEmpty()) {
+                ftp.chdir(Configs.FTPREMOTEPATH);
+            }
 
-        return resultOk;
+            uuid = Main.getConfigs().get(Configs.MYUUID);
+
+
+            archivepath = SUBDIR + "/" + "archive";
+            activepath = SUBDIR + "/" + "active";
+            remoteFile = activepath + "/" + uuid + ".php";
+
+            setupFTPDirStructure();
+            ftp.quit();
+        } catch (Exception e) {
+            getLogger().error(e);
+            e.printStackTrace();
+            ftp = null;
+        }
+    }
+
+    public boolean isFTPWorking() {
+        return ftp != null;
+    }
+
+    private boolean connect() {
+        if (ftp == null) return false;
+        try {
+            ftp.connect();
+            ftp.login(Main.getConfigs().get(Configs.FTPUSER), Main.getConfigs().get(Configs.FTPPWD));
+            getLogger().debug(ftp.getLastReply().getReplyText());
+            ftp.setConnectMode(FTPConnectMode.PASV);
+            if (!Main.getConfigs().get(Configs.FTPREMOTEPATH).isEmpty()) {
+                ftp.chdir(Configs.FTPREMOTEPATH);
+                getLogger().debug(ftp.getLastReply().getReplyText());
+            }
+        } catch (Exception e) {
+            getLogger().error(e);
+            e.printStackTrace();
+            ftp = null; // einmal gefailed. Dann Ende mit FTP für diesen Programmlauf.
+        }
+        return ftp != null;
     }
 
     /**
@@ -87,190 +94,117 @@ public class FTPWrapper {
      *
      * @return true falls ok
      */
-    public static boolean upload(String content, boolean move2archive) throws IOException {
-
-        FTPClient ftpClient = new FTPClient();
-
-        if (!Main.getConfigs().isFTPComplete()) return false;
-
-        String host = Main.getConfigs().get(Configs.FTPHOST);
-        int port = Integer.parseInt(Main.getConfigs().get(Configs.FTPPORT));
-        String usr = Main.getConfigs().get(Configs.FTPUSER);
-        String pwd = Main.getConfigs().get(Configs.FTPPWD);
-        String remotepath = Main.getConfigs().get(Configs.FTPREMOTEPATH);
-        String uuid = Main.getConfigs().get(Configs.MYUUID);
-
-        String activeFile = remotepath + "/" + SUBDIR + "/active/" + uuid + ".php";
-
-        boolean resultOk = true;
-        Logger logger = Logger.getLogger(FTPWrapper.class);
-
-
-        File tempPHPFile = File.createTempFile(SUBDIR, ".php");
-        tempPHPFile.deleteOnExit();
-        FileUtils.writeStringToFile(tempPHPFile, content, "UTF-8");
-
-        FileInputStream fis = null;
-
+    public void upload(String content, boolean move2archive) {
+        if (!connect()) return;
 
         try {
-            ftpClient.connect(host, port);
-
-            logger.debug(ftpClient.getReplyString());
-
-            resultOk &= ftpClient.login(usr, pwd);
-
-            logger.debug(ftpClient.getReplyString());
-
-            fis = new FileInputStream(tempPHPFile);
-
-            if (move2archive) {
-                DateTime now = new DateTime();
-                String archivefile = remotepath + "/" + SUBDIR + "/archive/" + now.toString("yyyyMMddHHmmss") + "-" + uuid + ".php";
-                resultOk &= ftpClient.storeFile(archivefile, fis);
-                ftpClient.deleteFile(activeFile); // egal ob es eine gab oder nicht
-            } else {
-                resultOk &= ftpClient.storeFile(activeFile, fis);
-                logger.debug("Uploading file to :" + activeFile);
-            }
-
-            logger.debug(ftpClient.getReplyString());
-
-            resultOk &= ftpClient.logout();
-
-            logger.debug(ftpClient.getReplyString());
-
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (IOException e) {/* nothing to do */}
-            ftpClient.disconnect();
+            File tempPHPFile = File.createTempFile("ocfflag", ".php");
+            tempPHPFile.deleteOnExit();
+            FileUtils.writeStringToFile(tempPHPFile, content, "UTF-8");
+            upload(tempPHPFile.getPath(), remoteFile);
+            if (move2archive) move2archive();
+            ftp.quit();
+            getLogger().debug(ftp.getLastReply().getReplyText());
+        } catch (Exception e) {
+            getLogger().error(e);
+            e.printStackTrace();
+            ftp = null;
         }
+    }
 
-        return resultOk;
+    private void upload(String localFilename, String remoteFilename) throws IOException, FTPException {
+        ftp.put(localFilename, remoteFilename, false);
+        getLogger().debug("uploading " + remoteFilename + ": " + ftp.getLastReply().getReplyText());
     }
 
     /**
      * Richtet das FTP Verzeichnis ein.
      * Verschiebt evtl. kaputte oder abgeschlossene PHP Statistiken in das Archivverzeichnis.
      * Dabei benennt es die Datei um.
-     *
-     * @return true falls ok
      */
-    public static boolean initFTPDir() throws IOException {
-        FTPClient ftpClient = new FTPClient();
+    private void setupFTPDirStructure() throws Exception {
+        mkdir(SUBDIR);
+        mkdir(activepath);
+        mkdir(archivepath);
 
-        if (Long.parseLong(Main.getConfigs().get(Configs.MIN_STAT_SEND_TIME)) <= 0 || !Main.getConfigs().isFTPComplete())
-            return false;
-
-        String host = Main.getConfigs().get(Configs.FTPHOST);
-        int port = Integer.parseInt(Main.getConfigs().get(Configs.FTPPORT));
-        String usr = Main.getConfigs().get(Configs.FTPUSER);
-        String pwd = Main.getConfigs().get(Configs.FTPPWD);
-
-
-        boolean resultOk = true;
-        Logger logger = Logger.getLogger(FTPWrapper.class);
-
-        try {
-            ftpClient.connect(host, port);
-
-            logger.debug(ftpClient.getReplyString());
-
-            resultOk &= ftpClient.login(usr, pwd);
-
-            logger.debug(ftpClient.getReplyString());
-
-            if (resultOk) {
-                DateTime now = new DateTime();
-                String uuid = Main.getConfigs().get(Configs.MYUUID);
-
-
-                String remotepath = Main.getConfigs().get(Configs.FTPREMOTEPATH);
-
-                String archivepath = remotepath + "/" + SUBDIR + "/archive";
-                String activepath = remotepath + "/" + SUBDIR + "/active";
-
-                String remoteFile = activepath + "/" + uuid + ".php";
-
-                String localFile = Tools.getWorkingPath() + File.separator + uuid + ".php";
-
-                String archivefile = archivepath + "/" + now.toString("yyyyMMddHHmmss") + "-" + uuid + ".php";
-
-                // Verzeichnisse erstellen, wenn nötig
-                resultOk &= ftpClient.makeDirectory(remotepath);
-                resultOk &= ftpClient.makeDirectory(activepath);
-                resultOk &= ftpClient.makeDirectory(archivepath);
-
-                // Gibts noch eine aktive Statistik Datei ?
-                FileOutputStream fos = new FileOutputStream(localFile);
-                boolean remoteFileStillExisting = ftpClient.retrieveFile(remoteFile, fos);
-
-                if (remoteFileStillExisting) {
-                    fos.close();
-                    ftpClient.deleteFile(remoteFile);
-
-                    // ins Archiv verschieben
-                    FileInputStream fis = new FileInputStream(localFile);
-                    resultOk &= ftpClient.storeFile(archivefile, fis);
-
-                    logger.debug(archivefile + ": " + ftpClient.getReplyString());
-
-                    resultOk &= ftpClient.logout();
-                    logger.debug(ftpClient.getReplyString());
-                }
-            }
-        } finally {
-            ftpClient.disconnect();
-        }
-
-        return resultOk;
     }
 
-    public static boolean testFTP(JTextArea outputArea, JButton buttonToDisable) {
+    public void cleanupStatsFile() {
+        if (!connect()) return;
+        try {
+            move2archive();
+            ftp.quit();
+            getLogger().debug(ftp.getLastReply().getReplyText());
+        } catch (Exception e) {
+            getLogger().error(e);
+            e.printStackTrace();
+            ftp = null;
+        }
+    }
 
+    /**
+     * Gibts noch eine aktive Statistik Datei ? Dann ins Archiv damit.
+     */
+    private void move2archive() throws IOException, FTPException {
+        String archivefile = archivepath + "/" + new DateTime().toString("yyyyMMddHHmmss") + "-" + uuid + ".php";
+        move(remoteFile, archivefile);
+    }
+
+    /**
+     * Das FTP Protokoll kennt kein Move. Daher habe ich hier eins nachgebaut.
+     *
+     * @param source
+     * @param target
+     * @return
+     */
+    private void move(String source, String target) throws IOException, FTPException {
+        if (ftp.existsFile(source)) {
+            File tmpFile = File.createTempFile("ocfflag", ".php");
+            tmpFile.deleteOnExit();
+            ftp.get(tmpFile.getPath(), source);
+            ftp.put(tmpFile.getPath(), target);
+            ftp.delete(source);
+            getLogger().debug("moving " + source + " to " + target);
+        }
+    }
+
+    /**
+     * erstellt ein Verzeichnis, sofern es das noch nicht gibt.
+     *
+     * @param dirname
+     * @return true bei Erfolg
+     */
+    public void mkdir(String dirname) throws IOException, FTPException {
+        if (!ftp.existsDirectory(dirname)) {
+            ftp.mkdir(dirname);
+            getLogger().debug("mkdir " + dirname + ": " + ftp.getLastReply().getReplyText());
+        }
+    }
+
+    public void testFTP(JTextArea outputArea, JButton buttonToDisable) {
         if (!Main.getConfigs().isFTPComplete()) {
             outputArea.append("FTP Verbindungsdaten unvollständig\n");
-            return false;
+            return;
         }
-
         buttonToDisable.setEnabled(false);
-
-        // das funktioniert noch nicht
-        boolean ftps = false;//(Main.getConfigs().get(Configs.FTPS).equalsIgnoreCase("true"));
-        FTPClient ftpClient = new FTPClient(); //ftps ? new FTPSClient() : new FTPClient();
-
-        String host = Main.getConfigs().get(Configs.FTPHOST);
-        int port = Integer.parseInt(Main.getConfigs().get(Configs.FTPPORT));
-        String usr = Main.getConfigs().get(Configs.FTPUSER);
-        String pwd = Main.getConfigs().get(Configs.FTPPWD);
-        String uuid = Main.getConfigs().get(Configs.MYUUID);
-        Logger logger = Logger.getLogger(FTPWrapper.class);
-
-        boolean success = false;
+        final Appender myAppender = new StatusMessageAppender(outputArea);
+        getLogger().addAppender(myAppender);
+        tryToInitFTP();
+        if (!connect()) {
+            outputArea.append("Server reagiert nicht\n");
+            buttonToDisable.setEnabled(true);
+            return;
+        }
 
         SwingWorker<Boolean, Boolean> worker = new SwingWorker<Boolean, Boolean>() {
             @Override
             protected Boolean doInBackground() throws IOException {
                 boolean resultOk = true;
-                String line = "";
 
                 try {
-                    ftpClient.connect(host, port);
-
-                    line = ftpClient.getReplyString();
-                    logger.debug(line);
-                    outputArea.append(line);
-
-                    resultOk &= ftpClient.login(usr, pwd);
-                    line = ftpClient.getReplyString();
-                    logger.debug(line);
-                    outputArea.append(line);
 
                     // creating a testfile for the ftp test
-                    File file = File.createTempFile(SUBDIR, ".txt");
+                    File file = File.createTempFile("ocfflag", ".txt");
                     file.createNewFile();
                     FileWriter writer = new FileWriter(file);
 
@@ -287,22 +221,20 @@ public class FTPWrapper {
                     file.deleteOnExit();
 
                     // upload
-                    FileInputStream fis = new FileInputStream(file);
-                    resultOk &= ftpClient.storeFile("ftptest-" + uuid, fis);
-                    line = ftpClient.getReplyString();
-                    logger.debug(line);
-                    outputArea.append(line);
-
-                    ftpClient.deleteFile("ftptest-" + uuid);
-
-
+                    String rfile = "ocfflagtest-" + uuid;
+                    upload(file.getPath(), rfile);
+                    ftp.delete(rfile);
+                    getLogger().debug(ftp.getLastReply().getReplyText());
+                    ftp.quit();
+                    getLogger().debug(rfile + ": " + ftp.getLastReply().getReplyText());
                 } catch (Exception ftpEx) {
-                    logger.error(ftpEx);
+                    getLogger().error(ftpEx);
                     outputArea.append(ftpEx.toString() + "\n");
                     resultOk = false;
                 } finally {
-                    ftpClient.disconnect();
+                    getLogger().removeAppender(myAppender);
                 }
+
                 return resultOk;
             }
 
@@ -312,15 +244,40 @@ public class FTPWrapper {
                     buttonToDisable.setEnabled(true);
                     outputArea.append(get() ? "FTP funktioniert\n" : "FEHLER IN FTP\n");
                 } catch (InterruptedException e) {
-                    logger.debug(e);
+                    getLogger().debug(e);
                 } catch (ExecutionException e) {
-                    logger.fatal(logger, e);
+                    getLogger().fatal(e);
                 }
             }
         };
 
         worker.execute();
-        return true;
+
+    }
+
+
+    private class StatusMessageAppender extends AppenderSkeleton {
+        private final JTextArea jTextA;
+        private PatternLayout defaultPatternLayout = new PatternLayout("%d{ISO8601} %-5p: %m%n");
+
+        public StatusMessageAppender(JTextArea jTextA) {
+            this.jTextA = jTextA;
+        }
+
+        @Override
+        protected void append(LoggingEvent event) {
+            jTextA.append(defaultPatternLayout.format(event));
+        }
+
+
+        @Override
+        public void close() {
+        }
+
+        @Override
+        public boolean requiresLayout() {
+            return true;
+        }
     }
 
 }

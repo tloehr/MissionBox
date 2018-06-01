@@ -386,19 +386,13 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:off,700;on,350;off,3000");
 
                 statistics.reset();
+                Main.getFtpWrapper().cleanupStatsFile();
                 lastMinuteAnnounced = false;
                 lastAnnouncedMinute = -1;
                 lastAnnouncedSecond = -1;
                 coldcountdownrunning.set(false);
                 hotcountdownrunning.set(false);
                 overtime.set(false);
-
-                try {
-                    FTPWrapper.initFTPDir();
-                } catch (IOException e) {
-                    getLogger().error(e);
-                }
-
 
             } else if (messageEvent.getEvent() == Statistics.GAME_OUTCOME_FLAG_DEFENDED) {
                 /***
