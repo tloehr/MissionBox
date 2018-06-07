@@ -1,4 +1,6 @@
-package de.flashheart.missionbox.events;
+package de.flashheart.missionbox.statistics;
+
+import de.flashheart.missionbox.events.GameEvent;
 
 public class PHPMessage {
     String php;

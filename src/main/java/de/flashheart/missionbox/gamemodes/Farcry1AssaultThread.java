@@ -4,7 +4,7 @@ import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.events.GameEvent;
 import de.flashheart.missionbox.events.MessageListener;
-import de.flashheart.missionbox.events.Statistics;
+import de.flashheart.missionbox.statistics.Statistics;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;

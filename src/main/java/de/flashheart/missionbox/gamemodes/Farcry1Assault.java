@@ -4,11 +4,9 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
-import de.flashheart.missionbox.events.GameEvent;
 import de.flashheart.missionbox.events.MessageListener;
-import de.flashheart.missionbox.events.Statistics;
+import de.flashheart.missionbox.statistics.Statistics;
 import de.flashheart.missionbox.misc.Configs;
-import de.flashheart.missionbox.misc.FTPWrapper;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -386,7 +384,6 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:off,700;on,350;off,3000");
 
                 statistics.reset();
-                Main.getFtpWrapper().cleanupStatsFile();
                 lastMinuteAnnounced = false;
                 lastAnnouncedMinute = -1;
                 lastAnnouncedSecond = -1;

@@ -11,12 +11,11 @@ import de.flashheart.missionbox.gui.FrmTest;
 import de.flashheart.missionbox.hardware.abstraction.MyAbstractButton;
 import de.flashheart.missionbox.hardware.abstraction.MyPin;
 import de.flashheart.missionbox.misc.Configs;
-import de.flashheart.missionbox.misc.FTPWrapper;
 import de.flashheart.missionbox.misc.Tools;
 import de.flashheart.missionbox.progresshandlers.ProgressInterface;
 import de.flashheart.missionbox.progresshandlers.RelayProgressRedYellowGreen;
 import de.flashheart.missionbox.progresshandlers.TickingSlowAndSilent;
-import de.flashheart.missionbox.threads.MessageProcessor;
+import de.flashheart.missionbox.statistics.MessageProcessor;
 import de.flashheart.missionbox.threads.PinHandler;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -73,7 +72,6 @@ public class Main {
     public static final Pin PIN_BTN_GREEN = RaspiPin.GPIO_16;
     public static final Pin PIN_BTN_START_STOP = RaspiPin.GPIO_01;
     public static final Pin PIN_BTN_PAUSE = RaspiPin.GPIO_04;
-    private static FTPWrapper ftpWrapper;
 
     public static final int DEBOUNCE = 200; //ms
 
@@ -102,10 +100,6 @@ public class Main {
     private static PinHandler pinHandler = null;
 
 
-    public static FTPWrapper getFtpWrapper() {
-        return ftpWrapper;
-    }
-
     private static void initBaseSystem() throws IOException {
         Tools.printProgBar(startup_progress);
 
@@ -121,14 +115,6 @@ public class Main {
                 " |____/ |_/_/   \\_\\_| \\_\\|_| |___|_| \\_|\\____| |_|  |_|_|___/___/_|\\___/|_| |_|____/ \\___/_/\\_\\\n" +
                 "                                                                                               ");
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            pinHandler.off();
-            if (messageProcessor != null) messageProcessor.interrupt();
-            if (GPIO != null) {
-
-
-            }
-        }));
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             StringWriter sw = new StringWriter();
@@ -145,8 +131,6 @@ public class Main {
         configs = new Configs();
 
         String title = "MissionBox " + Main.getConfigs().getApplicationInfo("my.version") + "." + Main.getConfigs().getApplicationInfo("buildNumber") + " [" + Main.getConfigs().getApplicationInfo("project.build.timestamp") + "]";
-        ftpWrapper = new FTPWrapper();
-
         logger.info(title);
 
 
@@ -158,6 +142,8 @@ public class Main {
             public void run() {
 
                 pinHandler.off();
+                messageProcessor.interrupt();
+                if (GPIO != null) GPIO.shutdown();
                 logger.info("\n" +
                         "  _____ _   _ ____     ___  _____   __  __ _         _             ____            \n" +
                         " | ____| \\ | |  _ \\   / _ \\|  ___| |  \\/  (_)___ ___(_) ___  _ __ | __ )  _____  __\n" +
@@ -215,7 +201,6 @@ public class Main {
         btnQuit = frmTest.getBtn2();
 
         btnQuit.addActionListener(e -> {
-            Main.shutdownEverything();
             System.exit(0);
         });
     }
@@ -378,12 +363,6 @@ public class Main {
 
     public static ProgressInterface getRelaisSirens() {
         return relaisSirens;
-    }
-
-    public static void shutdownEverything() {
-        ftpWrapper.cleanupStatsFile();
-        pinHandler.off();
-        if (GPIO != null) GPIO.shutdown();
     }
 
     public static Configs getConfigs() {

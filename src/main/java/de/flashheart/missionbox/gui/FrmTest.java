@@ -12,7 +12,6 @@ import de.flashheart.missionbox.gamemodes.FC1SavePoint;
 import de.flashheart.missionbox.events.GameEventListener;
 
 import de.flashheart.missionbox.misc.Configs;
-import de.flashheart.missionbox.misc.FTPWrapper;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.log4j.Logger;
 
@@ -417,7 +416,7 @@ public class FrmTest extends JFrame implements GameEventListener {
     }
 
     private void btnTestFTPActionPerformed(ActionEvent e) {
-        Main.getFtpWrapper().testFTP(txtFTPlog, btnTestFTP);
+        Main.getMessageProcessor().testFTP(txtFTPlog, btnTestFTP);
     }
 
 

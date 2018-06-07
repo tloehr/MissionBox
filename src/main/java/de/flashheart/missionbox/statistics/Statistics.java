@@ -1,6 +1,8 @@
-package de.flashheart.missionbox.events;
+package de.flashheart.missionbox.statistics;
 
 import de.flashheart.missionbox.Main;
+import de.flashheart.missionbox.events.FC1GameEvent;
+import de.flashheart.missionbox.events.GameEvent;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
@@ -44,6 +46,7 @@ public class Statistics implements HasLogger {
     public static final String GAME_PAUSING = "PAUSING"; // Box pausiert
     public static final String GAME_GOING_TO_RESUME = "GNGRESUM";
     public static final String GAME_RESUMED = "RESUMED"; // unmittelbar vor der Spielwiederaufnahme
+    private final MessageProcessor messageProcessor;
 
 
     public Stack<GameEvent> stackEvents;
@@ -56,6 +59,7 @@ public class Statistics implements HasLogger {
     private long captureTime, maxgametime, gametime;
 
     public Statistics() {
+        messageProcessor = Main.getMessageProcessor();
         stackEvents = new Stack<>();
         reset();
     }
@@ -73,6 +77,7 @@ public class Statistics implements HasLogger {
 
         matchid = 0;
         stackEvents.clear();
+        messageProcessor.cleanupStatsFile();
     }
 
     public void updateTimers(GameEvent gameEvent) {
@@ -86,7 +91,7 @@ public class Statistics implements HasLogger {
     public void sendStats() {
         getLogger().debug("sendStats()\n" + toPHP());
         if (min_stat_send_time > 0)
-            Main.getMessageProcessor().pushMessage(new PHPMessage(toPHP(), stackEvents.peek()));
+            messageProcessor.pushMessage(new PHPMessage(toPHP(), stackEvents.peek()));
     }
 
     public long addEvent(GameEvent gameEvent) {

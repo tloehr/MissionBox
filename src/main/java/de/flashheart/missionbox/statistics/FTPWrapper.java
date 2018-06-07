@@ -1,11 +1,11 @@
-package de.flashheart.missionbox.misc;
-
+package de.flashheart.missionbox.statistics;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
 import de.flashheart.missionbox.Main;
+import de.flashheart.missionbox.misc.Configs;
+import de.flashheart.missionbox.misc.HasLogger;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
@@ -21,14 +21,17 @@ import java.util.concurrent.ExecutionException;
  * FTP-Utility, basierend auf Apache FTPClient:
  * {@link "http://commons.apache.org/net/apidocs/org/apache/commons/net/ftp/FTPClient.html"}
  */
-public class FTPWrapper implements HasLogger {
-    static final String SUBDIR = "missionbox";
+class FTPWrapper implements HasLogger {
+    private final String SUBDIR = "missionbox";
+    private final int MAX_ERROR_COUNT;
 
+    private StatusMessageAppender myAppender = null;
     private FTPClient ftp;
-    private boolean lastOperationSuccessful = false;
+    private int errorCount = 0;
     private String archivepath, activepath, remoteFile, uuid;
 
     public FTPWrapper() {
+        MAX_ERROR_COUNT = Main.getConfigs().getInt(Configs.FTPMAXERRORCOUNT);
         tryToInitFTP();
     }
 
@@ -59,10 +62,18 @@ public class FTPWrapper implements HasLogger {
 
             setupFTPDirStructure();
             ftp.quit();
+            errorCount = 0;
         } catch (Exception e) {
             getLogger().error(e);
             e.printStackTrace();
-            ftp = null;
+            errorCount++;
+            getLogger().warn("Try #" + errorCount + " out of " + MAX_ERROR_COUNT);
+        } finally {
+            if (errorCount >= MAX_ERROR_COUNT) {
+                ftp = null;
+                getLogger().warn("Did try to connect for " + errorCount + " times. Giving up.");
+            }
+
         }
     }
 
@@ -81,12 +92,19 @@ public class FTPWrapper implements HasLogger {
                 ftp.chdir(Configs.FTPREMOTEPATH);
                 getLogger().debug(ftp.getLastReply().getReplyText());
             }
+            errorCount = 0;
         } catch (Exception e) {
             getLogger().error(e);
             e.printStackTrace();
-            ftp = null; // einmal gefailed. Dann Ende mit FTP für diesen Programmlauf.
+            errorCount++;
+            getLogger().warn("Try #" + errorCount + " out of " + MAX_ERROR_COUNT);
+        } finally {
+            if (errorCount >= MAX_ERROR_COUNT) {
+                ftp = null;
+                getLogger().warn("Did try to connect for " + errorCount + " times. Giving up.");
+            }
         }
-        return ftp != null;
+        return errorCount == 0;
     }
 
     /**
@@ -94,8 +112,8 @@ public class FTPWrapper implements HasLogger {
      *
      * @return true falls ok
      */
-    public void upload(String content, boolean move2archive) {
-        if (!connect()) return;
+    public boolean upload(String content, boolean move2archive) {
+        if (!connect()) return false;
 
         try {
             File tempPHPFile = File.createTempFile("ocfflag", ".php");
@@ -104,12 +122,20 @@ public class FTPWrapper implements HasLogger {
             upload(tempPHPFile.getPath(), remoteFile);
             if (move2archive) move2archive();
             ftp.quit();
+            errorCount = 0;
             getLogger().debug(ftp.getLastReply().getReplyText());
         } catch (Exception e) {
             getLogger().error(e);
             e.printStackTrace();
-            ftp = null;
+            errorCount++;
+            getLogger().warn("Try #" + errorCount + " out of " + MAX_ERROR_COUNT);
+        } finally {
+            if (errorCount >= MAX_ERROR_COUNT) {
+                ftp = null;
+                getLogger().warn("Did try to connect for " + errorCount + " times. Giving up.");
+            }
         }
+        return ftp != null;
     }
 
     private void upload(String localFilename, String remoteFilename) throws IOException, FTPException {
@@ -134,11 +160,18 @@ public class FTPWrapper implements HasLogger {
         try {
             move2archive();
             ftp.quit();
+            errorCount = 0;
             getLogger().debug(ftp.getLastReply().getReplyText());
         } catch (Exception e) {
             getLogger().error(e);
             e.printStackTrace();
-            ftp = null;
+            errorCount++;
+            getLogger().warn("Try #" + errorCount + " out of " + MAX_ERROR_COUNT);
+        } finally {
+            if (errorCount >= MAX_ERROR_COUNT) {
+                ftp = null;
+                getLogger().warn("Did try to connect for " + errorCount + " times. Giving up.");
+            }
         }
     }
 
@@ -187,8 +220,12 @@ public class FTPWrapper implements HasLogger {
             return;
         }
         buttonToDisable.setEnabled(false);
-        final Appender myAppender = new StatusMessageAppender(outputArea);
-        getLogger().addAppender(myAppender);
+        // TODO: das hier wird nicht mehr korrekt entfernt.
+        if (myAppender == null) {
+            myAppender = new StatusMessageAppender(outputArea);
+            getLogger().addAppender(myAppender);
+        }
+        myAppender.setActive(true);
         tryToInitFTP();
         if (!connect()) {
             outputArea.append("Server reagiert nicht\n");
@@ -232,7 +269,7 @@ public class FTPWrapper implements HasLogger {
                     outputArea.append(ftpEx.toString() + "\n");
                     resultOk = false;
                 } finally {
-                    getLogger().removeAppender(myAppender);
+                    myAppender.setActive(false);
                 }
 
                 return resultOk;
@@ -259,6 +296,7 @@ public class FTPWrapper implements HasLogger {
     private class StatusMessageAppender extends AppenderSkeleton {
         private final JTextArea jTextA;
         private PatternLayout defaultPatternLayout = new PatternLayout("%d{ISO8601} %-5p: %m%n");
+        private boolean active;
 
         public StatusMessageAppender(JTextArea jTextA) {
             this.jTextA = jTextA;
@@ -266,12 +304,16 @@ public class FTPWrapper implements HasLogger {
 
         @Override
         protected void append(LoggingEvent event) {
-            jTextA.append(defaultPatternLayout.format(event));
+            if (active) jTextA.append(defaultPatternLayout.format(event));
         }
 
 
         @Override
         public void close() {
+        }
+
+        public void setActive(boolean active) {
+            this.active = active;
         }
 
         @Override
