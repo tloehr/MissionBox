@@ -5,10 +5,10 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.events.MessageListener;
-import de.flashheart.missionbox.statistics.Statistics;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
+import de.flashheart.missionbox.statistics.Statistics;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -121,7 +121,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 if (messageEvent.getEvent() == Statistics.GAME_FLAG_HOT || messageEvent.getEvent() == Statistics.GAME_FLAG_COLD) {
 
                     FC1GameEvent event = (FC1GameEvent) messageEvent;
-                    String respawnTimer = Tools.formatLongTime(event.getLastrespawn() + event.getRespawninterval() - event.getGametime(), "mm:ss");
+                    String respawnTimer = Tools.formatLongTime(event.getLastrespawn() + event.getRespawninterval() - event.getGametime(), "HH:mm:ss");
                     Main.setRespawnTimer(respawnTimer);
 //                    getLogger().debug(event.getLastrespawn() + ", " + event.getRespawninterval() + " , " + event.getGametimer());
                     if (event.getLastrespawn() + event.getRespawninterval() <= event.getGametime()) {
@@ -194,7 +194,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.setTimerMessage(((FC1GameEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
 
-                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(remain, "mm:ss"));
+                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(remain, "HH:mm:ss"));
 
                 // das muss ich hier machen, weil der gametimer nur dann noch richtig ist, solange das spiel
                 // läuft. Wenn ich den nach Ende setzen, sind dann noch ein paar Millis mehr auf der Uhr.
@@ -215,23 +215,46 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 long remain = farcryAssaultThread.getRemaining();
                 DateTime remainingTime = new DateTime(remain, DateTimeZone.UTC);
 
+
                 int minutes = remainingTime.getMinuteOfHour();
                 int seconds = remainingTime.getSecondOfMinute();
 
                 // mehr als 1 Minute
                 if (lastAnnouncedMinute != minutes) {
                     lastAnnouncedMinute = minutes;
-                    getLogger().debug("time announcer: " + minutes + ":" + seconds);
+
+                    int hours = remainingTime.getHourOfDay();
+                    int tenminutes = minutes / 10;
+                    int remminutes = minutes - tenminutes * 10; // restliche Minuten ausrechnen
+
+                    getLogger().debug("time announcer: " + hours + ":" + minutes + ":" + seconds);
+                    getLogger().debug("time announcer: remaining 10 minutes chunks: " + tenminutes);
+                    
                     if (minutes > 0) {
                         String scheme = "";
-                        for (int m = 1; m < minutes; m++) {
-                            scheme += "on,250;off,250;";
+                        if (hours > 0) {
+                            for (int h = 0; h < hours; h++) {
+                                scheme += "on,1000;off,250;";
+                            }
                         }
 
-                        scheme += "on,250;off,10000";
+                        if (tenminutes > 0) {
+                            for (int tm = 0; tm < tenminutes; tm++) {
+                                scheme += "on,625;off,250;";
+                            }
+                        }
+
+                        if (remminutes > 0) {
+                            for (int rm = 0; rm < remminutes; rm++) {
+                                scheme += "on,250;off,250;";
+                            }
+                        }
+
+                        scheme += "off,10000";
 
                         Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_GREEN, "∞:" + scheme);
                         Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:" + scheme);
+
                     } else {
                         Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_GREEN);
                         Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_GREEN);
@@ -255,17 +278,17 @@ public class Farcry1Assault implements GameMode, HasLogger {
                     }
                 }
 
-                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(remain, "mm:ss"));
+                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(remain, "HH:mm:ss"));
                 Main.getFrmTest().setMessage(message);
             } else if (messageEvent.getEvent() == Statistics.GAME_PAUSING) {
                 Main.setTimerMessage(((FC1GameEvent) messageEvent).toHTML());
                 long pausingsince = System.currentTimeMillis() - ((FC1GameEvent) messageEvent).getPausingSince();
-                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(pausingsince, "mm:ss"));
+                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(pausingsince, "HH:mm:ss"));
                 Main.getFrmTest().setMessage(message);
             } else if (messageEvent.getEvent() == Statistics.GAME_GOING_TO_RESUME) {
                 Main.setTimerMessage(((FC1GameEvent) messageEvent).toHTML());
                 long resumein = ((FC1GameEvent) messageEvent).getResumingSince() + ((FC1GameEvent) messageEvent).getResumeinterval() - System.currentTimeMillis() + 1000; // 1 sekunde drauf, weg der Anzeige
-                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(resumein, "mm:ss"));
+                String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(resumein, "HH:mm:ss"));
                 Main.getFrmTest().setMessage(message);
             } else {
                 Main.setTimerMessage("Don't know");
@@ -275,7 +298,8 @@ public class Farcry1Assault implements GameMode, HasLogger {
         };
 
         MessageListener gameModeListener = messageEvent -> {
-            if (messageEvent.getEvent() != Statistics.GAME_PRE_GAME) lastStatsSent = statistics.addEvent(messageEvent);
+            if (messageEvent.getEvent() != Statistics.GAME_PRE_GAME)
+                lastStatsSent = statistics.addEvent(messageEvent);
 
             if (messageEvent.getEvent() == Statistics.GAME_RESUMED) {
                 gameJustResumed = true;
@@ -420,7 +444,6 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().setScheme(Main.NAME_LED1_BTN_GREEN, "∞:on,500;off,500");
                 Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_GREEN, "∞:on,500;off,500");
 
-                // Einmal langer Heulton zum Ende, heisst verloren
                 Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,0", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
 
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()));

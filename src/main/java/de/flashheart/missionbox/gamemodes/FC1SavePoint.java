@@ -146,7 +146,7 @@ public class FC1SavePoint extends JPanel {
 
     public String toHTML() {
         String html = "<b>" + new DateTime(pit).toString("HH:mm:ss") + "</b> gt@start: " + Tools.formatLongTime(getGametimerAtStart(),"mm:ss") +
-                (eventDuration == -1 ? "" : " gt@end: " + Tools.formatLongTime(getGametimerAtEnd(),"mm:ss"));
+                (eventDuration == -1 ? "" : " gt@end: " + Tools.formatLongTime(getGametimerAtEnd(),"HH:mm:ss"));
 
 //        // Restliche Spielzeit (rmn - remaining)
 //        html += (eventDuration == -1 ? "" : "gmrmn:" + Tools.formatLongTime(messageEvent.getMaxgametime() - messageEvent.getGametimer() - eventDuration - 1) + " ");

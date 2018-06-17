@@ -354,6 +354,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
                         fireMessage(textMessageList, new GameEvent(this, gameEvent, running_match_id, gametimer, lastRemainingTime));
                         Main.getPinHandler().resume();
 
+                        // Sirenengeheul zum Resume
                         Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, "1:on,500;off,500;on,500;off,500;on,500;off,500;on,2000;off,0");
 
                         String resume = resumeToState;

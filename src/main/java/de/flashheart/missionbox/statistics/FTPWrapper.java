@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
  */
 class FTPWrapper implements HasLogger {
     private final String SUBDIR = "missionbox";
-    private final int MAX_ERROR_COUNT;
+    private final  int MAX_ERROR_COUNT;
 
     private StatusMessageAppender myAppender = null;
     private FTPClient ftp;
@@ -31,7 +31,9 @@ class FTPWrapper implements HasLogger {
     private String archivepath, activepath, remoteFile, uuid;
 
     public FTPWrapper() {
-        MAX_ERROR_COUNT = Main.getConfigs().getInt(Configs.FTPMAXERRORCOUNT);
+        int tmperrcnt = Main.getConfigs().getInt(Configs.FTPMAXERRORCOUNT);
+        // Dadurch schaltet man den FTP Error Count aus. MAX_VALUE wird sowieso nie erreicht.
+        MAX_ERROR_COUNT = tmperrcnt <= 0 ? Integer.MAX_VALUE : tmperrcnt;
         tryToInitFTP();
     }
 

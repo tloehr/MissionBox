@@ -161,14 +161,14 @@ public class FC1GameEvent extends GameEvent {
 
         return String.format(result,
                 "gametmr", "remain", "flagact", "lrespawn", "maxgmtmr", "capttmr", "pause", "resume",
-                Tools.formatLongTime(gametime + Math.max(finalizedEventDuration, 0), "mm:ss"),
-                Tools.formatLongTime(remaining, "mm:ss"),
+                Tools.formatLongTime(gametime + Math.max(finalizedEventDuration, 0), "HH:mm:ss"),
+                Tools.formatLongTime(remaining, "HH:mm:ss"),
                 Tools.formatLongTime(timeWhenTheFlagWasActivated, "mm:ss"),
-                Tools.formatLongTime(lastrespawn, "mm:ss"),
-                Tools.formatLongTime(maxgametime, "mm:ss"),
-                Tools.formatLongTime(capturetime, "mm:ss"),
-                Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince, "mm:ss"),
-                Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis(), "mm:ss")
+                Tools.formatLongTime(lastrespawn, "HH:mm:ss"),
+                Tools.formatLongTime(maxgametime, "HH:mm:ss"),
+                Tools.formatLongTime(capturetime, "HH:mm:ss"),
+                Tools.formatLongTime(pausingSince == -1l ? pausingSince : System.currentTimeMillis() - pausingSince, "HH:mm:ss"),
+                Tools.formatLongTime(resumingSince == -1l ? resumingSince : resumingSince + resumeinterval - System.currentTimeMillis(), "HH:mm:ss")
         );
 
 

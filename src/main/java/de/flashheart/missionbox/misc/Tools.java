@@ -192,7 +192,7 @@ public class Tools {
 
 
     public static String formatLongTime(long time) {
-        return formatLongTime(time, "mm:ss,SSS");
+        return formatLongTime(time, "HH:mm:ss,SSS");
     }
 
     public static String getSoundPath() {

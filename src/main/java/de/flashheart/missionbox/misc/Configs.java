@@ -69,7 +69,7 @@ public class Configs implements HasLogger {
         configs.put(FLAGNAME, "OCF Flagge #" + new java.util.Random().nextInt());
         configs.put(GAMETIME, "0");
         configs.put(FTPS, "false");
-        configs.put(FTPMAXERRORCOUNT, "30");
+        configs.put(FTPMAXERRORCOUNT, "0");
         configs.put(FTPPORT, "21");
         configs.put(BRIGHTNESS_WHITE, "10");
         configs.put(BRIGHTNESS_RED, "10");

@@ -12,6 +12,7 @@ import de.flashheart.missionbox.gamemodes.FC1SavePoint;
 import de.flashheart.missionbox.events.GameEventListener;
 
 import de.flashheart.missionbox.misc.Configs;
+import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.log4j.Logger;
 
@@ -29,9 +30,7 @@ import java.util.ArrayList;
 /**
  * @author Torsten Löhr
  */
-public class FrmTest extends JFrame implements GameEventListener {
-
-    Logger logger = Logger.getLogger(getClass());
+public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
     ArrayList<FC1SavePoint> eventModel = new ArrayList<>();
 
@@ -82,7 +81,6 @@ public class FrmTest extends JFrame implements GameEventListener {
 
 
     private void initPanel() {
-        logger.setLevel(Main.getLogLevel());
 //        tbDebug.setSelected(MissionBox.getConfig(MissionBox.MBX_DEBUG).equals("true"));
         tbDebug.addItemListener(i -> {
 //            MissionBoxgetConfigs().put(MissionBox.MBX_DEBUG, i.getStateChange() == ItemEvent.SELECTED ? "true" : "false");
@@ -370,7 +368,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void btnRelaySirensActionPerformed(ActionEvent e) {
         BigDecimal bd = new BigDecimal(txtPercentage.getText().trim());
-        logger.debug("intvalue: " + bd.intValue() / 10);
+        getLogger().debug("intvalue: " + bd.intValue() / 10);
         Main.getRelaisSirens().setValue(bd);
     }
 
@@ -411,7 +409,7 @@ public class FrmTest extends JFrame implements GameEventListener {
 
     private void btnProgessActionPerformed(ActionEvent e) {
         BigDecimal bd = new BigDecimal(txtPercentage.getText().trim());
-        logger.debug("intvalue: " + bd.intValue() / 10);
+        getLogger().debug("intvalue: " + bd.intValue() / 10);
         Main.setPBLeds(bd);
     }
 
