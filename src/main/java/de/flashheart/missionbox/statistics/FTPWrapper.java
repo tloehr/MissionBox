@@ -1,4 +1,5 @@
 package de.flashheart.missionbox.statistics;
+
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
@@ -23,7 +24,7 @@ import java.util.concurrent.ExecutionException;
  */
 class FTPWrapper implements HasLogger {
     private final String SUBDIR = "missionbox";
-    private final  int MAX_ERROR_COUNT;
+    private final int MAX_ERROR_COUNT;
 
     private StatusMessageAppender myAppender = null;
     private FTPClient ftp;
