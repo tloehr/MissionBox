@@ -46,7 +46,7 @@ public class MessageProcessor extends Thread implements HasLogger {
 
         lock.lock();
         try {
-            getLogger().debug("pushMessage() pushing " + message.toString());
+//            getLogger().debug("pushMessage() pushing " + message.toString());
             messageQ.push(message);
         } finally {
             lock.unlock();
