@@ -250,7 +250,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                             }
                         }
 
-                        scheme += "off,10000";
+                        scheme += "off,2500";
 
                         Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_GREEN, "∞:" + scheme);
                         Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:" + scheme);
@@ -427,22 +427,24 @@ public class Farcry1Assault implements GameMode, HasLogger {
 
                 Main.getPinHandler().off(Main.NAME_SHUTDOWN_SIREN);
 
-                Main.getPinHandler().off(Main.NAME_LED1_BTN_RED);
-                Main.getPinHandler().off(Main.NAME_LED1_BTN_GREEN);
-                Main.getPinHandler().off(Main.NAME_LED2_BTN_RED);
-                Main.getPinHandler().off(Main.NAME_LED2_BTN_GREEN);
+                setDefendedBlinkScheme();
 
-                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_RED);
-                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_YELLOW);
-                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_GREEN);
-                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_RED);
-                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_YELLOW);
-                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_GREEN);
-
-                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_GREEN, "∞:on,500;off,500");
-                Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:on,500;off,500");
-                Main.getPinHandler().setScheme(Main.NAME_LED1_BTN_GREEN, "∞:on,500;off,500");
-                Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_GREEN, "∞:on,500;off,500");
+//                Main.getPinHandler().off(Main.NAME_LED1_BTN_RED);
+//                Main.getPinHandler().off(Main.NAME_LED1_BTN_GREEN);
+//                Main.getPinHandler().off(Main.NAME_LED2_BTN_RED);
+//                Main.getPinHandler().off(Main.NAME_LED2_BTN_GREEN);
+//
+//                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_RED);
+//                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_YELLOW);
+//                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_GREEN);
+//                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_RED);
+//                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_YELLOW);
+//                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_GREEN);
+//
+//                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_GREEN, "∞:on,500;off,500");
+//                Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:on,500;off,500");
+//                Main.getPinHandler().setScheme(Main.NAME_LED1_BTN_GREEN, "∞:on,500;off,500");
+//                Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_GREEN, "∞:on,500;off,500");
 
                 Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,0", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
 
@@ -465,22 +467,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                  *                    |___/
                  */
 
-                Main.getPinHandler().off(Main.NAME_LED1_BTN_RED);
-                Main.getPinHandler().off(Main.NAME_LED1_BTN_GREEN);
-                Main.getPinHandler().off(Main.NAME_LED2_BTN_RED);
-                Main.getPinHandler().off(Main.NAME_LED2_BTN_GREEN);
-
-                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_RED);
-                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_YELLOW);
-                Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_GREEN);
-                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_RED);
-                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_YELLOW);
-                Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_GREEN);
-
-                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_RED, "∞:on,500;off,500");
-                Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_RED, "∞:on,500;off,500");
-                Main.getPinHandler().setScheme(Main.NAME_LED1_BTN_RED, "∞:on,500;off,500");
-                Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_RED, "∞:on,500;off,500");
+               setTakenBlinkScheme();
 
 //                MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;3000,0");
                 Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,0", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
@@ -658,6 +645,45 @@ public class Farcry1Assault implements GameMode, HasLogger {
         });
 
     } // constructor
+
+    public void setTakenBlinkScheme() {
+        Main.getPinHandler().off(Main.NAME_LED1_BTN_RED);
+        Main.getPinHandler().off(Main.NAME_LED1_BTN_GREEN);
+        Main.getPinHandler().off(Main.NAME_LED2_BTN_RED);
+        Main.getPinHandler().off(Main.NAME_LED2_BTN_GREEN);
+
+        Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_RED);
+        Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_YELLOW);
+        Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_GREEN);
+        Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_RED);
+        Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_YELLOW);
+        Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_GREEN);
+
+        Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_RED, "∞:on,500;off,500");
+        Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_RED, "∞:on,500;off,500");
+        Main.getPinHandler().setScheme(Main.NAME_LED1_BTN_RED, "∞:on,500;off,500");
+        Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_RED, "∞:on,500;off,500");
+    }
+
+
+    public void setDefendedBlinkScheme(){
+        Main.getPinHandler().off(Main.NAME_LED1_BTN_RED);
+        Main.getPinHandler().off(Main.NAME_LED1_BTN_GREEN);
+        Main.getPinHandler().off(Main.NAME_LED2_BTN_RED);
+        Main.getPinHandler().off(Main.NAME_LED2_BTN_GREEN);
+
+        Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_RED);
+        Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_YELLOW);
+        Main.getPinHandler().off(Main.NAME_LED1_PROGRESS_GREEN);
+        Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_RED);
+        Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_YELLOW);
+        Main.getPinHandler().off(Main.NAME_LED2_PROGRESS_GREEN);
+
+        Main.getPinHandler().setScheme(Main.NAME_LED1_PROGRESS_GREEN, "∞:on,500;off,500");
+        Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:on,500;off,500");
+        Main.getPinHandler().setScheme(Main.NAME_LED1_BTN_GREEN, "∞:on,500;off,500");
+        Main.getPinHandler().setScheme(Main.NAME_LED2_BTN_GREEN, "∞:on,500;off,500");
+    }
 
 
     @Override
