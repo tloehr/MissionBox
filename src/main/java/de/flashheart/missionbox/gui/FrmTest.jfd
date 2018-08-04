@@ -452,6 +452,15 @@ new FormModel {
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnDefended"
+						"text": "Box Defended"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnDefendedActionPerformed", true ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridX": 7
+					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonRed"
 						"text": "Button RED"
@@ -478,6 +487,16 @@ new FormModel {
 						"gridX": 5
 						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "btnExploded"
+						"text": "Box Exploded"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnExplodedActionPerformed", true ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridX": 7
+						"gridY": 3
 					} )
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "lblButtonPAUSE"

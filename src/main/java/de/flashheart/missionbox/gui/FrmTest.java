@@ -417,6 +417,14 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
         Main.getMessageProcessor().testFTP(txtFTPlog, btnTestFTP);
     }
 
+    private void btnDefendedActionPerformed(ActionEvent e) {
+            Main.getGameMode().setDefendedBlinkScheme();
+    }
+
+    private void btnExplodedActionPerformed(ActionEvent e) {
+        Main.getGameMode().setTakenBlinkScheme();
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -479,9 +487,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
         lblButtonGreen = new JLabel();
         btnRedLED1 = new JButton();
         btnRedLED2 = new JButton();
+        btnDefended = new JButton();
         lblButtonRed = new JLabel();
         btnGreenLED1 = new JButton();
         btnGreenLED2 = new JButton();
+        btnExploded = new JButton();
         lblButtonPAUSE = new JLabel();
         btnRedProgress1 = new JButton();
         btnSiren1 = new JButton();
@@ -891,6 +901,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
                 btnRedLED2.setText("btnRedLED2");
                 panel1.add(btnRedLED2, CC.xy(5, 1, CC.FILL, CC.FILL));
 
+                //---- btnDefended ----
+                btnDefended.setText("Box Defended");
+                btnDefended.addActionListener(e -> btnDefendedActionPerformed(e));
+                panel1.add(btnDefended, CC.xy(7, 1, CC.FILL, CC.FILL));
+
                 //---- lblButtonRed ----
                 lblButtonRed.setText("Button RED");
                 lblButtonRed.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue32.png")));
@@ -905,6 +920,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
                 //---- btnGreenLED2 ----
                 btnGreenLED2.setText("btnGreenLED2");
                 panel1.add(btnGreenLED2, CC.xy(5, 3, CC.FILL, CC.FILL));
+
+                //---- btnExploded ----
+                btnExploded.setText("Box Exploded");
+                btnExploded.addActionListener(e -> btnExplodedActionPerformed(e));
+                panel1.add(btnExploded, CC.xy(7, 3, CC.FILL, CC.FILL));
 
                 //---- lblButtonPAUSE ----
                 lblButtonPAUSE.setText("Button PAUSE");
@@ -1126,9 +1146,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
     private JLabel lblButtonGreen;
     private JButton btnRedLED1;
     private JButton btnRedLED2;
+    private JButton btnDefended;
     private JLabel lblButtonRed;
     private JButton btnGreenLED1;
     private JButton btnGreenLED2;
+    private JButton btnExploded;
     private JLabel lblButtonPAUSE;
     private JButton btnRedProgress1;
     private JButton btnSiren1;
