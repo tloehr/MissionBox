@@ -1,20 +1,27 @@
 package de.flashheart.missionbox.statistics;
 
 import de.flashheart.missionbox.misc.HasLogger;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 
 import javax.swing.*;
+import java.nio.charset.Charset;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MessageProcessor extends Thread implements HasLogger {
+    public static final String GAMESTATE_CREATE = "http://localhost:8090/rest/gamestate/create";
 
     private ReentrantLock lock;
     private boolean interrupted;
-    private final Stack<PHPMessage> messageQ;
+    private final Stack<GameState> messageQ;
     private final CopyOnWriteArrayList<StatsSentListener> listeners;
-    private FTPWrapper ftpWrapper;
-    private boolean cleanupStatsFile = false;
+//    private FTPWrapper ftpWrapper;
+
 
     protected void fireChangeEvent(StatsSentEvent evt) {
         for (StatsSentListener l : listeners) {
@@ -40,24 +47,21 @@ public class MessageProcessor extends Thread implements HasLogger {
         interrupted = false;
     }
 
-    public void pushMessage(PHPMessage message) {
+    public void pushMessage(GameState gameState) {
         // https://github.com/tloehr/ocfflag/issues/4
         if (lock.isLocked()) return; // Sonst kann es passieren, dass das hier alles blockiert.
 
         lock.lock();
         try {
 //            getLogger().debug("pushMessage() pushing " + message.toString());
-            messageQ.push(message);
+            messageQ.push(gameState);
         } finally {
             lock.unlock();
         }
     }
 
-    public void cleanupStatsFile() {
-        cleanupStatsFile = true;
-    }
 
-    public void testFTP(JTextArea outputArea, JButton buttonToDisable){
+    public void testFTP(JTextArea outputArea, JButton buttonToDisable) {
         if (lock.isLocked()) {
             outputArea.setText("MessageProcessor is busy. Try again.");
             return; // Sonst kann es passieren, dass das hier alles blockiert.
@@ -65,7 +69,7 @@ public class MessageProcessor extends Thread implements HasLogger {
 
         lock.lock();
         try {
-            ftpWrapper.testFTP(outputArea, buttonToDisable);
+//            ftpWrapper.testFTP(outputArea, buttonToDisable);
         } finally {
             lock.unlock();
         }
@@ -77,28 +81,63 @@ public class MessageProcessor extends Thread implements HasLogger {
                 lock.lock();
                 // Um keine Verzögerungen beim Start zu haben, schiebe ich das hier in die Nebenläufigkeit.
                 // Das wird nur einmal ausgeführt.
-                if (ftpWrapper == null) ftpWrapper = new FTPWrapper();
+//                if (ftpWrapper == null) ftpWrapper = new FTPWrapper();
                 try {
                     if (!messageQ.isEmpty()) {
-                        PHPMessage myMessage = messageQ.pop();
+                        GameState gameState = messageQ.pop();
 
-                        boolean move2archive = myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_ABORTED ||
-                                myMessage.getGameEvent().getEvent() == Statistics.EVENT_GAME_OVER ||
-                                cleanupStatsFile;
+                        HttpHeaders headers = new HttpHeaders();
+                        //
+                        // Authentication
+                        //
+                        String auth = "Torsten:test1234";
+                        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
+                        String authHeader = "Basic " + new String(encodedAuth);
+                        headers.set("Authorization", authHeader);
 
-                        boolean success = ftpWrapper.upload(myMessage.getPhp(), move2archive);
-                        cleanupStatsFile = false; // muss nur einmal passieren
+
+                        headers.add("Accept", MediaType.APPLICATION_XML_VALUE);
+                        headers.setContentType(MediaType.APPLICATION_XML);
+
+                        RestTemplate restTemplate = new RestTemplate();
+
+                        // Data attached to the request.
+                        HttpEntity<GameState> requestBody = new HttpEntity<>(gameState, headers);
+
+                        // Send request with POST method.
+                        GameState result = restTemplate.postForObject(GAMESTATE_CREATE, requestBody, GameState.class);
+
+                        if (result != null && result.getBombname() != null) {
+                            getLogger().debug("GameState created: " + result.getTimestamp());
+                        } else {
+                            getLogger().error("Something error!");
+                        }
+
+
+                        //
+//                        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
+//                        // Request to return JSON format
+//                        headers.setContentType(MediaType.APPLICATION_JSON);
+////                        headers.set("my_other_key", "my_other_value");
+//
+//                        HttpEntity<String> entity = new HttpEntity<String>(headers);
+//
+//                        RestTemplate restTemplate = new RestTemplate();
+//
+//                        // Send request with GET method and default Headers.
+//
+//                        ResponseEntity<String> response = restTemplate.exchange("http://locaaslhost:8090/greeting", HttpMethod.GET, entity, String.class);
+//
+//                        getLogger().debug(response.getBody());
+
                         messageQ.clear(); // nur die letzte Nachricht ist wichtig
 
                         // sorge dafür, dass die weiße LED den erfolgreichen Versand anzeigt
-                        fireChangeEvent(new StatsSentEvent(this, myMessage.getGameEvent(), success));
+                        fireChangeEvent(new StatsSentEvent(this, gameState, true));
                     }
 
-                    if (cleanupStatsFile) {
-                        ftpWrapper.cleanupStatsFile();
-                        cleanupStatsFile = false;
-                    }
-
+                } catch (Exception ex) {
+                    getLogger().error(ex);
                 } finally {
                     lock.unlock();
                 }

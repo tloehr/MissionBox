@@ -2,16 +2,9 @@ package de.flashheart.missionbox.statistics;
 
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
-import de.flashheart.missionbox.events.GameEvent;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
-import de.flashheart.missionbox.misc.Tools;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-
-import java.util.Locale;
-import java.util.Stack;
 
 public class Statistics implements HasLogger {
 
@@ -49,8 +42,7 @@ public class Statistics implements HasLogger {
     private final MessageProcessor messageProcessor;
 
 
-    public Stack<GameEvent> stackEvents;
-    private int matchid;
+    private GameState gameState;
     private DateTime endOfGame = null;
 
     private long min_stat_send_time;
@@ -60,7 +52,6 @@ public class Statistics implements HasLogger {
 
     public Statistics() {
         messageProcessor = Main.getMessageProcessor();
-        stackEvents = new Stack<>();
         reset();
     }
 
@@ -69,18 +60,16 @@ public class Statistics implements HasLogger {
         endOfGame = null;
         bombfused = false;
 
-
         gametime = 0l;
         remainingTime = 0l;
         captureTime = 0l;
         maxgametime = 0l;
 
-        matchid = 0;
-        stackEvents.clear();
-        messageProcessor.cleanupStatsFile();
+        gameState = new GameState(Main.getConfigs().get(Configs.FLAGNAME), GameState.TYPE_FARCRY, Main.getConfigs().get(Configs.MYUUID), Main.getConfigs().getNextMatchID());
+
     }
 
-    public void updateTimers(GameEvent gameEvent) {
+    public void updateTimers(FC1GameEvent gameEvent) {
         this.remainingTime = gameEvent.getRemaining();
         this.gametime = gameEvent.getGametime();
     }
@@ -89,29 +78,30 @@ public class Statistics implements HasLogger {
      * @return true, wenn die Operation erfolgreich war.
      */
     public void sendStats() {
-        getLogger().debug("sendStats()\n" + toPHP());
+        getLogger().debug("sendStats()\n" + gameState);
         if (min_stat_send_time > 0)
-            messageProcessor.pushMessage(new PHPMessage(toPHP(), stackEvents.peek()));
+            messageProcessor.pushMessage(gameState);
     }
 
-    public long addEvent(GameEvent gameEvent) {
+    public long addEvent(FC1GameEvent fc1GameEvent) {
         DateTime now = new DateTime();
-        this.matchid = gameEvent.getMatchid();
-        this.captureTime = ((FC1GameEvent) gameEvent).getCapturetime();
-        this.maxgametime = ((FC1GameEvent) gameEvent).getMaxgametime();
-        this.remainingTime = gameEvent.getRemaining();
-        this.gametime = gameEvent.getGametime();
+        this.captureTime = fc1GameEvent.getCapturetime();
+        this.maxgametime = fc1GameEvent.getMaxgametime();
+        this.remainingTime = fc1GameEvent.getRemaining();
+        this.gametime = fc1GameEvent.getGametime();
 
-        stackEvents.push(gameEvent);
+        gameState.getGameEvents().add(fc1GameEvent.createGameEvent());
+
+//        stackEvents.push(gameEvent);
 
         if (endOfGame == null) {
-            if (gameEvent.getEvent() == GAME_OUTCOME_FLAG_TAKEN || gameEvent.getEvent() == GAME_OUTCOME_FLAG_DEFENDED) {
+            if (fc1GameEvent.getEvent() == GAME_OUTCOME_FLAG_TAKEN || fc1GameEvent.getEvent() == GAME_OUTCOME_FLAG_DEFENDED) {
                 endOfGame = now;
             }
         }
 
-        if (gameEvent.getEvent() == GAME_FLAG_HOT) bombfused = true;
-        if (gameEvent.getEvent() == GAME_FLAG_COLD) bombfused = false;
+        if (fc1GameEvent.getEvent() == GAME_FLAG_HOT) bombfused = true;
+        if (fc1GameEvent.getEvent() == GAME_FLAG_COLD) bombfused = false;
 
 
         sendStats(); // jedes Ereignis wird gesendet.
@@ -120,41 +110,41 @@ public class Statistics implements HasLogger {
     }
 
 
-    private String toPHP() {
-        final StringBuilder php = new StringBuilder();
-        php.append("<?php\n");
-
-        String flagname = Main.getConfigs().get(Configs.FLAGNAME);
-
-        flagname = StringUtils.replace(flagname, "'", "\\'");
-        flagname = StringUtils.replace(flagname, "\"", "\\\"");
-
-        php.append("$game['bombname'] = '" + flagname + "';\n");
-        php.append("$game['uuid'] = '" + Main.getConfigs().get(Configs.MYUUID) + "';\n");
-        php.append("$game['matchid'] = '" + matchid + "';\n");
-        php.append("$game['timestamp'] = '" + DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(new DateTime()) + "';\n");
-        php.append("$game['ts_game_started'] = '" + DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(stackEvents.get(0).getPit()) + "';\n");
-        php.append("$game['ts_game_paused'] = '" + (stackEvents.peek().getEvent().equals(EVENT_PAUSE) ? DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(stackEvents.peek().getPit()) : "null") + "';\n");
-        php.append("$game['ts_game_ended'] = '" + (endOfGame == null ? "null" : DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(endOfGame)) + "';\n");
-        php.append("$game['bombfused'] = '" + Boolean.toString(bombfused) + "';\n");
-        php.append("$game['remaining'] = '" + Tools.formatLongTime(remainingTime, "HH:mm:ss") + "';\n");
-        php.append("$game['capturetime'] = '" + Tools.formatLongTime(captureTime, "HH:mm:ss") + "';\n");
-        php.append("$game['maxgametime'] = '" + Tools.formatLongTime(maxgametime, "HH:mm:ss") + "';\n");
-        php.append("$game['gametime'] = '" + Tools.formatLongTime(gametime, "HH:mm:ss") + "';\n");
-        // ist eigentlich überflüssig. macht aber den PHP code leichter.
-        php.append("$game['winner'] = '" + (endOfGame == null ? "notdecidedyet" : (bombfused ? "attacker" : "defender")) + "';\n");
-        php.append("$game['overtime'] = '" + (gametime > maxgametime ? Tools.formatLongTime(gametime - maxgametime, "HH:mm:ss") : "--") + "';\n");
-
-        php.append("$game['events'] = [\n");
-        for (GameEvent event : stackEvents) {
-            php.append(event.toPHPArray());
-        }
-
-        php.append("];\n?>");
-
-
-        return php.toString();
-    }
+//    private String toPHP() {
+//        final StringBuilder php = new StringBuilder();
+//        php.append("<?php\n");
+//
+//        String flagname = Main.getConfigs().get(Configs.FLAGNAME);
+//
+//        flagname = StringUtils.replace(flagname, "'", "\\'");
+//        flagname = StringUtils.replace(flagname, "\"", "\\\"");
+//
+//        php.append("$game['bombname'] = '" + flagname + "';\n");
+//        php.append("$game['uuid'] = '" + Main.getConfigs().get(Configs.MYUUID) + "';\n");
+//        php.append("$game['matchid'] = '" + matchid + "';\n");
+//        php.append("$game['timestamp'] = '" + DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(new DateTime()) + "';\n");
+//        php.append("$game['ts_game_started'] = '" + DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(stackEvents.get(0).getPit()) + "';\n");
+//        php.append("$game['ts_game_paused'] = '" + (stackEvents.peek().getEvent().equals(EVENT_PAUSE) ? DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(stackEvents.peek().getPit()) : "null") + "';\n");
+//        php.append("$game['ts_game_ended'] = '" + (endOfGame == null ? "null" : DateTimeFormat.mediumDateTime().withLocale(Locale.getDefault()).print(endOfGame)) + "';\n");
+//        php.append("$game['bombfused'] = '" + Boolean.toString(bombfused) + "';\n");
+//        php.append("$game['remaining'] = '" + Tools.formatLongTime(remainingTime, "HH:mm:ss") + "';\n");
+//        php.append("$game['capturetime'] = '" + Tools.formatLongTime(captureTime, "HH:mm:ss") + "';\n");
+//        php.append("$game['maxgametime'] = '" + Tools.formatLongTime(maxgametime, "HH:mm:ss") + "';\n");
+//        php.append("$game['gametime'] = '" + Tools.formatLongTime(gametime, "HH:mm:ss") + "';\n");
+//        // ist eigentlich überflüssig. macht aber den PHP code leichter.
+//        php.append("$game['winner'] = '" + (endOfGame == null ? "notdecidedyet" : (bombfused ? "attacker" : "defender")) + "';\n");
+//        php.append("$game['overtime'] = '" + (gametime > maxgametime ? Tools.formatLongTime(gametime - maxgametime, "HH:mm:ss") : "--") + "';\n");
+//
+//        php.append("$game['events'] = [\n");
+//        for (GameEvent event : stackEvents) {
+//            php.append(event.toPHPArray());
+//        }
+//
+//        php.append("];\n?>");
+//
+//
+//        return php.toString();
+//    }
 
 
 }

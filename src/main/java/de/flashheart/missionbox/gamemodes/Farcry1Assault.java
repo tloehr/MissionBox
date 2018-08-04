@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Farcry1Assault implements GameMode, HasLogger {
     private boolean gameJustStarted, gameJustResumed;
     private Farcry1AssaultThread farcryAssaultThread;
-    private String FOREVER = Integer.toString(Integer.MAX_VALUE);
+    //    private String FOREVER = Integer.toString(Integer.MAX_VALUE);
     //    private String lastAnnoucement = "";
     private int lastAnnouncedMinute = -1;
     private int lastAnnouncedSecond = -1;
@@ -67,7 +67,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
      *
      * @throws IOException
      */
-    public Farcry1Assault() throws IOException {
+    public Farcry1Assault() {
 
         getLogger().info("\n" +
                 "      ____  _             _   _               _____           ____                 _                        _ _   \n" +
@@ -229,7 +229,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
 
                     getLogger().debug("time announcer: " + hours + ":" + minutes + ":" + seconds);
                     getLogger().debug("time announcer: remaining 10 minutes chunks: " + tenminutes);
-                    
+
                     if (minutes > 0) {
                         String scheme = "";
                         if (hours > 0) {
@@ -515,8 +515,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
         };
 
 
-        farcryAssaultThread = new Farcry1AssaultThread(messageEvent -> {
-        }, gameTimeListener, gameModeListener, Integer.parseInt(Main.getConfigs().get(Configs.FCY_GAMETIME)), Integer.parseInt(Main.getConfigs().get(Configs.FCY_TIME2CAPTURE)), Integer.parseInt(Main.getConfigs().get(Configs.FCY_RESPAWN_INTERVAL)));
+        farcryAssaultThread = new Farcry1AssaultThread(gameTimeListener, gameModeListener, Long.parseLong(Main.getConfigs().get(Configs.FCY_GAMETIME)), Long.parseLong(Main.getConfigs().get(Configs.FCY_TIME2CAPTURE)), Long.parseLong(Main.getConfigs().get(Configs.FCY_RESPAWN_INTERVAL)));
 
 
         /***

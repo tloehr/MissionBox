@@ -2,12 +2,16 @@ package de.flashheart.missionbox.events;
 
 
 import de.flashheart.missionbox.misc.Tools;
+import de.flashheart.missionbox.statistics.GameEvent;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+
+import java.util.EventObject;
 
 /**
  * Dieses Event beinhaltet jedes Detail eines Farcry1 Zeit Ereignisses
  */
-public class FC1GameEvent extends GameEvent {
+public class FC1GameEvent extends EventObject {
 
     private long starttime = -1l;
 
@@ -20,6 +24,14 @@ public class FC1GameEvent extends GameEvent {
     private long lastrespawn;
     private long respawninterval;
     private long resumeinterval;
+
+
+    private DateTime pit;
+    private String event;
+
+    private long gametime;
+    private long remaining;
+
     public static final String css = "<style type=\"text/css\">\n" +
             ".tg  {border-collapse:collapse;border-spacing:0;border-color:#aabcfe;}\n" +
             ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aabcfe;color:#669;background-color:#e8edff;}\n" +
@@ -73,8 +85,15 @@ public class FC1GameEvent extends GameEvent {
 //        return endtime - gametimer - Math.max(eventDuration, 0);
 //    }
 
-    public FC1GameEvent(Object source, int gameid, String event, long starttime, long gametime, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval, long remaining) {
-        super(source, event, gameid, gametime, remaining);
+    public FC1GameEvent(Object source, String event, long starttime, long gametime, long timeWhenTheFlagWasActivated, long maxgametime, long capturetime, long pausingSince, long resumingSince, long lastrespawn, long respawninterval, long resumeinterval, long remaining) {
+
+
+        super(source);
+        this.pit = new DateTime();
+        this.event = event;
+        this.gametime = gametime;
+        this.remaining = remaining;
+
 
         this.starttime = starttime;
 
@@ -89,7 +108,6 @@ public class FC1GameEvent extends GameEvent {
 
 
     }
-
 
 
     public long getOvertime() {
@@ -174,7 +192,28 @@ public class FC1GameEvent extends GameEvent {
 
     }
 
+    public long getGametime() {
+        return gametime;
+    }
+
+    public long getRemaining() {
+        return remaining;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
     public String toHTML() {
         return toHTML(css, -1l);
+    }
+
+
+    public String toPHPArray() {
+        return "   ['pit' => '" + pit.toString("HH:mm:ss") + "','event' => '" + event + "','remaining' => '" + Tools.formatLongTime(remaining, "HH:mm:ss") + "'],\n";
+    }
+
+    public GameEvent createGameEvent() {
+        return new GameEvent(pit.getMillis(), event, gametime, remaining);
     }
 }

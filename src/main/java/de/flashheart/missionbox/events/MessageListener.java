@@ -7,6 +7,6 @@ import java.util.EventListener;
  */
 public interface MessageListener extends EventListener{
     
-    void messageReceived(GameEvent gameEvent);
+    void messageReceived(FC1GameEvent gameEvent);
 
 }

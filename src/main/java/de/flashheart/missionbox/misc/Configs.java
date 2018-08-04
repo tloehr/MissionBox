@@ -95,6 +95,12 @@ public class Configs implements HasLogger {
     }
 
 
+    public long getNextMatchID(){
+        long nextmachtid = Long.parseLong(get(MATCHID)) + 1l;
+        put(MATCHID, Long.toString(nextmachtid));
+        return nextmachtid;
+    }
+
     private void loadApplicationContext() throws IOException {
         InputStream in2 = Main.class.getResourceAsStream("/application.properties");
         applicationContext.load(in2);
