@@ -8,6 +8,7 @@ import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
+import de.flashheart.missionbox.statistics.GameEvent;
 import de.flashheart.missionbox.statistics.Statistics;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
@@ -118,7 +119,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
              *                    |_|                                   |___/
              */
             if (Long.parseLong(Main.getConfigs().get(Configs.FCY_RESPAWN_INTERVAL)) > 0l) {
-                if (messageEvent.getEvent() == Statistics.GAME_FLAG_HOT || messageEvent.getEvent() == Statistics.GAME_FLAG_COLD) {
+                if (messageEvent.getEvent() == GameEvent.FUSED|| messageEvent.getEvent() == GameEvent.DEFUSED) {
 
                     FC1GameEvent event = (FC1GameEvent) messageEvent;
                     String respawnTimer = Tools.formatLongTime(event.getLastrespawn() + event.getRespawninterval() - event.getGametime(), "HH:mm:ss");
@@ -145,7 +146,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
              *      \____\___/ \__,_|_| |_|\__\__,_|\___/ \_/\_/ |_| |_| |____/|_|\__, |_| |_|\__,_|_|
              *                                                                    |___/
              */
-            if (messageEvent.getEvent() == Statistics.GAME_FLAG_HOT) {
+            if (messageEvent.getEvent() == GameEvent.FUSED) {
                 /***
                  *      _   _  ___ _____
                  *     | | | |/ _ \_   _|
@@ -163,7 +164,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                         Main.getPinHandler().setScheme(Main.NAME_SIREN1, "10:on,500;off,500"); // eine Sekunde mehr. Dann gibts nicht so eine Lücke beim Ende
                     }
                 }
-            } else if (messageEvent.getEvent() == Statistics.GAME_FLAG_COLD) {
+            } else if (messageEvent.getEvent() == GameEvent.DEFUSED) {
                 /***
                  *       ____ ___  _     ____
                  *      / ___/ _ \| |   |  _ \
@@ -186,11 +187,11 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 }
             }
 
-            if (messageEvent.getEvent() == Statistics.GAME_PRE_GAME) {
+            if (messageEvent.getEvent() == GameEvent.PREGAME) {
                 Main.setTimerMessage("--");
                 Main.getFrmTest().setMessage(Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent())));
                 Main.setRespawnTimer("--");
-            } else if (messageEvent.getEvent() == Statistics.GAME_FLAG_HOT) {
+            } else if (messageEvent.getEvent() == GameEvent.FUSED) {
                 Main.setTimerMessage(((FC1GameEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
 
@@ -210,7 +211,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getFrmTest().setMessage(message);
                 Main.setProgress(((FC1GameEvent) messageEvent).getTimeWhenTheFlagWasActivated(), ((FC1GameEvent) messageEvent).getGametime(), ((FC1GameEvent) messageEvent).getTimeWhenTheFlagWasActivated() + ((FC1GameEvent) messageEvent).getCapturetime());
 
-            } else if (messageEvent.getEvent() == Statistics.GAME_FLAG_COLD) {
+            } else if (messageEvent.getEvent() == GameEvent.DEFUSED) {
                 Main.setTimerMessage(((FC1GameEvent) messageEvent).toHTML());
                 long remain = farcryAssaultThread.getRemaining();
                 DateTime remainingTime = new DateTime(remain, DateTimeZone.UTC);
@@ -280,14 +281,14 @@ public class Farcry1Assault implements GameMode, HasLogger {
 
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(remain, "HH:mm:ss"));
                 Main.getFrmTest().setMessage(message);
-            } else if (messageEvent.getEvent() == Statistics.GAME_PAUSING) {
-                Main.setTimerMessage(((FC1GameEvent) messageEvent).toHTML());
-                long pausingsince = System.currentTimeMillis() - ((FC1GameEvent) messageEvent).getPausingSince();
+            } else if (messageEvent.getEvent() == GameEvent.PAUSING) {
+                Main.setTimerMessage(messageEvent.toHTML());
+                long pausingsince = System.currentTimeMillis() - messageEvent.getPausingSince();
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(pausingsince, "HH:mm:ss"));
                 Main.getFrmTest().setMessage(message);
-            } else if (messageEvent.getEvent() == Statistics.GAME_GOING_TO_RESUME) {
-                Main.setTimerMessage(((FC1GameEvent) messageEvent).toHTML());
-                long resumein = ((FC1GameEvent) messageEvent).getResumingSince() + ((FC1GameEvent) messageEvent).getResumeinterval() - System.currentTimeMillis() + 1000; // 1 sekunde drauf, weg der Anzeige
+            } else if (messageEvent.getEvent() == GameEvent.GOING_TO_RESUME) {
+                Main.setTimerMessage(messageEvent.toHTML());
+                long resumein = messageEvent.getResumingSince() + messageEvent.getResumeinterval() - System.currentTimeMillis() + 1000; // 1 sekunde drauf, weg der Anzeige
                 String message = Tools.h1(Tools.xx("fc1assault.gamestate." + messageEvent.getEvent()) + " " + Tools.formatLongTime(resumein, "HH:mm:ss"));
                 Main.getFrmTest().setMessage(message);
             } else {
@@ -298,12 +299,12 @@ public class Farcry1Assault implements GameMode, HasLogger {
         };
 
         MessageListener gameModeListener = messageEvent -> {
-            if (messageEvent.getEvent() != Statistics.GAME_PRE_GAME)
+            if (messageEvent.getEvent() != GameEvent.PREGAME)
                 lastStatsSent = statistics.addEvent(messageEvent);
 
-            if (messageEvent.getEvent() == Statistics.GAME_RESUMED) {
+            if (messageEvent.getEvent() == GameEvent.RESUMED) {
                 gameJustResumed = true;
-            } else if (messageEvent.getEvent() == Statistics.GAME_FLAG_HOT) {
+            } else if (messageEvent.getEvent() == GameEvent.FUSED) {
                 /***
                  *      _____ _             _   _       _
                  *     |  ___| | __ _  __ _| | | | ___ | |_
@@ -328,7 +329,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
 
                 // die hauptsirene wird hier nicht aktiviert, weil sie über das PercentageInterface läuft.
 
-            } else if (messageEvent.getEvent() == Statistics.GAME_FLAG_COLD) {
+            } else if (messageEvent.getEvent() == GameEvent.DEFUSED) {
                 /***
                  *      _____ _              ____      _     _
                  *     |  ___| | __ _  __ _ / ___|___ | | __| |
@@ -371,7 +372,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 lastAnnouncedSecond = -1;
                 hotcountdownrunning.set(false);
                 coldcountdownrunning.set(false);
-            } else if (messageEvent.getEvent() == Statistics.GAME_PRE_GAME) {
+            } else if (messageEvent.getEvent() == GameEvent.PREGAME) {
                 /***
                  *      ____            ____
                  *     |  _ \ _ __ ___ / ___| __ _ _ __ ___   ___
@@ -415,7 +416,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 hotcountdownrunning.set(false);
                 overtime.set(false);
 
-            } else if (messageEvent.getEvent() == Statistics.GAME_OUTCOME_FLAG_DEFENDED) {
+            } else if (messageEvent.getEvent() == GameEvent.DEFENDED) {
                 /***
                  *      _____ _             ____        __                _          _
                  *     |  ___| | __ _  __ _|  _ \  ___ / _| ___ _ __   __| | ___  __| |
@@ -457,7 +458,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getFrmTest().setMessage(message);
                 Main.setRespawnTimer("--");
 
-            } else if (messageEvent.getEvent() == Statistics.GAME_OUTCOME_FLAG_TAKEN) {
+            } else if (messageEvent.getEvent() == GameEvent.EXPLODED) {
                 /***
                  *      _____ _            _____     _
                  *     |  ___| | __ _  __ |_   _|_ _| | _____ _ __
@@ -467,12 +468,12 @@ public class Farcry1Assault implements GameMode, HasLogger {
                  *                    |___/
                  */
 
-               setTakenBlinkScheme();
+                setTakenBlinkScheme();
 
 //                MissionBox.setScheme(MissionBox.MBX_SIREN1, "1;3000,0");
                 Main.getPinHandler().setScheme(Main.NAME_START_STOP_SIREN, String.format("1:on,%s;off,0", Main.getConfigs().get(Configs.MBX_STARTGAME_SIRENTIME)));
 
-            } else if (messageEvent.getEvent() == Statistics.GAME_FLAG_ACTIVE) {
+            } else if (messageEvent.getEvent() == GameEvent.START_GAME) {
                 /***
                  *      _____ _                _        _   _
                  *     |  ___| | __ _  __ _   / \   ___| |_(_)_   _____
@@ -586,7 +587,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
             if (farcryAssaultThread.isPausing()) return;
             if (event.getState() == PinState.LOW) {
                 getLogger().debug("GPIO Start/Stop down");
-                if (farcryAssaultThread.getGameEvent() == Statistics.GAME_PRE_GAME) {
+                if (farcryAssaultThread.getGameEvent() == GameEvent.PREGAME) {
                     farcryAssaultThread.startGame();
                 } else {
                     farcryAssaultThread.prepareGame();
@@ -606,7 +607,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
             if (!Main.isGameStartable()) return;
             if (farcryAssaultThread.isPausing()) return;
             getLogger().debug("btnGameStartStop");
-            if (farcryAssaultThread.getGameEvent() == Statistics.GAME_PRE_GAME) {
+            if (farcryAssaultThread.getGameEvent() == GameEvent.PREGAME) {
                 farcryAssaultThread.startGame();
             } else {
                 farcryAssaultThread.prepareGame();
@@ -665,7 +666,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
     }
 
 
-    public void setDefendedBlinkScheme(){
+    public void setDefendedBlinkScheme() {
         Main.getPinHandler().off(Main.NAME_LED1_BTN_RED);
         Main.getPinHandler().off(Main.NAME_LED1_BTN_GREEN);
         Main.getPinHandler().off(Main.NAME_LED2_BTN_RED);

@@ -4,6 +4,7 @@ import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.GameEventListener;
 import de.flashheart.missionbox.events.FC1GameEvent;
 
+import de.flashheart.missionbox.statistics.GameEvent;
 import de.flashheart.missionbox.statistics.Statistics;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.commons.lang3.StringUtils;
@@ -85,7 +86,7 @@ public class FC1SavePoint extends JPanel {
         logger.debug(toString());
 
         // ein Revert macht nur Sinn bei HOT oder COLD. Sonst nicht.
-        btnRevert.setVisible(messageEvent.getEvent() == Statistics.GAME_FLAG_HOT || messageEvent.getEvent() == Statistics.GAME_FLAG_COLD);
+        btnRevert.setVisible(messageEvent.getEvent() == GameEvent.FUSED || messageEvent.getEvent() == GameEvent.DEFUSED);
         refreshTextLine();
     }
 

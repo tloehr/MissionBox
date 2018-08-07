@@ -5,28 +5,13 @@ import java.util.List;
 
 public class GameState {
 
-    // for gamestate
-    public static final String NON_EXISTENT = "NULL";
-    public static final String PRE_GAME = "PREPGAME";
-    public static final String FLAG_ACTIVE = "FLAGACTV";
-    public static final String FLAG_COLD = "FLAGCOLD";
-    public static final String FLAG_HOT = "FLAG_HOT";
-    public static final String SUDDEN_DEATH = "SDDNDEATH";
-    public static final String OVERTIME = "OVRTIME";
-    public static final String OUTCOME_FLAG_TAKEN = "FLAGTAKN";
-    public static final String OUTCOME_FLAG_DEFENDED = "FLAGDFND";
-    public static final String GOING_TO_PAUSE = "GNGPAUSE";
-    public static final String PAUSING = "PAUSING"; // Box pausiert
-    public static final String GOING_TO_RESUME = "GNGRESUM";
-    public static final String RESUMED = "RESUMED"; // unmittelbar vor der Spielwiederaufnahme
-
     // for gametype
     public static final String TYPE_FARCRY = "farcry";
     public static final String TYPE_CENTERFLAG = "centerflag";
 
     private String bombname;
     private String gametype;
-    private String gamestate;
+    private String state;
     private String uuid;
     private long matchid;
     private long timestamp;
@@ -42,22 +27,23 @@ public class GameState {
 
     public GameState() {
         gameEvents = new ArrayList<>();
-        gametime = 0l;
-        remaining = 0l;
-        capturetime = 0l; // farcry only
-        maxgametime = 0l;
-        timestamp = 0l;
-        timestamp_game_started = -1l;
-        timestamp_game_paused = -1l;
-        timestamp_game_ended = -1l;
     }
 
     public GameState(String bombname, String gametype, String uuid, long matchid) {
         this();
+        this.state = GameEvent.PREGAME;
+        this.bombfused = false;
         this.bombname = bombname;
         this.gametype = gametype;
         this.uuid = uuid;
         this.matchid = matchid;
+        this.capturetime = 0l;
+        this.maxgametime = 0l;
+        this.remaining = 0l;
+        this.bombfused = false;
+        this.timestamp_game_started = -1;
+        this.timestamp_game_paused = -1;
+        this.timestamp_game_ended = -1;
     }
 
     public String getBombname() {
@@ -172,12 +158,13 @@ public class GameState {
         this.gameEvents = gameEvents;
     }
 
-    public String getGamestate() {
-        return gamestate;
+    public String getState() {
+        return state;
     }
 
-    public void setGamestate(String gamestate) {
-        this.gamestate = gamestate;
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     @Override
@@ -185,7 +172,7 @@ public class GameState {
         return "GameState{" +
                 "bombname='" + bombname + '\'' +
                 ", gametype='" + gametype + '\'' +
-                ", gamestate='" + gamestate + '\'' +
+                ", state='" + state + '\'' +
                 ", uuid='" + uuid + '\'' +
                 ", matchid=" + matchid +
                 ", timestamp=" + timestamp +

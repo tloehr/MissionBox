@@ -6,6 +6,7 @@ import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
+import de.flashheart.missionbox.statistics.GameEvent;
 import de.flashheart.missionbox.statistics.Statistics;
 
 import javax.swing.*;
@@ -107,27 +108,27 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
 //        percentageList.add(MessageListener.class, percentageListener);
         gameModeList.add(MessageListener.class, gameModeListener);
 
-        previousGameState = Statistics.GAME_NON_EXISTENT;
+        previousGameState = "NULL";
 
         prepareGame();
     }
 
     public boolean isPausing() {
-        return (gameEvent == Statistics.GAME_PAUSING || gameEvent == Statistics.GAME_GOING_TO_PAUSE);
+        return (gameEvent == GameEvent.PAUSING || gameEvent == GameEvent.GOING_TO_PAUSE);
     }
 
     public void setFlagHot(boolean hot) {
         if (isPausing()) return; // eigentlich brauche ich diese Abfrage nicht, weil dass durch die Konstruktion schon
         // bewältigt wird. Aber so ist es schön einheitlich.
         if (hot) {
-            if (gameEvent == Statistics.GAME_FLAG_COLD) {
+            if (gameEvent == GameEvent.DEFUSED) {
                 timeWhenTheFlagWasActivated = gametimer;
-                setGameEvent(Statistics.GAME_FLAG_HOT);
+                setGameEvent(GameEvent.FUSED);
             }
         } else {
-            if (gameEvent == Statistics.GAME_FLAG_HOT) {
+            if (gameEvent == GameEvent.FUSED) {
                 timeWhenTheFlagWasActivated = -1l;
-                setGameEvent(Statistics.GAME_FLAG_COLD);
+                setGameEvent(GameEvent.DEFUSED);
             }
         }
     }
@@ -173,7 +174,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
                 fireMessage(gameModeList, new FC1GameEvent(this, gameEvent, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
 
                 switch (gameEvent) {
-                    case Statistics.GAME_PRE_GAME: {
+                    case GameEvent.PREGAME: {
                         getLogger().info("\n  ____  ____  _____ ____    _    __  __ _____ \n" +
                                 " |  _ \\|  _ \\| ____/ ___|  / \\  |  \\/  | ____|\n" +
                                 " | |_) | |_) |  _|| |  _  / _ \\ | |\\/| |  _|  \n" +
@@ -187,7 +188,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
                         Main.getFrmTest().clearEvents();
                         break;
                     }
-                    case Statistics.GAME_FLAG_ACTIVE: { // hier wird das Spiel gestartet
+                    case GameEvent.START_GAME: { // hier wird das Spiel gestartet
                         getLogger().info("\n  _____ _        _    ____      _    ____ _____ _____     _______ \n" +
                                 " |  ___| |      / \\  / ___|    / \\  / ___|_   _|_ _\\ \\   / / ____|\n" +
                                 " | |_  | |     / _ \\| |  _    / _ \\| |     | |  | | \\ \\ / /|  _|  \n" +
@@ -199,10 +200,10 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
                         addEventToList = true;
 
                         starttime = System.currentTimeMillis();
-                        setGameEvent(Statistics.GAME_FLAG_COLD);
+                        setGameEvent(GameEvent.DEFUSED);
                         break;
                     }
-                    case Statistics.GAME_FLAG_HOT: {
+                    case GameEvent.FUSED: {
                         getLogger().info("\n  _____ _        _    ____   _   _  ___ _____ \n" +
                                 " |  ___| |      / \\  / ___| | | | |/ _ \\_   _|\n" +
                                 " | |_  | |     / _ \\| |  _  | |_| | | | || |  \n" +
@@ -221,7 +222,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
                         break;
                     }
 
-                    case Statistics.GAME_FLAG_COLD: {
+                    case GameEvent.DEFUSED: {
                         getLogger().info("\n  _____ _        _    ____    ____ ___  _     ____  \n" +
                                 " |  ___| |      / \\  / ___|  / ___/ _ \\| |   |  _ \\ \n" +
                                 " | |_  | |     / _ \\| |  _  | |  | | | | |   | | | |\n" +
@@ -235,7 +236,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
 
                         break;
                     }
-                    case Statistics.GAME_OUTCOME_FLAG_TAKEN: {
+                    case GameEvent.EXPLODED: {
                         getLogger().info("\n  _____ _        _    ____   _____  _    _  _______ _   _ \n" +
                                 " |  ___| |      / \\  / ___| |_   _|/ \\  | |/ / ____| \\ | |\n" +
                                 " | |_  | |     / _ \\| |  _    | | / _ \\ | ' /|  _| |  \\| |\n" +
@@ -246,7 +247,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
                         addEventToList = true;
                         break;
                     }
-                    case Statistics.GAME_OUTCOME_FLAG_DEFENDED: {
+                    case GameEvent.DEFENDED: {
                         getLogger().info("\n  _____ _        _    ____   ____  _____ _____ _____ _   _ ____  _____ ____  \n" +
                                 " |  ___| |      / \\  / ___| |  _ \\| ____|  ___| ____| \\ | |  _ \\| ____|  _ \\ \n" +
                                 " | |_  | |     / _ \\| |  _  | | | |  _| | |_  |  _| |  \\| | | | |  _| | | | |\n" +
@@ -260,22 +261,22 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
 
                         break;
                     }
-                    case Statistics.GAME_GOING_TO_PAUSE: {
+                    case GameEvent.GOING_TO_PAUSE: {
                         pausingSince = System.currentTimeMillis();
                         resumeToState = previousGameState; // falls doch kein revert gebraucht wird
                         Main.getPinHandler().pause();
-                        setGameEvent(Statistics.GAME_PAUSING);
+                        setGameEvent(GameEvent.PAUSING);
                         break;
                     }
-                    case Statistics.GAME_PAUSING: {
+                    case GameEvent.PAUSING: {
                         break;
                     }
-                    case Statistics.GAME_GOING_TO_RESUME: {
+                    case GameEvent.GOING_TO_RESUME: {
                         resumingSince = System.currentTimeMillis();
                         Main.getFrmTest().setToPauseMode(false);
                         break;
                     }
-                    case Statistics.GAME_RESUMED: {
+                    case GameEvent.RESUMED: {
 
                         // Korrektur der Pausen und Resume Zeit
                         long pause_period = System.currentTimeMillis() - pausingSince;      // damit ist auch die resume zeit inbegriffen.
@@ -310,7 +311,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
 
 
                             timeWhenTheFlagWasActivated = -1l;
-                            if (resumeToState == Statistics.GAME_FLAG_HOT) {
+                            if (resumeToState == GameEvent.FUSED) {
                                 timeWhenTheFlagWasActivated = savePoint.getMessageEvent().getTimeWhenTheFlagWasActivated();
                                 getLogger().debug("flagactivate ist nun: " + Tools.formatLongTime(timeWhenTheFlagWasActivated));
                             }
@@ -350,13 +351,13 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
 
     @Override
     public void prepareGame() {
-        previousGameState = Statistics.GAME_NON_EXISTENT;
-        setGameEvent(Statistics.GAME_PRE_GAME);
+        previousGameState = "null";
+        setGameEvent(GameEvent.PREGAME);
     }
 
     @Override
     public void startGame() {
-        setGameEvent(Statistics.GAME_FLAG_ACTIVE);
+        setGameEvent(GameEvent.START_GAME);
     }
 
     @Override
@@ -367,13 +368,13 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
     @Override
     public void togglePause() {
         if (isPausing()) {
-            setGameEvent(Statistics.GAME_GOING_TO_RESUME);
+            setGameEvent(GameEvent.GOING_TO_RESUME);
         } else {
             // DEFENDED, weil das könnte ja ein getroffener Verteidiger noch schnell entschärft haben.
             // Wenn er das im OVERTIME macht, dann ist ein UNDO nötig.
-            if (isGameRunning() || gameEvent == Statistics.GAME_OUTCOME_FLAG_DEFENDED) {
+            if (isGameRunning() || gameEvent == GameEvent.DEFUSED) {
                 Main.getFrmTest().setToPauseMode(true);
-                setGameEvent(Statistics.GAME_GOING_TO_PAUSE);
+                setGameEvent(GameEvent.GOING_TO_PAUSE);
             }
         }
     }
@@ -391,14 +392,14 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
 
     public long getRemaining() {
         long endtime = maxgametime;
-        if (gameEvent == Statistics.GAME_FLAG_HOT) {
+        if (gameEvent == GameEvent.FUSED) {
             endtime = timeWhenTheFlagWasActivated + capturetime;
         }
         return endtime - gametimer;
     }
 
     public boolean isGameRunning() {
-        return gameEvent == Statistics.GAME_FLAG_ACTIVE || gameEvent == Statistics.GAME_FLAG_HOT || gameEvent == Statistics.GAME_FLAG_COLD;
+        return gameEvent == GameEvent.START_GAME || gameEvent == GameEvent.FUSED || gameEvent == GameEvent.DEFUSED;
     }
 //
 //    public boolean isGameJustEnded() {
@@ -424,29 +425,29 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
 
             } else if (pausingSince >= 0) {
                 fireMessage(gameTimerList, new FC1GameEvent(this, gameEvent, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
-            } else if (gameEvent == Statistics.GAME_PRE_GAME) {
+            } else if (gameEvent == GameEvent.PREGAME) {
                 fireMessage(gameTimerList, new FC1GameEvent(this, gameEvent, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
             }
 
 
             try {
-                if (gameEvent == Statistics.GAME_FLAG_COLD) {
+                if (gameEvent == GameEvent.DEFUSED) {
                     if (getRemaining() <= 0l) {
-                        setGameEvent(Statistics.GAME_OUTCOME_FLAG_DEFENDED);
+                        setGameEvent(GameEvent.DEFENDED);
                     }
                 }
 
-                if (gameEvent == Statistics.GAME_FLAG_HOT) {
+                if (gameEvent == GameEvent.FUSED) {
                     if (getRemaining() <= 0l) {
-                        setGameEvent(Statistics.GAME_OUTCOME_FLAG_TAKEN);
+                        setGameEvent(GameEvent.EXPLODED);
                     }
                 }
 
-                if (gameEvent == Statistics.GAME_GOING_TO_RESUME) {
+                if (gameEvent == GameEvent.GOING_TO_RESUME) {
                     // um einen Countdown zu zeigen, bevor es weiter geht.
                     // getLogger().debug("resuming in " + new DateTime(resumeInterval - (System.currentTimeMillis() - resumingSince), DateTimeZone.UTC).toString("mm:ss"));
                     if (System.currentTimeMillis() - resumingSince >= resumeInterval) {
-                        setGameEvent(Statistics.GAME_RESUMED);
+                        setGameEvent(GameEvent.RESUMED);
                     } else {
                         fireMessage(gameTimerList, new FC1GameEvent(this, gameEvent, starttime, gametimer, timeWhenTheFlagWasActivated, maxgametime, capturetime, pausingSince, resumingSince, lastrespawn, respawninterval, resumeInterval, lastRemainingTime));
                     }

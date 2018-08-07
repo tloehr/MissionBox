@@ -412,10 +412,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
         getLogger().debug("intvalue: " + bd.intValue() / 10);
         Main.setPBLeds(bd);
     }
-
-    private void btnTestFTPActionPerformed(ActionEvent e) {
-        Main.getMessageProcessor().testFTP(txtFTPlog, btnTestFTP);
-    }
+    
 
     private void btnDefendedActionPerformed(ActionEvent e) {
             Main.getGameMode().setDefendedBlinkScheme();
@@ -480,7 +477,6 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
         lblRspwnSiren = new JTextField();
         label6 = new JLabel();
         lblStartsiren = new JTextField();
-        btnTestFTP = new JButton();
         scrollPane1 = new JScrollPane();
         txtFTPlog = new JTextArea();
         panel1 = new JPanel();
@@ -521,7 +517,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
         //======== tabbedPane1 ========
         {
-            tabbedPane1.setFont(new Font("Dialog", Font.PLAIN, 16));
+            tabbedPane1.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
             tabbedPane1.addChangeListener(e -> tabbedPane1StateChanged(e));
 
             //======== contentPanel ========
@@ -535,7 +531,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
                 btn1.setIcon(new ImageIcon(getClass().getResource("/artwork/farcry-logo-64.png")));
                 btn1.setHorizontalTextPosition(SwingConstants.CENTER);
                 btn1.setVerticalTextPosition(SwingConstants.BOTTOM);
-                btn1.setFont(new Font("Dialog", Font.BOLD, 18));
+                btn1.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
                 contentPanel.add(btn1, CC.xy(1, 1));
 
                 //======== scrollPane2 ========
@@ -578,7 +574,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
                         //---- lblRevertEvent ----
                         lblRevertEvent.setText("--");
                         lblRevertEvent.setAlignmentX(0.5F);
-                        lblRevertEvent.setFont(new Font("Dialog", Font.BOLD, 16));
+                        lblRevertEvent.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                         lblRevertEvent.setHorizontalAlignment(SwingConstants.CENTER);
                         panel9.add(lblRevertEvent, BorderLayout.CENTER);
                     }
@@ -607,7 +603,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
                 //---- btnPause ----
                 btnPause.setText("PAUSE");
                 btnPause.setIcon(new ImageIcon(getClass().getResource("/artwork/ledblue64.png")));
-                btnPause.setFont(new Font("Dialog", Font.BOLD, 18));
+                btnPause.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
                 btnPause.setVerticalTextPosition(SwingConstants.BOTTOM);
                 btnPause.setHorizontalTextPosition(SwingConstants.CENTER);
                 contentPanel.add(btnPause, CC.xy(1, 3));
@@ -623,7 +619,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                     //---- lblTimer ----
                     lblTimer.setText("--");
-                    lblTimer.setFont(new Font("Dialog", Font.PLAIN, 12));
+                    lblTimer.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
                     lblTimer.setHorizontalAlignment(SwingConstants.CENTER);
                     panel13.add(lblTimer);
 
@@ -636,7 +632,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                 //---- tbDebug ----
                 tbDebug.setText("Debug");
-                tbDebug.setFont(new Font("Dialog", Font.BOLD, 18));
+                tbDebug.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
                 tbDebug.setIcon(new ImageIcon(getClass().getResource("/artwork/circle_grey_32.png")));
                 tbDebug.setSelectedIcon(new ImageIcon(getClass().getResource("/artwork/circle_yellow_32.png")));
                 contentPanel.add(tbDebug, CC.xy(1, 7, CC.FILL, CC.DEFAULT));
@@ -644,7 +640,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                 //---- lblRespawn ----
                 lblRespawn.setText("--");
-                lblRespawn.setFont(new Font("Dialog", Font.PLAIN, 16));
+                lblRespawn.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 lblRespawn.setForeground(Color.red);
                 contentPanel.add(lblRespawn, CC.xy(7, 10, CC.CENTER, CC.DEFAULT));
             }
@@ -658,11 +654,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                 //---- label1 ----
                 label1.setText("Eroberungszeit (Sek.)");
-                label1.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label1.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label1, CC.xy(1, 1));
 
                 //---- lblFCYCapture ----
-                lblFCYCapture.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYCapture.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblFCYCapture.setText("1");
                 lblFCYCapture.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYCapture.setBackground(Color.orange);
@@ -680,38 +676,38 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                     //---- btnFcyPlus60 ----
                     btnFcyPlus60.setText("+60");
-                    btnFcyPlus60.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyPlus60.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyPlus60.addActionListener(e -> btnFcyPlus60ActionPerformed(e));
                     panel3.add(btnFcyPlus60);
 
                     //---- btnFcyPlus10 ----
                     btnFcyPlus10.setText("+10");
-                    btnFcyPlus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyPlus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyPlus10.addActionListener(e -> btnFcyPlus10ActionPerformed(e));
                     panel3.add(btnFcyPlus10);
 
                     //---- btnFCYcapPlus ----
                     btnFCYcapPlus.setText("+1");
-                    btnFCYcapPlus.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFCYcapPlus.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFCYcapPlus.setActionCommand("+");
                     btnFCYcapPlus.addActionListener(e -> btnFCYcapPlusActionPerformed(e));
                     panel3.add(btnFCYcapPlus);
 
                     //---- btnFCYcapMinus ----
                     btnFCYcapMinus.setText("-1");
-                    btnFCYcapMinus.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFCYcapMinus.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFCYcapMinus.addActionListener(e -> btnFCYcapMinusActionPerformed(e));
                     panel3.add(btnFCYcapMinus);
 
                     //---- btnFcyMinus10 ----
                     btnFcyMinus10.setText("-10");
-                    btnFcyMinus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyMinus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyMinus10.addActionListener(e -> btnFcyMinus10ActionPerformed(e));
                     panel3.add(btnFcyMinus10);
 
                     //---- btnFcyMinus60 ----
                     btnFcyMinus60.setText("-60");
-                    btnFcyMinus60.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyMinus60.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyMinus60.addActionListener(e -> btnFcyMinus60ActionPerformed(e));
                     panel3.add(btnFcyMinus60);
                 }
@@ -719,11 +715,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                 //---- label2 ----
                 label2.setText("Spielzeit (Minuten)");
-                label2.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label2.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label2, CC.xy(1, 3));
 
                 //---- lblFCYGametime ----
-                lblFCYGametime.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYGametime.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblFCYGametime.setText("1");
                 lblFCYGametime.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYGametime.setBackground(Color.orange);
@@ -741,26 +737,26 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                     //---- btnFcyGTPlus10 ----
                     btnFcyGTPlus10.setText("+10");
-                    btnFcyGTPlus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyGTPlus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyGTPlus10.addActionListener(e -> btnFcyGTPlus10ActionPerformed(e));
                     panel4.add(btnFcyGTPlus10);
 
                     //---- btnFcyGTPlus1 ----
                     btnFcyGTPlus1.setText("+1");
-                    btnFcyGTPlus1.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyGTPlus1.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyGTPlus1.setActionCommand("+");
                     btnFcyGTPlus1.addActionListener(e -> btnFcyGTPlus1ActionPerformed(e));
                     panel4.add(btnFcyGTPlus1);
 
                     //---- btnFcyGTMinus1 ----
                     btnFcyGTMinus1.setText("-1");
-                    btnFcyGTMinus1.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyGTMinus1.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyGTMinus1.addActionListener(e -> btnFcyGTMinus1ActionPerformed(e));
                     panel4.add(btnFcyGTMinus1);
 
                     //---- btnFcyGTMinus10 ----
                     btnFcyGTMinus10.setText("-10");
-                    btnFcyGTMinus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyGTMinus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyGTMinus10.addActionListener(e -> btnFcyGTMinus10ActionPerformed(e));
                     panel4.add(btnFcyGTMinus10);
                 }
@@ -768,11 +764,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                 //---- label3 ----
                 label3.setText("Respawn (Sekunden)");
-                label3.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label3.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label3, CC.xy(1, 5));
 
                 //---- lblFCYRespawn ----
-                lblFCYRespawn.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblFCYRespawn.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblFCYRespawn.setText("1");
                 lblFCYRespawn.setHorizontalAlignment(SwingConstants.LEFT);
                 lblFCYRespawn.setBackground(Color.orange);
@@ -790,38 +786,38 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                     //---- btnFcyRpwnPlus60 ----
                     btnFcyRpwnPlus60.setText("+60");
-                    btnFcyRpwnPlus60.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnPlus60.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnPlus60.addActionListener(e -> btnFcyRpwnPlus60ActionPerformed(e));
                     panel6.add(btnFcyRpwnPlus60);
 
                     //---- btnFcyRpwnPlus10 ----
                     btnFcyRpwnPlus10.setText("+10");
-                    btnFcyRpwnPlus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnPlus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnPlus10.addActionListener(e -> btnFcyRpwnPlus10ActionPerformed(e));
                     panel6.add(btnFcyRpwnPlus10);
 
                     //---- btnFcyRpwnPlus1 ----
                     btnFcyRpwnPlus1.setText("+1");
-                    btnFcyRpwnPlus1.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnPlus1.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnPlus1.setActionCommand("+");
                     btnFcyRpwnPlus1.addActionListener(e -> btnFcyRpwnPlus1ActionPerformed(e));
                     panel6.add(btnFcyRpwnPlus1);
 
                     //---- btnFcyRpwnMinus1 ----
                     btnFcyRpwnMinus1.setText("-1");
-                    btnFcyRpwnMinus1.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnMinus1.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnMinus1.addActionListener(e -> btnFcyRpwnMinus1ActionPerformed(e));
                     panel6.add(btnFcyRpwnMinus1);
 
                     //---- btnFcyRpwnMinus10 ----
                     btnFcyRpwnMinus10.setText("-10");
-                    btnFcyRpwnMinus10.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnMinus10.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnMinus10.addActionListener(e -> btnFcyRpwnMinus10ActionPerformed(e));
                     panel6.add(btnFcyRpwnMinus10);
 
                     //---- btnFcyRpwnMinus60 ----
                     btnFcyRpwnMinus60.setText("-60");
-                    btnFcyRpwnMinus60.setFont(new Font("Dialog", Font.BOLD, 16));
+                    btnFcyRpwnMinus60.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
                     btnFcyRpwnMinus60.addActionListener(e -> btnFcyRpwnMinus60ActionPerformed(e));
                     panel6.add(btnFcyRpwnMinus60);
                 }
@@ -829,11 +825,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                 //---- label7 ----
                 label7.setText("Respawnsirene (millis)");
-                label7.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label7.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label7, CC.xy(1, 7));
 
                 //---- lblRspwnSiren ----
-                lblRspwnSiren.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblRspwnSiren.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblRspwnSiren.setText("1");
                 lblRspwnSiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblRspwnSiren.setBackground(Color.orange);
@@ -847,11 +843,11 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
 
                 //---- label6 ----
                 label6.setText("Startsirene (millis)");
-                label6.setFont(new Font("Dialog", Font.PLAIN, 16));
+                label6.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 settingsPanel.add(label6, CC.xy(1, 9));
 
                 //---- lblStartsiren ----
-                lblStartsiren.setFont(new Font("Dialog", Font.BOLD, 20));
+                lblStartsiren.setFont(new Font(Font.DIALOG, Font.BOLD, 20));
                 lblStartsiren.setText("1");
                 lblStartsiren.setHorizontalAlignment(SwingConstants.LEFT);
                 lblStartsiren.setBackground(Color.orange);
@@ -862,11 +858,6 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
                     }
                 });
                 settingsPanel.add(lblStartsiren, CC.xywh(3, 9, 3, 1, CC.FILL, CC.DEFAULT));
-
-                //---- btnTestFTP ----
-                btnTestFTP.setText("Test FTP");
-                btnTestFTP.addActionListener(e -> btnTestFTPActionPerformed(e));
-                settingsPanel.add(btnTestFTP, CC.xy(1, 11, CC.FILL, CC.DEFAULT));
 
                 //======== scrollPane1 ========
                 {
@@ -1139,7 +1130,6 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
     private JTextField lblRspwnSiren;
     private JLabel label6;
     private JTextField lblStartsiren;
-    private JButton btnTestFTP;
     private JScrollPane scrollPane1;
     private JTextArea txtFTPlog;
     private JPanel panel1;

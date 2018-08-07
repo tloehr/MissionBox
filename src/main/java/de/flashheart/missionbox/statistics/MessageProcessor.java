@@ -1,5 +1,7 @@
 package de.flashheart.missionbox.statistics;
 
+import de.flashheart.missionbox.Main;
+import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
@@ -7,8 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-import javax.swing.*;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,17 +22,15 @@ public class MessageProcessor extends Thread implements HasLogger {
     private boolean interrupted;
     private final Stack<GameState> messageQ;
     private final CopyOnWriteArrayList<StatsSentListener> listeners;
-//    private FTPWrapper ftpWrapper;
-
+    private boolean active;
+    private final HttpHeaders headers;
+    private final RestTemplate restTemplate;
 
     protected void fireChangeEvent(StatsSentEvent evt) {
+        if (!active) return;
         for (StatsSentListener l : listeners) {
             l.statsSentEventReceived(evt);
         }
-    }
-
-    public void addListener(StatsSentListener l) {
-        this.listeners.add(l);
     }
 
     public boolean isInterrupted() {
@@ -39,8 +39,24 @@ public class MessageProcessor extends Thread implements HasLogger {
 
     public MessageProcessor() {
         super();
+        active = Long.parseLong(Main.getConfigs().get(Configs.MIN_STAT_SEND_TIME)) > 0;
 
-        this.listeners = new CopyOnWriteArrayList<>();
+        //
+        // Authentication
+        //
+        headers = new HttpHeaders();
+        String auth = "Torsten:test1234";
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
+        String authHeader = "Basic " + new String(encodedAuth);
+        headers.set("Authorization", authHeader);
+
+        //                        headers.add("Accept", MediaType.APPLICATION_XML_VALUE);
+        //                        headers.setContentType(MediaType.APPLICATION_XML);
+        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        restTemplate = new RestTemplate();
+
+        listeners = new CopyOnWriteArrayList<>();
 
         lock = new ReentrantLock();
         messageQ = new Stack<>();
@@ -48,12 +64,13 @@ public class MessageProcessor extends Thread implements HasLogger {
     }
 
     public void pushMessage(GameState gameState) {
+        if (!active) return;
         // https://github.com/tloehr/ocfflag/issues/4
         if (lock.isLocked()) return; // Sonst kann es passieren, dass das hier alles blockiert.
 
         lock.lock();
         try {
-//            getLogger().debug("pushMessage() pushing " + message.toString());
+            getLogger().debug("pushMessage() pushing " + gameState);
             messageQ.push(gameState);
         } finally {
             lock.unlock();
@@ -61,22 +78,22 @@ public class MessageProcessor extends Thread implements HasLogger {
     }
 
 
-    public void testFTP(JTextArea outputArea, JButton buttonToDisable) {
-        if (lock.isLocked()) {
-            outputArea.setText("MessageProcessor is busy. Try again.");
-            return; // Sonst kann es passieren, dass das hier alles blockiert.
-        }
-
-        lock.lock();
-        try {
-//            ftpWrapper.testFTP(outputArea, buttonToDisable);
-        } finally {
-            lock.unlock();
-        }
-    }
+//    public void testFTP(JTextArea outputArea, JButton buttonToDisable) {
+//        if (lock.isLocked()) {
+//            outputArea.setText("MessageProcessor is busy. Try again.");
+//            return; // Sonst kann es passieren, dass das hier alles blockiert.
+//        }
+//
+//        lock.lock();
+//        try {
+////            ftpWrapper.testFTP(outputArea, buttonToDisable);
+//        } finally {
+//            lock.unlock();
+//        }
+//    }
 
     public void run() {
-        while (!interrupted) {
+        while (active && !interrupted) {
             try {
                 lock.lock();
                 // Um keine Verzögerungen beim Start zu haben, schiebe ich das hier in die Nebenläufigkeit.
@@ -85,21 +102,6 @@ public class MessageProcessor extends Thread implements HasLogger {
                 try {
                     if (!messageQ.isEmpty()) {
                         GameState gameState = messageQ.pop();
-
-                        HttpHeaders headers = new HttpHeaders();
-                        //
-                        // Authentication
-                        //
-                        String auth = "Torsten:test1234";
-                        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
-                        String authHeader = "Basic " + new String(encodedAuth);
-                        headers.set("Authorization", authHeader);
-
-
-                        headers.add("Accept", MediaType.APPLICATION_XML_VALUE);
-                        headers.setContentType(MediaType.APPLICATION_XML);
-
-                        RestTemplate restTemplate = new RestTemplate();
 
                         // Data attached to the request.
                         HttpEntity<GameState> requestBody = new HttpEntity<>(gameState, headers);
@@ -115,9 +117,7 @@ public class MessageProcessor extends Thread implements HasLogger {
 
 
                         //
-//                        headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
-//                        // Request to return JSON format
-//                        headers.setContentType(MediaType.APPLICATION_JSON);
+
 ////                        headers.set("my_other_key", "my_other_value");
 //
 //                        HttpEntity<String> entity = new HttpEntity<String>(headers);
