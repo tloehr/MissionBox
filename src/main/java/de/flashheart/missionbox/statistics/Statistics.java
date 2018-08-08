@@ -49,9 +49,7 @@ public class Statistics implements HasLogger {
     }
 
     public void reset() {
-
         gameState = new GameState(Main.getConfigs().get(Configs.FLAGNAME), GameState.TYPE_FARCRY, Main.getConfigs().get(Configs.MYUUID), Main.getConfigs().getNextMatchID());
-
     }
 
     public void updateTimers(FC1GameEvent gameEvent) {
@@ -59,6 +57,8 @@ public class Statistics implements HasLogger {
         gameState.setGametime(gameEvent.getGametime());
         gameState.setRemaining(gameEvent.getRemaining());
         gameState.setCapturetime(gameEvent.getCapturetime());
+        gameState.setTimestamp_game_started(gameEvent.getStarttime());
+        gameState.setTimestamp_game_paused(gameEvent.getPausingSince());
     }
 
     /**
@@ -94,10 +94,15 @@ public class Statistics implements HasLogger {
             gameState.setState(fc1GameEvent.getEvent());
         }
 
-        if (fc1GameEvent.getEvent() == GameEvent.PAUSING){
+        if (fc1GameEvent.getEvent() == GameEvent.PAUSING) {
             gameState.setTimestamp_game_paused(now);
         } else {
             gameState.setTimestamp_game_paused(-1l);
+        }
+
+        if (fc1GameEvent.getEvent() == GameEvent.EXPLODED ||
+                fc1GameEvent.getEvent() == GameEvent.DEFENDED) {
+            gameState.setTimestamp_game_ended(now);
         }
 
         if (fc1GameEvent.getEvent() == GameEvent.FUSED) gameState.setBombfused(true);

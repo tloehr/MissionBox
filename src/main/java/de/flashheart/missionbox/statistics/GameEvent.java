@@ -5,11 +5,22 @@ package de.flashheart.missionbox.statistics;
  */
 public class GameEvent {
 
+
+    // Events for farcry
     public static final String PREGAME = "PREGAME";
     public static final String RESUMED = "RESUMED";
     public static final String FUSED = "FUSED";
     public static final String DEFUSED = "DEFUSED";
     public static final String START_GAME = "START_GAME"; // von Standby nach Active
+    public static final String EXPLODED = "EXPLODED";
+    public static final String DEFENDED = "DEFENDED";
+
+    // Common Events
+    public static final String GOING_TO_PAUSE = "GNGPAUSE";
+    public static final String PAUSING = "PAUSING"; // Box pausiert
+    public static final String GOING_TO_RESUME = "GNGRESUM";
+
+    // Events for centerflag
     public static final String BLUE_ACTIVATED = "BLUE_ACTIVATED";
     public static final String RED_ACTIVATED = "RED_ACTIVATED";
     public static final String GAME_OVER = "GAME_OVER"; // wenn die Spielzeit abgelaufen ist
@@ -22,12 +33,6 @@ public class GameEvent {
     public static final String RESULT_GREEN_WON = "RESULT_GREEN_WON";
     public static final String RESULT_YELLOW_WON = "RESULT_YELLOW_WON";
     public static final String RESULT_MULTI_WINNERS = "RESULT_MULTI_WINNERS"; // wenn mehr als einer die bestzeit erreicht hat (seeeeehr unwahrscheinlich)
-    public static final String EXPLODED = "EXPLODED";
-    public static final String DEFENDED = "DEFENDED";
-
-    public static final String GOING_TO_PAUSE = "GNGPAUSE";
-    public static final String PAUSING = "PAUSING"; // Box pausiert
-    public static final String GOING_TO_RESUME = "GNGRESUM";
 
 
     protected long pit;
