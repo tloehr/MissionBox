@@ -1,5 +1,6 @@
 package de.flashheart.missionbox.statistics;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+import sun.security.action.GetLongAction;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -25,6 +27,9 @@ public class MessageProcessor extends Thread implements HasLogger {
     private boolean active;
     private final HttpHeaders headers;
     private final RestTemplate restTemplate;
+    // todo: only for development. Remove later
+//    private final ObjectMapper mapper = new ObjectMapper();
+
 
     protected void fireChangeEvent(StatsSentEvent evt) {
         if (!active) return;
@@ -105,6 +110,10 @@ public class MessageProcessor extends Thread implements HasLogger {
 
                         // Data attached to the request.
                         HttpEntity<GameState> requestBody = new HttpEntity<>(gameState, headers);
+
+
+//                         getLogger().debug(mapper.writeValueAsString(gameState));
+
 
                         // Send request with POST method.
                         GameState result = restTemplate.postForObject(GAMESTATE_CREATE, requestBody, GameState.class);

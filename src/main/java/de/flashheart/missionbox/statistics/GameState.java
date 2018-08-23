@@ -1,5 +1,7 @@
 package de.flashheart.missionbox.statistics;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ public class GameState {
 
     private String bombname;
     private String gametype;
-    private String state;
+    private String state;  // pregame, running, pausing, finished or broken
     private String uuid;
     private long matchid;
     private long timestamp;
@@ -24,6 +26,7 @@ public class GameState {
     private long maxgametime;
     private long gametime;
     private List<GameEvent> gameEvents;
+    private String zoneid; // for timezone handling
 
     public GameState() {
         gameEvents = new ArrayList<>();
@@ -31,7 +34,7 @@ public class GameState {
 
     public GameState(String bombname, String gametype, String uuid, long matchid) {
         this();
-        this.state = GameEvent.PREGAME;
+        this.state =  "pregame";
         this.bombfused = false;
         this.bombname = bombname;
         this.gametype = gametype;
@@ -44,6 +47,8 @@ public class GameState {
         this.timestamp_game_started = -1;
         this.timestamp_game_paused = -1;
         this.timestamp_game_ended = -1;
+        this.timestamp = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+               this.zoneid = ZoneId.systemDefault().getId();
     }
 
     public String getBombname() {
@@ -166,25 +171,33 @@ public class GameState {
     public void setState(String state) {
         this.state = state;
     }
+    public String getZoneid() {
+          return zoneid;
+      }
 
-    @Override
-    public String toString() {
-        return "GameState{" +
-                "bombname='" + bombname + '\'' +
-                ", gametype='" + gametype + '\'' +
-                ", state='" + state + '\'' +
-                ", uuid='" + uuid + '\'' +
-                ", matchid=" + matchid +
-                ", timestamp=" + timestamp +
-                ", timestamp_game_started=" + timestamp_game_started +
-                ", timestamp_game_paused=" + timestamp_game_paused +
-                ", timestamp_game_ended=" + timestamp_game_ended +
-                ", bombfused=" + bombfused +
-                ", remaining=" + remaining +
-                ", capturetime=" + capturetime +
-                ", maxgametime=" + maxgametime +
-                ", gametime=" + gametime +
-                ", gameEvents=" + gameEvents +
-                '}';
-    }
+      public void setZoneid(String zoneid) {
+          this.zoneid = zoneid;
+      }
+
+      @Override
+      public String toString() {
+          return "GameState{" +
+                  "bombname='" + bombname + '\'' +
+                  ", gametype='" + gametype + '\'' +
+                  ", state='" + state + '\'' +
+                  ", uuid='" + uuid + '\'' +
+                  ", matchid=" + matchid +
+                  ", timestamp=" + timestamp +
+                  ", timestamp_game_started=" + timestamp_game_started +
+                  ", timestamp_game_paused=" + timestamp_game_paused +
+                  ", timestamp_game_ended=" + timestamp_game_ended +
+                  ", bombfused=" + bombfused +
+                  ", remaining=" + remaining +
+                  ", capturetime=" + capturetime +
+                  ", maxgametime=" + maxgametime +
+                  ", gametime=" + gametime +
+                  ", gameEvents=" + gameEvents +
+                  ", zoneid='" + zoneid + '\'' +
+                  '}';
+      }
 }

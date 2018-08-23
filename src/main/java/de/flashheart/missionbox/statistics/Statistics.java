@@ -5,6 +5,9 @@ import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 public class Statistics implements HasLogger {
 
 
@@ -59,6 +62,11 @@ public class Statistics implements HasLogger {
         gameState.setCapturetime(gameEvent.getCapturetime());
         gameState.setTimestamp_game_started(gameEvent.getStarttime());
         gameState.setTimestamp_game_paused(gameEvent.getPausingSince());
+        gameState.setTimestamp(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+
+        getLogger().debug(gameState.getTimestamp());
+        getLogger().debug(System.currentTimeMillis());
+
     }
 
     /**
@@ -72,11 +80,12 @@ public class Statistics implements HasLogger {
         long now = System.currentTimeMillis();
         updateTimers(fc1GameEvent);
 
-        gameState.getGameEvents().add(fc1GameEvent.createGameEvent());
-
         if (gameState.getGameEvents().isEmpty()) {
             gameState.setTimestamp_game_started(now);
         }
+
+        gameState.getGameEvents().add(fc1GameEvent.createGameEvent());
+
 
         if (gameState.getTimestamp_game_ended() == -1l) {
             if (fc1GameEvent.getEvent().equals(GameEvent.EXPLODED) || fc1GameEvent.getEvent().equals(GameEvent.DEFENDED)) {
