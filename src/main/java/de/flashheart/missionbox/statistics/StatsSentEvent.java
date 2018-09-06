@@ -1,5 +1,7 @@
 package de.flashheart.missionbox.statistics;
 
+import de.flashheart.missionbox.rlggames.GameState;
+
 import java.util.EventObject;
 
 public class StatsSentEvent extends EventObject {

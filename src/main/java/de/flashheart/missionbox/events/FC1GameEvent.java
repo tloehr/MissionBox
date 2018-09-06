@@ -2,7 +2,7 @@ package de.flashheart.missionbox.events;
 
 
 import de.flashheart.missionbox.misc.Tools;
-import de.flashheart.missionbox.statistics.GameEvent;
+import de.flashheart.missionbox.rlggames.GameEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 

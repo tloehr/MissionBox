@@ -1,5 +1,7 @@
 package de.flashheart.missionbox.statistics;
 
+import de.flashheart.missionbox.rlggames.GameEvent;
+
 public class PHPMessage {
     String php;
 

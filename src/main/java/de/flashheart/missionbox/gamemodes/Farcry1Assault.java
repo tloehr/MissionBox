@@ -8,7 +8,7 @@ import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
-import de.flashheart.missionbox.statistics.GameEvent;
+import de.flashheart.missionbox.rlggames.GameEvent;
 import de.flashheart.missionbox.statistics.Statistics;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
@@ -407,6 +407,8 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_RED, "∞:on,350;off,3700");
                 Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_YELLOW, "∞:off,350;on,350;off,3350");
                 Main.getPinHandler().setScheme(Main.NAME_LED2_PROGRESS_GREEN, "∞:off,700;on,350;off,3000");
+
+                
 
                 statistics.reset();
                 lastMinuteAnnounced = false;

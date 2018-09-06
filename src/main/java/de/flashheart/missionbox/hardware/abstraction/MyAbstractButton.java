@@ -9,13 +9,13 @@ import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.misc.HasLogger;
 
 import javax.swing.*;
+import javax.swing.event.EventListenerList;
 import java.awt.event.ActionListener;
 
 /**
  * Created by tloehr on 15.03.16.
  */
 public class MyAbstractButton implements HasLogger {
-
     private final GpioPinDigitalInput hardwareButton;
     private final JButton guiButton;
 

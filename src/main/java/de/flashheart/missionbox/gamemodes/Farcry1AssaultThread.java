@@ -6,8 +6,7 @@ import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
-import de.flashheart.missionbox.statistics.GameEvent;
-import de.flashheart.missionbox.statistics.Statistics;
+import de.flashheart.missionbox.rlggames.GameEvent;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -108,7 +107,7 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
 //        percentageList.add(MessageListener.class, percentageListener);
         gameModeList.add(MessageListener.class, gameModeListener);
 
-        previousGameState = "NULL";
+        previousGameState = "null";
 
         prepareGame();
     }
@@ -271,6 +270,10 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
                     case GameEvent.PAUSING: {
                         break;
                     }
+                    case GameEvent.GAME_ABORTED: {
+                        setGameEvent(GameEvent.PREGAME); // nur damit ein Event "aborted" beim eventhandler ankommt für die Statistik
+                        break;
+                    }
                     case GameEvent.GOING_TO_RESUME: {
                         resumingSince = System.currentTimeMillis();
                         Main.getFrmTest().setToPauseMode(false);
@@ -352,7 +355,13 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
     @Override
     public void prepareGame() {
         previousGameState = "null";
-        setGameEvent(GameEvent.PREGAME);
+        if (isGameRunning() || isPausing()) {
+            // das spiel lief noch. Also wird es hier abgebrochen
+            setGameEvent(GameEvent.GAME_ABORTED);
+        } else {
+            setGameEvent(GameEvent.PREGAME);
+        }
+
     }
 
     @Override

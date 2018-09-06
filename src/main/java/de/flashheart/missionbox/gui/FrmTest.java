@@ -264,9 +264,7 @@ public class FrmTest extends JFrame implements GameEventListener, HasLogger {
         return tabbedPane1.getSelectedIndex() == 0;
     }
 
-    private void btnRedLedBarActionPerformed(ActionEvent e) {
-//        MissionBox.setScheme(MissionBox.MBX_TIME_SIREN, "3;500,500");
-    }
+
 
     private void lblFCYCaptureActionPerformed(ActionEvent e) {
         JTextField txt = ((JTextField) e.getSource());

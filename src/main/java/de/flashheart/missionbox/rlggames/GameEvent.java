@@ -1,4 +1,4 @@
-package de.flashheart.missionbox.statistics;
+package de.flashheart.missionbox.rlggames;
 
 /**
  * Created by tloehr on 25.04.15.
@@ -19,12 +19,13 @@ public class GameEvent {
     public static final String GOING_TO_PAUSE = "GNGPAUSE";
     public static final String PAUSING = "PAUSING"; // Box pausiert
     public static final String GOING_TO_RESUME = "GNGRESUM";
+    public static final String GAME_ABORTED = "GAME_ABORTED"; // wenn das Spiel beendet wurde
 
     // Events for centerflag
     public static final String BLUE_ACTIVATED = "BLUE_ACTIVATED";
     public static final String RED_ACTIVATED = "RED_ACTIVATED";
     public static final String GAME_OVER = "GAME_OVER"; // wenn die Spielzeit abgelaufen ist
-    public static final String GAME_ABORTED = "GAME_ABORTED"; // wenn das Spiel beendet wurde
+
     public static final String RESULT_RED_WON = "RESULT_RED_WON";
     public static final String RESULT_BLUE_WON = "RESULT_BLUE_WON";
     public static final String RESULT_DRAW = "RESULT_DRAW"; // Unentschieden
