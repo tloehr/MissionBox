@@ -1,14 +1,15 @@
 package de.flashheart.missionbox.statistics;
 
+import de.flashheart.gamestate.GameState;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
-import de.flashheart.missionbox.rlggames.GameState;
-import org.apache.tomcat.util.codec.binary.Base64;
+import org.codehaus.plexus.util.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+
 
 import java.nio.charset.Charset;
 import java.util.Arrays;

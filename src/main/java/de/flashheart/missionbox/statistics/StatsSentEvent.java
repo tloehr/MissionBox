@@ -1,6 +1,6 @@
 package de.flashheart.missionbox.statistics;
 
-import de.flashheart.missionbox.rlggames.GameState;
+import de.flashheart.gamestate.GameState;
 
 import java.util.EventObject;
 

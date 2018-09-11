@@ -1,11 +1,12 @@
 package de.flashheart.missionbox.statistics;
 
+import de.flashheart.gamestate.GameEvent;
+import de.flashheart.gamestate.GameState;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
-import de.flashheart.missionbox.rlggames.GameEvent;
-import de.flashheart.missionbox.rlggames.GameState;
+
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
