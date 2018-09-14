@@ -18,7 +18,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MessageProcessor extends Thread implements HasLogger {
-    public static final String GAMESTATE_CREATE = "http://localhost:8090/rest/gamestate/create";
 
     private ReentrantLock lock;
     private boolean interrupted;
@@ -27,8 +26,6 @@ public class MessageProcessor extends Thread implements HasLogger {
     private boolean active;
     private final HttpHeaders headers;
     private final RestTemplate restTemplate;
-    // todo: only for development. Remove later
-//    private final ObjectMapper mapper = new ObjectMapper();
 
 
     protected void fireChangeEvent(StatsSentEvent evt) {
@@ -50,8 +47,8 @@ public class MessageProcessor extends Thread implements HasLogger {
         // Authentication
         //
         headers = new HttpHeaders();
-        String auth = "Torsten:test1234";
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
+
+        byte[] encodedAuth = Base64.encodeBase64(Main.getConfigs().get(Configs.REST_AUTH).getBytes(Charset.forName("US-ASCII")));
         String authHeader = "Basic " + new String(encodedAuth);
         headers.set("Authorization", authHeader);
 
@@ -111,12 +108,8 @@ public class MessageProcessor extends Thread implements HasLogger {
                         // Data attached to the request.
                         HttpEntity<GameState> requestBody = new HttpEntity<>(gameState, headers);
 
-
-//                         getLogger().debug(mapper.writeValueAsString(gameState));
-
-
                         // Send request with POST method.
-                        GameState result = restTemplate.postForObject(GAMESTATE_CREATE, requestBody, GameState.class);
+                        GameState result = restTemplate.postForObject(Main.getConfigs().get(Configs.REST_URL), requestBody, GameState.class);
 
                         if (result != null && result.getBombname() != null) {
                             getLogger().debug("GameState created: " + result.getTimestamp());
@@ -124,24 +117,6 @@ public class MessageProcessor extends Thread implements HasLogger {
                             getLogger().error("Something error!");
                         }
 
-
-                        //
-
-////                        headers.set("my_other_key", "my_other_value");
-//
-//                        HttpEntity<String> entity = new HttpEntity<String>(headers);
-//
-//                        RestTemplate restTemplate = new RestTemplate();
-//
-//                        // Send request with GET method and default Headers.
-//
-//                        ResponseEntity<String> response = restTemplate.exchange("http://locaaslhost:8090/greeting", HttpMethod.GET, entity, String.class);
-//
-//                        getLogger().debug(response.getBody());
-
-                        messageQ.clear(); // nur die letzte Nachricht ist wichtig
-
-                        // sorge dafür, dass die weiße LED den erfolgreichen Versand anzeigt
                         fireChangeEvent(new StatsSentEvent(this, gameState, true));
                     }
 

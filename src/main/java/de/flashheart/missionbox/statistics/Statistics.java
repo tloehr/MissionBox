@@ -7,21 +7,19 @@ import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
+import java.util.Arrays;
 
 public class Statistics implements HasLogger {
+    public static final String[] EVENTS_TO_STATE = new String[]{GameEvent.GAME_ABORTED, GameEvent.DEFENDED, GameEvent.EXPLODED};
 
     private final MessageProcessor messageProcessor;
-    private final HashMap<String, String> stateColors, stateDisplayText;
+
     private GameState gameState;
 
     public Statistics() {
         messageProcessor = Main.getMessageProcessor();
-        stateColors = GameState.getStateColors();
-        stateDisplayText = GameState.getEvent2State();
 
         reset();
     }
@@ -31,7 +29,6 @@ public class Statistics implements HasLogger {
     }
 
     public void updateTimers(FC1GameEvent gameEvent) {
-        gameState.setRemaining(gameEvent.getRemaining());
         gameState.setGametime(gameEvent.getGametime());
         gameState.setRemaining(gameEvent.getRemaining());
         gameState.setCapturetime(gameEvent.getCapturetime());
@@ -65,10 +62,11 @@ public class Statistics implements HasLogger {
             }
         }
 
-        // these event are propagated to the STATE attribute
-        if (stateColors.containsKey(fc1GameEvent.getEvent())) {
-            gameState.setState(stateDisplayText.get(fc1GameEvent.getEvent()));
-            gameState.setColor(stateColors.get(fc1GameEvent.getEvent()));
+        gameState.setColor("white");
+
+        // Result ?
+        if (Arrays.asList(EVENTS_TO_STATE).contains(fc1GameEvent.getEvent())) {
+            gameState.setState(fc1GameEvent.getEvent());
         }
 
         if (fc1GameEvent.getEvent() == GameEvent.PAUSING) {
@@ -82,8 +80,14 @@ public class Statistics implements HasLogger {
             gameState.setTimestamp_game_ended(now);
         }
 
-        if (fc1GameEvent.getEvent() == GameEvent.FUSED) gameState.setBombfused(true);
-        if (fc1GameEvent.getEvent() == GameEvent.DEFUSED) gameState.setBombfused(false);
+        if (fc1GameEvent.getEvent() == GameEvent.FUSED) {
+            gameState.setBombfused(true);
+            gameState.setColor("red");
+        }
+        if (fc1GameEvent.getEvent() == GameEvent.DEFUSED) {
+            gameState.setBombfused(false);
+            gameState.setColor("green");
+        }
 
         sendStats(); // jedes neue Ereignis wird gesendet.
 
