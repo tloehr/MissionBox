@@ -1,12 +1,12 @@
 package de.flashheart.missionbox.gamemodes;
 
+import de.flashheart.GameEvent;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
-import de.flashheart.missionbox.rlggames.GameEvent;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -140,6 +140,8 @@ public class Farcry1AssaultThread implements Runnable, GameThread, HasLogger {
     public void setMaxgametime(long maxgametime) {
         this.maxgametime = maxgametime * 60000l;
     }
+
+
 
     public void setRespawninterval(long respawninterval) {
         this.respawninterval = respawninterval * 1000l;

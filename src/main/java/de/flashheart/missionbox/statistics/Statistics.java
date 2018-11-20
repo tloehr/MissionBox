@@ -1,7 +1,7 @@
 package de.flashheart.missionbox.statistics;
 
-import de.flashheart.gamestate.GameEvent;
-import de.flashheart.gamestate.GameState;
+import de.flashheart.GameEvent;
+import de.flashheart.GameState;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.misc.Configs;
@@ -18,20 +18,18 @@ public class Statistics implements HasLogger {
 
     private GameState gameState;
 
-    public Statistics() {
+    public Statistics(long maxtime) {
         messageProcessor = Main.getMessageProcessor();
 
-        reset();
+        reset(maxtime);
     }
 
-    public void reset() {
-        gameState = new GameState(Main.getConfigs().get(Configs.FLAGNAME), GameState.TYPE_FARCRY, Main.getConfigs().get(Configs.MYUUID), Main.getConfigs().getNextMatchID());
+    public void reset(long maxtime) {
+        gameState = new GameState(Main.getConfigs().get(Configs.FLAGNAME), GameState.TYPE_FARCRY, Main.getConfigs().get(Configs.MYUUID), Main.getConfigs().getNextMatchID(), maxtime);
     }
 
     public void updateTimers(FC1GameEvent gameEvent) {
         gameState.setGametime(gameEvent.getGametime());
-        gameState.setRemaining(gameEvent.getRemaining());
-        gameState.setCapturetime(gameEvent.getCapturetime());
         gameState.setTimestamp_game_started(gameEvent.getStarttime());
         gameState.setTimestamp_game_paused(gameEvent.getPausingSince());
         gameState.setTimestamp(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
@@ -81,11 +79,9 @@ public class Statistics implements HasLogger {
         }
 
         if (fc1GameEvent.getEvent() == GameEvent.FUSED) {
-            gameState.setBombfused(true);
             gameState.setColor("red");
         }
         if (fc1GameEvent.getEvent() == GameEvent.DEFUSED) {
-            gameState.setBombfused(false);
             gameState.setColor("green");
         }
 

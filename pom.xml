@@ -98,12 +98,10 @@
             <!--<version>RELEASE</version>-->
         <!--</dependency>-->
 
-        <!--local libs-->
-        <!-- mvn install:install-file -Dfile=/Users/tloehr/Documents/lib/rlggamestates.jar -DgroupId=de.flashheart -DartifactId=rlggamestates -Dversion=1.0.0-RELEASE -Dpackaging=jar -->
         <dependency>
-            <groupId>de.flashheart</groupId>
-            <artifactId>rlggamestates</artifactId>
-            <version>1.0.0-RELEASE</version>
+          <groupId>de.flashheart</groupId>
+          <artifactId>rlgutils</artifactId>
+          <version>1.0.1-RELEASE</version>
         </dependency>
 
     </dependencies>

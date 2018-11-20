@@ -2,13 +2,13 @@ package de.flashheart.missionbox.gamemodes;
 
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import de.flashheart.GameEvent;
 import de.flashheart.missionbox.Main;
 import de.flashheart.missionbox.events.FC1GameEvent;
 import de.flashheart.missionbox.events.MessageListener;
 import de.flashheart.missionbox.misc.Configs;
 import de.flashheart.missionbox.misc.HasLogger;
 import de.flashheart.missionbox.misc.Tools;
-import de.flashheart.missionbox.rlggames.GameEvent;
 import de.flashheart.missionbox.statistics.Statistics;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
@@ -80,7 +80,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
                 "");
 
         min_stat_sent_time = Long.parseLong(Main.getConfigs().get(Configs.MIN_STAT_SEND_TIME));
-        statistics = new Statistics();
+        statistics = new Statistics(Long.parseLong(Main.getConfigs().get(Configs.FCY_GAMETIME)));
         coldcountdownrunning = new AtomicBoolean(false);
         hotcountdownrunning = new AtomicBoolean(false);
         resumecountdownrunning = new AtomicBoolean(false);
@@ -410,7 +410,7 @@ public class Farcry1Assault implements GameMode, HasLogger {
 
                 
 
-                statistics.reset();
+                statistics.reset(Long.parseLong(Main.getConfigs().get(Configs.FCY_GAMETIME)));
                 lastMinuteAnnounced = false;
                 lastAnnouncedMinute = -1;
                 lastAnnouncedSecond = -1;

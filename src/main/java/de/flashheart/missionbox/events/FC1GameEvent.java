@@ -1,7 +1,6 @@
 package de.flashheart.missionbox.events;
 
-
-import de.flashheart.gamestate.GameEvent;
+import de.flashheart.GameEvent;
 import de.flashheart.missionbox.misc.Tools;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -214,6 +213,6 @@ public class FC1GameEvent extends EventObject {
     }
 
     public GameEvent createGameEvent() {
-        return new GameEvent(pit.getMillis(), event, gametime, remaining);
+        return new GameEvent(event, gametime);
     }
 }
